@@ -1,0 +1,15 @@
+include README.rst LICENSE.txt
+include setup.cfg
+include setup.py
+include bld.bat
+include build.sh
+include meta.yaml
+
+recursive-include tests *
+recursive-include examples *
+
+recursive-include docs *
+prune docs/build
+
+recursive-exclude * __pycache__
+recursive-exclude * *.py[co]

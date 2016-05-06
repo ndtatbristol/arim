@@ -1,0 +1,34 @@
+package:
+  name: arim
+  version: "VERSION_NUMBER_UNDEFINED_YET"
+
+source:
+  path: .
+
+requirements:
+  build:
+    - python >=3.5
+    - numpy
+    - scipy
+    - numba
+    - hdf5
+    - matplotlib
+
+  run:
+    - python >=3.5
+    - numpy
+    - scipy
+    - numba
+    - hdf5
+    - matplotlib
+
+test:
+  commands:
+    - arim --version
+
+  requires:
+    - arim
+
+build:
+  entry_points:
+    - arim = arim.cli:main
