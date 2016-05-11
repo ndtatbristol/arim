@@ -46,7 +46,7 @@ def plot_bscan_pulse_echo(frame, use_dB=True, ax=None, title='B-scan', clim=None
             clim = [-40., 0.]
 
     im = ax.imshow(scanlines, extent=[frame.time.start, frame.time.end, 0, numpulseecho - 1],
-                   interpolation=interpolation, cmap=cmap)
+                   interpolation=interpolation, cmap=cmap, origin='lower')
     ax.set_xlabel('Time (µs)')
     ax.set_ylabel('Element')
     ax.xaxis.set_major_formatter(us_formatter)
