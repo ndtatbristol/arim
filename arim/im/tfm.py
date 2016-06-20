@@ -50,13 +50,14 @@ class BaseTFM:
     dtype
     amplitudes : Amplitudes
     geom_probe_to_grid
+    interpolate_position (Default is 0 = Nearest)
     fillvalue : float
         Value to assign to scanlines outside ``[tmin, tmax]``. Default: nan
     delay_and_sum_kwargs : dict
 
     """
     def __init__(self, frame, grid, amplitudes_tx='uniform', amplitudes_rx='uniform',
-                 dtype=None, fillvalue=np.nan, geom_probe_to_grid=None):
+                 dtype=None, fillvalue=np.nan, geom_probe_to_grid=None,interpolate_position=0):
         self.frame = frame
         self.grid = grid
 
@@ -65,6 +66,7 @@ class BaseTFM:
         self.dtype = dtype
 
         self.fillvalue = fillvalue
+        self.interpolate_position=interpolate_position
 
         self.delay_and_sum_kwargs = {}
         self.res = None
@@ -106,7 +108,7 @@ class BaseTFM:
         self.focal_law = focal_law
 
         delay_and_sum_kwargs = dict(fillvalue=self.fillvalue)
-        res = delay_and_sum(self.frame, focal_law, **delay_and_sum_kwargs)
+        res = delay_and_sum(self.frame, focal_law,interpolate_position=self.interpolate_position,**delay_and_sum_kwargs)
 
         res = self.hook_result(res)
 

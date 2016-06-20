@@ -15,7 +15,7 @@ from ..utils import chunk_array
 __all__ = ['delay_and_sum', 'find_minimum_times']
 
 
-def delay_and_sum(frame, focal_law, fillvalue=np.nan, result=None, block_size=None, numthreads=None):
+def delay_and_sum(frame, focal_law, fillvalue=np.nan, result=None, block_size=None, numthreads=None,interpolate_position=0):
     """
     Chunk the grid.
 
@@ -53,18 +53,36 @@ def delay_and_sum(frame, focal_law, fillvalue=np.nan, result=None, block_size=No
         numthreads = s.NUMTHREADS
 
     futures = []
-    with ThreadPoolExecutor(max_workers=numthreads) as executor:
-        for chunk in chunk_array((numpoints, ...), block_size):
-            futures.append(executor.submit(
-                _delay_and_sum_amplitudes,
-                frame.scanlines, frame.tx, frame.rx,
-                focal_law.lookup_times_tx[chunk],
-                focal_law.lookup_times_rx[chunk],
-                focal_law.amplitudes_tx[chunk],
-                focal_law.amplitudes_rx[chunk],
-                focal_law.scanline_weights,
-                frame.time.step, frame.time.start, fillvalue,
-                result[chunk]))
+    if interpolate_position == 0:
+        #Nearest Match
+        with ThreadPoolExecutor(max_workers=numthreads) as executor:
+            for chunk in chunk_array((numpoints, ...), block_size):
+                futures.append(executor.submit(
+                    _delay_and_sum_amplitudes_nearest,
+                    frame.scanlines, frame.tx, frame.rx,
+                    focal_law.lookup_times_tx[chunk],
+                    focal_law.lookup_times_rx[chunk],
+                    focal_law.amplitudes_tx[chunk],
+                    focal_law.amplitudes_rx[chunk],
+                    focal_law.scanline_weights,
+                    frame.time.step, frame.time.start, fillvalue,
+                    result[chunk]))
+    elif interpolate_position == 1:
+        #Linear Interpolation
+        with ThreadPoolExecutor(max_workers=numthreads) as executor:
+            for chunk in chunk_array((numpoints, ...), block_size):
+                futures.append(executor.submit(
+                    _delay_and_sum_amplitudes_linear,
+                    frame.scanlines, frame.tx, frame.rx,
+                    focal_law.lookup_times_tx[chunk],
+                    focal_law.lookup_times_rx[chunk],
+                    focal_law.amplitudes_tx[chunk],
+                    focal_law.amplitudes_rx[chunk],
+                    focal_law.scanline_weights,
+                    frame.time.step, frame.time.start, fillvalue,
+                    result[chunk]))
+    
+    
     # Raise exceptions that happened, if any:
     for future in futures:
         future.result()
@@ -72,9 +90,11 @@ def delay_and_sum(frame, focal_law, fillvalue=np.nan, result=None, block_size=No
 
 
 @numba.jit(nopython=True, nogil=True)
-def _delay_and_sum_amplitudes(scanlines, tx, rx, lookup_times_tx, lookup_times_rx, amplitudes_tx, amplitudes_rx,
+def _delay_and_sum_amplitudes_nearest(scanlines, tx, rx, lookup_times_tx, lookup_times_rx, amplitudes_tx, amplitudes_rx,
                               scanline_weights, dt, t0, fillvalue, result):
     """
+    (CPU Parallel) Delay and Sum Algorithm, using nearest time point match     
+    
     Parameters
     ----------
     scanlines : ndarray [numscanlines x numsamples]
@@ -114,6 +134,59 @@ def _delay_and_sum_amplitudes(scanlines, tx, rx, lookup_times_tx, lookup_times_r
             else:
                 result[point] += scanline_weights[scan] * amplitudes_tx[point, tx[scan]] * amplitudes_rx[point, rx[scan]] \
                                  * scanlines[scan, lookup_index]
+
+@numba.jit(nopython=True, nogil=True)
+def _delay_and_sum_amplitudes_linear(scanlines, tx, rx, lookup_times_tx, lookup_times_rx, amplitudes_tx, amplitudes_rx,
+                              scanline_weights, dt, t0, fillvalue, result):
+    """
+    (CPU Parallel) Delay and Sum Algorithm, using linear interpolation for time point     
+    
+    Parameters
+    ----------
+    scanlines : ndarray [numscanlines x numsamples]
+    lookup_times_tx : ndarray [numpoints x numelements]
+        Corresponds to the time of flight between the transmitters and the grid points.
+        Values: integers in [0 and numsamples[
+    lookup_times_rx : ndarray [numpoints x numelements]
+        Corresponds to the time of flight between the grid points and the receivers.
+        Values: integers in [0 and numsamples[
+    amplitudes_tx : ndarray [numpoints x numelements]
+    amplitudes_rx : ndarray [numpoints x numelements]
+    scanline_weights : ndarray [numscanlines]
+        Allow to scale specific scanlines. Useful for HMC, where we want a coefficient 2 when tx=rx, and 1 otherwise.
+    result : ndarray [numpoints]
+        Result.
+    tx, rx : ndarray [numscanlines]
+        Mapping between the scanlines and the transmitter/receiver.
+        Values: integers in [0, numelements[
+
+    Returns
+    -------
+    None
+    """
+    numscanlines, numsamples = scanlines.shape
+    numpoints, numelements = lookup_times_tx.shape
+
+    for point in range(numpoints):
+        if np.isnan(result[point]):
+            continue
+
+        for scan in range(numscanlines):
+            lookup_time = lookup_times_tx[point, tx[scan]] + lookup_times_rx[point, rx[scan]]
+            loc1=(lookup_time - t0) / dt
+            lookup_index = int(round(loc1))
+            frac1 = loc1 - lookup_index 
+            lookup_index1 = lookup_index+1
+            #lookup_index = round((lookup_time - t0) / dt)
+
+            if lookup_index < 0 or lookup_index1 >= numsamples:
+                result[point] += fillvalue
+            else:
+                lscanVal=scanlines[scan, lookup_index]
+                lscanVal1=scanlines[scan, lookup_index1]
+                lscanUseVal=lscanVal+frac1*(lscanVal1-lscanVal)
+                result[point] += scanline_weights[scan] * amplitudes_tx[point, tx[scan]] * amplitudes_rx[point, rx[scan]] \
+                                 * lscanUseVal
 
 
 def find_minimum_times(time_1, time_2, dtype=None, dtype_indices=None, block_size=None, numthreads=None):
