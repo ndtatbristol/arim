@@ -2,9 +2,11 @@
 I/O module for BRAIN files (Matlab NDT library of Universiy of Bristol).
 
 
-Not implemented:
-- get element dimensions from el_x1, el_y1, el_z1, el_x2, el_y2, el_z2: this requires to obtain the orientation of the
-probe, it is probably not worth it. Consequently these fields are discarded right now.
+Implemented as of 20/6/2016:
+- dtype of variables is according to settings.py
+
+- get element dimensions from el_x1, el_y1, el_z1, el_x2, el_y2, el_z2: 
+  Information calculated is probe orientation dependent.
 
 
 """
@@ -13,6 +15,7 @@ import numpy as np
 from scipy.io import loadmat
 
 from .. import geometry as g
+from .. import settings as s
 from ..core import Probe, Frame, Time, InfiniteMedium, Material
 
 __all__ = ['NotHandledByScipy', 'InvalidExpData', 'load_expdata']
@@ -81,25 +84,33 @@ def _load_probe(array):
     """
     frequency = array['centre_freq'][0, 0]
 
-    dtype = np.result_type(array['el_xc'], array['el_yc'], array['el_zc'])
-
+    #dtype = np.result_type(array['el_xc'], array['el_yc'], array['el_zc'])
+    dtype=s.FLOAT
+    
     # Get locations
-    locations_x = np.squeeze(array['el_xc']).astype(np.float)
-    locations_y = np.squeeze(array['el_yc']).astype(np.float)
-    locations_z = np.squeeze(array['el_zc']).astype(np.float)
+    locations_x = np.squeeze(array['el_xc']).astype(dtype)
+    locations_y = np.squeeze(array['el_yc']).astype(dtype)
+    locations_z = np.squeeze(array['el_zc']).astype(dtype)
 
     locations = g.Points(locations_x, locations_y, locations_z)
-    return Probe(locations, frequency)
+    
+    #Calculate Probe Dimensions (using el_x1, el_x2 and el_xc etc for each dimension)
+    dimensions_x = 2*np.maximum(np.absolute(np.squeeze(array['el_x1']).astype(dtype) - locations_x),np.absolute(np.squeeze(array['el_x2']).astype(dtype) - locations_x))
+    dimensions_y = 2*np.maximum(np.absolute(np.squeeze(array['el_y1']).astype(dtype) - locations_y),np.absolute(np.squeeze(array['el_y2']).astype(dtype) - locations_y))
+    dimensions_z = 2*np.maximum(np.absolute(np.squeeze(array['el_z1']).astype(dtype) - locations_z),np.absolute(np.squeeze(array['el_z2']).astype(dtype) - locations_z)) 
+    dimensions = g.Points(dimensions_x, dimensions_y, dimensions_z)
+    
+    return Probe(locations, frequency,dimensions=dimensions)
 
 
 def _load_frame(exp_data, probe):
     # NB: Matlab is 1-indexed, Python is 0-indexed
-    tx = np.squeeze(exp_data['tx']) - 1
-    rx = np.squeeze(exp_data['rx']) - 1
+    tx = np.squeeze(exp_data['tx'].astype(s.UINT)) - 1
+    rx = np.squeeze(exp_data['rx'].astype(s.UINT)) - 1
 
     # Remark: [...] is required to read in the case of HDF5 file
     # (and does nothing if we have a regular array
-    scanlines = np.squeeze(exp_data['time_data'][...])
+    scanlines = np.squeeze(exp_data['time_data'][...].astype(s.FLOAT))
 
     # exp_data.time_data is such as a two consecutive time samples are stored contiguously, which
     # is what we want. However Matlab saves either in Fortran order (shape: numscanlines x numsamples)
@@ -107,10 +118,10 @@ def _load_frame(exp_data, probe):
     if scanlines.flags.f_contiguous:
         scanlines = scanlines.T
 
-    timevect = np.squeeze(exp_data['time'])
+    timevect = np.squeeze(exp_data['time'].astype(s.FLOAT))
     time = Time.from_vect(timevect)
 
-    velocity = np.squeeze(exp_data['ph_velocity'])
+    velocity = np.squeeze(exp_data['ph_velocity'].astype(s.FLOAT))
     material = Material(velocity)
     examination_object = InfiniteMedium(material)
 
