@@ -46,7 +46,8 @@ def delay_and_sum(frame, focal_law, fillvalue=np.nan, result=None, block_size=No
     if result is None:
         result = np.full((numpoints,), 0, dtype=frame.scanlines.dtype)
     assert result.shape == (numpoints,)
-
+    
+    # Calculate using parallel CPU
     if block_size is None:
         block_size = s.BLOCK_SIZE_DELAY_AND_SUM
     if numthreads is None:
@@ -81,11 +82,10 @@ def delay_and_sum(frame, focal_law, fillvalue=np.nan, result=None, block_size=No
                     focal_law.scanline_weights,
                     frame.time.step, frame.time.start, fillvalue,
                     result[chunk]))
-    
-    
     # Raise exceptions that happened, if any:
     for future in futures:
         future.result()
+    
     return result
 
 
@@ -174,7 +174,7 @@ def _delay_and_sum_amplitudes_linear(scanlines, tx, rx, lookup_times_tx, lookup_
         for scan in range(numscanlines):
             lookup_time = lookup_times_tx[point, tx[scan]] + lookup_times_rx[point, rx[scan]]
             loc1=(lookup_time - t0) / dt
-            lookup_index = int(round(loc1))
+            lookup_index = int(loc1)
             frac1 = loc1 - lookup_index 
             lookup_index1 = lookup_index+1
             #lookup_index = round((lookup_time - t0) / dt)
@@ -187,6 +187,7 @@ def _delay_and_sum_amplitudes_linear(scanlines, tx, rx, lookup_times_tx, lookup_
                 lscanUseVal=lscanVal+frac1*(lscanVal1-lscanVal)
                 result[point] += scanline_weights[scan] * amplitudes_tx[point, tx[scan]] * amplitudes_rx[point, rx[scan]] \
                                  * lscanUseVal
+
 
 
 def find_minimum_times(time_1, time_2, dtype=None, dtype_indices=None, block_size=None, numthreads=None):
