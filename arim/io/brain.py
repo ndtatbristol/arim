@@ -120,7 +120,9 @@ def _load_frame(exp_data, probe):
         scanlines = scanlines.T
 
     timevect = np.squeeze(exp_data['time'])
+    timevect=timevect.astype(s.FLOAT)
     time = Time.from_vect(timevect)
+    
     velocity = np.squeeze(exp_data['ph_velocity'])
     velocity = velocity.astype(s.FLOAT)
     material = Material(velocity)
