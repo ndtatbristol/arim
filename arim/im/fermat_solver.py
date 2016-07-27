@@ -23,6 +23,31 @@ from ..core.cache import Cache
 from .base import find_minimum_times
 from .. import settings as s
 from ..utils import chunk_array, smallest_uint_that_fits
+"""
+Module for computation of shortest ray paths accross several interfaces.
+Notably used for multi-view TFM.
+
+To improve:
+    - pitch-catch (multiple arrays) imaging?
+
+
+"""
+
+import gc
+import logging
+import math
+import time
+from collections import namedtuple
+from concurrent.futures import ThreadPoolExecutor
+
+import numba
+import numpy as np
+
+from .. import geometry as g
+from ..core.cache import Cache
+from .base import find_minimum_times
+from .. import settings as s
+from ..utils import chunk_array, smallest_uint_that_fits
 
 __all__ = ['FermatSolver', 'View', 'Rays', 'Path']
 
@@ -166,12 +191,16 @@ def assemble_rays(indices_head, indices_tail, indices_at_interface,
     Parameters
     ----------
     indices_head: A to C in path ABC
+        Shape (n, m, d1)
     indices_tail: C to F in path CDEF
-    indices_at_interface: indices of C A to F in path ABCDEF
+        Shape (m, p, d2)
+    indices_at_interface: indices at interface C of minimal rays between A to F in path ABCDEF
+        Shape (n, p)
 
     Returns
     -------
     out_ray
+        Shape (n, p, d1+d2-1)
 
     """
     n, m, d1 = indices_head.shape
@@ -217,15 +246,26 @@ def assemble_rays(indices_head, indices_tail, indices_at_interface,
 @numba.jit(nopython=True, nogil=True)
 def _assemble_rays(indices_head, indices_tail, indices_at_interface, out_indices):
     """
+    The layout given are for optimal speeds.
+
     Parameters
     ----------
     indices_head: A to C in path ABC
+        Layout: C
+        Shape (n, m, d1)
     indices_tail: C to F in path CDEF
-    indices_at_interface: indices of C A to F in path ABCDEF
+        Layout: F
+        Shape (m, p, d2)
+    indices_at_interface: indices at interface C of minimal rays between A to F in path ABCDEF
+        Layout: C
+        Shape (n, m)
     out_indices: A to F in path ABCDEF
+        Layout: C
+        Shape (n, p, d1+d2-1)
 
     Returns
     -------
+    None: write output in ``out_indices``
 
     """
     n, m, d1 = indices_head.shape

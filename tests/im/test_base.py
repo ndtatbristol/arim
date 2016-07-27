@@ -116,3 +116,24 @@ def test_find_minimum_times():
     expected_indices = np.array([[1], [2]])
 
     assert np.all(best_indices == expected_indices)
+
+def test_find_minimum_times2():
+    n = 300
+    m = 301
+    p = 302
+
+    # The unique minimum of the i-th row of time_1 is on the i-th column and is 0.
+    time_1 = np.fromfunction(lambda i, j: (j - i) % m, (n, m), dtype=np.float)
+
+    # Each column of time_2 is constant
+    time_2 = np.fromfunction(lambda i,j: j * m, (m, p), dtype=np.float)
+
+    # Run the tested function:
+    best_times, best_indices = im.find_minimum_times(time_1, time_2)
+
+    # Expected results:
+    best_times_expected = np.fromfunction(lambda i,j: m*j, (n, p), dtype=np.float)
+    best_indices_expected = np.fromfunction(lambda i,j: i, (n, p), dtype=np.int)
+
+    assert np.allclose(best_times_expected, best_times)
+    assert np.all(best_indices_expected == best_indices)

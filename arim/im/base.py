@@ -192,15 +192,27 @@ def _delay_and_sum_amplitudes_linear(scanlines, tx, rx, lookup_times_tx, lookup_
 
 def find_minimum_times(time_1, time_2, dtype=None, dtype_indices=None, block_size=None, numthreads=None):
     """
+    For i=1:n and j=1:p,
+
+        out_min_times(i, j)   := min_{k=1:m}    time_1[i, k] + time_2[k, j]
+        out_min_indices(i, j) := argmin_{k=1:m} time_1[i, k] + time_2[k, j]
+
+
     Parameters
     ----------
     time_1
+        Shape: (n, m)
     time_2
+        Shape: (m, p)
     dtype
     dtype_indices
 
     Returns
     -------
+    out_min_times
+        Shape: (n, p)
+    out_min_indices
+        Shape: (n, p)
 
     Notes
     -----
