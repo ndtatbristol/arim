@@ -23,6 +23,7 @@ from ..core.cache import Cache
 from .base import find_minimum_times
 from .. import settings as s
 from ..utils import chunk_array, smallest_uint_that_fits
+
 """
 Module for computation of shortest ray paths accross several interfaces.
 Notably used for multi-view TFM.
@@ -48,7 +49,6 @@ from ..core.cache import Cache
 from .base import find_minimum_times
 from .. import settings as s
 from ..utils import chunk_array, smallest_uint_that_fits
-
 
 __all__ = ['FermatSolver', 'View', 'Path', 'Rays']
 
@@ -164,7 +164,7 @@ class Rays:
         """
         n, m, dm2 = interior_indices.shape
 
-        indices = np.zeros((n, m, dm2+2), dtype=interior_indices.dtype)
+        indices = np.zeros((n, m, dm2 + 2), dtype=interior_indices.dtype)
 
         indices[..., 0] = np.repeat(np.arange(n), m).reshape((n, m))
         indices[..., -1] = np.tile(np.arange(m), n).reshape((n, m))
@@ -289,7 +289,7 @@ class Rays:
             new_shape = (*indices_new_interface.shape, 1)
             return indices_new_interface.reshape(new_shape)
 
-        expanded_indices = np.zeros((n, p, d+1), dtype=interior_indices.dtype)
+        expanded_indices = np.zeros((n, p, d + 1), dtype=interior_indices.dtype)
         for i in range(n):
             for j in range(p):
                 # Index on the interface A(d-1):
@@ -484,22 +484,6 @@ class Path(tuple):
             return max([len(x) for x in interfaces])
 
 
-def make_empty_ray_indices(num1, num2, dtype):
-    """
-    Arguments Rays.indices in the case of two consecutive interfaces:
-
-        indices[i, j, 0] := i
-        indices[i, j, 1] := j
-
-        indices.shape := (num1, num2, 2)
-
-    """
-    indices = np.zeros((num1, num2, 2), dtype=dtype)
-    indices[..., 0] = np.repeat(np.arange(num1), num2).reshape((num1, num2))
-    indices[..., 1] = np.tile(np.arange(num2), num1).reshape((num1, num2))
-    return indices
-
-
 class FermatSolver:
     """
     Solver: take as input the interfaces, give as output the ray paths.
@@ -595,6 +579,8 @@ class FermatSolver:
         Warning: it is not safe to call this with a Path not passed to __init__
         because of possible overflows.
 
+
+
         Returns
         -------
         res : Rays
@@ -623,8 +609,9 @@ class FermatSolver:
             res_tail.times,
             dtype=self.dtype,
             dtype_indices=self.dtype_indices)
-        indices = assemble_rays(res_head.indices, res_tail.indices,
-                                indices_at_interface, dtype=self.dtype_indices)
+
+        assert res_tail.path.num_points_sets == 2
+        indices = Rays.expand_rays(res_head.interior_indices, indices_at_interface)
 
         del indices_at_interface  # no more useful
 
@@ -660,8 +647,7 @@ class FermatSolver:
             self.cached_distance[key] = distance
             if key != rkey:  # if points1 and points2 are the same!
                 self.cached_distance[rkey] = distance.T
-        ray_indices = make_empty_ray_indices(len(points1), len(points2), self.dtype_indices)
-        return Rays(distance / speed, ray_indices, path)
+        return Rays.make_rays_two_interfaces(distance / speed, path, self.dtype_indices)
 
     def convert_result_to_contiguous(self):
         """Convert all results to C order."""
