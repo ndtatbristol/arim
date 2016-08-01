@@ -48,14 +48,256 @@ from ..core.cache import Cache
 from .base import find_minimum_times
 from .. import settings as s
 from ..utils import chunk_array, smallest_uint_that_fits
-from .rays import Rays
 
 
-__all__ = ['FermatSolver', 'View', 'Path']
+__all__ = ['FermatSolver', 'View', 'Path', 'Rays']
 
 logger = logging.getLogger(__name__)
 
 
+class Rays:
+    """
+    Rays(times, interior_indices, path)
+
+    Store the rays between the first and last datasets of points along
+    a specific path.
+
+    - n: number of points of the first set of points.
+    - m: number of points of the last set of points.
+    - d: number of interfaces along the path.
+
+    We name A(1), A(2), ..., A(d) the d interfaces along the path.
+    A ray passes  A(1), A(2), ..., A(d) in this order.
+
+
+    Parameters
+    ----------
+    times : ndarray of floats [n x m]
+        Shortest time between first and last set of points.
+        ``times[i, j]`` is the minimal time between the i-th point of the first
+        interface and the j-th point of the last interface. In other words,
+        ``times[i, j]`` is the minimal time between ``A(1)[i]`` and
+        ``A(d)[j]``.
+    indices_interior : ndarray of floats [n x m x (d-2)]
+        Indices of points for each ray, excluding the first and last interfaces.
+
+        For k=1:(p-1), a ray starting from ``A(1)[i]`` and ending in
+        ``A(d)[i]`` passes through the k-th interface at the point indexed
+        by ``indices[i, j, k-1]``.
+    path : Path
+        Sets of points crossed by the rays.
+
+    Attributes
+    ----------
+    indices : ndarray of floats [n x m x d]
+        Indices of points for each ray.
+        For k=0:p, a ray starting from ``A(1)[i]`` and ending in ``A(d)[i]``
+        passes through the k-th interface at the point indexed by ``indices[i, j, k]``.
+        By definition, ``indices[i, j, 0] := i`` and ``indices[i, j, d-1] := j``
+        for all i and j.
+
+    """
+
+    # __slots__ = []
+
+    def __init__(self, times, interior_indices, path):
+        assert times.ndim == 2
+        assert interior_indices.ndim == 3
+        assert times.shape == interior_indices.shape[:2] == (len(path.points[0]), len(path.points[-1]))
+        assert path.num_points_sets == interior_indices.shape[2] + 2
+
+        if interior_indices.dtype.kind != 'u':
+            raise TypeError("Indices must be unsigned integers.")
+        assert times.dtype.kind == 'f'
+
+        indices = self.make_indices(interior_indices)
+
+        self._times = times
+        self._indices = indices
+        self._path = path
+
+    @classmethod
+    def make_rays_two_interfaces(cls, times, path, dtype_indices):
+        """
+        Alternative constructor for Rays objects when there is only two interfaces,
+        i.e. no interior interface.
+        """
+        if path.num_points_sets != 2:
+            raise ValueError(
+                "This constructor works only for path with two interfaces. Use __init__ instead.")
+        n = len(path.points[0])
+        m = len(path.points[1])
+
+        interior_indices = np.zeros((n, m, 0), dtype=dtype_indices)
+        return cls(times, interior_indices, path)
+
+    @property
+    def path(self):
+        return self._path
+
+    @property
+    def times(self):
+        return self._times
+
+    @property
+    def indices(self):
+        return self._indices
+
+    @property
+    def interior_indices(self):
+        return self.indices[..., 1:-1]
+
+    @staticmethod
+    def make_indices(interior_indices):
+        """
+        Parameters
+        ----------
+        interior_indices : shape (n, m, d)
+
+        Returns
+        -------
+        indices : shape (n, m, d+2) such as:
+            - indices[i, j, 0] := i for all i, j
+            - indices[i, j, -1] := j for all i, j
+            - indices[i, j, k] := interior_indices[i, j, k+1] for all i, j and for k=1:(d-1)
+
+        """
+        n, m, dm2 = interior_indices.shape
+
+        indices = np.zeros((n, m, dm2+2), dtype=interior_indices.dtype)
+
+        indices[..., 0] = np.repeat(np.arange(n), m).reshape((n, m))
+        indices[..., -1] = np.tile(np.arange(m), n).reshape((n, m))
+        indices[..., 1:-1] = interior_indices
+        return indices
+
+    def get_coordinates(self, n_interface):
+        """
+        Yields the coordinates of the rays of the n-th interface, as a tuple
+        of three 2d ndarrays.
+
+        Use numpy fancy indexing.
+
+        Example
+        -------
+        ::
+
+            for (d, (x, y, z)) in enumerate(rays.get_coordinates()):
+                # Coordinates at the d-th interface of the ray between ray A(1)[i] and
+                # ray_A(d)[j].
+                x[i, j]
+                y[i, j]
+                z[i, j]
+
+
+        """
+        points = self.path.points[n_interface]
+        indices = self.indices[..., n_interface]
+        x = points.x[indices]
+        y = points.y[indices]
+        z = points.z[indices]
+        yield (x, y, z)
+
+    def get_coordinates_one(self, start_index, end_index):
+        """
+        Return the coordinates of one ray as ``Point``.
+
+        This function is slow: use ``get_coordinates`` or a variant for treating
+        a larger number of rays.
+        """
+        indices = self.indices[start_index, end_index, :]
+        num_points_sets = self.path.num_points_sets
+        x = np.zeros(num_points_sets, s.FLOAT)
+        y = np.zeros(num_points_sets, s.FLOAT)
+        z = np.zeros(num_points_sets, s.FLOAT)
+        for (i, (points, j)) in enumerate(zip(self.path.points, indices)):
+            x[i] = points.x[j]
+            y[i] = points.y[j]
+            z[i] = points.z[j]
+        return g.Points(x, y, z, 'Ray')
+
+    def to_contiguous(self):
+        """Returns a named tuple whose all arrays are stored in C-order."""
+        times = np.ascontiguousarray(self.times)
+        indices = np.ascontiguousarray(self.indices)
+        return self.__class__(times, indices, self.path)
+
+    def to_fortran(self):
+        """Returns a named tuple whose all arrays are stored in Fortran order."""
+        times = np.asfortranarray(self.times)
+        indices = np.asfortranarray(self.indices)
+        return self.__class__(times, indices, self.path)
+
+    def gone_through_extreme_points(self):
+        """
+        Returns the rays which are going through at least one extreme point in the interfaces.
+        These rays can be non physical, it is then safer to be conservative and remove them all.
+
+        Extreme points are the first/last points (in indices) in the interfaces, except the first and
+        last interfaces (respectively the points1 and the grid).
+
+        Returns
+        -------
+        out : ndarray of bool
+            ``rays[i, j]`` is True if the rays starting from the i-th point of the first interface
+            and going to the j-th point of the last interface is going through at least one extreme point
+            through the middle interfaces.
+            Order: same as attribute ``indices``.
+
+        """
+        order = 'F' if self.indices.flags.f_contiguous else 'C'
+
+        shape = self.indices.shape[0:2]
+        out = np.full(shape, False, order=order, dtype=np.bool)
+
+        middle_points = tuple(self.path.points)[1:-1]
+        for (d, points) in enumerate(middle_points, start=1):
+            indices = self.indices[..., d]
+
+            out = np.logical_or(out, indices == 0, out=out)
+            out = np.logical_or(out, indices == (len(points) - 1), out=out)
+        return out
+
+    @staticmethod
+    def expand_rays(interior_indices, indices_new_interface):
+        """
+        Expand the rays by one interface knowing the beginning of the rays and the
+        points the rays must go through at the last interface.
+
+        A0, A1, ..., A(d+1) are (d+2) interfaces.
+
+        n: number of points of interface A0
+        m: number of points of interface Ad
+        p: number of points of interface A(d+1)
+
+        Parameters
+        ----------
+        indices_head: *interior* indices of rays going from A(0) to A(d).
+            Shape: (n, m, d)
+        indices_at_interface: indices of the points of interface A(d) that the rays
+        starting from A(0) cross to go to A(d+1).
+            Shape: (n, p)
+
+        Returns
+        -------
+        out_ray
+            Shape (n, p, d+1)
+        """
+        n, m, d = interior_indices.shape
+        n, p = indices_new_interface.shape
+        if d == 0:
+            new_shape = (*indices_new_interface.shape, 1)
+            return indices_new_interface.reshape(new_shape)
+
+        expanded_indices = np.zeros((n, p, d+1), dtype=interior_indices.dtype)
+        for i in range(n):
+            for j in range(p):
+                # Index on the interface A(d-1):
+                idx = indices_new_interface[i, j]
+                for k in range(d):
+                    expanded_indices[i, j, k] = interior_indices[i, idx, k]
+                expanded_indices[i, j, d] = idx
+        return expanded_indices
 
 
 def assemble_rays(indices_head, indices_tail, indices_at_interface,
@@ -180,7 +422,8 @@ class Path(tuple):
 
     def __new__(cls, sequence):
         if len(sequence) % 2 == 0 or len(sequence) < 3:
-            raise ValueError('{} expects a sequence of length odd and >= 5)'.format(cls.__name__))
+            raise ValueError('{} expects a sequence of length odd and >= 5)'.format(
+                cls.__name__))
         return super().__new__(cls, sequence)
 
     def __repr__(self):
