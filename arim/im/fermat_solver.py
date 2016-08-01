@@ -216,18 +216,6 @@ class Rays:
             z[i] = points.z[j]
         return g.Points(x, y, z, 'Ray')
 
-    def to_contiguous(self):
-        """Returns a named tuple whose all arrays are stored in C-order."""
-        times = np.ascontiguousarray(self.times)
-        indices = np.ascontiguousarray(self.indices)
-        return self.__class__(times, indices, self.path)
-
-    def to_fortran(self):
-        """Returns a named tuple whose all arrays are stored in Fortran order."""
-        times = np.asfortranarray(self.times)
-        indices = np.asfortranarray(self.indices)
-        return self.__class__(times, indices, self.path)
-
     def gone_through_extreme_points(self):
         """
         Returns the rays which are going through at least one extreme point in the interfaces.
@@ -298,112 +286,6 @@ class Rays:
                     expanded_indices[i, j, k] = interior_indices[i, idx, k]
                 expanded_indices[i, j, d] = idx
         return expanded_indices
-
-
-def assemble_rays(indices_head, indices_tail, indices_at_interface,
-                  dtype=None, block_size=None, numthreads=None):
-    """
-    Assemble two rays.
-
-    Parameters
-    ----------
-    indices_head: A to C in path ABC
-        Shape (n, m, d1)
-    indices_tail: C to F in path CDEF
-        Shape (m, p, d2)
-    indices_at_interface: indices at interface C of minimal rays between A to F in path ABCDEF
-        Shape (n, p)
-
-    Returns
-    -------
-    out_ray
-        Shape (n, p, d1+d2-1)
-
-    """
-    n, m, d1 = indices_head.shape
-    m_, p, d2 = indices_tail.shape
-    assert m == m_
-    assert indices_at_interface.shape == (n, p)
-
-    d = d1 + d2 - 1
-
-    if dtype is None:
-        dtype = np.result_type(indices_head, indices_tail, indices_at_interface)
-
-    if block_size is None:
-        block_size = s.BLOCK_SIZE_FIND_MIN_TIMES
-    if numthreads is None:
-        numthreads = s.NUMTHREADS
-
-    # Allocate out:
-    out_indices = np.full((n, p, d), 0, dtype=dtype)
-
-    indices_head = np.ascontiguousarray(indices_head)
-    indices_tail = np.asfortranarray(indices_tail)
-
-    block_size_adj = math.ceil(block_size / m)
-
-    futures = []
-    with ThreadPoolExecutor(max_workers=numthreads) as executor:
-        for chunk1 in chunk_array((n, m, d1), block_size_adj, axis=0):
-            for chunk2 in chunk_array((m, p, d2), block_size_adj, axis=1):
-                chunk_res = (chunk1[0], chunk2[1], ...)
-
-                futures.append(executor.submit(
-                    _assemble_rays,
-                    indices_head[chunk1], indices_tail[chunk2],
-                    indices_at_interface[chunk_res],
-                    out_indices[chunk_res]))
-    # Raise exceptions that happened, if any:
-    for future in futures:
-        future.result()
-    return out_indices
-
-
-@numba.jit(nopython=True, nogil=True)
-def _assemble_rays(indices_head, indices_tail, indices_at_interface, out_indices):
-    """
-    The layout given are for optimal speeds.
-
-    Parameters
-    ----------
-    indices_head: A to C in path ABC
-        Layout: C
-        Shape (n, m, d1)
-    indices_tail: C to F in path CDEF
-        Layout: F
-        Shape (m, p, d2)
-    indices_at_interface: indices at interface C of minimal rays between A to F in path ABCDEF
-        Layout: C
-        Shape (n, m)
-    out_indices: A to F in path ABCDEF
-        Layout: C
-        Shape (n, p, d1+d2-1)
-
-    Returns
-    -------
-    None: write output in ``out_indices``
-
-    """
-    n, m, d1 = indices_head.shape
-    m_, p, d2 = indices_tail.shape
-    for i in range(n):
-        for j in range(p):
-            best_index = indices_at_interface[i, j]
-
-            # Populate out_min_indices:
-            for d in range(d1 - 1):
-                out_indices[i, j, d] = indices_head[i, best_index, d]
-            out_indices[i, j, d1 - 1] = best_index
-            for d in range(d2 - 1):
-                out_indices[i, j, d1 + d] = indices_tail[best_index, j, d + 1]
-
-
-def get_ray_coordinates_np(ray_indices, interfaces, dtype=None):
-    for (d, interface) in enumerate(interfaces):
-        yield (interface.x[ray_indices[..., d]],
-               interface.y[ray_indices[..., d]],
-               interface.z[ray_indices[..., d]])
 
 
 class Path(tuple):
@@ -555,7 +437,6 @@ class FermatSolver:
 
         self.solve_no_clean()
         self.clear_cache()
-        self.convert_result_to_fortran()
         return self.res
 
     def solve_no_clean(self):
@@ -648,18 +529,6 @@ class FermatSolver:
             if key != rkey:  # if points1 and points2 are the same!
                 self.cached_distance[rkey] = distance.T
         return Rays.make_rays_two_interfaces(distance / speed, path, self.dtype_indices)
-
-    def convert_result_to_contiguous(self):
-        """Convert all results to C order."""
-        new_res = {path: ray.to_contiguous() for (path, ray) in self.res.items()}
-        self.res = new_res
-        return self.res
-
-    def convert_result_to_fortran(self):
-        """Convert all results to Fortran order."""
-        new_res = {path: ray.to_fortran() for (path, ray) in self.res.items()}
-        self.res = new_res
-        return self.res
 
 
 class View(namedtuple('View', ['tx_path', 'rx_path', 'name'])):

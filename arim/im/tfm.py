@@ -213,10 +213,10 @@ class MultiviewTFM(BaseTFM):
         assert view.rx_path == rays_rx.path
         assert isinstance(rays_tx, Rays)
         assert isinstance(rays_rx, Rays)
-        assert rays_rx.indices.flags.fortran
-        assert rays_tx.indices.flags.fortran
-        assert rays_tx.times.flags.fortran
-        assert rays_rx.times.flags.fortran
+        #assert rays_rx.indices.flags.fortran
+        #assert rays_tx.indices.flags.fortran
+        #assert rays_tx.times.flags.fortran
+        #assert rays_rx.times.flags.fortran
         assert rays_tx.path[0] is frame.probe.locations
         assert rays_rx.path[0] is frame.probe.locations
         assert rays_tx.path[-1] is grid.as_points
@@ -242,11 +242,11 @@ class MultiviewTFM(BaseTFM):
 
     def get_lookup_times_tx(self):
         """Lookup times in transmission, obtained with Fermat solver."""
-        return self.rays_tx.times.T
+        return np.ascontiguousarray(self.rays_tx.times.T)
 
     def get_lookup_times_rx(self):
         """Lookup times in reception, obtained with Fermat solver."""
-        return self.rays_rx.times.T
+        return np.ascontiguousarray(self.rays_rx.times.T)
 
 
     def __repr__(self):
