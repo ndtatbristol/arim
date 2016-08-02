@@ -43,8 +43,9 @@ ext_modules = [Extension(
         "arim.im._fermat_solver",
         sources=["arim/im/fermat_solver_c.cpp", "arim/im/_fermat_solver.pyx"],
         language="c++",
+        # extra_compile_args=['/Ox', '/EHsc'],
         extra_compile_args=['/Ox', '/EHsc', '/openmp'],
-        #include_dirs=[numpy.get_include()],
+                #include_dirs=[numpy.get_include()],
 )]
 
 

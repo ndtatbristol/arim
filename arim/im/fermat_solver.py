@@ -15,7 +15,6 @@ import time
 from collections import namedtuple
 from concurrent.futures import ThreadPoolExecutor
 
-import numba
 import numpy as np
 
 from .. import geometry as g
@@ -24,32 +23,6 @@ from .base import find_minimum_times
 from .. import settings as s
 from ..utils import chunk_array, smallest_uint_that_fits
 from ._fermat_solver import _expand_rays
-
-"""
-Module for computation of shortest ray paths accross several interfaces.
-Notably used for multi-view TFM.
-
-To improve:
-    - pitch-catch (multiple arrays) imaging?
-
-
-"""
-
-import gc
-import logging
-import math
-import time
-from collections import namedtuple
-from concurrent.futures import ThreadPoolExecutor
-
-import numba
-import numpy as np
-
-from .. import geometry as g
-from ..core.cache import Cache
-from .base import find_minimum_times
-from .. import settings as s
-from ..utils import chunk_array, smallest_uint_that_fits
 
 __all__ = ['FermatSolver', 'View', 'Path', 'Rays']
 

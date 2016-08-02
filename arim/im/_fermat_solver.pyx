@@ -29,4 +29,3 @@ cpdef object _expand_rays(unsigned int[:,:,::1] interior_indices,
         n, m, p, d)
     return None
 
-#

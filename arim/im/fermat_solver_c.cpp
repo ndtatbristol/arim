@@ -6,7 +6,7 @@
 #define IDX_2(I1, I2, D1, D2)  ((I1)*(D2) + (I2))
 #define IDX_3(I1, I2, I3, D1, D2, D3)  ((I1)*(D2)*(D3) + (I2)*(D3) + (I3))
 
-#define CHUNKSIZE 1
+#define CHUNKSIZE 4
 
 /*
 Expand the rays by one interface knowing the beginning of the rays and the
@@ -34,41 +34,27 @@ expanded_indices: OUTPUT
 
 */
 void expand_rays(
-    const unsigned int *__restrict interior_indices,
-    const unsigned int *__restrict indices_new_interface,
-    unsigned int *__restrict expanded_indices,
+    const unsigned int * __restrict interior_indices,
+    const unsigned int * __restrict indices_new_interface,
+    unsigned int * __restrict expanded_indices,
     const size_t n, const size_t m, const size_t p, const size_t d) {
-    /*
-    n, m, d = interior_indices.shape
-    n, p = indices_new_interface.shape
-    if d == 0:
-        new_shape = (*indices_new_interface.shape, 1)
-        return indices_new_interface.reshape(new_shape)
 
-    expanded_indices = np.zeros((n, p, d + 1), dtype=interior_indices.dtype)
-    for i in range(n):
-        for j in range(p):
-            # Index on the interface A(d-1):
-            idx = indices_new_interface[i, j]
-            for k in range(d):
-                expanded_indices[i, j, k] = interior_indices[i, idx, k]
-            expanded_indices[i, j, d] = idx
-    return expanded_indices
-    */
+    #pragma omp parallel firstprivate(n, m, p, d, interior_indices, indices_new_interface) shared(expanded_indices)
+    {
+        #pragma omp for schedule(static, CHUNKSIZE)
+        for (int i=0; i<n; ++i) {
+            for (int j=0; j<p; ++j) {
+                // get the point on interface A(d) to which the ray goes 
+                const unsigned int idx = (size_t)indices_new_interface[IDX_2(i, j, n, p)];
 
-    #pragma omp parallel for schedule(dynamic, CHUNKSIZE)
-    for (int i=0; i<n; ++i) {
-        for (int j=0; j<p; ++j) {
-            // get the point on interface A(d) to which the ray goes 
-            unsigned int idx = (size_t)indices_new_interface[IDX_2(i, j, n, p)];
+                // recopy the head of ray
+                for (int k=0; k<d; ++k) {
+                    expanded_indices[IDX_3(i, j, k, n, p, d+1)] = interior_indices[IDX_3(i, idx, k, n, m, d)];
+                }
 
-            // recopy the head of ray
-            for (int k=0; k<d; ++k) {
-                expanded_indices[IDX_3(i, j, k, n, p, d+1)] = interior_indices[IDX_3(i, idx, k, n, m, d)];
+                // and add the last point:
+                expanded_indices[IDX_3(i, j, d, n, p, d+1)] = (unsigned int)idx;
             }
-
-            // and add the last point:
-            expanded_indices[IDX_3(i, j, d, n, p, d+1)] = (unsigned int)idx;
         }
     }
 }
