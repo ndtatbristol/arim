@@ -7,7 +7,8 @@ From https://github.com/pypa/sampleproject/blob/master/setup.py
 """
 
 # Always prefer setuptools over distutils
-from setuptools import setup, find_packages
+from setuptools import setup, find_packages, Extension
+from Cython.Build import cythonize
 
 import codecs
 import re
@@ -36,6 +37,16 @@ def find_version(*file_paths):
         return version_match.group(1)
     raise RuntimeError("Unable to find version string.")
 # --- End snippet
+
+
+ext_modules = [Extension(
+        "arim.im._fermat_solver",
+        sources=["arim/im/fermat_solver_c.cpp", "arim/im/_fermat_solver.pyx"],
+        language="c++",
+        extra_compile_args=['/Ox', '/EHsc', '/openmp'],
+        #include_dirs=[numpy.get_include()],
+)]
+
 
 setup(
     name='arim',
@@ -122,6 +133,8 @@ setup(
             'arim = arim.cli:main',
         ],
     },
+
+    ext_modules = cythonize(ext_modules),
 
     zip_safe = False,
 )

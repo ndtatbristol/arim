@@ -23,6 +23,7 @@ from ..core.cache import Cache
 from .base import find_minimum_times
 from .. import settings as s
 from ..utils import chunk_array, smallest_uint_that_fits
+from ._fermat_solver import _expand_rays
 
 """
 Module for computation of shortest ray paths accross several interfaces.
@@ -145,7 +146,7 @@ class Rays:
 
     @property
     def interior_indices(self):
-        return self.indices[..., 1:-1]
+        return np.ascontiguousarray(self.indices[..., 1:-1])
 
     @staticmethod
     def make_indices(interior_indices):
@@ -260,32 +261,28 @@ class Rays:
 
         Parameters
         ----------
-        indices_head: *interior* indices of rays going from A(0) to A(d).
+        interior_indices: *interior* indices of rays going from A(0) to A(d).
             Shape: (n, m, d)
-        indices_at_interface: indices of the points of interface A(d) that the rays
+        indices_new_interface: indices of the points of interface A(d) that the rays
         starting from A(0) cross to go to A(d+1).
             Shape: (n, p)
 
         Returns
         -------
-        out_ray
+        expanded_indices
             Shape (n, p, d+1)
         """
         n, m, d = interior_indices.shape
-        n, p = indices_new_interface.shape
+        n_, p = indices_new_interface.shape
+        if n != n_:
+            raise ValueError("Inconsistent shapes")
         if d == 0:
             new_shape = (*indices_new_interface.shape, 1)
             return indices_new_interface.reshape(new_shape)
-
-        expanded_indices = np.zeros((n, p, d + 1), dtype=interior_indices.dtype)
-        for i in range(n):
-            for j in range(p):
-                # Index on the interface A(d-1):
-                idx = indices_new_interface[i, j]
-                for k in range(d):
-                    expanded_indices[i, j, k] = interior_indices[i, idx, k]
-                expanded_indices[i, j, d] = idx
-        return expanded_indices
+        else:
+            expanded_indices = np.empty((n, p, d + 1), dtype=interior_indices.dtype)
+            _expand_rays(interior_indices, indices_new_interface, expanded_indices, n, m, p, d)
+            return expanded_indices
 
 
 class Path(tuple):
@@ -408,7 +405,8 @@ class FermatSolver:
 
         if dtype_indices is None:
             max_length = max((p.len_largest_interface for p in paths))
-            dtype_indices = smallest_uint_that_fits(max_length)
+            #dtype_indices = smallest_uint_that_fits(max_length)
+            dtype_indices = s.UINT
 
         for path in paths:
             try:
