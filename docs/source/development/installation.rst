@@ -43,7 +43,7 @@ Activate the environment::
 
 Install dependencies::
 
-  conda install numpy scipy matplotlib h5py numba sphinx sphinx_rtd_theme
+  conda install numpy scipy matplotlib h5py numba sphinx sphinx_rtd_theme cython
 
 Then install arim in editable mode::
 
