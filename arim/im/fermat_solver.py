@@ -52,22 +52,22 @@ class Rays:
         interface and the j-th point of the last interface. In other words,
         ``times[i, j]`` is the minimal time between ``A(1)[i]`` and
         ``A(d)[j]``.
-    indices_interior : ndarray of floats [n x m x (d-2)]
+    indices_interior : ndarray of floats [(d-2) x n x m]
         Indices of points for each ray, excluding the first and last interfaces.
 
         For k=1:(p-1), a ray starting from ``A(1)[i]`` and ending in
         ``A(d)[i]`` passes through the k-th interface at the point indexed
-        by ``indices[i, j, k-1]``.
+        by ``indices[k-1, i, j]``.
     path : Path
         Sets of points crossed by the rays.
 
     Attributes
     ----------
-    indices : ndarray of floats [n x m x d]
+    indices : ndarray of floats [d x n x m]
         Indices of points for each ray.
         For k=0:p, a ray starting from ``A(1)[i]`` and ending in ``A(d)[i]``
-        passes through the k-th interface at the point indexed by ``indices[i, j, k]``.
-        By definition, ``indices[i, j, 0] := i`` and ``indices[i, j, d-1] := j``
+        passes through the k-th interface at the point indexed by ``indices[k, i, j]``.
+        By definition, ``indices[0, i, j] := i`` and ``indices[d-1, i, j] := j``
         for all i and j.
 
     """
@@ -77,8 +77,8 @@ class Rays:
     def __init__(self, times, interior_indices, path):
         assert times.ndim == 2
         assert interior_indices.ndim == 3
-        assert times.shape == interior_indices.shape[:2] == (len(path.points[0]), len(path.points[-1]))
-        assert path.num_points_sets == interior_indices.shape[2] + 2
+        assert times.shape == interior_indices.shape[1:] == (len(path.points[0]), len(path.points[-1]))
+        assert path.num_points_sets == interior_indices.shape[0] + 2
 
         if interior_indices.dtype.kind != 'u':
             raise TypeError("Indices must be unsigned integers.")
@@ -102,7 +102,7 @@ class Rays:
         n = len(path.points[0])
         m = len(path.points[1])
 
-        interior_indices = np.zeros((n, m, 0), dtype=dtype_indices)
+        interior_indices = np.zeros((0, n, m), dtype=dtype_indices)
         return cls(times, interior_indices, path)
 
     @property
@@ -119,30 +119,30 @@ class Rays:
 
     @property
     def interior_indices(self):
-        return np.ascontiguousarray(self.indices[..., 1:-1])
+        return self.indices[1:-1, ...]
 
     @staticmethod
     def make_indices(interior_indices):
         """
         Parameters
         ----------
-        interior_indices : shape (n, m, d)
+        interior_indices : shape (d, n, m)
 
         Returns
         -------
         indices : shape (n, m, d+2) such as:
-            - indices[i, j, 0] := i for all i, j
-            - indices[i, j, -1] := j for all i, j
-            - indices[i, j, k] := interior_indices[i, j, k+1] for all i, j and for k=1:(d-1)
+            - indices[0, i, j] := i for all i, j
+            - indices[-1, i, j] := j for all i, j
+            - indices[k, i, j] := interior_indices[i, j, k+1] for all i, j and for k=1:(d-1)
 
         """
-        n, m, dm2 = interior_indices.shape
+        dm2, n, m = interior_indices.shape
 
-        indices = np.zeros((n, m, dm2 + 2), dtype=interior_indices.dtype)
+        indices = np.zeros((dm2 + 2, n, m), dtype=interior_indices.dtype)
 
-        indices[..., 0] = np.repeat(np.arange(n), m).reshape((n, m))
-        indices[..., -1] = np.tile(np.arange(m), n).reshape((n, m))
-        indices[..., 1:-1] = interior_indices
+        indices[0, ...] = np.repeat(np.arange(n), m).reshape((n, m))
+        indices[-1, ...] = np.tile(np.arange(m), n).reshape((n, m))
+        indices[1:-1, ...] = interior_indices
         return indices
 
     def get_coordinates(self, n_interface):
@@ -166,7 +166,7 @@ class Rays:
 
         """
         points = self.path.points[n_interface]
-        indices = self.indices[..., n_interface]
+        indices = self.indices[n_interface, ...]
         x = points.x[indices]
         y = points.y[indices]
         z = points.z[indices]
@@ -179,7 +179,7 @@ class Rays:
         This function is slow: use ``get_coordinates`` or a variant for treating
         a larger number of rays.
         """
-        indices = self.indices[start_index, end_index, :]
+        indices = self.indices[:, start_index, end_index]
         num_points_sets = self.path.num_points_sets
         x = np.zeros(num_points_sets, s.FLOAT)
         y = np.zeros(num_points_sets, s.FLOAT)
@@ -209,15 +209,14 @@ class Rays:
         """
         order = 'F' if self.indices.flags.f_contiguous else 'C'
 
-        shape = self.indices.shape[0:2]
+        shape = self.indices.shape[1:]
         out = np.full(shape, False, order=order, dtype=np.bool)
 
+        interior_indices = self.interior_indices
         middle_points = tuple(self.path.points)[1:-1]
-        for (d, points) in enumerate(middle_points, start=1):
-            indices = self.indices[..., d]
-
-            out = np.logical_or(out, indices == 0, out=out)
-            out = np.logical_or(out, indices == (len(points) - 1), out=out)
+        for (d, points) in enumerate(middle_points):
+            np.logical_or(out, interior_indices[d, ...] == 0, out=out)
+            np.logical_or(out, interior_indices[d, ...] == (len(points) - 1), out=out)
         return out
 
     @staticmethod
@@ -232,10 +231,12 @@ class Rays:
         m: number of points of interface Ad
         p: number of points of interface A(d+1)
 
+        For more information on ``interior_indices``, see the documentation of ``Rays``.
+
         Parameters
         ----------
         interior_indices: *interior* indices of rays going from A(0) to A(d).
-            Shape: (n, m, d)
+            Shape: (d, n, m)
         indices_new_interface: indices of the points of interface A(d) that the rays
         starting from A(0) cross to go to A(d+1).
             Shape: (n, p)
@@ -243,17 +244,17 @@ class Rays:
         Returns
         -------
         expanded_indices
-            Shape (n, p, d+1)
+            Shape (d+1, n, p)
         """
-        n, m, d = interior_indices.shape
+        d, n, m = interior_indices.shape
         n_, p = indices_new_interface.shape
         if n != n_:
             raise ValueError("Inconsistent shapes")
         if d == 0:
-            new_shape = (*indices_new_interface.shape, 1)
+            new_shape = (1, *indices_new_interface.shape)
             return indices_new_interface.reshape(new_shape)
         else:
-            expanded_indices = np.empty((n, p, d + 1), dtype=interior_indices.dtype)
+            expanded_indices = np.empty((d + 1, n, p), dtype=interior_indices.dtype)
             _expand_rays(interior_indices, indices_new_interface, expanded_indices, n, m, p, d)
             return expanded_indices
 

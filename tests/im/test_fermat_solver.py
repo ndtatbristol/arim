@@ -73,9 +73,9 @@ class TestRays4:
         n, m, p, q = self.numpoints
         interior_indices_1 = (np.arange(n * q, dtype=dtype_indices) % m).reshape(n, q)
         interior_indices_2 = (np.arange(n * q, dtype=dtype_indices) % p).reshape(n, q)
-        interior_indices = np.zeros((n, q, self.d - 2), dtype=dtype_indices)
-        interior_indices[..., 0] = interior_indices_1
-        interior_indices[..., 1] = interior_indices_2
+        interior_indices = np.zeros((self.d - 2, n, q), dtype=dtype_indices)
+        interior_indices[0, ...] = interior_indices_1
+        interior_indices[1, ...] = interior_indices_2
         return interior_indices
 
     @pytest.fixture
@@ -96,15 +96,15 @@ class TestRays4:
         n, m, p, q = self.numpoints
 
         assert indices.dtype == interior_indices.dtype
-        assert indices.shape == (n, q, self.d)
+        assert indices.shape == (self.d, n, q)
 
-        assert np.all(indices[..., 0] == np.fromfunction(
+        assert np.all(indices[0, ...] == np.fromfunction(
             lambda i, j: i, (n, q), dtype=dtype_indices))
-        assert np.all(indices[..., -1] == np.fromfunction(lambda i,
+        assert np.all(indices[-1, ...] == np.fromfunction(lambda i,
                                                           j: j, (n, q), dtype=dtype_indices))
 
         for k in range(self.d - 2):
-            assert np.all(interior_indices[..., k] == indices[..., k + 1])
+            np.testing.assert_allclose(interior_indices[k, ...], indices[k + 1, ...])
 
     def test_expand_rays(self, interior_indices):
         dtype_indices = interior_indices.dtype
@@ -114,25 +114,25 @@ class TestRays4:
         indices_new_interface = np.ascontiguousarray(indices_new_interface)
 
         expanded_indices = Rays.expand_rays(interior_indices, indices_new_interface)
-        assert expanded_indices.shape == (n, r, self.d - 1)
+        assert expanded_indices.shape == (self.d - 1, n, r)
 
         for i in range(n):
             for j in range(r):
                 # Index on the interface A(d-1):
                 idx = indices_new_interface[i, j]
                 for k in range(self.d - 2):
-                    assert expanded_indices[i, j, k] == interior_indices[i, idx, k]
-                assert expanded_indices[i, j, self.d - 2] == idx
+                    assert expanded_indices[k, i, j] == interior_indices[k, i, idx]
+                assert expanded_indices[self.d - 2, i, j] == idx
 
     def test_rays_gone_through_extreme_points(self, rays):
         expected = np.full(rays.times.shape, False, dtype=np.bool)
         n, m, p, q = self.numpoints
 
         interior_indices = rays.interior_indices
-        np.logical_or(interior_indices[..., 0] == 0, expected, out=expected)
-        np.logical_or(interior_indices[..., 0] == (m-1), expected, out=expected)
-        np.logical_or(interior_indices[..., 1] == 0, expected, out=expected)
-        np.logical_or(interior_indices[..., 1] == (p-1), expected, out=expected)
+        np.logical_or(interior_indices[0, ...] == 0, expected, out=expected)
+        np.logical_or(interior_indices[0, ...] == (m-1), expected, out=expected)
+        np.logical_or(interior_indices[1, ...] == 0, expected, out=expected)
+        np.logical_or(interior_indices[1, ...] == (p-1), expected, out=expected)
 
         out = rays.gone_through_extreme_points()
         np.testing.assert_equal(out, expected)
@@ -165,9 +165,9 @@ class TestRays2:
     def test_rays(self, rays):
         dtype_indices = rays.indices.dtype
         n, m = self.numpoints
-        assert rays.indices.shape == (n, m, 2)
-        assert np.all(rays.indices[..., 0] == np.fromfunction(lambda i, j: i, (n, m), dtype=dtype_indices))
-        assert np.all(rays.indices[..., 1] == np.fromfunction(lambda i, j: j, (n, m), dtype=dtype_indices))
+        assert rays.indices.shape == (2, n, m)
+        assert np.all(rays.indices[0, ...] == np.fromfunction(lambda i, j: i, (n, m), dtype=dtype_indices))
+        assert np.all(rays.indices[1, ...] == np.fromfunction(lambda i, j: j, (n, m), dtype=dtype_indices))
 
     def test_expand_rays(self, rays):
         dtype_indices = rays.indices.dtype
@@ -177,15 +177,15 @@ class TestRays2:
         indices_new_interface = np.ascontiguousarray(indices_new_interface)
 
         expanded_indices = Rays.expand_rays(rays.interior_indices, indices_new_interface)
-        assert expanded_indices.shape == (n, r, self.d - 1)
+        assert expanded_indices.shape == (self.d - 1, n, r)
 
         for i in range(n):
             for j in range(r):
                 # Index on the interface A(d-1):
                 idx = indices_new_interface[i, j]
                 for k in range(self.d - 2):
-                    assert expanded_indices[i, j, k] == rays.interior_indices[i, idx, k]
-                assert expanded_indices[i, j, self.d - 2] == idx
+                    assert expanded_indices[k, i, j] == rays.interior_indices[k, i, idx]
+                assert expanded_indices[self.d - 2, i, j] == idx
 
     def test_rays_gone_through_extreme_points(self, rays):
         n, m = self.numpoints
@@ -236,13 +236,13 @@ def test_fermat_solver():
         assert path in rays_dict
         assert rays_dict[path].path is path
 
-        assert rays_dict[path].indices.shape == (n, m, path.num_points_sets)
+        assert rays_dict[path].indices.shape == (path.num_points_sets, n, m)
         assert rays_dict[path].times.shape == (n, m)
 
         # Check the first and last points of the rays:
         indices = rays_dict[path].indices
-        assert np.all(indices[..., 0] == np.fromfunction(lambda i, j: i, (n, m)))
-        assert np.all(indices[..., -1] == np.fromfunction(lambda i, j: j, (n, m)))
+        assert np.all(indices[0, ...] == np.fromfunction(lambda i, j: i, (n, m)))
+        assert np.all(indices[-1, ...] == np.fromfunction(lambda i, j: j, (n, m)))
 
     # Check rays for path_1:
     for i in range(n):
@@ -262,7 +262,7 @@ def test_fermat_solver():
                     best_index = k
             assert np.isclose(min_tof, rays_dict[path_1].times[i, j]), \
                 "Wrong time of flight for ray (start={}, end={}) in path 1 ".format(i, j)
-            assert best_index == rays_dict[path_1].indices[i, j, 1], \
+            assert best_index == rays_dict[path_1].indices[1, i, j], \
                 "Wrong indices for ray (start={}, end={}) in path 1 ".format(i, j)
 
     # Check rays for path_2:
@@ -291,5 +291,5 @@ def test_fermat_solver():
 
             assert np.isclose(min_tof, rays_dict[path_2].times[i, j]), \
                 "Wrong time of flight for ray (start={}, end={}) in path 2 ".format(i, j)
-            assert (best_index_1, best_index_2) == tuple(rays_dict[path_2].indices[i, j, 1:3]), \
+            assert (best_index_1, best_index_2) == tuple(rays_dict[path_2].indices[1:3, i, j]), \
                 "Wrong indices for ray (start={}, end={}) in path 2 ".format(i, j)

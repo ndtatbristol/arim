@@ -25,12 +25,12 @@ Output: out_ray
 Parameters
 ----------
 interior_indices: *interior* indices of rays going from A(0) to A(d).
-    Shape: (n, m, d)
+    Shape: (d, n, m)
 indices_new_interface: indices of the points of interface A(d) that the rays
 starting from A(0) cross to go to A(d+1).
     Shape: (n, p)
 expanded_indices: OUTPUT
-    Shape (n, p, d+1)
+    Shape (d+1, n, p)
 
 */
 void expand_rays(
@@ -49,11 +49,11 @@ void expand_rays(
 
                 // recopy the head of ray
                 for (int k=0; k<d; ++k) {
-                    expanded_indices[IDX_3(i, j, k, n, p, d+1)] = interior_indices[IDX_3(i, idx, k, n, m, d)];
+                    expanded_indices[IDX_3(k, i, j, d+1, n, p)] = interior_indices[IDX_3(k, i, idx, d, n, m)];
                 }
 
                 // and add the last point:
-                expanded_indices[IDX_3(i, j, d, n, p, d+1)] = (unsigned int)idx;
+                expanded_indices[IDX_3(d, i, j, d+1, n, p)] = (unsigned int)idx;
             }
         }
     }
