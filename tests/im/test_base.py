@@ -23,7 +23,7 @@ def make_delay_and_sum_case1():
 
     """
     # very basic points1:
-    locations = g.Points.from_2d_array(np.array([(0, 0, 0), (1., 0, 0)], dtype=np.float))
+    locations = g.Points(np.array([(0, 0, 0), (1., 0, 0)], dtype=np.float))
     frequency = 1e6
     probe = Probe(locations, frequency)
 

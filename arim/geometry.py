@@ -1,3 +1,22 @@
+"""
+Utilities for geometric operations: translation, rotation, change of basis, etc.
+
+Basis
+=====
+
+A basis (i_hat, j_hat, k_hat) is stored as a matrix::
+
+            (i1 i2 i3)
+   basis =  (j1 j2 j3)
+            (k1 k2 k3)
+
+where (i1, i2, i3) is the coordinate of the basis vector i_hat in the global coordinate system.
+
+Remark: this storage is consistent with the Points layout: ``basis[0, :] = (i1, i2, i3)``. A basis can be seen as three
+points (i_hat, j_hat, k_hat).
+
+"""
+
 # Remark: declaration of constant GCS at the end of this file
 import math
 from collections import namedtuple
@@ -22,94 +41,107 @@ import numba
 SphericalCoordinates = namedtuple('SphericalCoordinates', 'r theta phi')
 
 
-class Points(collections.abc.Sequence):
+class Points:
     '''
-    Set of points, stored in 1D.
+    Set of points in a 3D space.
+
+    The coordinates (x, y, z) are stored contiguously.
+
+    This object can contain a grid of any dimension of points:
+        - one point (``points.shape == ()``)
+        - a vector of points (``points.shape == (n, )``)
+        - a matrix of points (``points.shape == (n, m)``)
+        - etc.
+
+    The lenght of Points (``len(points)``) is the number of points in the first dimension of the grid. If there is only
+    one point, a TypeError is raised.
+
+    Unless otherwise stated, in this class ``idx`` is a multidimensional index of a point. ``len(idx)`` equals the
+    dimension of the Points object.
+
+    Points objects support indexing: ``points[idx]`` is one point (ndarray of 3 numbers).
+
+    Points objects are iterable: one point at a time is returned. The points are iterated over such as the right-hand
+    side of the multidimensional varies the quickest. For example, for a Points object of shape (2, 2, 2), the points
+    are returned in the following order: (0, 0, 0), (0, 0, 1), (0, 1, 0), (0, 1, 1), (1, 0, 0),
+    (1, 0, 1), (1, 1, 0), (1, 1, 1). The method ``enumerate`` returns the indices and the points in the same order.
+
+    For convenience, wraps several functions of ``arim.geometry``.
+
+    Parameters
+    ----------
+    coords: ndarray
+        Dimension: (\*shape, 3)
+    name: str or None
+        Name of the set of points.
+
+    Attributes
+    ----------
+    shape : tuple
+        () if there is one point, (n, ) if vector of n points, (n, m) if matrix of points, etc.
+    size_npoints : int
+        Total number of points.
+
     '''
-    __slots__ = ('_x', '_y', '_z', 'name')
+    __slots__ = ('coords', 'name')
 
-    def __init__(self, x, y, z, name=None):
-        assert x.ndim == 1
-        assert x.shape == y.shape == z.shape
-        assert x.dtype == y.dtype == z.dtype
-        assert x.flags.contiguous
-        assert y.flags.contiguous
-        assert z.flags.contiguous
+    def __init__(self, coords, name=None):
+        coords = np.asarray(coords)
+        assert coords.flags.contiguous
+        assert coords.shape[-1] == 3
 
-        self._x = x
-        self._y = y
-        self._z = z
+        self.coords = coords
         self.name = name
 
-        self.writeable = False
+    @classmethod
+    def from_xyz(cls, x, y, z, name=None):
+        assert x.ndim == y.ndim == z.ndim
+        assert x.shape == y.shape == z.shape
+        assert x.dtype == y.dtype == z.dtype
+
+        coords = np.stack([x, y, z], axis=-1)
+        return cls(coords, name)
 
     @property
-    def writeable(self):
-        assert self._x.flags.writeable == self._y.flags.writeable == self._z.flags.writeable
-        return self._x.flags.writeable
+    def shape(self):
+        return self.coords.shape[:-1]
 
-    @writeable.setter
-    def writeable(self, writeable):
-        self._x.flags.writeable = writeable
-        self._y.flags.writeable = writeable
-        self._z.flags.writeable = writeable
+    @property
+    def ndim(self):
+        return self.coords.ndim - 1
 
-    @classmethod
-    def from_one(cls, xyz, name=None):
-        x = np.array([xyz[0]])
-        y = np.array([xyz[1]])
-        z = np.array([xyz[2]])
-        return cls(x, y, z, name)
-
-    @classmethod
-    def from_2d_array(cls, arr, name=None):
-        assert arr.ndim == 2
-        assert arr.shape[1] == 3
-        x = np.array(arr[..., 0], copy=True)
-        y = np.array(arr[..., 1], copy=True)
-        z = np.array(arr[..., 2], copy=True)
-        return cls(x, y, z, name)
-
-    def to_2d_array(self):
-        """
-        Returns the points as a array of shape (numelements, 3).
-        """
-        arr = np.zeros((len(self), 3), dtype=self.dtype)
-        arr[:, 0] = self.x
-        arr[:, 1] = self.y
-        arr[:, 2] = self.z
-        return arr
+    @property
+    def size(self):
+        size = 1
+        for i in self.shape:
+            size *= i
+        return size
 
     def __str__(self):
-        if self.name is None:
-            return self.__repr__()
-        else:
-            return 'P:{}'.format(self.name)
+        return 'P:{}'.format(self.name)
 
     def __repr__(self):
+        classname = self.__class__.__qualname__
         if self.name is None:
-            return '<{} at {}>'.format(self.__class__.__qualname__, hex(id(self)))
+            return '<{}{} at {}>'.format(classname, self.shape, hex(id(self)))
         else:
-            return '<{}: {} at {}>'.format(self.__class__.__qualname__, self.name, hex(id(self)))
-
-    def __len__(self):
-        return len(self._x)
+            return '<{}{}: {} at {}>'.format(classname, self.shape, self.name, hex(id(self)))
 
     @property
     def x(self):
-        return self._x
+        return self.coords[..., 0]
 
     @property
     def y(self):
-        return self._y
+        return self.coords[..., 1]
 
     @property
     def z(self):
-        return self._z
+        return self.coords[..., 2]
 
     @property
     def dtype(self):
-        return self._x.dtype
+        return self.coords.dtype
 
     def closest_point(self, x, y, z):
         dx = self.x - x
@@ -120,19 +152,43 @@ class Points(collections.abc.Sequence):
     def allclose(self, other, atol=1e-8, rtol=0.):
         return are_points_close(self, other, atol=atol, rtol=rtol)
 
+    def __len__(self):
+        try:
+            return self.shape[0]
+        except IndexError:
+            raise TypeError("Points is unsized")
+
     def __getitem__(self, key):
-        return np.array((self._x[key], self._y[key], self.z[key]), dtype=self.dtype)
+        """
+        Returns one point (array of three numbers).
+        """
+        return self.coords[key]
 
     def norm2(self, out=None):
-        return np.sqrt(self._x * self._x + self._y * self._y + self._z * self._z, out=out)
-
-    def translate(self, vector, inplace=False):
         """
-        Translate these points along a given vector.
+        Returns a array of shape `shape`
+        """
+        return norm2(self.x, self.y, self.z, out=out)
+
+    def translate(self, direction, inplace=False):
+        """
+        Translate the points along a given direction or several directions.
+
+        If one direction is given (array of shape (3, )), the same direction is applied to all points::
+
+            NewCoords[idx] = OldCoords[idx] + Direction, for all idx
+
+        If as many direction as points are given, each point will be translated from the corresponding direction given.
+
+            NewCoords[idx] = OldCoords[idx] + Direction[idx], for all idx
+
+        Returns a new Points object with the same shape as the current one.
 
         Parameters
         ----------
-        vector : ndarray
+        direction : ndarray
+            Shape: (\*shape, 3)
+            Example: if the current
             Shape: (3, )
         inplace : bool
             Default: False
@@ -141,53 +197,34 @@ class Points(collections.abc.Sequence):
         -------
         translated_points : Points
         """
-        assert isinstance(self, Points)
-        assert vector.shape == (3,)
-
-        if inplace:
-            writeable = self.writeable
-            self.writeable = True
-            self._translate(vector, outx=self.x, outy=self.y, outz=self.z)
-            self.writeable = writeable
-            translated_points = self
-        else:
-            x, y, z = self._translate(vector)
-            translated_points = Points(x, y, z)
+        new_coords = self.coords + direction
+        translated_points = self.__class__(new_coords, self.name)
         return translated_points
 
-    def _translate(self, vector, outx=None, outy=None, outz=None):
-        outx = np.add(self.x, vector[0], out=outx)
-        outy = np.add(self.y, vector[1], out=outy)
-        outz = np.add(self.z, vector[2], out=outz)
-        return outx, outy, outz
+    def translate_inplace(self, direction):
+        np.add(self.coords, direction, out=self.coords)
+        return self
 
     def rotate(self, rotation_matrix, centre=None):
+        """Rotates the points. Returns a new Points object.
+
+        Cf. :func:`rotate`
         """
-        Rotate these points given a rotation matrix and the centre.
+        return Points(rotate(self.coords, rotation_matrix, centre), self.name)
 
-        Parameters
-        ----------
-        rotation_matrix
-            Shape: (3, 3)
-        centre : ndarray, optional
-            Default: centre = (0., 0., 0.)
+    def to_gcs(self, bases, origins):
+        """Returns the coordinates of the points expressed in the global coordinate system. Returns a new Points object.
 
-        Returns
-        -------
-        rotated_points : Points
-
+        Cf. :func:`to_gcs`
         """
-        array = self.to_2d_array()
+        return Points(to_gcs(self.coords, bases, origins), self.name)
 
-        assert rotation_matrix.shape == (3, 3)
+    def from_gcs(self, bases, origins):
+        """Returns the coordinates of the points expressed in the basis/bases given as parameter. Returns a new Points object.
 
-        if centre is None:
-            rotated = array @ rotation_matrix.T
-        else:
-            assert centre.shape == (3,)
-            translation = centre[np.newaxis, ...]
-            rotated = (array - translation) @ rotation_matrix.T + translation
-        return Points.from_2d_array(rotated)
+        Cf. :func:`from_gcs`
+        """
+        return Points(from_gcs(self.coords, bases, origins), self.name)
 
     def spherical_coordinates(self):
         """
@@ -209,6 +246,24 @@ class Points(collections.abc.Sequence):
         """
         return spherical_coordinates(self.x, self.y, self.z)
 
+    def __iter__(self):
+        for idx in np.ndindex(self.shape):
+            yield self.coords[idx]
+
+    def enumerate(self):
+        """
+        Yield the index and the coordinates of each point.
+
+        Yields
+        ------
+        idx: tuple
+            Multidimensional index of the point
+        (x, y, z) : ndarray of 3 numbers
+
+        """
+        for idx in np.ndindex(self.shape):
+            yield idx, self.coords[idx]
+
 
 class CoordinateSystem(namedtuple('CoordinateSystem', 'origin i_hat j_hat')):
     """
@@ -227,8 +282,7 @@ class CoordinateSystem(namedtuple('CoordinateSystem', 'origin i_hat j_hat')):
     k_hat
     basis_matrix : ndarray
         i_hat, j_hat and k_hat stored in columns ('matrice de passage' de la base locale vers GCS).
-
-
+        TODO: different convention as stated in header of the file
     """
     __slots__ = ()
 
@@ -245,10 +299,6 @@ class CoordinateSystem(namedtuple('CoordinateSystem', 'origin i_hat j_hat')):
             raise ValueError("Vector must be normalised.")
         if not np.isclose(i_hat @ j_hat, 0.):
             raise ValueError("The vectors must be orthogonal.")
-
-        i_hat.flags.writeable = False
-        j_hat.flags.writeable = False
-        origin.flags.writeable = False
 
         return super().__new__(cls, origin, i_hat, j_hat)
 
@@ -274,7 +324,7 @@ class CoordinateSystem(namedtuple('CoordinateSystem', 'origin i_hat j_hat')):
         """
         points = points_gcs.translate(-self.origin)
         # TODO: improve convert_from_gcs
-        return Points.from_2d_array(points.to_2d_array() @ self.basis_matrix)
+        return Points(points.coords @ self.basis_matrix)
 
     def convert_from_gcs_pairwise(self, points_gcs, origins):
         """
@@ -334,11 +384,11 @@ class CoordinateSystem(namedtuple('CoordinateSystem', 'origin i_hat j_hat')):
         --------
         convert_from_gcs
         """
-        points_cs = points_cs.to_2d_array()
+        points_cs = points_cs.coords
 
         # Vectorise the following operation:
         # OM' = Origin + OM_x * i_hat + OM_y * j_hat + OM_z * k_hat
-        return Points.from_2d_array((points_cs @ self.basis_matrix.T) + self.origin)
+        return Points((points_cs @ self.basis_matrix.T) + self.origin)
 
     def translate(self, vector):
         """
@@ -353,8 +403,8 @@ class CoordinateSystem(namedtuple('CoordinateSystem', 'origin i_hat j_hat')):
         cs
             New coordinate system.
         """
-        old_origin = Points.from_one(self.origin)
-        new_origin = old_origin.translate(vector)[0]
+        old_origin = Points(self.origin)
+        new_origin = old_origin.translate(vector)[()]
         return self.__class__(new_origin, self.i_hat, self.j_hat)
 
     def rotate(self, rotation_matrix, centre=None):
@@ -372,7 +422,7 @@ class CoordinateSystem(namedtuple('CoordinateSystem', 'origin i_hat j_hat')):
             New coordinate system.
         """
         old_basis = np.stack((self.origin, self.origin + self.i_hat, self.origin + self.j_hat), axis=0)
-        new_basis = Points.from_2d_array(old_basis).rotate(rotation_matrix, centre).to_2d_array()
+        new_basis = Points(old_basis).rotate(rotation_matrix, centre).coords
 
         origin = new_basis[0, :]
         i_hat = new_basis[1, :] - origin
@@ -392,56 +442,6 @@ class CoordinateSystem(namedtuple('CoordinateSystem', 'origin i_hat j_hat')):
     def basis_matrix(self):
         # i_hat, j_hat and k_hat stored in columns
         return np.stack((self.i_hat, self.j_hat, self.k_hat), axis=1)
-
-
-def _spherical_coordinates_r(x, y, z, out=None):
-    """radial distance
-    """
-    return norm2(x, y, z, out=out)
-
-
-def _spherical_coordinates_theta(z, r, out=None):
-    """inclination angle"""
-    return np.arccos(z / r, out=out)
-
-
-def _spherical_coordinates_phi(x, y, out=None):
-    """azimuthal angle"""
-    return np.arctan2(y, x, out=out)
-
-
-def spherical_coordinates(x, y, z, r=None):
-    """
-    Compute the spherical coordinates (r, θ, φ) of points.
-
-    Coordinates are assumed to be in the GCS (O, x_hat, y_hat, z_hat).
-
-    Quoted from [Spherical coordinate system](https://en.wikipedia.org/wiki/Spherical_coordinate_system):
-
-        Spherical coordinates (r, θ, φ) as commonly used in physics: radial distance r, polar angle θ (theta),
-        and azimuthal angle φ (phi).
-
-    Parameters
-    ----------
-    x, y, z : ndarray
-    r : ndarray or None
-        Computed on the fly is not provided.
-
-    Returns
-    -------
-    r, theta, phi : ndarray
-        Arrays with same shape as input.
-
-    See Also
-    --------
-    Points.spherical_coordinates : corresponding function with the ``Points`` interface.
-
-    """
-    if r is None:
-        r = _spherical_coordinates_r(x, y, z)
-    theta = _spherical_coordinates_theta(z, r)
-    phi = _spherical_coordinates_phi(x, y)
-    return SphericalCoordinates(r, theta, phi)
 
 
 class Grid:
@@ -559,14 +559,148 @@ class Grid:
     @property
     def as_points(self):
         """
-        Returns the grid points as a ``Point`` object (flatten the grid points). Returns always the same object.
+        Returns the grid points as Points object of dimension 1 (flatten the grid points). Returns always the same object.
+        """
+        if getattr(self, '_points', None) is None:
+            self._points = Points.from_xyz(self.xx.ravel(), self.yy.ravel(), self.zz.ravel(),
+                                           self.__class__.__qualname__)
+        return self._points
+
+
+class GeometryHelper:
+    """
+    Helper class for computing distances and angles between two sets of points.
+
+    Canonical usage: compute distances between probe elements and all grid points.
+
+    Warning: if the points coordinates evolve over time, do not use the cache, or clear the cache at every change.
+    """
+
+    def __init__(self, points1_gcs, points2_gcs, pcs, use_cache=True):
+        """
+
+        Parameters
+        ----------
+        points1_gcs : Points
+        points2_gcs : Points
+        pcs : CoordinateSystem
+        use_cache : bool
+
         Returns
         -------
 
         """
-        if getattr(self, '_points', None) is None:
-            self._points = Points(self.xx.ravel(), self.yy.ravel(), self.zz.ravel(), self.__class__.__qualname__)
-        return self._points
+        self._points1_gcs = points1_gcs
+        self._points2_gcs = points2_gcs
+
+        assert isinstance(pcs, CoordinateSystem)
+        self._pcs = pcs
+
+        if use_cache:
+            self._cache = Cache()
+        else:
+            # this will drop silently any attempt to data on this
+            self._cache = NoCache()
+
+        self.distance_pairwise_kwargs = {}
+
+    @property
+    def points1_gcs(self):
+        return self._points1_gcs
+
+    @property
+    def points2_gcs(self):
+        return self._points2_gcs
+
+    @property
+    def points1_pcs(self):
+        return self._pcs.convert_from_gcs(self._points1_gcs)
+
+    @property
+    def pcs(self):
+        return self._pcs
+
+    def is_valid(self, probe, points):
+        return (probe is self._points1_gcs) and (points is self._points2_gcs)
+
+    def distance_pairwise(self):
+        out = self._cache.get('distance_pairwise', None)
+        if out is None:
+            out = distance_pairwise(self._points2_gcs, self._points1_gcs, **self.distance_pairwise_kwargs)
+            self._cache['distance_pairwise'] = out
+        return out
+
+    def points2_to_pcs_pairwise(self):
+        out = self._cache.get('points2_to_pcs_pairwise', None)
+        if out is None:
+            out = self._pcs.convert_from_gcs_pairwise(self._points2_gcs, self.points1_pcs)
+            self._cache['points2_to_pcs_pairwise'] = out
+        return out
+
+    def points2_to_pcs_pairwise_spherical(self):
+        out = self._cache.get('points2_to_pcs_pairwise_spherical', None)
+        if out is None:
+            points_pcs = self.points2_to_pcs_pairwise()
+            dist = self.distance_pairwise()
+            out = spherical_coordinates(points_pcs[0], points_pcs[1], points_pcs[2], dist)
+            self._cache['points2_to_pcs_pairwise_spherical'] = out
+        return out
+
+    def clear(self):
+        self._cache.clear()
+
+    def __str__(self):
+        return '{} between {} and {}'.format(self.__class__.__name__, str(self._points1_gcs), str(self._points2_gcs))
+
+
+def _spherical_coordinates_r(x, y, z, out=None):
+    """radial distance
+    """
+    return norm2(x, y, z, out=out)
+
+
+def _spherical_coordinates_theta(z, r, out=None):
+    """inclination angle"""
+    return np.arccos(z / r, out=out)
+
+
+def _spherical_coordinates_phi(x, y, out=None):
+    """azimuthal angle"""
+    return np.arctan2(y, x, out=out)
+
+
+def spherical_coordinates(x, y, z, r=None):
+    """
+    Compute the spherical coordinates (r, θ, φ) of points.
+
+    Coordinates are assumed to be in the GCS (O, x_hat, y_hat, z_hat).
+
+    Quoted from [Spherical coordinate system](https://en.wikipedia.org/wiki/Spherical_coordinate_system):
+
+        Spherical coordinates (r, θ, φ) as commonly used in physics: radial distance r, polar angle θ (theta),
+        and azimuthal angle φ (phi).
+
+    Parameters
+    ----------
+    x, y, z : ndarray
+    r : ndarray or None
+        Computed on the fly is not provided.
+
+    Returns
+    -------
+    r, theta, phi : ndarray
+        Arrays with same shape as input.
+
+    See Also
+    --------
+    Points.spherical_coordinates : corresponding function with the ``Points`` interface.
+
+    """
+    if r is None:
+        r = _spherical_coordinates_r(x, y, z)
+    theta = _spherical_coordinates_theta(z, r)
+    phi = _spherical_coordinates_phi(x, y)
+    return SphericalCoordinates(r, theta, phi)
 
 
 def rotation_matrix_x(theta):
@@ -593,6 +727,100 @@ def rotation_matrix_z(theta):
                      (0, 0, 1)), dtype=np.float)
 
 
+def rotate(coords, rotation_matrix, centre=None):
+    """
+    Rotate these points given a rotation matrix and the centre.
+
+    The rotation of a point OM (in column) is given by OM' such as:
+
+        OM' := RotationMatrix x OM + Centre
+
+    This function accepts multiple rotations: for example to have one rotation matrix per point of index ``idx``,
+    ``rotation_matrix[idx]`` must be a 3x3 matrix.
+
+    Parameters
+    ----------
+    coords : ndarray
+        Coordinates to rotate. Shape: (*shape_points, 3)
+    rotation_matrix
+        Shape: (3, 3) or (*shape_points, 3, 3). Rotation matrices to apply: either one for all points or one per point.
+    centre : ndarray, optional
+        Centre of the rotation. This point is invariant by rotation.
+        Shape: Shape: (3, 3) or (*shape_points, 3).
+        Default: centre = (0., 0., 0.)
+
+    Returns
+    -------
+    rotated_points : ndarray
+        Shape: (*shape_points, 3
+    """
+    assert rotation_matrix.shape[-2:] == (3, 3)
+
+    if centre is None:
+        # Out[..., j] = Sum_i Rotation[...,j, i].In[...,i]
+        rotated = np.einsum('...ji,...i->...j', rotation_matrix, coords)
+    else:
+        centre = np.asarray(centre)
+        assert centre.shape[-1] == 3
+        rotated = np.einsum('...ji,...i->...j', rotation_matrix, coords - centre) + centre
+    return rotated
+
+
+def to_gcs(coords_cs, bases, origins):
+    """
+    Convert the coordinates of points expressed in the basis/bases given as parameter to coordinates expressed in the
+    global coordinate system.
+
+    Warning: the bases must be **orthogonal**. No check is performed.
+
+    Parameters
+    ----------
+    coords_cs : ndarray
+        Shape: (*shape_points, 3)
+        Coordinates of the points in the basis.
+    bases : ndarray
+        Shape: (*shape_points, 3, 3) or (3, 3)
+        One or several orthogonal bases. For each basis, the coordinates of the basis vectors in the global
+        coordinate system must be given row per row: i_hat, j_hat, k_hat.
+    origins
+        Shape: (*shape_points, 3) or (3, 3)
+
+    Returns
+    -------
+    coords_gcs : ndarray
+        Shape: (*shape_points, 3)
+    """
+    # OM' = Origin + OM_x * i_hat + OM_y * j_hat + OM_z * k_hat
+    return np.einsum('...ij,...i->...j', bases, coords_cs) + origins
+
+
+def from_gcs(points_gcs, bases, origins):
+    """
+    Convert the coordinates of points expressed in the global coordinate system to coordinates expressed
+    in the basis/bases given as parameter.
+
+    Warning: the bases must be **orthogonal**. No check is performed.
+
+    Parameters
+    ----------
+    coords_gcs : ndarray
+        Shape: (*shape_points, 3)
+        Coordinates of the points in the GCS.
+    bases : ndarray
+        Shape: (*shape_points, 3, 3) or (3, 3)
+        One or several orthogonal bases. For each basis, the coordinates of the basis vectors in the global
+        coordinate system must be given row per row: i_hat, j_hat, k_hat.
+    origins
+        Shape: (*shape_points, 3) or (3, 3)
+
+    Returns
+    -------
+    coords_gcs : ndarray
+        Shape: (*shape_points, 3)
+    """
+    return np.einsum('...ji,...i->...j', bases, points_gcs - origins)
+
+
 def rotation_matrix_ypr(yaw, pitch, roll):
     '''Returns the rotation matrix (as a ndarray) from the yaw, pitch and roll
     in radians.
@@ -602,6 +830,29 @@ def rotation_matrix_ypr(yaw, pitch, roll):
     https://en.wikipedia.org/wiki/Rotation_matrix#General_rotations
     '''
     return rotation_matrix_z(yaw) @ rotation_matrix_y(pitch) @ rotation_matrix_x(roll)
+
+
+def are_points_close(points1, points2, atol=1e-8, rtol=0.):
+    """
+    Return True if and only if the two sets of points have the same shape and coordinates close
+    to the given precision.
+
+    Attribute name is ignored.
+
+    Parameters
+    ----------
+    points1 : Points
+    points2 : Points
+    atol : float
+    rtol : float
+
+    Returns
+    -------
+    bool
+    """
+    return (
+        len(points1.shape) == len(points2.shape) and
+        np.allclose(points1.coords, points2.coords, rtol=rtol, atol=atol))
 
 
 def are_points_aligned(points, rtol=0., atol=1e-08):
@@ -623,7 +874,7 @@ def are_points_aligned(points, rtol=0., atol=1e-08):
     numpoints = len(points)
 
     # TODO: are_points_aligned -> use coordinate system?
-    points = points.to_2d_array()
+    points = points.coords
     if numpoints <= 2:
         return True
 
@@ -799,11 +1050,6 @@ def direct_isometry_3d(A, i_hat, j_hat, B, u_hat, v_hat):
     return M, P
 
 
-GCS = CoordinateSystem(origin=np.array((0., 0., 0.)),
-                       i_hat=np.array((1., 0., 0.)),
-                       j_hat=np.array((0., 1., 0.)))
-
-
 def distance_pairwise(points1, points2, out=None, dtype=None, block_size=None, numthreads=None):
     '''
     Compute the Euclidean distances of flight between two sets of points.
@@ -882,6 +1128,25 @@ def distance_pairwise(points1, points2, out=None, dtype=None, block_size=None, n
     return distance
 
 
+def is_orthonormal(basis):
+    assert basis.shape == (3, 3)
+    return (basis.dtype.kind == 'f' # must be real
+            and np.allclose(basis.T, np.linalg.inv(basis)))
+
+def is_orthonormal_direct(basis):
+    """
+    Returns True if the basis is orthonormal and direct:
+    Parameters
+    ----------
+    basis
+
+    Returns
+    -------
+
+    """
+    return is_orthonormal(basis) and np.allclose(np.cross(basis[0, :], basis[1, :]), basis[2, :])
+
+
 @numba.jit(nopython=True, nogil=True)
 def _distance_pairwise(x1, y1, z1, x2, y2, z2, distance):
     """
@@ -902,95 +1167,6 @@ def _distance_pairwise(x1, y1, z1, x2, y2, z2, distance):
     return
 
 
-def are_points_close(points1, points2, atol=1e-8, rtol=0.):
-    return (
-        np.allclose(points1.x, points2.x, rtol=rtol, atol=atol) and
-        np.allclose(points1.y, points2.y, rtol=rtol, atol=atol) and
-        np.allclose(points1.z, points2.z, rtol=rtol, atol=atol) and
-        len(points1) == len(points2))
-
-
-class GeometryHelper:
-    """
-    Helper class for computing distances and angles between two sets of points.
-
-    Canonical usage: compute distances between probe elements and all grid points.
-
-    Warning: if the points coordinates evolve over time, do not use the cache, or clear the cache at every change.
-    """
-
-    def __init__(self, points1_gcs, points2_gcs, pcs, use_cache=True):
-        """
-
-        Parameters
-        ----------
-        points1_gcs : Points
-        points2_gcs : Points
-        pcs : CoordinateSystem
-        use_cache : bool
-
-        Returns
-        -------
-
-        """
-        self._points1_gcs = points1_gcs
-        self._points2_gcs = points2_gcs
-
-        assert isinstance(pcs, CoordinateSystem)
-        self._pcs = pcs
-
-        if use_cache:
-            self._cache = Cache()
-        else:
-            # this will drop silently any attempt to data on this
-            self._cache = NoCache()
-
-        self.distance_pairwise_kwargs = {}
-
-    @property
-    def points1_gcs(self):
-        return self._points1_gcs
-
-    @property
-    def points2_gcs(self):
-        return self._points2_gcs
-
-    @property
-    def points1_pcs(self):
-        return self._pcs.convert_from_gcs(self._points1_gcs)
-
-    @property
-    def pcs(self):
-        return self._pcs
-
-    def is_valid(self, probe, points):
-        return (probe is self._points1_gcs) and (points is self._points2_gcs)
-
-    def distance_pairwise(self):
-        out = self._cache.get('distance_pairwise', None)
-        if out is None:
-            out = distance_pairwise(self._points2_gcs, self._points1_gcs, **self.distance_pairwise_kwargs)
-            self._cache['distance_pairwise'] = out
-        return out
-
-    def points2_to_pcs_pairwise(self):
-        out = self._cache.get('points2_to_pcs_pairwise', None)
-        if out is None:
-            out = self._pcs.convert_from_gcs_pairwise(self._points2_gcs, self.points1_pcs)
-            self._cache['points2_to_pcs_pairwise'] = out
-        return out
-
-    def points2_to_pcs_pairwise_spherical(self):
-        out = self._cache.get('points2_to_pcs_pairwise_spherical', None)
-        if out is None:
-            points_pcs = self.points2_to_pcs_pairwise()
-            dist = self.distance_pairwise()
-            out = spherical_coordinates(points_pcs[0], points_pcs[1], points_pcs[2], dist)
-            self._cache['points2_to_pcs_pairwise_spherical'] = out
-        return out
-
-    def clear(self):
-        self._cache.clear()
-
-    def __str__(self):
-        return '{} between {} and {}'.format(self.__class__.__name__, str(self._points1_gcs), str(self._points2_gcs))
+GCS = CoordinateSystem(origin=np.array((0., 0., 0.)),
+                       i_hat=np.array((1., 0., 0.)),
+                       j_hat=np.array((0., 1., 0.)))

@@ -188,7 +188,7 @@ class Rays:
             x[i] = points.x[j]
             y[i] = points.y[j]
             z[i] = points.z[j]
-        return g.Points(x, y, z, 'Ray')
+        return g.Points.from_xyz(x, y, z, 'Ray')
 
     def gone_through_extreme_points(self):
         """

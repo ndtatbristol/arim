@@ -211,7 +211,7 @@ def probe():
     locx -= locx.mean()
     locy = np.zeros(numelements, dtype=np.float)
     locz = np.zeros(numelements, dtype=np.float)
-    locations = g.Points(locx, locy, locz)
+    locations = g.Points.from_xyz(locx, locy, locz)
     x = np.arange(numelements) * 0.1e-3
 
     frequency = 1e6
@@ -265,12 +265,12 @@ class TestProbe:
     def linear_probe(self):
         numelements = 10
 
-        dimensions = g.Points(np.full(numelements, 0.8e-3),
-                              np.full(numelements, 30e-3),
-                              np.zeros(numelements, dtype=np.float))
-        orientations = g.Points(np.zeros(numelements, dtype=np.float),
-                                np.zeros(numelements, dtype=np.float),
-                                np.ones(numelements, dtype=np.float))
+        dimensions = g.Points.from_xyz(np.full(numelements, 0.8e-3),
+                                       np.full(numelements, 30e-3),
+                                       np.zeros(numelements, dtype=np.float))
+        orientations = g.Points.from_xyz(np.zeros(numelements, dtype=np.float),
+                                         np.zeros(numelements, dtype=np.float),
+                                         np.ones(numelements, dtype=np.float))
         shapes = np.array(numelements * [c.ElementShape.rectangular], dtype='O')
         dead_elements = np.zeros((numelements,), dtype=np.bool)
         probe = c.Probe.make_matrix_probe(pitch_x=1e-3, numx=numelements, pitch_y=np.nan, numy=1,
