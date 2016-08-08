@@ -92,13 +92,13 @@ def _load_probe(array):
     locations_y = np.squeeze(array['el_yc']).astype(dtype)
     locations_z = np.squeeze(array['el_zc']).astype(dtype)
 
-    locations = g.Points(locations_x, locations_y, locations_z)
+    locations = g.Points.from_xyz(locations_x, locations_y, locations_z)
     
     #Calculate Probe Dimensions (using el_x1, el_x2 and el_xc etc for each dimension)
     dimensions_x = 2*np.maximum(np.absolute(np.squeeze(array['el_x1']).astype(dtype) - locations_x),np.absolute(np.squeeze(array['el_x2']).astype(dtype) - locations_x))
     dimensions_y = 2*np.maximum(np.absolute(np.squeeze(array['el_y1']).astype(dtype) - locations_y),np.absolute(np.squeeze(array['el_y2']).astype(dtype) - locations_y))
     dimensions_z = 2*np.maximum(np.absolute(np.squeeze(array['el_z1']).astype(dtype) - locations_z),np.absolute(np.squeeze(array['el_z2']).astype(dtype) - locations_z)) 
-    dimensions = g.Points(dimensions_x, dimensions_y, dimensions_z)
+    dimensions = g.Points.from_xyz(dimensions_x, dimensions_y, dimensions_z)
     
     return Probe(locations, frequency,dimensions=dimensions)
 

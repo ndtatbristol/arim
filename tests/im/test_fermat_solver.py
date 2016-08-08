@@ -60,9 +60,9 @@ class TestRays4:
 
     @pytest.fixture
     def path(self):
-        interfaces = [Points(np.random.rand(n),
-                             np.random.rand(n),
-                             np.random.rand(n), 'A{}'.format(i)) for (i, n) in enumerate(self.numpoints)]
+        interfaces = [Points.from_xyz(np.random.rand(n),
+                                      np.random.rand(n),
+                                      np.random.rand(n), 'A{}'.format(i)) for (i, n) in enumerate(self.numpoints)]
 
         path = t.Path((interfaces[0], 1.0, interfaces[1],
                        2.0, interfaces[2], 3.0, interfaces[3]))
@@ -101,7 +101,7 @@ class TestRays4:
         assert np.all(indices[0, ...] == np.fromfunction(
             lambda i, j: i, (n, q), dtype=dtype_indices))
         assert np.all(indices[-1, ...] == np.fromfunction(lambda i,
-                                                          j: j, (n, q), dtype=dtype_indices))
+                                                                 j: j, (n, q), dtype=dtype_indices))
 
         for k in range(self.d - 2):
             np.testing.assert_allclose(interior_indices[k, ...], indices[k + 1, ...])
@@ -130,9 +130,9 @@ class TestRays4:
 
         interior_indices = rays.interior_indices
         np.logical_or(interior_indices[0, ...] == 0, expected, out=expected)
-        np.logical_or(interior_indices[0, ...] == (m-1), expected, out=expected)
+        np.logical_or(interior_indices[0, ...] == (m - 1), expected, out=expected)
         np.logical_or(interior_indices[1, ...] == 0, expected, out=expected)
-        np.logical_or(interior_indices[1, ...] == (p-1), expected, out=expected)
+        np.logical_or(interior_indices[1, ...] == (p - 1), expected, out=expected)
 
         out = rays.gone_through_extreme_points()
         np.testing.assert_equal(out, expected)
@@ -147,9 +147,9 @@ class TestRays2:
 
     @pytest.fixture
     def path(self):
-        interfaces = [Points(np.random.rand(n),
-                             np.random.rand(n),
-                             np.random.rand(n), 'A{}'.format(i)) for (i, n) in enumerate(self.numpoints)]
+        interfaces = [Points.from_xyz(np.random.rand(n),
+                                      np.random.rand(n),
+                                      np.random.rand(n), 'A{}'.format(i)) for (i, n) in enumerate(self.numpoints)]
 
         path = t.Path((interfaces[0], 2.0, interfaces[1]))
         return path
@@ -219,9 +219,9 @@ def test_fermat_solver():
     standoff = 11.1
     z = 66.6
     theta = np.deg2rad(30.)
-    interface_a = Points(x_n, standoff + x_n * np.sin(theta), np.full(n, z), 'Interface A')
-    interface_b = Points(x_m, np.zeros(m), np.full(m, z), 'Interface B')
-    interface_c = Points(x_m, -(x_m - 5) ** 2 - 10., np.full(m, z), 'Interface C')
+    interface_a = Points.from_xyz(x_n, standoff + x_n * np.sin(theta), np.full(n, z), 'Interface A')
+    interface_b = Points.from_xyz(x_m, np.zeros(m), np.full(m, z), 'Interface B')
+    interface_c = Points.from_xyz(x_m, -(x_m - 5) ** 2 - 10., np.full(m, z), 'Interface C')
 
     path_1 = t.Path((interface_a, v1, interface_b, v2, interface_c))
     path_2 = t.Path((interface_a, v1, interface_b, v3, interface_c, v4, interface_b))
@@ -254,9 +254,9 @@ def test_fermat_solver():
                 tof = norm2(interface_a.x[i] - interface_b.x[k],
                             interface_a.y[i] - interface_b.y[k],
                             interface_a.z[i] - interface_b.z[k]) / v1 + \
-                    norm2(interface_c.x[j] - interface_b.x[k],
-                          interface_c.y[j] - interface_b.y[k],
-                          interface_c.z[j] - interface_b.z[k]) / v2
+                      norm2(interface_c.x[j] - interface_b.x[k],
+                            interface_c.y[j] - interface_b.y[k],
+                            interface_c.z[j] - interface_b.z[k]) / v2
                 if tof < min_tof:
                     min_tof = tof
                     best_index = k
@@ -277,12 +277,12 @@ def test_fermat_solver():
                     tof = norm2(interface_a.x[i] - interface_b.x[k1],
                                 interface_a.y[i] - interface_b.y[k1],
                                 interface_a.z[i] - interface_b.z[k1]) / v1 + \
-                        norm2(interface_c.x[k2] - interface_b.x[k1],
-                              interface_c.y[k2] - interface_b.y[k1],
-                              interface_c.z[k2] - interface_b.z[k1]) / v3 + \
-                        norm2(interface_b.x[j] - interface_c.x[k2],
-                              interface_b.y[j] - interface_c.y[k2],
-                              interface_b.z[j] - interface_c.z[k2]) / v4
+                          norm2(interface_c.x[k2] - interface_b.x[k1],
+                                interface_c.y[k2] - interface_b.y[k1],
+                                interface_c.z[k2] - interface_b.z[k1]) / v3 + \
+                          norm2(interface_b.x[j] - interface_c.x[k2],
+                                interface_b.y[j] - interface_c.y[k2],
+                                interface_b.z[j] - interface_c.z[k2]) / v4
 
                     if tof < min_tof:
                         min_tof = tof

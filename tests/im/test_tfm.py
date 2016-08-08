@@ -61,10 +61,10 @@ class TestAmplitude:
 
 
 def test_make_views():
-    probe = g.Points(np.random.rand(10), np.random.rand(10), np.random.rand(10), 'Probe')
-    frontwall = g.Points(np.random.rand(10), np.random.rand(10), np.random.rand(10), 'Frontwall')
-    backwall = g.Points(np.random.rand(10), np.random.rand(10), np.random.rand(10), 'Backwall')
-    grid = g.Points(np.random.rand(10), np.random.rand(10), np.random.rand(10), 'Grid')
+    probe = g.Points(np.random.uniform(size=(10, 3)), 'Probe')
+    frontwall = g.Points(np.random.uniform(size=(10, 3)), 'Frontwall')
+    backwall = g.Points(np.random.uniform(size=(10, 3)), 'Backwall')
+    grid = g.Points(np.random.uniform(size=(10, 3)), 'Grid')
 
     v_couplant = 1.0
     v_longi = 2.0

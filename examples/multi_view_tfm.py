@@ -88,13 +88,13 @@ probe.name = 'Probe'
 xmin = -20e-3
 xmax = 100e-3
 
-frontwall = arim.geometry.Points(
+frontwall = arim.geometry.Points.from_xyz(
     x=np.linspace(xmin, xmax, numinterface),
     y=np.zeros((numinterface, ), dtype=np.float),
     z=np.zeros((numinterface, ), dtype=np.float),
     name='Frontwall')
 
-backwall = arim.geometry.Points(
+backwall = arim.geometry.Points.from_xyz(
     x=np.linspace(xmin, xmax, numinterface2),
     y=np.zeros((numinterface2, ), dtype=np.float),
     z=np.full((numinterface2, ), 40.18e-3, dtype=np.float),
