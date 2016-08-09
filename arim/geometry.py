@@ -118,16 +118,14 @@ class Points:
         return size
 
     def __str__(self):
-        if self.name is None:
-            return self.__repr__()
-        else:
-            return 'P{}:{}'.format(self.shape, self.name)
+        return 'P:{}'.format(self.name)
 
     def __repr__(self):
+        classname = self.__class__.__qualname__
         if self.name is None:
-            return '<{} at {}>'.format(self.__class__.__qualname__, hex(id(self)))
+            return '<{}{} at {}>'.format(classname, self.shape, hex(id(self)))
         else:
-            return '<{}: {} at {}>'.format(self.__class__.__qualname__, self.name, hex(id(self)))
+            return '<{}{}: {} at {}>'.format(classname, self.shape, self.name, hex(id(self)))
 
     @property
     def x(self):
