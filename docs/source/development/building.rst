@@ -9,7 +9,7 @@ Building
 **To build arim:** in a command prompt in arim root directory::
 
   activate arim-dev
-  cython setup.py build_ext --inplace
+  python setup.py build_ext --inplace
 
 
 Remark: your compiler must be in your system path. In Windows, you might want to run these commands in the Visual Studio Command Prompt.
