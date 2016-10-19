@@ -191,7 +191,7 @@ class Probe:
         y -= y.mean()
         yy = np.repeat(y, numx)
 
-        locations = g.Points(xx, yy, np.zeros(numx * numy, dtype=dtype))
+        locations = g.Points.from_xyz(xx, yy, np.zeros(numx * numy, dtype=dtype))
 
         probe = cls(locations, frequency, *args, **kwargs)
 
@@ -303,5 +303,5 @@ class Probe:
         x = np.repeat(size_x, self.numelements)
         y = np.repeat(size_y, self.numelements)
         z = np.repeat(size_z, self.numelements)
-        self.dimensions = g.Points(x, y, z)
+        self.dimensions = g.Points.from_xyz(x, y, z)
         return self

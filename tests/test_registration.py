@@ -21,7 +21,7 @@ def test_move_probe_over_flat_surface_ideal(A, B, dA, dB):
     B = np.asarray(B, dtype=np.float)
 
     # Setup: a 2-element points1
-    locations = g.Points.from_2d_array(np.array([A, B])) # locations in PCS
+    locations = g.Points(np.array([A, B])) # locations in PCS
     probe = Probe(locations, 1e6) # NB: assume PCS=GCS at this point
 
     tx = np.array([0, 0, 1])

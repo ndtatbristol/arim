@@ -19,13 +19,13 @@ def _make_ima_50_MHz_128_1d():
     )
     numelements = 128
     shapes = np.full(numelements, core.ElementShape.rectangular, dtype=np.object)
-    orientations = g.Points(np.zeros((numelements,), dtype=np.float),
-                               np.zeros((numelements,), dtype=np.float),
-                               np.ones((numelements,), dtype=np.float),
-                               )
-    dimensions = g.Points(np.full(numelements, 0.2e-3),
-                             np.full(numelements, 15e-3),
-                             np.full(numelements, 0.))
+    orientations = g.Points.from_xyz(np.zeros((numelements,), dtype=np.float),
+                                     np.zeros((numelements,), dtype=np.float),
+                                     np.ones((numelements,), dtype=np.float),
+                                     )
+    dimensions = g.Points.from_xyz(np.full(numelements, 0.2e-3),
+                                   np.full(numelements, 15e-3),
+                                   np.full(numelements, 0.))
     dead_elements = np.full(numelements, False, dtype=np.bool)
 
     probe = core.Probe.make_matrix_probe(
@@ -52,13 +52,13 @@ def _make_ima_50_MHz_64_1d():
     )
     numelements = 64
     shapes = np.full(numelements, core.ElementShape.rectangular, dtype=np.object)
-    orientations = g.Points(np.zeros((numelements,), dtype=np.float),
-                               np.zeros((numelements,), dtype=np.float),
-                               np.ones((numelements,), dtype=np.float),
-                               )
-    dimensions = g.Points(np.full(numelements, 0.53e-3),
-                             np.full(numelements, 15e-3),
-                             np.full(numelements, 0.))
+    orientations = g.Points.from_xyz(np.zeros((numelements,), dtype=np.float),
+                                     np.zeros((numelements,), dtype=np.float),
+                                     np.ones((numelements,), dtype=np.float),
+                                     )
+    dimensions = g.Points.from_xyz(np.full(numelements, 0.53e-3),
+                                   np.full(numelements, 15e-3),
+                                   np.full(numelements, 0.))
     dead_elements = np.full(numelements, False, dtype=np.bool)
 
     probe = core.Probe.make_matrix_probe(
