@@ -185,8 +185,6 @@ logger.info("Performed {} delay-and-sum's in {:.2f} s".format(len(tfms), toc-tic
 #%% Plot all TFM
 
 if PLOT_TFM:
-    start_index = 0
-    end_index = grid.as_points.closest_point(54e-3, 0.0, 21e-3)
 
     func_res = lambda x: arim.utils.decibel(x)
     # func_res = lambda x: np.imag(x)
@@ -199,12 +197,14 @@ if PLOT_TFM:
         ax = plot_interface(view.name, show_grid=False, ax=ax)
 
         if SHOW_RAY:
-            ray_tx = tfm.rays_tx.get_coordinates_one(start_index, end_index)
-            ray_rx = tfm.rays_rx.get_coordinates_one(start_index, end_index)
+            element_index = 0
 
-            ax.plot(ray_tx.x, ray_tx.z, 'm--', label='TX')
-            ax.plot(ray_rx.x, ray_rx.z, 'c-.', label='RX')
-            ax.legend()
+            linestyle_tx = 'm--'
+            linestyle_rx = 'c-.'
+
+            aplt.draw_rays_on_click(grid, tfm.rays_tx, element_index, ax, linestyle_tx)
+            aplt.draw_rays_on_click(grid, tfm.rays_rx, element_index, ax, linestyle_rx)
+
         ax.legend().remove()
         if SAVEFIG:
             ax.figure.savefig("fig_{:02}_{}.png".format(i, view.name))

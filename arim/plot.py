@@ -2,9 +2,9 @@
 Plotting utilities
 """
 
-
 import functools
 from warnings import warn
+import logging
 
 import matplotlib as mpl
 from matplotlib import ticker
@@ -13,8 +13,13 @@ import numpy as np
 
 from . import utils, model
 from .exceptions import ArimWarning
+from . import geometry as g
 
-# __all__ = ['mm_formatter', 'us_formatter']
+__all__ = ['mm_formatter', 'us_formatter',
+           'plot_bscan_pulse_echo', 'plot_oxz', 'plot_tfm', 'plot_directivity_finite_width_2d',
+           'draw_rays_on_click', 'RayPlotter']
+
+logger = logging.getLogger(__name__)
 
 mm_formatter = ticker.FuncFormatter(lambda x, pos: '{:.1f}'.format(x * 1e3))
 us_formatter = ticker.FuncFormatter(lambda x, pos: '{:.1f}'.format(x * 1e6))
@@ -189,3 +194,85 @@ def plot_directivity_finite_width_2d(element_width, wavelength, ax=None, **kwarg
     ax.yaxis.set_minor_locator(ticker.MultipleLocator(0.1))
     ax.legend()
     return ax
+
+
+class RayPlotter:
+    def __init__(self, grid, ray, element_index, linestyle='m--', tolerance_distance=1e-3):
+        self.grid = grid
+        self.ray = ray
+        self.element_index = element_index
+        self.linestyle = linestyle
+        self._lines = []
+        self.debug = False
+        self.y = 0
+        self.tolerance_distance = tolerance_distance
+
+    def __call__(self, event):
+        logger.debug(
+            'button=%d, x=%d, y=%d, xdata=%f, ydata=%f' % (event.button, event.x, event.y, event.xdata, event.ydata))
+        ax = event.canvas.figure.axes[0]
+        if event.button == 1:
+            self.draw_ray(ax, event.xdata, event.ydata)
+        elif event.button == 3:
+            self.clear_rays(ax)
+        if self.debug:
+            print('show_ray_on_clic() finish with no error')
+
+    def draw_ray(self, ax, x, z):
+        gridpoints = self.grid.as_points
+        wanted_point = (x, self.y, z)
+        point_index = gridpoints.closest_point(*wanted_point)
+        obtained_point = gridpoints[point_index]
+
+        distance = g.norm2(*(obtained_point - wanted_point))
+        if distance > self.tolerance_distance:
+            logger.warning("The closest grid point is far from what you want (dist: {:.2f} mm)".format(distance * 1000))
+
+        legs = self.ray.get_coordinates_one(self.element_index, point_index)
+        line = ax.plot(legs.x, legs.z, self.linestyle)
+        self._lines.extend(line)
+        logger.debug('Draw a ray')
+        ax.figure.canvas.draw_idle()
+
+    def clear_rays(self, ax):
+        """Clear all rays"""
+        lines_to_clear = [line for line in ax.lines if line in self._lines]
+        for line in lines_to_clear:
+            ax.lines.remove(line)
+            self._lines.remove(line)
+        logger.debug('Clear {} ray(s) on figure'.format(len(lines_to_clear)))
+        ax.figure.canvas.draw_idle()
+
+    def connect(self, ax):
+        """Connect to matplotlib event backend"""
+        ax.figure.canvas.mpl_connect('button_press_event', self)
+
+
+def draw_rays_on_click(grid, ray, element_index, ax=None, linestyle='m--', ):
+    """
+    Dynamic plotting of rays on a plot.
+
+    Left-click: draw a ray between the probe element and the mouse point.
+    Right-click: clear all rays in the plot.
+
+    Parameters
+    ----------
+    grid : Grid
+    ray : Rays
+
+    element_index : int
+    ax : Axis
+        Matplotlib axis on which to plot. If None: current axis.
+    linestyle : str
+        A valid matplotlib linestyle. Default: 'm--'
+
+    Returns
+    -------
+    ray_plotter : RayPlotter
+
+    """
+    if ax is None:
+        ax = plt.gca()
+    ray_plotter = RayPlotter(grid=grid, ray=ray, element_index=element_index, linestyle=linestyle)
+    ray_plotter.connect(ax)
+    return ray_plotter
