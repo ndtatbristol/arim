@@ -4,7 +4,7 @@ from .enums import *
 from .core import *
 from .misc import get_git_version
 
-from . import _probes, signal, geometry, io, im, registration
+from . import _probes, signal, geometry, io, im, registration, model
 
 probes = _probes.probes
 

@@ -6,7 +6,7 @@ from .. import geometry as g
 from .. import settings as s
 from ..core import NoCache, ElementShape
 from ..exceptions import ArimWarning
-from ..utils import ut
+from .. import model
 
 class Amplitudes:
     """
@@ -215,7 +215,7 @@ class DirectivityFiniteWidth2D(Amplitudes):
         spher = self.geom_probe_to_grid.points2_to_pcs_pairwise_spherical()
         for (element, (elt_dim, elt_loc)) in enumerate(zip(probe.dimensions, probe.locations)):
             elt_width = elt_dim[0]
-            amplitudes[..., element] = ut.directivity_finite_width_2d(spher.theta[..., element], elt_width, wavelength)
+            amplitudes[..., element] = model.directivity_finite_width_2d(spher.theta[..., element], elt_width, wavelength)
         return amplitudes
 
 
@@ -251,7 +251,7 @@ class DirectivityFiniteWidth2D_Rays(AmplitudesRays):
 
         for (element, (elt_dim, elt_loc)) in enumerate(zip(probe.dimensions, probe.locations)):
             elt_width = elt_dim[0]
-            amplitudes[..., element] = ut.directivity_finite_width_2d(spher.theta[..., element], elt_width,
+            amplitudes[..., element] = model.directivity_finite_width_2d(spher.theta[..., element], elt_width,
                                                                       self.wavelength)
         return amplitudes
 

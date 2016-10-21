@@ -20,6 +20,8 @@ Submodules
    arim.enums
    arim.exceptions
    arim.geometry
+   arim.misc
+   arim.model
    arim.plot
    arim.registration
    arim.settings

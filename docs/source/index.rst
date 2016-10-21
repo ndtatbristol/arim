@@ -24,6 +24,7 @@ Contents:
   installation/installation
   core/index
   im/index
+  model/index
   utils/index
   io/index
   examples/index

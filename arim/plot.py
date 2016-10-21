@@ -11,7 +11,7 @@ from matplotlib import ticker
 import matplotlib.pyplot as plt
 import numpy as np
 
-from . import utils
+from . import utils, model
 from .exceptions import ArimWarning
 
 # __all__ = ['mm_formatter', 'us_formatter']
@@ -176,7 +176,7 @@ def plot_directivity_finite_width_2d(element_width, wavelength, ax=None, **kwarg
 
     ratio = element_width / wavelength
     theta = np.linspace(-np.pi / 2, np.pi / 2, 100)
-    directivity = utils.ut.directivity_finite_width_2d(theta, element_width, wavelength)
+    directivity = model.directivity_finite_width_2d(theta, element_width, wavelength)
 
     ax.plot(np.rad2deg(theta), directivity, label=r'$a/\lambda = {:.2f}$'.format(ratio), **kwargs)
     ax.set_xlabel(r'Polar angle $\theta$ (deg)')
