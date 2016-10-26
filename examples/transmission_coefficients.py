@@ -5,6 +5,7 @@ Case: an incident longitudinal in the fluid hits the wall of an aluminium part.
 """
 
 import numpy as np
+import warnings
 
 from matplotlib.pyplot import *
 
@@ -12,6 +13,9 @@ from arim.model import fluid_solid, snell_angles
 
 
 #%% Parameters
+
+NULL_TRANSMISSION_ABOVE_CRIT_ANGLES = True
+SAVEFIG = False
 
 # water:
 c_fluid = 1480.
@@ -25,9 +29,15 @@ rho_solid = 2700.
 
 #%% Computation of reflection and transmission coefficients
 
+# Critical angles
+critical_l = np.arcsin(c_fluid / c_l)
+critical_t = np.arcsin(c_fluid / c_t)
+print("Critical angle L: {:.3f}°".format(np.rad2deg(critical_l)))
+print("Critical angle T: {:.3f}°".format(np.rad2deg(critical_t)))
+
 # Remark: by using complex angles, complex reflection and transmission coefficients
 # are computed.
-alpha_fluid = np.asarray(np.linspace(0, np.pi/2, 5000), dtype=complex)
+alpha_fluid = np.asarray(np.linspace(0, np.pi/2, 50000), dtype=complex)
 
 
 alpha_l = snell_angles(alpha_fluid, c_fluid, c_l)
@@ -36,18 +46,13 @@ alpha_t = snell_angles(alpha_fluid, c_fluid, c_t)
 reflection, transmission_l, transmission_t = fluid_solid(alpha_fluid, rho_fluid, rho_solid, c_fluid, c_l, c_t,
                                                          alpha_l, alpha_t)
 
-# Critical angles
-critical_l = np.arcsin(c_fluid / c_l)
-critical_t = np.arcsin(c_fluid / c_t)
-print("Critical angle L: {:.3f}°".format(np.rad2deg(critical_l)))
-print("Critical angle T: {:.3f}°".format(np.rad2deg(critical_t)))
-
 # Transmission coefficients above the critical angles are not physical.
 # Force them to 0.
-transmission_l[alpha_fluid > critical_l] = 0
-transmission_t[alpha_fluid > critical_t] = 0
+if NULL_TRANSMISSION_ABOVE_CRIT_ANGLES:
+    transmission_l[alpha_fluid > critical_l] = 0
+    transmission_t[alpha_fluid > critical_t] = 0
 
-#%% Plot reflection and transmission coefficients
+#%% Plot reflection and transmission coefficients (alpha_fluid axis)
 
 figure()
 hold(True)
@@ -60,7 +65,36 @@ axvline(x=np.rad2deg(critical_t), color='k', linestyle='-', label='critical angl
 xlabel('angle of the incident wave in water (deg)')
 ylabel('coefficient amplitude')
 legend(loc='best')
+if SAVEFIG:
+    savefig("transrelf_alpha_fluid")
 
+#%%Plot reflection and transmission coefficients (alpha_t axis)
+
+figure()
+hold(True)
+plot(np.rad2deg(alpha_t.real), np.abs(reflection), label='reflection')
+plot(np.rad2deg(alpha_t.real), np.abs(transmission_l), label='transmission L')
+plot(np.rad2deg(alpha_t.real), np.abs(transmission_t), label='transmission T')
+title('Tranmission and reflection coefficients from water to aluminium')
+xlabel('angle of the transmitted wave T (deg)')
+ylabel('coefficient amplitude')
+legend(loc='best')
+if SAVEFIG:
+    savefig("transrelf_alpha_t")
+
+#%%Plot reflection and transmission coefficients (alpha_l axis)
+
+figure()
+hold(True)
+plot(np.rad2deg(alpha_l.real), np.abs(reflection), label='reflection')
+plot(np.rad2deg(alpha_l.real), np.abs(transmission_l), label='transmission L')
+plot(np.rad2deg(alpha_l.real), np.abs(transmission_t), label='transmission T')
+title('Tranmission and reflection coefficients from water to aluminium')
+xlabel('angle of the transmitted wave L (deg)')
+ylabel('coefficient amplitude')
+legend(loc='best')
+if SAVEFIG:
+    savefig("transrelf_alpha_l")
 
 #%% Computation of the repartition of energy
 
@@ -90,7 +124,8 @@ ratio_l = np.abs(energy_l/inc_energy)
 ratio_t = np.abs(energy_t/inc_energy)
 
 # Verify the conservation of energy:
-np.testing.assert_allclose(ratio_refl+ratio_l+ratio_t, 1.0)
+if not(np.allclose(ratio_refl+ratio_l+ratio_t, 1.0)):
+    warnings.warn("The conservation of energy is not respected.")
 
 
 #%% Plot energy
@@ -106,8 +141,8 @@ axvline(x=np.rad2deg(critical_t), color='k', linestyle='-', label='critical angl
 title('Repartition of energy: water to aluminum interface')
 xlabel('angle of the incident wave in water (deg)')
 ylabel('normalised energy (1)')
-ylim([0, 1.05])
+#ylim([0, 1.05])
 legend(loc='best')
-
-np.testing.assert_allclose(ratio_refl+ratio_l+ratio_t, 1.)
+if SAVEFIG:
+    savefig("transrefl_energy")
 
