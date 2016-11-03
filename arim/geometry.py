@@ -33,8 +33,9 @@ from .exceptions import ArimWarning, InvalidDimension, InvalidShape
 from .core.cache import Cache, NoCache
 
 __all__ = ['rotation_matrix_x', 'rotation_matrix_y', 'rotation_matrix_z',
-           'rotation_matrix_ypr', 'are_points_aligned', 'norm2', 'norm2_2d', 'direct_isometry_2d',
-           'direct_isometry_3d', 'Grid', 'Points', 'GCS', 'are_points_close', 'distance_pairwise',
+           'rotation_matrix_ypr', 'are_points_aligned', 'norm2', 'norm2_2d', 'direct_isometry_2d', 'points_in_rectbox'
+                                                                                                   'direct_isometry_3d',
+           'Grid', 'Points', 'GCS', 'are_points_close', 'distance_pairwise',
            'GeometryHelper']
 import numba
 
@@ -263,6 +264,16 @@ class Points:
         """
         for idx in np.ndindex(self.shape):
             yield idx, self.coords[idx]
+
+    def points_in_rectbox(self, xmin=None, xmax=None, ymin=None, ymax=None, zmin=None, zmax=None):
+        """Returns points in the rectangular box.
+
+        See Also
+        --------
+        points_in_rectbox
+
+        """
+        return points_in_rectbox(self.x, self.y, self.z, xmin, xmax, ymin, ymax, zmin, zmax)
 
 
 class CoordinateSystem(namedtuple('CoordinateSystem', 'origin i_hat j_hat')):
@@ -565,6 +576,16 @@ class Grid:
             self._points = Points.from_xyz(self.xx.ravel(), self.yy.ravel(), self.zz.ravel(),
                                            self.__class__.__qualname__)
         return self._points
+
+    def points_in_rectbox(self, xmin=None, xmax=None, ymin=None, ymax=None, zmin=None, zmax=None):
+        """Returns points in the rectangular box.
+
+        See Also
+        --------
+        points_in_rectbox
+
+        """
+        return points_in_rectbox(self.xx, self.yy, self.zz, xmin, xmax, ymin, ymax, zmin, zmax)
 
 
 class GeometryHelper:
@@ -1130,8 +1151,9 @@ def distance_pairwise(points1, points2, out=None, dtype=None, block_size=None, n
 
 def is_orthonormal(basis):
     assert basis.shape == (3, 3)
-    return (basis.dtype.kind == 'f' # must be real
+    return (basis.dtype.kind == 'f'  # must be real
             and np.allclose(basis.T, np.linalg.inv(basis)))
+
 
 def is_orthonormal_direct(basis):
     """
@@ -1165,6 +1187,61 @@ def _distance_pairwise(x1, y1, z1, x2, y2, z2, distance):
             dz = z1[i] - z2[j]
             distance[i, j] = math.sqrt(dx * dx + dy * dy + dz * dz)
     return
+
+
+def points_in_rectbox(x, y, z, xmin=None, xmax=None, ymin=None, ymax=None, zmin=None, zmax=None):
+    """
+    Returns points in the rectangular box.
+
+    Some constraints can be ignored (unbounded box).
+
+    Parameters
+    ----------
+    x : ndarray
+        Coordinates x of the points to filter.
+    y : ndarray
+        Coordinates y of the points to filter.
+    z : ndarray
+        Coordinates z of the points to filter.
+    xmin : float or None
+    xmax : float or None
+    ymin : float or None
+    ymax : float or None
+    zmin : float or None
+    zmax : float or None
+
+    Returns
+    -------
+    out : ndarray
+        Array of bool whose shape is the one as x, y and z. For each entry: true if all the constraints are satisfied,
+        false otherwise.
+
+    Examples
+    --------
+
+    >>> points_in_rectbox(x, y, z, xmin=10, ymax=20, zmin=30, zmax=39)
+    Returns points such as ``10 <= x`` and ``y <= 20`` and ``30 <= z <= zmax``.
+
+    """
+    if not (x.shape == y.shape == z.shape):
+        raise ValueError("shape must be equal")
+    out = np.ones(x.shape, dtype=bool)
+    valid_ones = []
+    if xmin is not None:
+        valid_ones.append(xmin <= x)
+    if ymin is not None:
+        valid_ones.append(ymin <= y)
+    if zmin is not None:
+        valid_ones.append(zmin <= z)
+    if xmax is not None:
+        valid_ones.append(x <= xmax)
+    if ymax is not None:
+        valid_ones.append(y <= ymax)
+    if zmax is not None:
+        valid_ones.append(z <= zmax)
+    for valid in valid_ones:
+        np.logical_and(out, valid, out=out)
+    return out
 
 
 GCS = CoordinateSystem(origin=np.array((0., 0., 0.)),

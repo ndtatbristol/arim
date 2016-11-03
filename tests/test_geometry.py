@@ -538,6 +538,20 @@ class TestPoints:
             x, y, z = p_cs
             np.testing.assert_allclose(p_gcs, origin + x * i_hat + y * j_hat + z * k_hat)
 
+    def test_points_in_rectbox(self):
+        # 5 points, first col: x, second col: y, third col: z
+        coords = np.array([[0., 1., 2.],
+                           [3., 4., 5.],
+                           [6., 7., 8.],
+                           [9., 10., 11.],
+                           [12., 13., 14.]])
+        points = g.Points(coords)
+
+        np.testing.assert_equal(points.points_in_rectbox(), [True, ] * 5)
+        np.testing.assert_equal(points.points_in_rectbox(xmin=3.), [False, True, True, True, True])
+        np.testing.assert_equal(points.points_in_rectbox(xmin=3., xmax=11), [False, True, True, True, False])
+        np.testing.assert_equal(points.points_in_rectbox(xmin=3., zmax=8.), [False, True, True, False, False])
+
 
 class TestCoordinateSystem:
     theta = np.deg2rad(30)
