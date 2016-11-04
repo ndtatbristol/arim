@@ -1,3 +1,5 @@
+import enum
+
 import numpy as np
 import pytest
 
@@ -88,12 +90,25 @@ def test_infer_capture_method():
     assert u.infer_capture_method(tx, rx) == CaptureMethod.unsupported
 
 def test_get_name():
-    metadata = dict(long_name='Nicolas', short_name='Nick')
+    metadata = dict(long_name='Nicolas', short_name='Nic')
     assert u.get_name(metadata) == 'Nicolas'
 
     del metadata['long_name']
-    assert u.get_name(metadata) == 'Nick'
+    assert u.get_name(metadata) == 'Nic'
 
     del metadata['short_name']
     assert isinstance(u.get_name(metadata), str)
 
+
+def test_parse_enum_constant():
+    Foo = enum.Enum("Foo", "foo bar")
+
+    assert u.parse_enum_constant("foo", Foo) is Foo.foo
+    assert u.parse_enum_constant(Foo.foo, Foo) is Foo.foo
+    assert u.parse_enum_constant("bar", Foo) is Foo.bar
+    assert u.parse_enum_constant(Foo.bar, Foo) is Foo.bar
+
+    with pytest.raises(ValueError):
+        u.parse_enum_constant("baz", Foo)
+    with pytest.raises(ValueError):
+        u.parse_enum_constant(Foo, Foo)

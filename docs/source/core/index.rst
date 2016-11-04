@@ -10,5 +10,6 @@ Contents:
   getting_started
   probe
   frame
+  path
   metadata
 

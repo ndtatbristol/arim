@@ -11,38 +11,40 @@ import pytest
 from arim.geometry import Points, norm2
 from arim.im import fermat_solver as t
 from arim.im import Rays
+from arim import Material
+import arim
 
 
-def test_path():
-    s1 = t.Path(('frontwall', 1.234, 'backwall'))
-    s1_bis = t.Path(('frontwall', 1.234, 'backwall'))
+def test_fermat_path():
+    s1 = t.FermatPath(('frontwall', 1.234, 'backwall'))
+    s1_bis = t.FermatPath(('frontwall', 1.234, 'backwall'))
     assert s1 == s1_bis  # check hashability
 
-    s2 = t.Path(('backwall', 2.0, 'points1'))
+    s2 = t.FermatPath(('backwall', 2.0, 'points1'))
 
-    s12 = t.Path(('frontwall', 1.234, 'backwall', 2.0, 'points1'))
+    s12 = t.FermatPath(('frontwall', 1.234, 'backwall', 2.0, 'points1'))
     assert s12 == (s1 + s2)
-    assert isinstance(s1 + s2, t.Path)
+    assert isinstance(s1 + s2, t.FermatPath)
 
-    s1_rev = t.Path(('backwall', 1.234, 'frontwall'))
+    s1_rev = t.FermatPath(('backwall', 1.234, 'frontwall'))
     assert s1.reverse() == s1_rev
     with pytest.raises(ValueError):
         s2 + s1
 
     with pytest.raises(ValueError):
-        t.Path((1, 2))
+        t.FermatPath((1, 2))
 
     with pytest.raises(ValueError):
-        t.Path((1,))
+        t.FermatPath((1,))
 
-    s3 = t.Path(('A', 1.0, 'B', 2.0, 'C', 3.0, 'D'))
+    s3 = t.FermatPath(('A', 1.0, 'B', 2.0, 'C', 3.0, 'D'))
     head, tail = s3.split_head()
-    assert head == t.Path(('A', 1.0, 'B'))
-    assert tail == t.Path(('B', 2.0, 'C', 3.0, 'D'))
+    assert head == t.FermatPath(('A', 1.0, 'B'))
+    assert tail == t.FermatPath(('B', 2.0, 'C', 3.0, 'D'))
 
     head, tail = s3.split_queue()
-    assert head == t.Path(('A', 1.0, 'B', 2.0, 'C'))
-    assert tail == t.Path(('C', 3.0, 'D'))
+    assert head == t.FermatPath(('A', 1.0, 'B', 2.0, 'C'))
+    assert tail == t.FermatPath(('C', 3.0, 'D'))
 
     assert tuple(s1.points) == ('frontwall', 'backwall')
 
@@ -64,8 +66,8 @@ class TestRays4:
                                       np.random.rand(n),
                                       np.random.rand(n), 'A{}'.format(i)) for (i, n) in enumerate(self.numpoints)]
 
-        path = t.Path((interfaces[0], 1.0, interfaces[1],
-                       2.0, interfaces[2], 3.0, interfaces[3]))
+        path = t.FermatPath((interfaces[0], 1.0, interfaces[1],
+                             2.0, interfaces[2], 3.0, interfaces[3]))
         return path
 
     @pytest.fixture
@@ -151,7 +153,7 @@ class TestRays2:
                                       np.random.rand(n),
                                       np.random.rand(n), 'A{}'.format(i)) for (i, n) in enumerate(self.numpoints)]
 
-        path = t.Path((interfaces[0], 2.0, interfaces[1]))
+        path = t.FermatPath((interfaces[0], 2.0, interfaces[1]))
         return path
 
     @pytest.fixture
@@ -223,8 +225,8 @@ def test_fermat_solver():
     interface_b = Points.from_xyz(x_m, np.zeros(m), np.full(m, z), 'Interface B')
     interface_c = Points.from_xyz(x_m, -(x_m - 5) ** 2 - 10., np.full(m, z), 'Interface C')
 
-    path_1 = t.Path((interface_a, v1, interface_b, v2, interface_c))
-    path_2 = t.Path((interface_a, v1, interface_b, v3, interface_c, v4, interface_b))
+    path_1 = t.FermatPath((interface_a, v1, interface_b, v2, interface_c))
+    path_2 = t.FermatPath((interface_a, v1, interface_b, v3, interface_c, v4, interface_b))
 
     # The test function must return a dictionary of Rays:
     solver = t.FermatSolver([path_1, path_2])

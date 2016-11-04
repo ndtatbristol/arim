@@ -10,10 +10,8 @@ To improve:
 
 import gc
 import logging
-import math
 import time
 from collections import namedtuple
-from concurrent.futures import ThreadPoolExecutor
 
 import numpy as np
 
@@ -21,10 +19,10 @@ from .. import geometry as g
 from ..core.cache import Cache
 from .base import find_minimum_times
 from .. import settings as s
-from ..utils import chunk_array, smallest_uint_that_fits
+
 from ._fermat_solver import _expand_rays
 
-__all__ = ['FermatSolver', 'View', 'Path', 'Rays']
+__all__ = ['FermatSolver', 'View', 'FermatPath', 'Rays']
 
 logger = logging.getLogger(__name__)
 
@@ -33,7 +31,7 @@ class Rays:
     """
     Rays(times, interior_indices, path)
 
-    Store the rays between the first and last datasets of points along
+    Store the rays between the first and last sets of points along
     a specific path.
 
     - n: number of points of the first set of points.
@@ -58,7 +56,7 @@ class Rays:
         For k=1:(p-1), a ray starting from ``A(1)[i]`` and ending in
         ``A(d)[i]`` passes through the k-th interface at the point indexed
         by ``indices[k-1, i, j]``.
-    path : Path
+    path : FermatPath
         Sets of points crossed by the rays.
 
     Attributes
@@ -259,17 +257,19 @@ class Rays:
             return expanded_indices
 
 
-class Path(tuple):
+class FermatPath(tuple):
     """
-    Path(points_and_speeds)
+    FermatPath(points_and_speeds)
 
-    Path objects contain the interfaces (sets of points) which rays pass through during propagation, and the speeds
-    between contiguous interfaces.
+    This object contain the interface points through which the pass during the propagation and the speeds
+    between the consecutive interfaces.
 
-    A Path must starts and ends with Points objects. Speeds (stored
-    as float) and Points must alternate.
+    This object should be used only for the internal plumbing of FermatSolver. This object can be obtained from a
+    (smarter) :class:`Path` object via the class method :meth:`FermatPath.from_path`.
 
-    Ex: Path((points_1, speed_1_2, points_2, speed_2_3, points_3))
+    A FermatPath must starts and ends with Points objects. Speeds (stored as float) and Points must alternate.
+
+    Ex: FermatPath((points_1, speed_1_2, points_2, speed_2_3, points_3))
 
     """
 
@@ -278,6 +278,19 @@ class Path(tuple):
             raise ValueError('{} expects a sequence of length odd and >= 5)'.format(
                 cls.__name__))
         return super().__new__(cls, sequence)
+
+    @classmethod
+    def from_path(cls, path):
+        """
+        Create a FermatPath object from a (smarter) Path object.
+        """
+        path_pieces = []
+        for interface, material, mode in zip(path.interfaces, path.materials, path.modes):
+            velocity = material.velocity(mode)
+            path_pieces.append(interface.points)
+            path_pieces.append(velocity)
+        path_pieces.append(path.interfaces[-1].points)
+        return cls(path_pieces)
 
     def __repr__(self):
         return '{}({})'.format(self.__class__.__name__, ', '.join([str(x) for x in self]))
@@ -346,7 +359,7 @@ class FermatSolver:
 
     Parameters
     ----------
-    paths : set of Path
+    paths : set of FermatPath
         Paths which will be solved. Solving several paths at a time allows an efficient caching.
     dtype : numpy.dtype
         Datatype for times and distances. Optional, default: settings.FLOAT
@@ -379,7 +392,7 @@ class FermatSolver:
 
         if dtype_indices is None:
             max_length = max((p.len_largest_interface for p in paths))
-            #dtype_indices = smallest_uint_that_fits(max_length)
+            # dtype_indices = smallest_uint_that_fits(max_length)
             dtype_indices = s.UINT
 
         for path in paths:

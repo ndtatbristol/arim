@@ -33,8 +33,8 @@ from .exceptions import ArimWarning, InvalidDimension, InvalidShape
 from .core.cache import Cache, NoCache
 
 __all__ = ['rotation_matrix_x', 'rotation_matrix_y', 'rotation_matrix_z',
-           'rotation_matrix_ypr', 'are_points_aligned', 'norm2', 'norm2_2d', 'direct_isometry_2d', 'points_in_rectbox'
-                                                                                                   'direct_isometry_3d',
+           'rotation_matrix_ypr', 'are_points_aligned', 'norm2', 'norm2_2d', 'direct_isometry_2d', 'points_in_rectbox',
+           'direct_isometry_3d',
            'Grid', 'Points', 'GCS', 'are_points_close', 'distance_pairwise',
            'GeometryHelper']
 import numba
@@ -694,12 +694,13 @@ def spherical_coordinates(x, y, z, r=None):
     """
     Compute the spherical coordinates (r, θ, φ) of points.
 
-    Coordinates are assumed to be in the GCS (O, x_hat, y_hat, z_hat).
+    r is positive or null. Theta is in [0, pi]. Phi is in [-pi, pi].
 
     Quoted from [Spherical coordinate system](https://en.wikipedia.org/wiki/Spherical_coordinate_system):
 
         Spherical coordinates (r, θ, φ) as commonly used in physics: radial distance r, polar angle θ (theta),
         and azimuthal angle φ (phi).
+
 
     Parameters
     ----------

@@ -1,6 +1,9 @@
+import math
+
 import numpy as np
 import pytest
 
+import arim
 from arim import CaptureMethod
 from arim import core as c
 from arim import utils
@@ -222,8 +225,22 @@ def probe():
 
 @pytest.fixture(scope='module')
 def examination_object():
-    material = c.Material(6300, 3100, 2700, dict(long_name='Aluminium'))
+    material = c.Material(6300, 3100, 2700, metadata=dict(long_name='Aluminium'))
     return c.InfiniteMedium(material)
+
+
+@pytest.fixture(scope="module")
+def water():
+    return c.Material(1400., density=1000., state_of_matter='liquid', metadata={'long_name': 'Water'})
+
+
+@pytest.fixture(scope="module")
+def aluminium():
+    v_longi = 6320.
+    v_transverse = 3130.
+
+    return c.Material(v_longi, v_transverse, density=2700., state_of_matter='solid',
+                      metadata={'long_name': 'Aluminium'})
 
 
 @pytest.fixture(scope='module')
@@ -309,5 +326,185 @@ def test_material():
     mat = c.Material(1)
     str(mat)
 
-    mat = c.Material(1, 2, 3, {'short_name': 'test_material'})
+    mat = c.Material(1, 2, 3, metadata={'short_name': 'test_material'})
     str(mat)
+    assert math.isclose(mat.longitudinal_vel, 1)
+    assert math.isclose(mat.transverse_vel, 2)
+    assert math.isclose(mat.density, 3)
+    assert mat.state_of_matter is None
+    assert mat.metadata['short_name'] == 'test_material'
+
+    mat = c.Material(1, 2, state_of_matter=arim.StateMatter.liquid, metadata={'short_name': 'test_material'})
+    assert mat.state_of_matter is arim.StateMatter.liquid
+    mat = c.Material(1, 2, state_of_matter='liquid', metadata={'short_name': 'test_material'})
+    assert mat.state_of_matter is arim.StateMatter.liquid
+
+    assert math.isclose(mat.velocity('longitudinal'), mat.longitudinal_vel)
+    assert math.isclose(mat.velocity(arim.Mode.L), mat.longitudinal_vel)
+    assert math.isclose(mat.velocity('transverse'), mat.transverse_vel)
+    assert math.isclose(mat.velocity(arim.Mode.T), mat.transverse_vel)
+
+
+def test_mode():
+    assert c.Mode.L is c.Mode.longitudinal
+    assert c.Mode.T is c.Mode.transverse
+
+    assert c.Mode.L.the_other_one() is c.Mode.T
+    assert c.Mode.T.the_other_one() is c.Mode.L
+
+
+class TestInterface:
+    def test_interface_probe(self):
+        n = 10
+        points = g.Points(np.random.uniform(size=(n, 3)))
+        orientations = g.Points(np.eye(3), 'coordinate system')
+
+        interface = c.Interface(points, orientations, are_normals_on_inc_rays_side=None,
+                                are_normals_on_out_rays_side=True)
+
+        assert interface.points is points
+        assert interface.orientations is orientations
+        str(interface)
+        repr(interface)
+
+    def test_interface_grid(self):
+        n = 10
+        points = g.Points(np.random.uniform(size=(n, 3)))
+        orientations = g.Points(np.eye(3), 'coordinate system')
+
+        interface = c.Interface(points, orientations, are_normals_on_inc_rays_side=True,
+                                are_normals_on_out_rays_side=None)
+
+        with pytest.raises(ValueError):
+            c.Interface(points, orientations, are_normals_on_inc_rays_side=True, are_normals_on_out_rays_side=None,
+                        reflection_against=water)
+
+        assert interface.points is points
+        assert interface.orientations is orientations
+        assert interface.transmission_reflection is None
+        str(interface)
+        repr(interface)
+
+    def test_interface_transmission(self, water):
+        n = 10
+        points = g.Points(np.random.uniform(size=(n, 3)))
+        orientations = g.Points(np.eye(3), 'coordinate system')
+
+        interface = c.Interface(points, orientations, transmission_reflection='transmission', kind='fluid_solid',
+                                are_normals_on_inc_rays_side=True, are_normals_on_out_rays_side=None)
+
+        with pytest.raises(ValueError):
+            c.Interface(points, orientations, transmission_reflection='transmission', kind='fluid_solid',
+                        are_normals_on_inc_rays_side=True, are_normals_on_out_rays_side=None,
+                        reflection_against=water)
+
+        assert interface.points is points
+        assert interface.orientations is orientations
+        assert interface.transmission_reflection is c.TransmissionReflection.transmission
+        str(interface)
+        repr(interface)
+
+    def test_interface_reflection(self):
+        n = 10
+        points = g.Points(np.random.uniform(size=(n, 3)))
+        orientations = g.Points(np.eye(3), 'coordinate system')
+
+        interface = c.Interface(points, orientations, transmission_reflection='reflection', kind='fluid_solid',
+                                are_normals_on_inc_rays_side=True, are_normals_on_out_rays_side=None,
+                                reflection_against=water)
+
+        with pytest.raises(ValueError):
+            c.Interface(points, orientations, transmission_reflection='reflection', kind='fluid_solid',
+                        are_normals_on_inc_rays_side=True, are_normals_on_out_rays_side=None,
+                        reflection_against=None)
+
+        assert interface.points is points
+        assert interface.orientations is orientations
+        assert interface.transmission_reflection is c.TransmissionReflection.reflection
+        assert interface.reflection_against is water
+        str(interface)
+        repr(interface)
+
+
+class TestPath:
+    pass
+    # def test_path_lt(self):
+    #     v_couplant = 1480.
+    #     v_longi = 6320
+    #     v_transverse = 3130
+    #
+    #     water = Material(v_couplant, density=1000., state_of_matter='liquid', metadata={'long_name': 'Water'})
+    #     aluminium = Material(v_longi, v_transverse, density=2700., state_of_matter='solid',
+    #                          metadata={'long_name': 'Aluminium'})
+    #
+    #     n = 7
+    #     m = 8
+    #     p = 9
+    #     q = 10
+    #
+    #     probe = Points(np.random.uniform(size=(n, 3)), 'probe')
+    #     frontwall = Points(np.random.uniform(size=(m, 3)), 'frontwall')
+    #     backwall = Points(np.random.uniform(size=(p, 3)), 'backwall')
+    #     grid = Points(np.random.uniform(size=(q, 3)), 'grid')
+    #
+    #     cs = Points(np.eye(3), 'coordinate system')
+    #
+    #     path = t.SmarterPath((probe, frontwall, backwall, grid),
+    #                          (cs, cs, cs, cs),
+    #
+    #                          (water, aluminium, aluminium),
+    #                          ('L', 'L', 'T'),
+    #                          ('fluid_solid', 'solid_fluid'),
+    #                          ('transmission', 'reflection'),
+    #                          name='LT')
+    #
+    #
+    #     assert path.raw_path == (probe, v_couplant, frontwall, v_longi, backwall, v_transverse, grid)
+    #     assert path.transmission_reflection == (
+    #     arim.TransmissionReflection.transmission, arim.TransmissionReflection.reflection)
+    #
+    # def test_path_l(self):
+    #     v_couplant = 1480.
+    #     v_longi = 6320
+    #     v_transverse = 3130
+    #
+    #     water = Material(v_couplant, density=1000., state_of_matter='liquid', metadata={'long_name': 'Water'})
+    #     aluminium = Material(v_longi, v_transverse, density=2700., state_of_matter='solid',
+    #                          metadata={'long_name': 'Aluminium'})
+    #
+    #     n = 7
+    #     m = 8
+    #     p = 9
+    #     q = 10
+    #
+    #     probe = Points(np.random.uniform(size=(n, 3)), 'probe')
+    #     frontwall = Points(np.random.uniform(size=(m, 3)), 'frontwall')
+    #     backwall = Points(np.random.uniform(size=(p, 3)), 'backwall')
+    #     grid = Points(np.random.uniform(size=(q, 3)), 'grid')
+    #
+    #     cs = Points(np.eye(3), 'coordinate system')
+    #
+    #     path = t.SmarterPath((probe, frontwall, grid),
+    #                          (cs, cs, cs),
+    #                          (water, aluminium),
+    #                          ('L', 'L'),
+    #                          ('transmission',),
+    #                          ('fluid_solid',),
+    #                          name='L')
+    #
+    #
+    #     # path = arim.im.SmarterPath(
+    #     #     interfaces=(probe, frontwall, grid.as_points),
+    #     #     orientations=(cs, cs, cs),
+    #     #     are_normals_on_inc_rays_side=[None, False, False],
+    #     #     are_normals_on_out_rays_side=[True, True, None],
+    #     #     materials=(water, aluminium),
+    #     #     modes=('L', 'L'),
+    #     #     interface_kinds=(None, 'fluid_solid', None),
+    #     #     transmission_reflection=(None, 'transmission', None),
+    #     #     reflection_against=
+    #     #
+    #     #
+    #     # )
+    #
+    #     assert path.raw_path == (probe, v_couplant, frontwall, v_longi, grid)

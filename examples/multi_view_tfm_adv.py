@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 # encoding: utf-8
 """
-This script shows how to perform multiview TFM.
+This script shows how to define advanced paths and how to use them for performing
+multiview TFM.
 
 Warning: this script can take up to several minutes to run and opens more than 20 windows.
 
@@ -9,6 +10,7 @@ Warning: this script can take up to several minutes to run and opens more than 2
 """
 import logging
 import time
+from collections import OrderedDict
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -30,7 +32,7 @@ mpl.rcParams['figure.figsize'] = [12., 6.]
 mpl.rcParams['savefig.dpi'] = 300
 
 logging.basicConfig()
-logger = logging.getLogger("multi_view_tfm")
+logger = logging.getLogger("multi_view_tfm_adv")
 logger.setLevel(logging.INFO)
 logger.info("Start script")
 
@@ -44,11 +46,13 @@ frame.probe  = arim.probes['ima_50_MHz_128_1d']
 # put the first element in O(0,0,0), then it will be in (0,0,z) later.
 frame.probe.locations.translate(-frame.probe.locations[0], inplace=True)
 
-#%% Velocities
+#%% Set-up materials
 
-v_couplant = 1480.
-v_longi = 6320
-v_shear = 3130
+water = arim.Material(longitudinal_vel=1480, transverse_vel=None, density=1000.,
+                      state_of_matter='liquid', metadata={'long_name':'Water'})
+aluminium = arim.Material(longitudinal_vel=6320., transverse_vel=3130., density=2700.,
+                          state_of_matter='solid', metadata={'long_name':'Aluminium'})
+
 
 # -------------------------------------------------------------------------
 #%% Registration: get the position of the probe from the pulse-echo data
@@ -73,7 +77,7 @@ if PLOT_TIME_TO_SURFACE:
 
 
 # Move probe:
-distance_to_surface = time_to_surface * v_couplant / 2
+distance_to_surface = time_to_surface * water.longitudinal_vel / 2
 frame, iso = arim.registration.move_probe_over_flat_surface(frame, distance_to_surface, full_output=True)
 
 logger.info('probe orientation: {:.2f}°'.format(np.rad2deg(iso.theta)))
@@ -109,9 +113,38 @@ grid = arim.geometry.Grid(xmin, xmax,
                           zmin=0., zmax=45e-3,
                           pixel_size=1e-3)
 
-print("Interfaces:")
-for p in [probe, frontwall, backwall, grid.as_points]:
-    print("\t{} \t\t{} points".format(p, len(p)))
+
+# Get a full basis per point:
+probe_orientation = arim.geometry.Points(np.zeros((*probe.shape, 3, 3)), 'ProbeOrientation')
+probe_orientation.x[...] = frame.probe.pcs.i_hat
+probe_orientation.y[...] = frame.probe.pcs.j_hat
+probe_orientation.z[...] = frame.probe.pcs.k_hat
+
+frontwall_orientation = arim.geometry.Points(np.zeros((*frontwall.shape, 3, 3)), 'FrontwallOrientation')
+frontwall_orientation.coords[..., :, :] = np.identity(3)
+
+backwall_orientation = arim.geometry.Points(np.zeros((*backwall.shape, 3, 3)), 'BackwallOrientation')
+backwall_orientation.coords[..., :, :] = np.identity(3)
+
+grid_orientation = arim.geometry.Points(np.zeros((*grid.as_points.shape, 3, 3)), 'GridOrientation')
+grid_orientation.coords[..., :, :] = np.identity(3)
+
+probe_interface = arim.Interface(
+    probe, probe_orientation, are_normals_on_out_rays_side=True)
+frontwall_interface = arim.Interface(
+    frontwall, probe_orientation, 'fluid_solid',
+    'transmission',
+    are_normals_on_inc_rays_side=False, are_normals_on_out_rays_side=True)
+backwall_interface = arim.Interface(
+    backwall, backwall_orientation, 'solid_fluid',
+    'reflection', reflection_against=water,
+    are_normals_on_inc_rays_side=True, are_normals_on_out_rays_side=True)
+grid_interface = arim.Interface(grid.as_points, grid_orientation, are_normals_on_inc_rays_side=True)
+    
+    
+for p in [probe_interface, frontwall_interface, backwall_interface, grid_interface]:
+    logger.debug(p)
+    
 
 
 #%% Plot interface
@@ -156,8 +189,52 @@ plot_interface("Interfaces", show_grid=False, element_normal=True)
 # -------------------------------------------------------------------------
 #%% Setup views
 
-views = arim.im.MultiviewTFM.make_views(probe, frontwall, backwall, grid.as_points, v_couplant, v_longi, v_shear)
-print('Views to show: {}'.format(str(views)))
+paths = OrderedDict()
+
+paths['L'] = arim.Path(
+    interfaces=(probe_interface, frontwall_interface, grid_interface),
+    materials=(water, aluminium),
+    modes=('L', 'L'),
+    name='L')
+
+paths['T'] = arim.Path(
+    interfaces=(probe_interface, frontwall_interface, grid_interface),
+    materials=(water, aluminium),
+    modes=('L', 'T'),
+    name='T')
+
+paths['LL'] = arim.Path(
+    interfaces=(probe_interface, frontwall_interface, backwall_interface, grid_interface),
+    materials=(water, aluminium, aluminium),
+    modes=('L', 'L', 'L'),
+    name='LL')
+
+paths['LT'] = arim.Path(
+    interfaces=(probe_interface, frontwall_interface, backwall_interface, grid_interface),
+    materials=(water, aluminium, aluminium),
+    modes=('L', 'L', 'T'),
+    name='LT')
+
+paths['TL'] = arim.Path(
+    interfaces=(probe_interface, frontwall_interface, backwall_interface, grid_interface),
+    materials=(water, aluminium, aluminium),
+    modes=('L', 'T', 'L'),
+    name='TL')
+
+paths['TT'] = arim.Path(
+    interfaces=(probe_interface, frontwall_interface, backwall_interface, grid_interface),
+    materials=(water, aluminium, aluminium),
+    modes=('L', 'T', 'T'),
+    name='TT')
+
+# Make views
+views = []
+for view_name in arim.im.IMAGING_MODES:
+    tx_name, rx_name = view_name.split('-')
+    tx_path = arim.im.FermatPath.from_path(paths[tx_name])
+    rx_path = arim.im.FermatPath.from_path(paths[rx_name])
+    views.append(arim.im.View(tx_path, rx_path, view_name))
+
 
 #%% Setup Fermat solver and compute rays
 
@@ -211,6 +288,7 @@ if PLOT_TFM:
             aplt.draw_rays_on_click(grid, tfm.rays_rx, element_index, ax, linestyle_rx)
 
         ax.axis([-20e-3, 100e-3, 45e-3,-20e-3])
+
         if SAVEFIG:
             ax.figure.savefig("fig_{:02}_{}.png".format(i, view.name), bbox_inches='tight')
 

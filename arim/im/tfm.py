@@ -3,16 +3,17 @@ This module defines classes to perform TFM and TFM-like imaging.
 """
 
 import numpy as np
+import warnings
 
 from .. import geometry as g
 from .amplitudes import UniformAmplitudes, AmplitudesRemoveExtreme
 from .base import delay_and_sum
-from .fermat_solver import Path, View, Rays
+from .fermat_solver import FermatPath, View, Rays
 from .. import settings as s
 from ..core import Frame, FocalLaw
 from ..enums import CaptureMethod
 
-__all__ = ['BaseTFM', 'ContactTFM', 'MultiviewTFM']
+__all__ = ['BaseTFM', 'ContactTFM', 'MultiviewTFM', 'IMAGING_MODES']
 
 # Order by length then by lexicographic order
 # Remark: independant views for one array (i.e. consider that view AB-CD is the
@@ -274,13 +275,13 @@ class MultiviewTFM(BaseTFM):
         -------
         views : List[View]
         """
+        warnings.warn(PendingDeprecationWarning("Using 'arim.Path' objects is now recommended. This method will be removed in future versions."))
         views = []
         parse = lambda name: cls._parse_name_view(name, backwall, v_longi, v_shear)
         for name in IMAGING_MODES:
             tx_name, rx_name = name.split('-')
-            tx_path = Path((probe, v_couplant, frontwall) + parse(tx_name) + (grid,))
-            rx_path = Path((probe, v_couplant, frontwall) + parse(rx_name[::-1]) + (grid,))
-
+            tx_path = FermatPath((probe, v_couplant, frontwall) + parse(tx_name) + (grid,))
+            rx_path = FermatPath((probe, v_couplant, frontwall) + parse(rx_name[::-1]) + (grid,))
             views.append(View(tx_path, rx_path, name))
         return views
 
