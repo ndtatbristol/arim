@@ -349,9 +349,6 @@ def test_mode():
     assert c.Mode.L is c.Mode.longitudinal
     assert c.Mode.T is c.Mode.transverse
 
-    assert c.Mode.L.the_other_one() is c.Mode.T
-    assert c.Mode.T.the_other_one() is c.Mode.L
-
 
 class TestInterface:
     def test_interface_probe(self):
