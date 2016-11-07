@@ -122,7 +122,7 @@ class Interface:
 
         infos.append("Orientations: {}".format(self.orientations))
         infos.append("Normals are on INC.. rays side: {}".format(self.are_normals_on_inc_rays_side))
-        infos.append("Normals are on OUT. rays side: {}".format(self.are_normals_on_inc_rays_side))
+        infos.append("Normals are on OUT. rays side: {}".format(self.are_normals_on_out_rays_side))
         infos_str = "\n".join(["    " + x if i > 0 else x for i, x in enumerate(infos)])
         return infos_str
 
