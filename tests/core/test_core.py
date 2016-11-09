@@ -2,6 +2,7 @@ import math
 
 import numpy as np
 import pytest
+from unittest import mock
 
 import arim
 from arim import CaptureMethod
@@ -339,6 +340,7 @@ def test_material():
     mat = c.Material(1, 2, state_of_matter='liquid', metadata={'short_name': 'test_material'})
     assert mat.state_of_matter is arim.StateMatter.liquid
 
+    # test method 'velocity':
     assert math.isclose(mat.velocity('longitudinal'), mat.longitudinal_vel)
     assert math.isclose(mat.velocity(arim.Mode.L), mat.longitudinal_vel)
     assert math.isclose(mat.velocity('transverse'), mat.transverse_vel)
@@ -424,84 +426,15 @@ class TestInterface:
 
 
 class TestPath:
-    pass
-    # def test_path_lt(self):
-    #     v_couplant = 1480.
-    #     v_longi = 6320
-    #     v_transverse = 3130
-    #
-    #     water = Material(v_couplant, density=1000., state_of_matter='liquid', metadata={'long_name': 'Water'})
-    #     aluminium = Material(v_longi, v_transverse, density=2700., state_of_matter='solid',
-    #                          metadata={'long_name': 'Aluminium'})
-    #
-    #     n = 7
-    #     m = 8
-    #     p = 9
-    #     q = 10
-    #
-    #     probe = Points(np.random.uniform(size=(n, 3)), 'probe')
-    #     frontwall = Points(np.random.uniform(size=(m, 3)), 'frontwall')
-    #     backwall = Points(np.random.uniform(size=(p, 3)), 'backwall')
-    #     grid = Points(np.random.uniform(size=(q, 3)), 'grid')
-    #
-    #     cs = Points(np.eye(3), 'coordinate system')
-    #
-    #     path = t.SmarterPath((probe, frontwall, backwall, grid),
-    #                          (cs, cs, cs, cs),
-    #
-    #                          (water, aluminium, aluminium),
-    #                          ('L', 'L', 'T'),
-    #                          ('fluid_solid', 'solid_fluid'),
-    #                          ('transmission', 'reflection'),
-    #                          name='LT')
-    #
-    #
-    #     assert path.raw_path == (probe, v_couplant, frontwall, v_longi, backwall, v_transverse, grid)
-    #     assert path.transmission_reflection == (
-    #     arim.TransmissionReflection.transmission, arim.TransmissionReflection.reflection)
-    #
-    # def test_path_l(self):
-    #     v_couplant = 1480.
-    #     v_longi = 6320
-    #     v_transverse = 3130
-    #
-    #     water = Material(v_couplant, density=1000., state_of_matter='liquid', metadata={'long_name': 'Water'})
-    #     aluminium = Material(v_longi, v_transverse, density=2700., state_of_matter='solid',
-    #                          metadata={'long_name': 'Aluminium'})
-    #
-    #     n = 7
-    #     m = 8
-    #     p = 9
-    #     q = 10
-    #
-    #     probe = Points(np.random.uniform(size=(n, 3)), 'probe')
-    #     frontwall = Points(np.random.uniform(size=(m, 3)), 'frontwall')
-    #     backwall = Points(np.random.uniform(size=(p, 3)), 'backwall')
-    #     grid = Points(np.random.uniform(size=(q, 3)), 'grid')
-    #
-    #     cs = Points(np.eye(3), 'coordinate system')
-    #
-    #     path = t.SmarterPath((probe, frontwall, grid),
-    #                          (cs, cs, cs),
-    #                          (water, aluminium),
-    #                          ('L', 'L'),
-    #                          ('transmission',),
-    #                          ('fluid_solid',),
-    #                          name='L')
-    #
-    #
-    #     # path = arim.im.SmarterPath(
-    #     #     interfaces=(probe, frontwall, grid.as_points),
-    #     #     orientations=(cs, cs, cs),
-    #     #     are_normals_on_inc_rays_side=[None, False, False],
-    #     #     are_normals_on_out_rays_side=[True, True, None],
-    #     #     materials=(water, aluminium),
-    #     #     modes=('L', 'L'),
-    #     #     interface_kinds=(None, 'fluid_solid', None),
-    #     #     transmission_reflection=(None, 'transmission', None),
-    #     #     reflection_against=
-    #     #
-    #     #
-    #     # )
-    #
-    #     assert path.raw_path == (probe, v_couplant, frontwall, v_longi, grid)
+    def test_path_velocities(self, water, aluminium):
+        probe_interface = mock.Mock()
+        frontwall_interface = mock.Mock()
+        backwall_interface = mock.Mock()
+        grid_interface = mock.Mock()
+        path = c.Path(
+            interfaces=(probe_interface, frontwall_interface, backwall_interface, grid_interface),
+            materials=(water, aluminium, aluminium),
+            modes=('L', 'L', 'T'),
+            name='LT')
+
+        assert path.velocities == (water.longitudinal_vel, aluminium.longitudinal_vel, aluminium.transverse_vel)

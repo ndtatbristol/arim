@@ -1,5 +1,5 @@
 """
-Module for computation of shortest ray paths accross several interfaces.
+Module for ray tracing (computation of shortest ray paths accross several interfaces).
 Notably used for multi-view TFM.
 
 To improve:
@@ -12,6 +12,7 @@ import gc
 import logging
 import time
 from collections import namedtuple
+import warnings
 
 import numpy as np
 
@@ -41,42 +42,43 @@ class Rays:
     We name A(1), A(2), ..., A(d) the d interfaces along the path.
     A ray passes  A(1), A(2), ..., A(d) in this order.
 
+    The ray (i, j) is defined as the ray starting in `A(1)[i]`` and
+    arriving in ``A(d)[j]``.
+
 
     Parameters
     ----------
     times : ndarray of floats [n x m]
         Shortest time between first and last set of points.
-        ``times[i, j]`` is the minimal time between the i-th point of the first
-        interface and the j-th point of the last interface. In other words,
-        ``times[i, j]`` is the minimal time between ``A(1)[i]`` and
-        ``A(d)[j]``.
+        ``times[i, j]`` is the total travel time for the ray (i, j).
     indices_interior : ndarray of floats [(d-2) x n x m]
-        Indices of points for each ray, excluding the first and last interfaces.
+        Indices of points through which each ray goes, excluding the first and last interfaces.
+        ``indices[k-1, i, j]`` is the indice point of the ``k`` *interior* interface through which
+        the ray (i,j) goes.
 
-        For k=1:(p-1), a ray starting from ``A(1)[i]`` and ending in
-        ``A(d)[i]`` passes through the k-th interface at the point indexed
-        by ``indices[k-1, i, j]``.
-    path : FermatPath
+    fermat_path : FermatPath
         Sets of points crossed by the rays.
 
     Attributes
     ----------
+    times
+    indices_interior
+    fermat_path
     indices : ndarray of floats [d x n x m]
-        Indices of points for each ray.
+        Indices of points through which each ray goes.
         For k=0:p, a ray starting from ``A(1)[i]`` and ending in ``A(d)[i]``
-        passes through the k-th interface at the point indexed by ``indices[k, i, j]``.
+        goes through the k-th interface at the point indexed by ``indices[k, i, j]``.
         By definition, ``indices[0, i, j] := i`` and ``indices[d-1, i, j] := j``
         for all i and j.
-
     """
 
     # __slots__ = []
 
-    def __init__(self, times, interior_indices, path):
+    def __init__(self, times, interior_indices, fermat_path):
         assert times.ndim == 2
         assert interior_indices.ndim == 3
-        assert times.shape == interior_indices.shape[1:] == (len(path.points[0]), len(path.points[-1]))
-        assert path.num_points_sets == interior_indices.shape[0] + 2
+        assert times.shape == interior_indices.shape[1:] == (len(fermat_path.points[0]), len(fermat_path.points[-1]))
+        assert fermat_path.num_points_sets == interior_indices.shape[0] + 2
 
         if interior_indices.dtype.kind != 'u':
             raise TypeError("Indices must be unsigned integers.")
@@ -86,7 +88,7 @@ class Rays:
 
         self._times = times
         self._indices = indices
-        self._path = path
+        self._fermat_path = fermat_path
 
     @classmethod
     def make_rays_two_interfaces(cls, times, path, dtype_indices):
@@ -105,7 +107,12 @@ class Rays:
 
     @property
     def path(self):
-        return self._path
+        warnings.warn("use Rays.fermat_path instead Rays.path", DeprecationWarning)
+        return self._fermat_path
+
+    @property
+    def fermat_path(self):
+        return self._fermat_path
 
     @property
     def times(self):
@@ -163,7 +170,7 @@ class Rays:
 
 
         """
-        points = self.path.points[n_interface]
+        points = self.fermat_path.points[n_interface]
         indices = self.indices[n_interface, ...]
         x = points.x[indices]
         y = points.y[indices]
@@ -178,11 +185,11 @@ class Rays:
         a larger number of rays.
         """
         indices = self.indices[:, start_index, end_index]
-        num_points_sets = self.path.num_points_sets
+        num_points_sets = self.fermat_path.num_points_sets
         x = np.zeros(num_points_sets, s.FLOAT)
         y = np.zeros(num_points_sets, s.FLOAT)
         z = np.zeros(num_points_sets, s.FLOAT)
-        for (i, (points, j)) in enumerate(zip(self.path.points, indices)):
+        for (i, (points, j)) in enumerate(zip(self.fermat_path.points, indices)):
             x[i] = points.x[j]
             y[i] = points.y[j]
             z[i] = points.z[j]
@@ -211,7 +218,7 @@ class Rays:
         out = np.full(shape, False, order=order, dtype=np.bool)
 
         interior_indices = self.interior_indices
-        middle_points = tuple(self.path.points)[1:-1]
+        middle_points = tuple(self.fermat_path.points)[1:-1]
         for (d, points) in enumerate(middle_points):
             np.logical_or(out, interior_indices[d, ...] == 0, out=out)
             np.logical_or(out, interior_indices[d, ...] == (len(points) - 1), out=out)
@@ -255,6 +262,180 @@ class Rays:
             expanded_indices = np.empty((d + 1, n, p), dtype=interior_indices.dtype)
             _expand_rays(interior_indices, indices_new_interface, expanded_indices, n, m, p, d)
             return expanded_indices
+
+    def get_outgoing_angles(self, interfaces, return_distances=False):
+        """
+        Yield the angles between the normals of the interface
+        and the outcoming rays.
+        
+        These angles are the angles of refraction or reflection in case of
+        respectively refraction or reflection at this interface.
+
+        Distances can also be returned by setting ``return_distances`` to True.
+        They are computed any way; they are free of additional computation.
+
+        For the last interface, yield None or (None, None) depending ``return_distances``.
+        
+        Parameters
+        ----------
+        interfaces : tuple of Interfaces
+        return_distance : bool
+            Default False.
+            
+        Yields
+        ------
+        alpha : ndarray or None
+            ``alpha[i, j]`` is the angle between the outgoing leg of the ray (i, j)
+            at the current interface and the normal to this interface.
+            One array (or None) is yielded per interface.
+        distance : ndarray or None
+            ``distance[i, j]`` is the size of the leg of the ray (i, j) at the current
+            interface.
+            One array (or None) is yielded per interface.
+            Yielded only if ``return_distances`` is True.
+        
+        """
+        for interface_idx in range(len(interfaces) - 1):
+            interface = interfaces[interface_idx]
+            next_interface = interfaces[interface_idx + 1]
+
+            if interface.are_normals_on_out_rays_side is None:
+                if return_distances:
+                    yield None, None
+                else:
+                    yield None
+                continue
+
+            points = interface.points
+            next_points = next_interface.points
+
+            # Orientations for all points of the current interface
+            orientations_all_points = interface.orientations
+
+            # leg_origins[i, j] is the interface point through which the ray (i,j)
+            # goes (ray between the i-th probe element and the j-th grid point)
+            leg_origins = points[self.indices[interface_idx]]
+
+            # leg_direction[i, j] is the leg (as a 3d vector) of the ray (i,j)
+            # at the current interface
+            leg_directions = next_points[self.indices[interface_idx + 1]] - leg_origins
+
+            # orientations[i, j] is the orientation of the interface point through
+            # which the ray (i,j) goes.
+            # orientations[i, j] is a 3x3 orthonormal matrix (basis matrix)
+            orientations = orientations_all_points[self.indices[interface_idx]]
+
+            # direction of the legs in the coordinates expressed from the interface
+            leg_directions_local = g.to_gcs(leg_directions, orientations, np.array([0., 0., 0.]))
+
+            leg_directions_spher = g.spherical_coordinates(leg_directions_local[..., 0],
+                                                           leg_directions_local[..., 1],
+                                                           leg_directions_local[..., 2])
+            theta = leg_directions_spher.theta
+            distances = leg_directions_spher.r
+
+            # Flip angle if necessary
+            if interface.are_normals_on_out_rays_side:
+                alpha = theta
+            else:
+                alpha = np.pi - theta
+
+            if return_distances:
+                yield alpha, distances
+            else:
+                yield distances
+        # Last interface:
+        if return_distances:
+            yield None, None
+        else:
+            yield None
+
+
+    def get_incoming_angles(self, interfaces, return_distances=False):
+        """
+        Yield the angles between the normals of the interface
+        and the incoming rays.
+
+        These angles are the angles of incidence.
+
+        Distances can also be returned by setting ``return_distances`` to True.
+        They are computed any way; they are free of additional computation.
+
+        For the last interface, yield None or (None, None) depending ``return_distances``.
+
+        Parameters
+        ----------
+        interfaces : tuple of Interfaces
+        return_distance : bool
+            Default False.
+
+        Yields
+        ------
+        alpha : ndarray or None
+            ``alpha[i, j]`` is the angle between the incoming leg of the ray (i, j)
+            at the current interface and the normal to this interface.
+            One array (or None) is yielded per interface.
+        distance : ndarray or None
+            ``distance[i, j]`` is the size of the leg of the ray (i, j) at the current
+            interface.
+            One array (or None) is yielded per interface.
+            Yielded only if ``return_distances`` is True.
+
+        """
+        # First interface:
+        if return_distances:
+            yield None, None
+        else:
+            yield None
+        for interface_idx in range(1, len(interfaces)):
+            interface = interfaces[interface_idx]
+            previous_interface = interfaces[interface_idx - 1]
+
+            if interface.are_normals_on_inc_rays_side is None:
+                if return_distances:
+                    yield None, None
+                else:
+                    yield None
+                continue
+
+            points = interface.points
+            previous_points = previous_interface.points
+
+            # Orientations for all points of the current interface
+            orientations_all_points = interface.orientations
+
+            # leg_origins[i, j] is the interface point through which the ray (i,j)
+            # goes (ray between the i-th probe element and the j-th grid point)
+            leg_origins = points[self.indices[interface_idx]]
+
+            # leg_direction[i, j] is the leg (as a 3d vector) of the ray (i,j)
+            # at the current interface (incoming leg)
+            leg_directions = previous_points[self.indices[interface_idx - 1]] - leg_origins
+
+            # orientations[i, j] is the orientation of the interface point through
+            # which the ray (i,j) goes.
+            # orientations[i, j] is a 3x3 orthonormal matrix (basis matrix)
+            orientations = orientations_all_points[self.indices[interface_idx]]
+
+            # direction of the legs in the coordinates expressed from the interface
+            leg_directions_local = g.to_gcs(leg_directions, orientations, np.array([0., 0., 0.]))
+
+            leg_directions_spher = g.spherical_coordinates(leg_directions_local[..., 0],
+                                                           leg_directions_local[..., 1],
+                                                           leg_directions_local[..., 2])
+            theta = leg_directions_spher.theta
+            distances = leg_directions_spher.r
+
+            # Flip angle if necessary
+            if interface.are_normals_on_inc_rays_side:
+                alpha = theta
+            else:
+                alpha = np.pi - theta
+
+            if return_distances:
+                yield alpha, distances
+            else:
+                yield distances
 
 
 class FermatPath(tuple):

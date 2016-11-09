@@ -132,14 +132,14 @@ grid_orientation.coords[..., :, :] = np.identity(3)
 probe_interface = arim.Interface(
     probe, probe_orientation, are_normals_on_out_rays_side=True)
 frontwall_interface = arim.Interface(
-    frontwall, probe_orientation, 'fluid_solid',
+    frontwall, frontwall_orientation, 'fluid_solid',
     'transmission',
     are_normals_on_inc_rays_side=False, are_normals_on_out_rays_side=True)
 backwall_interface = arim.Interface(
     backwall, backwall_orientation, 'solid_fluid',
     'reflection', reflection_against=water,
     are_normals_on_inc_rays_side=True, are_normals_on_out_rays_side=True)
-grid_interface = arim.Interface(grid.as_points, grid_orientation, are_normals_on_inc_rays_side=True)
+grid_interface = arim.Interface(grid.as_points, grid_orientation, are_normals_on_inc_rays_side=False)
     
     
 for p in [probe_interface, frontwall_interface, backwall_interface, grid_interface]:

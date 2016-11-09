@@ -203,6 +203,10 @@ class Path:
     def __repr__(self):
         return "{}({})".format(self.__class__.__name__, self.name)
 
+    @property
+    def velocities(self):
+        return tuple(material.velocity(mode) for material, mode in zip(self.materials, self.modes))
+
 
 class Material(namedtuple('Material', 'longitudinal_vel transverse_vel density state_of_matter metadata')):
     """Material(longitudinal_vel, transverse_vel=None, density=None, state_of_matter=None, metadata=None)

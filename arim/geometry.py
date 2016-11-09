@@ -710,8 +710,8 @@ def spherical_coordinates(x, y, z, r=None):
 
     Returns
     -------
-    r, theta, phi : ndarray
-        Arrays with same shape as input.
+    r, theta, phi : SphericalCoordinates
+        Three arrays with same shape as input.
 
     See Also
     --------

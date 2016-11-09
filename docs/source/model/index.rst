@@ -7,6 +7,7 @@ Modelling
   :maxdepth: 2
 
   transmission_reflection
+  beamspread
 
 .. seealso::
 
