@@ -11,8 +11,9 @@ from . import core
 from .core import Mode, InterfaceKind, StateMatter, TransmissionReflection
 
 __all__ = ['directivity_finite_width_2d', 'fluid_solid', 'solid_l_fluid', 'solid_t_fluid', 'snell_angles',
-           'transmission_at_interface', 'reflection_at_interface', 'transmission_reflection_for_path',
-           'relative_beamspread_after_interface', 'relative_beamspread_for_path', 'beamspread_for_path']
+           'transmission_at_interface', 'reflection_at_interface',
+           'transmission_reflection_per_interface_for_path', 'transmission_reflection_for_path'
+           'beamspread_after_interface', 'beamspread_per_interface_for_path', 'beamspread_for_path']
 
 logger = logging.getLogger(__name__)
 
@@ -445,7 +446,7 @@ def reflection_at_interface(interface_kind, material_inc, material_against, mode
         raise NotImplementedError
 
 
-def transmission_reflection_for_path(path, angles_inc_list, force_complex=True):
+def transmission_reflection_per_interface_for_path(path, angles_inc_list, force_complex=True):
     """
     Yield the transmission-reflection coefficients interface per interface for a given path.
 
@@ -503,9 +504,49 @@ def transmission_reflection_for_path(path, angles_inc_list, force_complex=True):
             raise ValueError('invalid constant for transmission/reflection')
 
 
-def relative_beamspread_after_interface(inc_angles_last_interface, out_angles_last_interface,
-                                        leg_sizes_before_last_interface,
-                                        leg_sizes_after_last_interface, p=0.5):
+def transmission_reflection_for_path(path, angles_inc_list, force_complex=True):
+    """
+    Return the transmission-reflection coefficients for a given path.
+
+    This function takes into account all relevant interfaces defined in ``path``.
+
+    Requires to have computed the angles of incidence at each interface (cf. :meth:`Rays.get_incoming_angles`).
+    Use internally :func:`transmission_at_interface`` and :func:``reflection_at_interface``.
+
+    The angles of transmission or reflection are obtained using Snell-Descartes laws (:func:`snell_angles`).
+
+    Warning: do not check whether the angles of incidence are physical.
+
+    TODO: write test.
+
+    Parameters
+    ----------
+    path : Path
+    angles_inc_list : list of ndarray
+    force_complex : bool
+        If True, return complex coefficients. If not, return coefficients with the same datatype as ``angles_inc``.
+        Default: True.
+
+    Yields
+    ------
+    amps : ndarray or None
+        Amplitudes of transmission-reflection coefficients. None if not defined for all interface.
+    """
+    amps = None
+
+    for amps_per_interface in transmission_reflection_per_interface_for_path(path, angles_inc_list, force_complex=force_complex):
+        if amps_per_interface is None:
+            continue
+        if amps is None:
+            amps = amps_per_interface
+        else:
+            amps *= amps_per_interface
+    return amps
+
+
+def beamspread_after_interface(inc_angles_last_interface, out_angles_last_interface,
+                               leg_sizes_before_last_interface,
+                               leg_sizes_after_last_interface, p=0.5):
     """
     Compute the contribution to beamspread of an interface.
 
@@ -525,7 +566,7 @@ def relative_beamspread_after_interface(inc_angles_last_interface, out_angles_la
 
     Returns
     -------
-    relative_beamspread : ndarray
+    beamspread : ndarray
 
     """
     beta = (np.cos(out_angles_last_interface) ** 2 * np.sin(inc_angles_last_interface)) \
@@ -534,9 +575,9 @@ def relative_beamspread_after_interface(inc_angles_last_interface, out_angles_la
     return (distance_virtual / (distance_virtual + leg_sizes_after_last_interface)) ** p
 
 
-def relative_beamspread_for_path(inc_angles_list, out_angles_list, inc_leg_sizes_list, p=0.5):
+def beamspread_per_interface_for_path(inc_angles_list, out_angles_list, inc_leg_sizes_list, p=0.5):
     """
-    Compute the relative beamspread for a path, ie. the contribution of each interface to the total beamspread.
+    Compute the beamspread for a path as a list of the contribution of each interface.
 
     Parameters
     ----------
@@ -555,7 +596,7 @@ def relative_beamspread_for_path(inc_angles_list, out_angles_list, inc_leg_sizes
 
     Returns
     -------
-    relative_beamspread_list : list of ndarray
+    beamspread_list : list of ndarray
 
     """
     # At the first interface, beamspread is not defined
@@ -575,9 +616,9 @@ def relative_beamspread_for_path(inc_angles_list, out_angles_list, inc_leg_sizes
             inc_angles_last_interface = inc_angles_list[i - 1]
             out_angles_last_interface = out_angles_list[i - 1]
 
-            yield relative_beamspread_after_interface(inc_angles_last_interface, out_angles_last_interface,
-                                                      leg_sizes_before_last_interface,
-                                                      leg_sizes_after_last_interface, p=p)
+            yield beamspread_after_interface(inc_angles_last_interface, out_angles_last_interface,
+                                             leg_sizes_before_last_interface,
+                                             leg_sizes_after_last_interface, p=p)
 
 
 def beamspread_for_path(inc_angles_list, out_angles_list, inc_leg_sizes_list, p=0.5):
@@ -605,7 +646,7 @@ def beamspread_for_path(inc_angles_list, out_angles_list, inc_leg_sizes_list, p=
 
     """
     beamspread = None
-    for relative_beamspread in relative_beamspread_for_path(inc_angles_list, out_angles_list, inc_leg_sizes_list, p=p):
+    for relative_beamspread in beamspread_per_interface_for_path(inc_angles_list, out_angles_list, inc_leg_sizes_list, p=p):
         if relative_beamspread is None:
             continue
         if beamspread is None:
