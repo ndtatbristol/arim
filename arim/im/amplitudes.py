@@ -8,6 +8,10 @@ from ..core import NoCache, ElementShape
 from ..exceptions import ArimWarning
 from .. import model
 
+__all__ = ["Amplitudes", "UniformAmplitudes", "FixedAmplitudes", "AmplitudesRays", "MultiAmplitudes",
+           "DirectivityCosine", "DirectivityFiniteWidth2D", "DirectivityFiniteWidth2D_Rays", "AmplitudesRemoveExtreme"]
+
+
 class Amplitudes:
     """
     Abstract class for computing lookup amplitudes in TFM.
@@ -63,8 +67,26 @@ class UniformAmplitudes(Amplitudes):
     Uniform amplitudes: for any grid point, any transmitter and any receiver,
     the amplitude is one (1.).
     """
+
     def _compute_amplitudes(self):
         return np.ones(self.shape, dtype=self.dtype)
+
+
+class FixedAmplitudes(Amplitudes):
+    """
+    Specifiy an array as amplitudes.
+    """
+
+    def __init__(self, frame, grid, amps):
+        dtype = amps.dtype
+        super().__init__(frame, grid, dtype, fillvalue=None, cache_res=True)
+
+        if amps.shape != self.shape:
+            raise ValueError("invalid amplitudes shape: expected {}, got {}".format(self.shape, amps.shape))
+        self._amps = amps
+        
+    def _compute_amplitudes(self):
+        return self._amps
 
 
 class AmplitudesRays(Amplitudes):
@@ -215,7 +237,8 @@ class DirectivityFiniteWidth2D(Amplitudes):
         spher = self.geom_probe_to_grid.points2_to_pcs_pairwise_spherical()
         for (element, (elt_dim, elt_loc)) in enumerate(zip(probe.dimensions, probe.locations)):
             elt_width = elt_dim[0]
-            amplitudes[..., element] = model.directivity_finite_width_2d(spher.theta[..., element], elt_width, wavelength)
+            amplitudes[..., element] = model.directivity_finite_width_2d(spher.theta[..., element], elt_width,
+                                                                         wavelength)
         return amplitudes
 
 
@@ -252,7 +275,7 @@ class DirectivityFiniteWidth2D_Rays(AmplitudesRays):
         for (element, (elt_dim, elt_loc)) in enumerate(zip(probe.dimensions, probe.locations)):
             elt_width = elt_dim[0]
             amplitudes[..., element] = model.directivity_finite_width_2d(spher.theta[..., element], elt_width,
-                                                                      self.wavelength)
+                                                                         self.wavelength)
         return amplitudes
 
     # def get_theta_first_interface(self):
@@ -275,6 +298,7 @@ class DirectivityCosine(AmplitudesRays):
     Amplitudes of cosine theta where theta is the angle between the normal
     of the element and the first leg of the rays.
     """
+
     def _compute_amplitudes(self):
         spher = self.first_leg_spherical()
         return np.cos(spher.theta)
@@ -286,6 +310,7 @@ class AmplitudesRemoveExtreme(Amplitudes):
     of the intermediary interfaces. Such rays may be non-physical.
 
     """
+
     def __init__(self, frame, grid, rays, cache_extreme=None, **kwargs):
         if cache_extreme is None:
             cache_extreme = NoCache()
