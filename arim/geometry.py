@@ -513,8 +513,8 @@ class Grid:
             z = np.array([zmin], dtype=s.FLOAT)
             dz = None
         else:
-            if zmin > xmax:
-                warn("zmin > xmax in grid", ArimWarning)
+            if zmin > zmax:
+                warn("zmin > zmax in grid", ArimWarning)
             z = np.linspace(zmin, zmax, np.abs(np.ceil((zmax - zmin) / dz)) + 1, dtype=s.FLOAT)
             dz = np.mean(np.diff(z))
 
