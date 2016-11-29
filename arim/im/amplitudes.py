@@ -84,7 +84,7 @@ class FixedAmplitudes(Amplitudes):
         if amps.shape != self.shape:
             raise ValueError("invalid amplitudes shape: expected {}, got {}".format(self.shape, amps.shape))
         self._amps = amps
-        
+
     def _compute_amplitudes(self):
         return self._amps
 

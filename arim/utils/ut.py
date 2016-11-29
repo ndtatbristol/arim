@@ -123,6 +123,13 @@ def decibel(arr, reference=None, neginf_value=-1000., return_reference=False):
     """
     # Disable warnings messages for log10(0.0)
     arr_abs = np.abs(arr)
+    
+    if arr_abs.shape == ():
+        orig_shape = ()
+        arr_abs = arr_abs.reshape((1, ))
+    else:
+        orig_shape = None
+
     if reference is None:
         reference = np.nanmax(arr_abs)
     else:
@@ -133,6 +140,9 @@ def decibel(arr, reference=None, neginf_value=-1000., return_reference=False):
 
     if neginf_value is not None:
         arr_db[np.isneginf(arr_db)] = neginf_value
+                   
+    if orig_shape is not None:
+        arr_db = arr_db.reshape(orig_shape)
 
     if return_reference:
         return arr_db, reference
