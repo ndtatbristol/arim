@@ -3,9 +3,8 @@ import arim.utils.ut as ut
 
 
 def test_decibel():
-    arr = np.array([0.01, 0.1, 1.])
-    db = ut.decibel(arr)
-    assert np.allclose(db, [-40., -20, 0.])
+    db = ut.decibel(0.01, reference=1.)
+    assert np.allclose(db, -40.)
 
     arr = np.array([0.01, 0.1, 1., 10.])
     db = ut.decibel(arr)
