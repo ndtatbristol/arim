@@ -12,7 +12,7 @@ from .core import Mode, InterfaceKind, StateMatter, TransmissionReflection
 
 __all__ = ['directivity_finite_width_2d', 'fluid_solid', 'solid_l_fluid', 'solid_t_fluid', 'snell_angles',
            'transmission_at_interface', 'reflection_at_interface',
-           'transmission_reflection_per_interface_for_path', 'transmission_reflection_for_path'
+           'transmission_reflection_per_interface_for_path', 'transmission_reflection_for_path',
            'beamspread_after_interface', 'beamspread_per_interface_for_path', 'beamspread_for_path']
 
 logger = logging.getLogger(__name__)

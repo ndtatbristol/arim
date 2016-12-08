@@ -1,6 +1,13 @@
 arim.im package
 ===============
 
+Subpackages
+-----------
+
+.. toctree::
+
+    arim.im.das
+
 Submodules
 ----------
 
