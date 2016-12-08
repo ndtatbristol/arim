@@ -6,7 +6,6 @@ https://github.com/pypa/sampleproject
 From https://github.com/pypa/sampleproject/blob/master/setup.py
 """
 
-# Always prefer setuptools over distutils
 from setuptools import setup, find_packages, Extension
 from Cython.Build import cythonize
 
@@ -39,14 +38,22 @@ def find_version(*file_paths):
 # --- End snippet
 
 
-ext_modules = [Extension(
+ext_modules = [
+    Extension(
         "arim.im._fermat_solver",
         sources=["arim/im/fermat_solver_c.cpp", "arim/im/_fermat_solver.pyx"],
         language="c++",
         # extra_compile_args=['/Ox', '/EHsc'],
         extra_compile_args=['/Ox', '/EHsc', '/openmp'],
-                #include_dirs=[numpy.get_include()],
-)]
+        # include_dirs=[numpy.get_include()],
+    ),
+    Extension(
+        "arim.im.das._delay_and_sum_cpu",
+        sources=["arim/im/das/_delay_and_sum_cpu.pyx", "arim/im/das/delay_and_sum_cpu.cpp"],
+        language="c++",
+        extra_compile_args=['/Ox', '/EHsc', '/openmp'],
+    ),
+]
 
 
 setup(
@@ -62,7 +69,7 @@ setup(
 
     url='https://github.com/nbud/arim',
 
-    author='Nicolas Budyn',
+    author='Nicolas Budyn, Rhodri Bevan',
     author_email='nbud1@lycos.com',
 
     # Choose your license
@@ -135,7 +142,7 @@ setup(
         ],
     },
 
-    ext_modules = cythonize(ext_modules),
+    ext_modules=cythonize(ext_modules),
 
-    zip_safe = False,
+    zip_safe=False,
 )

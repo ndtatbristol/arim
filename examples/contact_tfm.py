@@ -61,7 +61,7 @@ grid = arim.geometry.Grid(xmin=-20e-3, xmax=20e-3,
                           zmin=0., zmax=50e-3,
                           pixel_size=0.15e-3)
 speed = frame.examination_object.material.longitudinal_vel
-tfm = arim.im.ContactTFM(speed, frame=frame, grid=grid, fillvalue=0.)
+tfm = arim.im.ContactTFM(speed, frame=frame, grid=grid)
 tfm.run()
 
 #%% Plot TFM in linear scale

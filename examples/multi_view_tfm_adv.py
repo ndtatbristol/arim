@@ -253,7 +253,7 @@ for i, view in enumerate(views):
     amps_rx = arim.im.UniformAmplitudes(frame, grid)
 
     tfm = arim.im.MultiviewTFM(frame, grid, view, rays_tx, rays_rx,
-                          amplitudes_tx=amps_tx, amplitudes_rx=amps_rx, fillvalue=0.)
+                          amplitudes_tx=amps_tx, amplitudes_rx=amps_rx)
     tfms.append(tfm)
 
 

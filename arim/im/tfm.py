@@ -7,7 +7,6 @@ import warnings
 
 from .. import geometry as g
 from .amplitudes import UniformAmplitudes, AmplitudesRemoveExtreme
-from .base import delay_and_sum
 from .fermat_solver import FermatPath, View, Rays
 from .. import settings as s
 from ..core import Frame, FocalLaw
@@ -51,14 +50,10 @@ class BaseTFM:
     dtype
     amplitudes : Amplitudes
     geom_probe_to_grid
-    interpolate_position (Default is 0 = Nearest)
-    fillvalue : float
-        Value to assign to scanlines outside ``[tmin, tmax]``. Default: nan
-    delay_and_sum_kwargs : dict
-
     """
+
     def __init__(self, frame, grid, amplitudes_tx='uniform', amplitudes_rx='uniform',
-                 dtype=None, fillvalue=np.nan, geom_probe_to_grid=None,interpolate_position=0):
+                 dtype=None, geom_probe_to_grid=None):
         self.frame = frame
         self.grid = grid
 
@@ -66,10 +61,6 @@ class BaseTFM:
             dtype = s.FLOAT
         self.dtype = dtype
 
-        self.fillvalue = fillvalue
-        self.interpolate_position=interpolate_position
-
-        self.delay_and_sum_kwargs = {}
         self.res = None
 
         if geom_probe_to_grid is None:
@@ -79,16 +70,21 @@ class BaseTFM:
         self._geom_probe_to_grid = geom_probe_to_grid
 
         if amplitudes_tx == 'uniform':
-            amplitudes_tx = UniformAmplitudes(frame, grid, fillvalue=fillvalue)
+            amplitudes_tx = UniformAmplitudes(frame, grid)
         if amplitudes_rx == 'uniform':
-            amplitudes_rx = UniformAmplitudes(frame, grid, fillvalue=fillvalue)
+            amplitudes_rx = UniformAmplitudes(frame, grid)
         self.amplitudes_tx = amplitudes_tx
         self.amplitudes_rx = amplitudes_rx
 
-    def run(self):
+    def run(self, delay_and_sum_func=None, **delay_and_sum_kwargs):
         """
         Compute TFM: get the lookup times, the amplitudes, and delay and sum
         the scanlines.
+
+        Parameters
+        ----------
+        delay_and_sum_func : delay_and_sum_func to use
+        delay_and_sum_kwargs : extra arguments for the delay and sum function
 
         Returns
         -------
@@ -108,8 +104,13 @@ class BaseTFM:
         focal_law = self.hook_focal_law(focal_law)
         self.focal_law = focal_law
 
-        delay_and_sum_kwargs = dict(fillvalue=self.fillvalue)
-        res = delay_and_sum(self.frame, focal_law,interpolate_position=self.interpolate_position,**delay_and_sum_kwargs)
+        if delay_and_sum_func is None:
+            from .das import delay_and_sum
+            delay_and_sum_func = delay_and_sum
+        if delay_and_sum_kwargs is None:
+            delay_and_sum_kwargs = {}
+
+        res = delay_and_sum_func(self.frame, focal_law, **delay_and_sum_kwargs)
 
         res = self.hook_result(res)
 
@@ -178,6 +179,7 @@ class ContactTFM(BaseTFM):
     Contact TFM. The probe is assumed to lay on the surface of the examination
     object.
     """
+
     def __init__(self, speed, **kwargs):
         # This attribute is attached to the instance AND the class (double underscore):
         self.__lookup_times = None
@@ -249,7 +251,6 @@ class MultiviewTFM(BaseTFM):
         """Lookup times in reception, obtained with Fermat solver."""
         return np.ascontiguousarray(self.rays_rx.times.T)
 
-
     def __repr__(self):
         return "<{}: {} at {}>".format(
             self.__class__.__name__,
@@ -275,7 +276,8 @@ class MultiviewTFM(BaseTFM):
         -------
         views : List[View]
         """
-        warnings.warn(PendingDeprecationWarning("Using 'arim.Path' objects is now recommended. This method will be removed in future versions."))
+        warnings.warn(PendingDeprecationWarning(
+            "Using 'arim.Path' objects is now recommended. This method will be removed in future versions."))
         views = []
         parse = lambda name: cls._parse_name_view(name, backwall, v_longi, v_shear)
         for name in IMAGING_MODES:

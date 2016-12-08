@@ -38,7 +38,7 @@ logger.info("Start script")
 
 expdata_filename = r'O:\arim-datasets\Aluminium_Notch_L12_128elts_5MHz\acq_02.mat'
 frame = arim.io.load_expdata(expdata_filename)
-frame.probe  = arim.probes['ima_50_MHz_128_1d']
+frame.probe = arim.probes['ima_50_MHz_128_1d']
 
 # Set probe reference point to first element
 # put the first element in O(0,0,0), then it will be in (0,0,z) later.
@@ -56,7 +56,7 @@ v_shear = 3130
 # Prepare registration
 frame.apply_filter(arim.signal.Abs() + arim.signal.Hilbert())
 
-ax, imag = aplt.plot_bscan_pulse_echo(frame, clim=[-40,0])
+ax, imag = aplt.plot_bscan_pulse_echo(frame, clim=[-40, 0])
 
 # Detect frontwall:
 time_to_surface = arim.registration.detect_surface_from_extrema(frame, tmin=10e-6, tmax=30e-6)
@@ -134,14 +134,13 @@ def plot_interface(title=None, show_grid=True, ax=None, element_normal=True):
     ax.grid()
 
     if element_normal:
-        k = 4# one every k arrows
+        k = 4  # one every k arrows
         ax.quiver(frame.probe.locations.x[::k],
                   frame.probe.locations.z[::k],
                   frame.probe.orientations.x[::k],
                   frame.probe.orientations.z[::k],
                   units='xy', angles='xy',
                   width=0.0003, color='c')
-
 
     ylim = ax.get_ylim()
     if ylim[0] < ylim[1]:
@@ -176,7 +175,7 @@ for i, view in enumerate(views):
     amps_rx = arim.im.UniformAmplitudes(frame, grid)
 
     tfm = arim.im.MultiviewTFM(frame, grid, view, rays_tx, rays_rx,
-                          amplitudes_tx=amps_tx, amplitudes_rx=amps_rx, fillvalue=0.)
+                          amplitudes_tx=amps_tx, amplitudes_rx=amps_rx)
     tfms.append(tfm)
 
 
@@ -210,7 +209,7 @@ if PLOT_TFM:
             aplt.draw_rays_on_click(grid, tfm.rays_tx, element_index, ax, linestyle_tx)
             aplt.draw_rays_on_click(grid, tfm.rays_rx, element_index, ax, linestyle_rx)
 
-        ax.axis([-20e-3, 100e-3, 45e-3,-20e-3])
+        ax.axis([-20e-3, 100e-3, 45e-3, -20e-3])
         if SAVEFIG:
             ax.figure.savefig("fig_{:02}_{}.png".format(i, view.name), bbox_inches='tight')
 
