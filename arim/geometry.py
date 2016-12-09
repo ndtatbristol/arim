@@ -88,7 +88,6 @@ class Points:
 
     def __init__(self, coords, name=None):
         coords = np.asarray(coords)
-        assert coords.flags.contiguous
         assert coords.shape[-1] == 3
 
         self.coords = coords
