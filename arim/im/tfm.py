@@ -50,6 +50,7 @@ class BaseTFM:
     dtype
     amplitudes : Amplitudes
     geom_probe_to_grid
+
     """
 
     def __init__(self, frame, grid, amplitudes_tx='uniform', amplitudes_rx='uniform',
@@ -172,6 +173,34 @@ class BaseTFM:
     @property
     def geom_probe_to_grid(self):
         return self._geom_probe_to_grid
+
+    def maximum_intensity_in_rectbox(self, xmin=None, xmax=None, ymin=None, ymax=None,
+        zmin=None, zmax=None):
+        """
+        Returns the maximum absolute intensity of the TFM image in the rectangular box
+        defined by the parameters. If a parameter is None, the box is unbounded in the
+        corresponding direction.
+
+        Intensity is given as it is (no dB conversion).
+
+        Parameters
+        ----------
+        xmin : float or None
+        xmax : float or None
+        ymin : float or None
+        ymax : float or None
+        zmin : float or None
+        zmax : float or None
+
+        Returns
+        -------
+        intensity : float
+
+        """
+        assert self.res is not None
+        area_of_interest = self.grid.points_in_rectbox(xmin, xmax, ymin, ymax,
+            zmin, zmax)
+        return np.nanmax(np.abs(self.res[area_of_interest]))
 
 
 class ContactTFM(BaseTFM):
