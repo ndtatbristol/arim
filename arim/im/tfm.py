@@ -7,22 +7,14 @@ import warnings
 
 from .. import geometry as g
 from .amplitudes import UniformAmplitudes, AmplitudesRemoveExtreme
-from .fermat_solver import FermatPath, View, Rays
+from .fermat_solver import FermatPath, Rays
 from .. import settings as s
-from ..core import Frame, FocalLaw
+from .. import core
+from ..core import Frame, FocalLaw, View
 from ..enums import CaptureMethod
+from ..path import IMAGING_MODES  # import for backward compatibility
 
 __all__ = ['BaseTFM', 'ContactTFM', 'MultiviewTFM', 'IMAGING_MODES']
-
-# Order by length then by lexicographic order
-# Remark: independant views for one array (i.e. consider that view AB-CD is the
-# same as view DC-BA).
-IMAGING_MODES = ["L-L", "L-T", "T-T",
-                 "LL-L", "LL-T", "LT-L", "LT-T", "TL-L", "TL-T", "TT-L", "TT-T",
-                 "LL-LL", "LL-LT", "LL-TL", "LL-TT",
-                 "LT-LT", "LT-TL", "LT-TT",
-                 "TL-LT", "TL-TT",
-                 "TT-TT"]
 
 
 class BaseTFM:
@@ -236,13 +228,11 @@ class MultiviewTFM(BaseTFM):
     def __init__(self, frame, grid, view, rays_tx, rays_rx, **kwargs):
         # assert grid is view.tx_path[-1]
         # assert grid is view.rx_path[-1]
-        if grid.numpoints != len(view.tx_path[-1]):
+        if grid.numpoints != len(view.tx_path.interfaces[-1].points):
             raise ValueError("Inconsistent grid")
-        if grid.numpoints != len(view.rx_path[-1]):
+        if grid.numpoints != len(view.rx_path.interfaces[-1].points):
             raise ValueError("Inconsistent grid")
 
-        assert view.tx_path == rays_tx.path
-        assert view.rx_path == rays_rx.path
         assert isinstance(rays_tx, Rays)
         assert isinstance(rays_rx, Rays)
         #assert rays_rx.indices.flags.fortran
@@ -289,7 +279,10 @@ class MultiviewTFM(BaseTFM):
     @classmethod
     def make_views(cls, probe, frontwall, backwall, grid, v_couplant, v_longi, v_shear):
         """
-        Create direct-direct, skip-direct and skip-skip views.
+        Create direct-direct, skip-direct and skip-skip views for a block an immersion.
+
+        This method is here for backward-compatibility only. It is recommended to use the more generic
+        ``arim.make_view_for_block_in_immersion`` instead.
 
         Parameters
         ----------
@@ -305,31 +298,24 @@ class MultiviewTFM(BaseTFM):
         -------
         views : List[View]
         """
-        warnings.warn(PendingDeprecationWarning(
-            "Using 'arim.Path' objects is now recommended. This method will be removed in future versions."))
-        views = []
-        parse = lambda name: cls._parse_name_view(name, backwall, v_longi, v_shear)
-        for name in IMAGING_MODES:
-            tx_name, rx_name = name.split('-')
-            tx_path = FermatPath((probe, v_couplant, frontwall) + parse(tx_name) + (grid,))
-            rx_path = FermatPath((probe, v_couplant, frontwall) + parse(rx_name[::-1]) + (grid,))
-            views.append(View(tx_path, rx_path, name))
+        from .. import paths_for_block_in_immersion, views_for_block_in_immersion
+
+        warnings.warn(DeprecationWarning(
+            "Using arim.make_view_for_block_in_immersion is recommended. This method will be removed in future versions."))
+
+        # Create dummy interfaces:
+        probe_interface = core.Interface(probe, None)
+        frontwall_interface = core.Interface(frontwall, None)
+        backwall_interface = core.Interface(backwall, None)
+        grid_interface = core.Interface(grid, None)
+
+        # Create Dummy material:
+        block = core.Material(v_longi, v_shear, state_of_matter='solid')
+        couplant = core.Material(v_couplant, state_of_matter='liquid')
+
+        paths_dict = paths_for_block_in_immersion(block, couplant, probe_interface, frontwall_interface,
+                                                  backwall_interface, grid_interface)
+        views = views_for_block_in_immersion(paths_dict)
+
         return views
 
-    @staticmethod
-    def _parse_name_view(name, backwall, v_longi, v_shear):
-        name = name.upper()
-        if name == 'L':
-            return (v_longi,)
-        elif name == 'T':
-            return (v_shear,)
-        elif name == 'LL':
-            return (v_longi, backwall, v_longi)
-        elif name == 'LT':
-            return (v_longi, backwall, v_shear)
-        elif name == 'TL':
-            return (v_shear, backwall, v_longi)
-        elif name == 'TT':
-            return (v_shear, backwall, v_shear)
-        else:
-            raise ValueError("Cannot parse view '{}'".format(name))

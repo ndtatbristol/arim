@@ -73,11 +73,13 @@ def test_make_views():
     views = arim.im.tfm.MultiviewTFM.make_views(probe, frontwall, backwall, grid, v_couplant, v_longi, v_shear)
 
     assert len(views) == 21
-    assert len(set([v.name for v in views])) == 21
+    assert len(set(views.keys())) == 21
+    for key, view in views.items():
+        assert key == view.name
 
-    view = [v for v in views if v.name == 'LT-TL'][0]
-    assert view.tx_path == view.rx_path
+    view = views['LT-TL']
+    assert view.tx_path.to_fermat_path() == view.rx_path.to_fermat_path()
 
-    view = [v for v in views if v.name == 'LT-LT'][0]
-    assert view.tx_path == (probe, v_couplant, frontwall, v_longi, backwall, v_shear, grid)
-    assert view.rx_path == (probe, v_couplant, frontwall, v_shear, backwall, v_longi, grid)
+    view = views['LT-LT']
+    assert view.tx_path.to_fermat_path() == (probe, v_couplant, frontwall, v_longi, backwall, v_shear, grid)
+    assert view.rx_path.to_fermat_path() == (probe, v_couplant, frontwall, v_shear, backwall, v_longi, grid)

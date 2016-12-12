@@ -7,14 +7,26 @@ Remark: Interface and Path objects are defined in arim.core
 import numpy as np
 
 from collections import OrderedDict
-from .core import Path, Interface
+from .core import Path, Interface, View
 from . import geometry as g
 from . import settings as s
 
 import warnings
 
 __all__ = ['interfaces_for_block_in_immersion', 'default_orientations', 'points_1d_wall_z', 'points_from_grid',
-           'points_from_probe', 'paths_for_block_in_immersion']
+           'points_from_probe', 'paths_for_block_in_immersion', 'views_for_block_in_immersion', 'IMAGING_MODES']
+
+
+# Order by length then by lexicographic order
+# Remark: independant views for one array (i.e. consider that view AB-CD is the
+# same as view DC-BA).
+IMAGING_MODES = ["L-L", "L-T", "T-T",
+                 "LL-L", "LL-T", "LT-L", "LT-T", "TL-L", "TL-T", "TT-L", "TT-T",
+                 "LL-LL", "LL-LT", "LL-TL", "LL-TT",
+                 "LT-LT", "LT-TL", "LT-TT",
+                 "TL-LT", "TL-TT",
+                 "TT-TT"]
+
 
 def points_1d_wall_z(xmin, xmax, z, numpoints, y=0., name=None, dtype=None):
     """
@@ -143,6 +155,10 @@ def paths_for_block_in_immersion(block_material, couplant_material, probe_interf
     """
     Creates the paths L, T, LL, LT, TL, TT (in this order).
 
+    Paths are returned in transmit convention: for the path XY, X is the mode
+    before reflection against the backwall and Y is the mode after reflection.
+    The path XY in transmit convention is the path YX in receive convention.
+
     Parameters
     ----------
     block_material : Material
@@ -201,3 +217,34 @@ def paths_for_block_in_immersion(block_material, couplant_material, probe_interf
 
     return paths
 
+def views_for_block_in_immersion(paths_dict):
+    """
+    Returns a list of views for the case of a block in immersion.
+
+    Returns the 21 first independent modes.
+
+    A common way to create the paths it to use ``paths_for_block_in_immersion``.
+
+    Remark on the nomenclature: XX'-YY' means the XX' is the transmit path and YY' is the receive path.
+
+
+    Parameters
+    ----------
+    paths_dict : Dict[Path]
+        Must have the keys: L, T, LL, LT, TL, TT (in transmit convention).
+
+    Returns
+    -------
+    views: OrderedDict[Views]
+
+    """
+    views = OrderedDict()
+    for view_name in IMAGING_MODES:
+        tx_name, rx_name = view_name.split('-')
+
+        tx_path = paths_dict[tx_name]
+        # to get the receive path: return the string of the corresponding transmit path
+        rx_path = paths_dict[rx_name[::-1]]
+
+        views[view_name] = View(tx_path, rx_path, view_name)
+    return views

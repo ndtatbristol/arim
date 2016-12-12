@@ -9,7 +9,7 @@ from .. import settings as s
 
 __all__ = ['Time', 'Material', 'ExaminationObject', 'BoundedMedium', 'InfiniteMedium',
            'StateMatter', 'TransmissionReflection', 'Mode', 'InterfaceKind', 'Interface',
-           'Path']
+           'Path', 'View']
 
 StateMatter = enum.Enum('StateMatter', 'liquid solid')
 StateMatter.__doc__ = "Enumerated constants for the states of matter."
@@ -206,6 +206,17 @@ class Path:
     @property
     def velocities(self):
         return tuple(material.velocity(mode) for material, mode in zip(self.materials, self.modes))
+
+    def to_fermat_path(self):
+        """
+        Create a FermatPath from this object (low-level object for ray tracing).
+
+        Returns
+        -------
+
+        """
+        from ..im.fermat_solver import FermatPath
+        return FermatPath.from_path(self)
 
 
 class Material(namedtuple('Material', 'longitudinal_vel transverse_vel density state_of_matter metadata')):
@@ -425,3 +436,13 @@ class Time:
 
     def closest_index(self, time):
         return np.argmin(np.abs(self.samples - time))
+
+
+class View(namedtuple('View', ['tx_path', 'rx_path', 'name'])):
+    """
+    View(tx_path, rx_path, name)
+    """
+    __slots__ = []
+
+    def __repr__(self):
+        return "{}({})".format(self.__class__.__name__, self.name)

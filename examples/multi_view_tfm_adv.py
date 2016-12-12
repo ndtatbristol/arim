@@ -17,6 +17,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 import arim
+import arim.core.misc
 import arim.plot as aplt
 
 #%% Output and parameters
@@ -233,7 +234,7 @@ for view_name in arim.im.IMAGING_MODES:
     tx_name, rx_name = view_name.split('-')
     tx_path = arim.im.FermatPath.from_path(paths[tx_name])
     rx_path = arim.im.FermatPath.from_path(paths[rx_name])
-    views.append(arim.im.View(tx_path, rx_path, view_name))
+    views.append(arim.core.misc.View(tx_path, rx_path, view_name))
 
 
 #%% Setup Fermat solver and compute rays

@@ -156,20 +156,20 @@ plot_interface("Interfaces", show_grid=False, element_normal=True)
 #%% Setup views
 
 views = arim.im.MultiviewTFM.make_views(probe, frontwall, backwall, grid.as_points, v_couplant, v_longi, v_shear)
-print('Views to show: {}'.format(str(views)))
+print('Views to show: {}'.format(str(views.keys())))
 
 #%% Setup Fermat solver and compute rays
 
-fermat_solver = arim.im.FermatSolver.from_views(views)
+fermat_solver = arim.im.FermatSolver.from_views(views.values())
 rays = fermat_solver.solve()
 
 #%% Setups TFM
 frame.apply_filter(arim.signal.Hilbert() + arim.signal.ButterworthBandpass(5, 3e6, 5.5e6, frame.time))
 
 tfms = []
-for i, view in enumerate(views):
-    rays_tx = rays[view.tx_path]
-    rays_rx = rays[view.rx_path]
+for i, view in enumerate(views.values()):
+    rays_tx = rays[view.tx_path.to_fermat_path()]
+    rays_rx = rays[view.rx_path.to_fermat_path()]
 
     amps_tx = arim.im.UniformAmplitudes(frame, grid)
     amps_rx = arim.im.UniformAmplitudes(frame, grid)

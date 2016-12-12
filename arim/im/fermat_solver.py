@@ -11,21 +11,23 @@ To improve:
 import gc
 import logging
 import time
-from collections import namedtuple
 import warnings
 
 import numpy as np
 
-from .. import geometry as g
-from ..core.cache import Cache
-from .base import find_minimum_times
-from .. import settings as s
-
 from ._fermat_solver import _expand_rays
+from .base import find_minimum_times
+from .. import geometry as g
+from .. import settings as s
+from ..core.cache import Cache
 
-__all__ = ['FermatSolver', 'View', 'FermatPath', 'Rays']
+__all__ = ['FermatSolver', 'FermatPath', 'Rays', 'ray_tracing']
 
 logger = logging.getLogger(__name__)
+
+def ray_tracing(views_list):
+    pass
+
 
 
 class Rays:
@@ -567,16 +569,16 @@ class FermatSolver:
 
     """
 
-    def __init__(self, paths, dtype=None, dtype_indices=None):
+    def __init__(self, fermat_paths_set, dtype=None, dtype_indices=None):
         if dtype is None:
             dtype = s.FLOAT
 
         if dtype_indices is None:
-            max_length = max((p.len_largest_interface for p in paths))
+            max_length = max((p.len_largest_interface for p in fermat_paths_set))
             # dtype_indices = smallest_uint_that_fits(max_length)
             dtype_indices = s.UINT
 
-        for path in paths:
+        for path in fermat_paths_set:
             try:
                 hash(path)
             except TypeError as e:
@@ -586,14 +588,27 @@ class FermatSolver:
         self.dtype_indices = dtype_indices
         self.clear_cache()
         self.res = {}
-        self.paths = paths
+        self.paths = fermat_paths_set
 
         self.num_minimization = 0
         self.num_euc_distance = 0
 
     @classmethod
-    def from_views(cls, views, dtype=None, dtype_indices=None):
-        paths = set((path for v in views for path in (v.tx_path, v.rx_path)))
+    def from_views(cls, views_list, dtype=None, dtype_indices=None):
+        """
+        Create a FermatSolver from a list of views (alternative constructor).
+
+        Parameters
+        ----------
+        views : List[Views]
+        dtype : dtype or None
+        dtype_indices : dtype or None
+
+        Returns
+        -------
+
+        """
+        paths = set((path for v in views_list for path in (v.tx_path.to_fermat_path(), v.rx_path.to_fermat_path())))
         return cls(paths, dtype=dtype, dtype_indices=dtype_indices)
 
     def solve(self):
@@ -697,11 +712,3 @@ class FermatSolver:
         return Rays.make_rays_two_interfaces(distance / speed, path, self.dtype_indices)
 
 
-class View(namedtuple('View', ['tx_path', 'rx_path', 'name'])):
-    """
-    View(tx_path, rx_path, name)
-    """
-    __slots__ = []
-
-    def __repr__(self):
-        return "{}({})".format(self.__class__.__name__, self.name)
