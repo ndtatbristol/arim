@@ -14,7 +14,7 @@ from ..core import Frame, FocalLaw, View
 from ..enums import CaptureMethod
 from ..path import IMAGING_MODES  # import for backward compatibility
 
-__all__ = ['BaseTFM', 'ContactTFM', 'MultiviewTFM', 'IMAGING_MODES']
+__all__ = ['BaseTFM', 'ContactTFM', 'SingleViewTFM', 'IMAGING_MODES']
 
 
 class BaseTFM:
@@ -224,8 +224,8 @@ class ContactTFM(BaseTFM):
     get_lookup_times_rx = get_lookup_times_tx
 
 
-class MultiviewTFM(BaseTFM):
-    def __init__(self, frame, grid, view, rays_tx, rays_rx, **kwargs):
+class SingleViewTFM(BaseTFM):
+    def __init__(self, frame, grid, view, **kwargs):
         # assert grid is view.tx_path[-1]
         # assert grid is view.rx_path[-1]
         if grid.numpoints != len(view.tx_path.interfaces[-1].points):
@@ -233,18 +233,19 @@ class MultiviewTFM(BaseTFM):
         if grid.numpoints != len(view.rx_path.interfaces[-1].points):
             raise ValueError("Inconsistent grid")
 
-        assert isinstance(rays_tx, Rays)
-        assert isinstance(rays_rx, Rays)
+        tx_rays = view.tx_path.rays
+        rx_rays = view.rx_path.rays
+
         #assert rays_rx.indices.flags.fortran
         #assert rays_tx.indices.flags.fortran
         #assert rays_tx.times.flags.fortran
         #assert rays_rx.times.flags.fortran
-        assert rays_tx.path[0] is frame.probe.locations
-        assert rays_rx.path[0] is frame.probe.locations
-        assert rays_tx.path[-1] is grid.as_points
-        assert rays_rx.path[-1] is grid.as_points
-        self.rays_tx = rays_tx
-        self.rays_rx = rays_rx
+        assert tx_rays.path[0] is frame.probe.locations
+        assert rx_rays.path[0] is frame.probe.locations
+        assert tx_rays.path[-1] is grid.as_points
+        assert rx_rays.path[-1] is grid.as_points
+        self.tx_rays = tx_rays
+        self.rx_rays = rx_rays
         self.view = view
 
         # used in get_amplitudes
@@ -252,23 +253,23 @@ class MultiviewTFM(BaseTFM):
 
         amplitudes_tx = kwargs.get('amplitudes_tx')
         if amplitudes_tx is None:
-            amplitudes_tx = AmplitudesRemoveExtreme(frame, grid, rays_tx)
+            amplitudes_tx = AmplitudesRemoveExtreme(frame, grid, tx_rays)
         kwargs['amplitudes_tx'] = amplitudes_tx
 
         amplitudes_rx = kwargs.get('amplitudes_rx')
         if amplitudes_rx is None:
-            amplitudes_rx = AmplitudesRemoveExtreme(frame, grid, rays_rx)
+            amplitudes_rx = AmplitudesRemoveExtreme(frame, grid, rx_rays)
         kwargs['amplitudes_rx'] = amplitudes_rx
 
         super().__init__(frame, grid, **kwargs)
 
     def get_lookup_times_tx(self):
         """Lookup times in transmission, obtained with Fermat solver."""
-        return np.ascontiguousarray(self.rays_tx.times.T)
+        return np.ascontiguousarray(self.tx_rays.times.T)
 
     def get_lookup_times_rx(self):
         """Lookup times in reception, obtained with Fermat solver."""
-        return np.ascontiguousarray(self.rays_rx.times.T)
+        return np.ascontiguousarray(self.rx_rays.times.T)
 
     def __repr__(self):
         return "<{}: {} at {}>".format(

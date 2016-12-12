@@ -22,6 +22,7 @@ Submodules
    arim.geometry
    arim.misc
    arim.model
+   arim.path
    arim.plot
    arim.registration
    arim.settings

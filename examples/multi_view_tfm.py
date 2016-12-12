@@ -155,26 +155,22 @@ plot_interface("Interfaces", show_grid=False, element_normal=True)
 # -------------------------------------------------------------------------
 #%% Setup views
 
-views = arim.im.MultiviewTFM.make_views(probe, frontwall, backwall, grid.as_points, v_couplant, v_longi, v_shear)
+views = arim.im.SingleViewTFM.make_views(probe, frontwall, backwall, grid.as_points, v_couplant, v_longi, v_shear)
 print('Views to show: {}'.format(str(views.keys())))
 
 #%% Setup Fermat solver and compute rays
 
-fermat_solver = arim.im.FermatSolver.from_views(views.values())
-rays = fermat_solver.solve()
+arim.im.ray_tracing(views.values())
 
 #%% Setups TFM
 frame.apply_filter(arim.signal.Hilbert() + arim.signal.ButterworthBandpass(5, 3e6, 5.5e6, frame.time))
 
 tfms = []
 for i, view in enumerate(views.values()):
-    rays_tx = rays[view.tx_path.to_fermat_path()]
-    rays_rx = rays[view.rx_path.to_fermat_path()]
-
     amps_tx = arim.im.UniformAmplitudes(frame, grid)
     amps_rx = arim.im.UniformAmplitudes(frame, grid)
 
-    tfm = arim.im.MultiviewTFM(frame, grid, view, rays_tx, rays_rx,
+    tfm = arim.im.SingleViewTFM(frame, grid, view,
                           amplitudes_tx=amps_tx, amplitudes_rx=amps_rx)
     tfms.append(tfm)
 
@@ -206,8 +202,8 @@ if PLOT_TFM:
             linestyle_tx = 'm--'
             linestyle_rx = 'c-.'
 
-            aplt.draw_rays_on_click(grid, tfm.rays_tx, element_index, ax, linestyle_tx)
-            aplt.draw_rays_on_click(grid, tfm.rays_rx, element_index, ax, linestyle_rx)
+            aplt.draw_rays_on_click(grid, tfm.tx_rays, element_index, ax, linestyle_tx)
+            aplt.draw_rays_on_click(grid, tfm.rx_rays, element_index, ax, linestyle_rx)
 
         ax.axis([-20e-3, 100e-3, 45e-3, -20e-3])
         if SAVEFIG:
