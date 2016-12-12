@@ -170,7 +170,7 @@ class Points:
         """
         return norm2(self.x, self.y, self.z, out=out)
 
-    def translate(self, direction, inplace=False):
+    def translate(self, direction):
         """
         Translate the points along a given direction or several directions.
 
@@ -190,8 +190,6 @@ class Points:
             Shape: (\*shape, 3)
             Example: if the current
             Shape: (3, )
-        inplace : bool
-            Default: False
 
         Returns
         -------
@@ -200,10 +198,6 @@ class Points:
         new_coords = self.coords + direction
         translated_points = self.__class__(new_coords, self.name)
         return translated_points
-
-    def translate_inplace(self, direction):
-        np.add(self.coords, direction, out=self.coords)
-        return self
 
     def rotate(self, rotation_matrix, centre=None):
         """Rotates the points. Returns a new Points object.
@@ -275,7 +269,7 @@ class Points:
         return points_in_rectbox(self.x, self.y, self.z, xmin, xmax, ymin, ymax, zmin, zmax)
 
 
-class CoordinateSystem(namedtuple('CoordinateSystem', 'origin i_hat j_hat')):
+class CoordinateSystem:
     """
     A point and a direct 3D affine basis.
 
@@ -294,23 +288,57 @@ class CoordinateSystem(namedtuple('CoordinateSystem', 'origin i_hat j_hat')):
         i_hat, j_hat and k_hat stored in columns ('matrice de passage' de la base locale vers GCS).
         TODO: different convention as stated in header of the file
     """
-    __slots__ = ()
+    __slots__ = ['_origin', '_i_hat', '_j_hat']
 
-    def __new__(cls, origin, i_hat, j_hat):
+    def __init__(self, origin, i_hat, j_hat):
+        # init values
+        self._i_hat = None
+        self._j_hat = None
+        self._origin = None
+
+        # use the setters (they check the data for us):
+        self.origin = origin
+        self.i_hat = i_hat
+        self.j_hat = j_hat
+
+    @property
+    def i_hat(self):
+        return self._i_hat
+
+    @i_hat.setter
+    def i_hat(self, i_hat):
         i_hat = np.asarray(i_hat)
-        j_hat = np.asarray(j_hat)
-        origin = np.asarray(origin)
-        get_shape_safely(i_hat, 'i_hat', (3,))
-        get_shape_safely(j_hat, 'j_hat', (3,))
-        get_shape_safely(origin, 'origin', (3,))
+        if i_hat.shape != (3,):
+            raise ValueError
+
         if not np.isclose(norm2(*i_hat), 1.0):
             raise ValueError("Vector must be normalised.")
+        self._i_hat = i_hat
+
+    @property
+    def j_hat(self):
+        return self._j_hat
+
+    @j_hat.setter
+    def j_hat(self, j_hat):
+        j_hat = np.asarray(j_hat)
+        if j_hat.shape != (3,):
+            raise ValueError
+
         if not np.isclose(norm2(*j_hat), 1.0):
             raise ValueError("Vector must be normalised.")
-        if not np.isclose(i_hat @ j_hat, 0.):
-            raise ValueError("The vectors must be orthogonal.")
+        self._j_hat = j_hat
 
-        return super().__new__(cls, origin, i_hat, j_hat)
+    @property
+    def origin(self):
+        return self._origin
+
+    @origin.setter
+    def origin(self, origin):
+        origin = np.asarray(origin)
+        if origin.shape != (3,):
+            raise ValueError
+        self._origin = origin
 
     @property
     def k_hat(self):
@@ -452,6 +480,9 @@ class CoordinateSystem(namedtuple('CoordinateSystem', 'origin i_hat j_hat')):
     def basis_matrix(self):
         # i_hat, j_hat and k_hat stored in columns
         return np.stack((self.i_hat, self.j_hat, self.k_hat), axis=1)
+
+    def copy(self):
+        return self.__class__(self.origin.copy(), self.i_hat.copy(), self.j_hat.copy())
 
 
 class Grid:

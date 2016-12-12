@@ -42,7 +42,8 @@ frame.probe = arim.probes['ima_50_MHz_128_1d']
 
 # Set probe reference point to first element
 # put the first element in O(0,0,0), then it will be in (0,0,z) later.
-frame.probe.locations.translate(-frame.probe.locations[0], inplace=True)
+frame.probe.set_reference_element('first')
+frame.probe.translate_to_point_O()
 
 #%% Velocities
 
@@ -88,8 +89,8 @@ numinterface2 = 1000
 probe = frame.probe.locations
 probe.name = 'Probe'
 
-xmin = -20e-3
-xmax = 100e-3
+xmin = -5e-3
+xmax = 115e-3
 
 frontwall = arim.geometry.Points.from_xyz(
     x=np.linspace(xmin, xmax, numinterface),
@@ -205,7 +206,7 @@ if PLOT_TFM:
             aplt.draw_rays_on_click(grid, tfm.tx_rays, element_index, ax, linestyle_tx)
             aplt.draw_rays_on_click(grid, tfm.rx_rays, element_index, ax, linestyle_rx)
 
-        ax.axis([-20e-3, 100e-3, 45e-3, -20e-3])
+        ax.axis([-5e-3, 115e-3, 45e-3, -20e-3])
         if SAVEFIG:
             ax.figure.savefig("fig_{:02}_{}.png".format(i, view.name), bbox_inches='tight')
 

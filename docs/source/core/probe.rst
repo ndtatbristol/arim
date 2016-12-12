@@ -14,13 +14,13 @@ the GCS and the PCS.
 
 The coordinates of the PCS expressed in the GCS are given in :attr:`Probe.pcs`.
 
-The conventional centre of the probe is defined as the point (0., 0., 0.) in the PCS. Usually, this corresponds either
-to first element of the element or the middle element. This can be changed by reassigning the attribute ``pcs`` with
-a new coordinate system centered where you want.
+The origin of the PCS is by definition the reference point of the probe. Depending on the convention, it can be
+the first element or the geometric centre of the probe. By default in arim, the geometric centre of the probe is used
+(average location of all elements). The reference point of a probe can be changed with the method
+:meth:`Probe.set_reference_element`.
 
-To move the probe: it is recommended to use methods ``rotate`` and ``translate`` instead of changing directly the
-attribute ``locations``.
-
+A probe can be moved using the methods ``rotate`` and ``translate``. These functions update the PCS. 
+It is not recommended to change directly the values of the attribute ``locations``.
 
 Limits:
 

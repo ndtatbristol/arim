@@ -314,6 +314,49 @@ class TestProbe:
         probe = probe.translate(translation)
         self.assert_probe_equal_in_pcs(probe, probe_bak)
 
+    def test_reference_element(self):
+        """
+        Test Probe.set_reference_element, Probe.flip_probe_around_axis_Oz, Probe.translate_to_point_0
+        """
+        allclose_kwargs = dict(rtol=0, atol=1e-9)
+        probe = self.linear_probe()
+        probe.set_reference_element('first')
+        probe.translate_to_point_O()
+        np.testing.assert_allclose(probe.locations.y, 0, **allclose_kwargs)
+        np.testing.assert_allclose(probe.locations.z, 0, **allclose_kwargs)
+        np.testing.assert_allclose(probe.locations[0], (0., 0., 0.), **allclose_kwargs)
+        np.testing.assert_allclose(probe.locations[-1], (9e-3, 0, 0), **allclose_kwargs)
+
+        probe = self.linear_probe()
+        probe.set_reference_element('last')
+        probe.translate_to_point_O()
+        np.testing.assert_allclose(probe.locations.y, 0., **allclose_kwargs)
+        np.testing.assert_allclose(probe.locations.z, 0., **allclose_kwargs)
+        np.testing.assert_allclose(probe.locations[0], (-9e-3, 0, 0), **allclose_kwargs)
+        np.testing.assert_allclose(probe.locations[-1], (0., 0., 0.), **allclose_kwargs)
+
+        probe = self.linear_probe()
+        probe.set_reference_element('last')
+        probe.flip_probe_around_axis_Oz()
+        probe.translate_to_point_O()
+        np.testing.assert_allclose(probe.locations.y, 0., **allclose_kwargs)
+        np.testing.assert_allclose(probe.locations.z, 0., **allclose_kwargs)
+        np.testing.assert_allclose(probe.locations[0], (9e-3, 0, 0), **allclose_kwargs)
+        np.testing.assert_allclose(probe.locations[-1], (0., 0., 0.), **allclose_kwargs)
+
+        probe = self.linear_probe()
+        probe.set_reference_element('mean')
+        probe.translate_to_point_O()
+        np.testing.assert_allclose(probe.locations.z, 0., **allclose_kwargs)
+        np.testing.assert_allclose(probe.locations.y, 0., **allclose_kwargs)
+        np.testing.assert_allclose(probe.locations[0], (-4.5e-3, 0., 0.), **allclose_kwargs)
+        np.testing.assert_allclose(probe.locations[-1], (+4.5e-3, 0, 0), **allclose_kwargs)
+
+        probe.flip_probe_around_axis_Oz()
+        np.testing.assert_allclose(probe.locations[0], (+4.5e-3, 0., 0.), **allclose_kwargs)
+        np.testing.assert_allclose(probe.locations[-1], (-4.5e-3, 0, 0), **allclose_kwargs)
+
+
     @staticmethod
     def assert_probe_equal_in_pcs(probe1, probe2):
         assert probe1.locations_pcs.allclose(probe2.locations_pcs)

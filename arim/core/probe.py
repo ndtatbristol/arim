@@ -105,7 +105,7 @@ class Probe:
         if metadata is None:
             metadata = {}
         if pcs is None:
-            pcs = g.GCS
+            pcs = g.GCS.copy()
 
         self.locations = locations
         self.dimensions = dimensions
@@ -141,7 +141,7 @@ class Probe:
     def make_matrix_probe(cls, numx, pitch_x, numy, pitch_y, frequency, *args, **kwargs):
         """
         Construct a matrix probe with ``numx × numy`` elements.
-        Elements are indexed as such: (X1, Y1), (X2, Y1), ..., (Xnumx, Y1), (X1, Y2), ...
+        Elements are indexed as follows: (X1, Y1), (X2, Y1), ..., (Xnumx, Y1), (X1, Y2), ...
 
         This class method is an alternative constructor for ``Probe``.
 
@@ -238,7 +238,7 @@ class Probe:
         rotation_matrix : ndarray
             3x3 matrix
         centre : Points or None
-            Centre of the rotation.
+            Centre of the rotation. If None: O(0, 0, 0) of GCS
 
         Returns
         -------
@@ -247,7 +247,7 @@ class Probe:
         """
         locations = self.locations.rotate(rotation_matrix, centre)
         if self.orientations is not None:
-            orientations = self.orientations.rotate(rotation_matrix, None)  # do not translate the orientations!
+            orientations = self.orientations.rotate(rotation_matrix, None)
         else:
             orientations = None
         pcs = self.pcs.rotate(rotation_matrix, centre)
@@ -305,3 +305,42 @@ class Probe:
         z = np.repeat(size_z, self.numelements)
         self.dimensions = g.Points.from_xyz(x, y, z)
         return self
+
+    def flip_probe_around_axis_Oz(self):
+        """
+        Flip probe around axis Oz by 180°.
+        """
+        rot = g.rotation_matrix_z(np.pi)
+        self.rotate(rot)
+
+    def set_reference_element(self, reference_element='first'):
+        """
+        Change the origin of the PCS to a given element.
+
+        Some prefer to have the reference point of the probe defined as the first element, some prefer
+        the centre of the probe, other change their mind over time. This function should please all of us.
+
+        Parameters
+        ----------
+        reference_element : float or str
+            Can be: an element integer (between 0 and ``numelements-1``) or: 'first' (alias to 0), 'last' (alias to -1),
+             'mean' (arithmetic mean of the centres of all elements).
+
+        """
+
+        if reference_element == 'first':
+            new_origin = self.locations[0]
+        elif reference_element == 'last':
+            new_origin = self.locations[-1]
+        elif reference_element == 'mean':
+            new_origin = self.locations.coords.mean(axis=0)
+        else:
+            new_origin = self.locations[reference_element]
+
+        self.pcs.origin = new_origin
+
+    def translate_to_point_O(self):
+        """
+        Move the probe such as its PCS is in point O(0, 0, 0).
+        """
+        self.translate(-self.pcs.origin)
