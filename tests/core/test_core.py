@@ -314,6 +314,39 @@ class TestProbe:
         probe = probe.translate(translation)
         self.assert_probe_equal_in_pcs(probe, probe_bak)
 
+
+    def test_reset_location(self):
+        probe = self.linear_probe()
+        probe2 = self.linear_probe()
+
+        # define a nasty isometry:
+        centre = np.array((1.1, 1.2, 1.3))
+        rotation = g.rotation_matrix_ypr(0.5, -0.6, 0.7)
+        translation = np.array((66., -77., 0.))
+        probe = probe.rotate(rotation, centre)
+        probe = probe.translate(translation)
+
+        # define a second isometry:
+        centre = np.array((4., 5., 6.))
+        rotation = g.rotation_matrix_ypr(0.1, -0.1, 0.3)
+        translation = np.array((8., 9., -10.))
+        probe2.rotate(rotation, centre)
+        probe2.translate(translation)
+
+        # check they are now not equal:
+        with pytest.raises(AssertionError):
+            assert not np.testing.assert_allclose(probe.locations, probe2.locations)
+        assert not probe.pcs.isclose(probe2.pcs)
+
+        probe.reset_position()
+        probe2.reset_position()
+        assert g.GCS.isclose(probe.pcs)
+        assert g.GCS.isclose(probe2.pcs)
+        self.assert_probe_equal_in_gcs(probe, probe2)
+        self.assert_probe_equal_in_pcs(probe, probe2)
+
+
+
     def test_reference_element(self):
         """
         Test Probe.set_reference_element, Probe.flip_probe_around_axis_Oz, Probe.translate_to_point_0
@@ -356,12 +389,20 @@ class TestProbe:
         np.testing.assert_allclose(probe.locations[0], (+4.5e-3, 0., 0.), **allclose_kwargs)
         np.testing.assert_allclose(probe.locations[-1], (-4.5e-3, 0, 0), **allclose_kwargs)
 
-
     @staticmethod
     def assert_probe_equal_in_pcs(probe1, probe2):
         assert probe1.locations_pcs.allclose(probe2.locations_pcs)
         assert probe1.dimensions.allclose(probe2.dimensions)
         assert probe1.orientations_pcs.allclose(probe2.orientations_pcs)
+        assert np.all(probe1.dead_elements == probe2.dead_elements)
+        assert np.all(probe1.shapes == probe2.shapes)
+
+    @staticmethod
+    def assert_probe_equal_in_gcs(probe1, probe2):
+        assert probe1.pcs.isclose(probe2.pcs)
+        assert probe1.locations.allclose(probe2.locations)
+        assert probe1.dimensions.allclose(probe2.dimensions)
+        assert probe1.orientations.allclose(probe2.orientations)
         assert np.all(probe1.dead_elements == probe2.dead_elements)
         assert np.all(probe1.shapes == probe2.shapes)
 

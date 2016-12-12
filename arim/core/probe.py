@@ -38,7 +38,7 @@ class Probe:
         Cf. corresponding attribute. Default: all elements are working.
     bandwidth :
         Cf. corresponding attribute. Default: None
-    pcs :
+    pcs : CoordinateSystem
         Cf. corresponding attribute. Default: PCS = GCS
     metadata :
         Cf. corresponding attribute. Default: empty dictionary
@@ -344,3 +344,15 @@ class Probe:
         Move the probe such as its PCS is in point O(0, 0, 0).
         """
         self.translate(-self.pcs.origin)
+
+    def reset_position(self):
+        """
+        Translate and rotate the probe such as its PCS coincides with the GCS. Returns None.
+        """
+        self.translate_to_point_O()
+
+        # inverse rotation:
+        rotation_matrix = np.stack((self.pcs.i_hat, self.pcs.j_hat, self.pcs.k_hat), axis=0)
+
+        self.rotate(rotation_matrix)
+
