@@ -25,9 +25,31 @@ __all__ = ['FermatSolver', 'FermatPath', 'Rays', 'ray_tracing']
 
 logger = logging.getLogger(__name__)
 
-def ray_tracing(views_list):
-    pass
 
+def ray_tracing(views_list):
+    """
+    Perform the ray tracing for different views. Save the result in ``Path.rays``.
+
+    Parameters
+    ----------
+    views : List[View] or Dict[View]
+
+    Returns
+    -------
+    None
+
+    """
+    # Ray tracing:
+    paths_set = set(v.tx_path for v in views_list) | set(v.rx_path for v in views_list)
+    paths_tuple = tuple(paths_set)
+    fermat_paths_tuple = tuple(FermatPath.from_path(path) for path in paths_tuple)
+
+    fermat_solver = FermatSolver(fermat_paths_tuple)
+    rays_dict = fermat_solver.solve()
+
+    # Save results in attribute path.rays:
+    for path, fermat_path in zip(paths_tuple, fermat_paths_tuple):
+        path.rays = rays_dict[fermat_path]
 
 
 class Rays:
@@ -351,7 +373,6 @@ class Rays:
             yield None, None
         else:
             yield None
-
 
     def get_incoming_angles(self, interfaces, return_distances=False):
         """
@@ -710,5 +731,3 @@ class FermatSolver:
             if key != rkey:  # if points1 and points2 are the same!
                 self.cached_distance[rkey] = distance.T
         return Rays.make_rays_two_interfaces(distance / speed, path, self.dtype_indices)
-
-

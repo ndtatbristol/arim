@@ -174,6 +174,8 @@ class Path:
         Mode for each leg.
 
         Lenght: numinterfaces - 1
+    rays : Rays
+        Results of ray tracing.
     name : str or None
         Name (optional)
     """
