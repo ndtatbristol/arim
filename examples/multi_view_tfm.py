@@ -16,6 +16,7 @@ import numpy as np
 
 import arim
 import arim.plot as aplt
+from arim.registration import registration_by_flat_frontwall_detection
 
 #%% Output and parameters
 
@@ -33,6 +34,7 @@ logging.basicConfig()
 logger = logging.getLogger("multi_view_tfm")
 logger.setLevel(logging.INFO)
 logger.info("Start script")
+logging.getLogger("arim").setLevel(logging.INFO)
 
 #%% Load frame
 
@@ -43,7 +45,6 @@ frame.probe = arim.probes['ima_50_MHz_128_1d']
 # Set probe reference point to first element
 # put the first element in O(0,0,0), then it will be in (0,0,z) later.
 frame.probe.set_reference_element('first')
-frame.probe.translate_to_point_O()
 
 #%% Velocities
 
@@ -60,7 +61,7 @@ frame.apply_filter(arim.signal.Abs() + arim.signal.Hilbert())
 ax, imag = aplt.plot_bscan_pulse_echo(frame, clim=[-40, 0])
 
 # Detect frontwall:
-time_to_surface = arim.registration.detect_surface_from_extrema(frame, tmin=10e-6, tmax=30e-6)
+_, _, time_to_surface = registration_by_flat_frontwall_detection(frame, couplant, tmin=10e-6, tmax=30e-6)
 
 if PLOT_TIME_TO_SURFACE:
     plt.figure()
@@ -71,14 +72,6 @@ if PLOT_TIME_TO_SURFACE:
     plt.gca().yaxis.set_minor_formatter(aplt.us_formatter)
 
     plt.title('time between elements and frontwall - must be a line!')
-
-
-# Move probe:
-distance_to_surface = time_to_surface * v_couplant / 2
-frame, iso = arim.registration.move_probe_over_flat_surface(frame, distance_to_surface, full_output=True)
-
-logger.info('probe orientation: {:.2f}°'.format(np.rad2deg(iso.theta)))
-logger.info('probe distance (min): {:.2f} mm'.format(-1e3*iso.z_o))
 
 # -------------------------------------------------------------------------
 #%% Define interfaces

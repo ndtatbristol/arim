@@ -1,7 +1,9 @@
 import numpy as np
 import pytest
 import arim.registration as reg
+from unittest.mock import Mock
 
+import arim
 import arim.geometry as g
 import arim.utils as u
 from arim import Time, ExaminationObject, Material, Frame, Probe
@@ -14,6 +16,20 @@ _MOVE_PROBE_ON_OXY_DATA = [
 ]
 
 
+def test_manual_registration():
+    from .core.test_core import TestProbe
+    probe = TestProbe().linear_probe()
+    frame = Mock(spec=['probe'])
+    frame.probe = probe
+
+    theta = np.deg2rad(10)
+    standoff = 15e-3
+    reg.manual_registration(frame, theta, standoff)
+    np.testing.assert_allclose(frame.probe.pcs.origin, (0, 0, standoff))
+    np.testing.assert_allclose(frame.probe.pcs.i_hat, (np.cos(theta), 0, -np.sin(theta)))
+    np.testing.assert_allclose(frame.probe.pcs.k_hat, (np.sin(theta), 0, np.cos(theta)))
+
+
 @pytest.mark.parametrize("A,B,dA,dB", _MOVE_PROBE_ON_OXY_DATA)
 def test_move_probe_over_flat_surface_ideal(A, B, dA, dB):
     """Test move_probe_over_flat_surface() with 2 elements"""
@@ -21,8 +37,8 @@ def test_move_probe_over_flat_surface_ideal(A, B, dA, dB):
     B = np.asarray(B, dtype=np.float)
 
     # Setup: a 2-element points1
-    locations = g.Points(np.array([A, B])) # locations in PCS
-    probe = Probe(locations, 1e6) # NB: assume PCS=GCS at this point
+    locations = g.Points(np.array([A, B]))  # locations in PCS
+    probe = Probe(locations, 1e6)  # NB: assume PCS=GCS at this point
 
     tx = np.array([0, 0, 1])
     rx = np.array([0, 1, 1])
