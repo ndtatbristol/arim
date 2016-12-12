@@ -110,14 +110,7 @@ class Frame:
         self.scanlines = filt(self.scanlines_raw)
         assert self.scanlines.shape == self.scanlines_raw.shape
         self.metadata['filter'] = str(filt)
-        
-        if self.scanlines.dtype.kind == 'c':
-            if self.scanlines.dtype != s.COMPLEX:
-                self.scanlines = np.squeeze(self.scanlines.astype(s.COMPLEX))
-        elif self.scanlines.dtype.kind == 'f':
-            if self.scanlines.dtype != s.FLOAT:
-                self.scanlines = np.squeeze(self.scanlines.astype(s.FLOAT))
-        
+
         return self.scanlines
 
     def get_scanline(self, tx, rx, use_raw=False):
