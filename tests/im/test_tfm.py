@@ -1,5 +1,7 @@
 import numpy as np
 import pytest
+from unittest.mock import Mock, patch
+import math
 
 import arim
 import arim.im as im
@@ -41,6 +43,51 @@ class TestTFM:
         speed = 6300
         tfm = im.ContactTFM(speed, frame=frame, grid=grid)
         res = tfm.run()
+
+    def test_extrema_lookup_times_in_rectbox(self, grid, probe):
+        frame = Mock(spec='tx rx metadata numscanlines probe')
+        tx = [0, 0, 0, 1, 1, 1]
+        rx = [0, 1, 2, 1, 1, 2]
+        frame.tx = tx
+        frame.rx = rx
+        frame.numscanlines = len(tx)
+        frame.probe = probe
+
+        lookup_times_tx = np.zeros((grid.numpoints, len(tx)))
+        lookup_times_rx = np.zeros((grid.numpoints, len(tx)))
+
+        # scanline 5 (tx=1, rx=2) is the minimum time:
+        grid_idx = 5
+        lookup_times_tx[grid_idx, 5] = -1.5
+        lookup_times_rx[grid_idx, 5] = -1.5
+        # some noise:
+        lookup_times_tx[grid_idx, 4] = -2.
+        lookup_times_rx[grid_idx, 4] = -0.1
+
+        # scanline 1 (tx=0, rx=1) is the maximum time:
+        grid_idx = 3
+        lookup_times_tx[grid_idx, 1] = 1.5
+        lookup_times_rx[grid_idx, 1] = 1.5
+        # some noise:
+        lookup_times_tx[0, 0] = 2.
+        lookup_times_rx[0, 0] = 0.1
+
+        with patch.object(im.BaseTFM, 'get_lookup_times_tx', return_value=lookup_times_tx):
+            with patch.object(im.BaseTFM, 'get_lookup_times_rx', return_value=lookup_times_rx):
+                tfm = im.BaseTFM(frame, grid)
+                out = tfm.extrema_lookup_times_in_rectbox()
+        assert math.isclose(out.tmin, -3.)
+        assert math.isclose(out.tmax, 3.)
+        assert out.tx_elt_for_tmin == 1
+        assert out.rx_elt_for_tmin == 2
+        assert out.tx_elt_for_tmax == 0
+        assert out.rx_elt_for_tmax == 1
+
+
+
+
+
+
 
 
 class TestAmplitude:

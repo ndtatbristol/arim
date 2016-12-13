@@ -4,6 +4,7 @@ This module defines classes to perform TFM and TFM-like imaging.
 
 import numpy as np
 import warnings
+from collections import namedtuple
 
 from .. import geometry as g
 from .amplitudes import UniformAmplitudes, AmplitudesRemoveExtreme
@@ -13,8 +14,11 @@ from .. import core
 from ..core import Frame, FocalLaw, View
 from ..enums import CaptureMethod
 from ..path import IMAGING_MODES  # import for backward compatibility
+import numba
 
 __all__ = ['BaseTFM', 'ContactTFM', 'SingleViewTFM', 'IMAGING_MODES']
+
+ExtramaLookupTimes = namedtuple('ExtramaLookupTimes', 'tmin tmax tx_elt_for_tmin rx_elt_for_tmin tx_elt_for_tmax rx_elt_for_tmax')
 
 
 class BaseTFM:
@@ -167,7 +171,7 @@ class BaseTFM:
         return self._geom_probe_to_grid
 
     def maximum_intensity_in_rectbox(self, xmin=None, xmax=None, ymin=None, ymax=None,
-        zmin=None, zmax=None):
+                                     zmin=None, zmax=None):
         """
         Returns the maximum absolute intensity of the TFM image in the rectangular box
         defined by the parameters. If a parameter is None, the box is unbounded in the
@@ -191,8 +195,47 @@ class BaseTFM:
         """
         assert self.res is not None
         area_of_interest = self.grid.points_in_rectbox(xmin, xmax, ymin, ymax,
-            zmin, zmax)
+                                                       zmin, zmax)
         return np.nanmax(np.abs(self.res[area_of_interest]))
+
+    def extrema_lookup_times_in_rectbox(self, xmin=None, xmax=None, ymin=None, ymax=None,
+                                        zmin=None, zmax=None):
+        """
+        Returns the minimum and maximum of the lookup times in an rectangular box.
+        The output is returned as a named tuple for convenience.
+
+        Parameters
+        ----------
+        xmin : float or None
+        xmax : float or None
+        ymin : float or None
+        ymax : float or None
+        zmin : float or None
+        zmax : float or None
+
+        Returns
+        -------
+        out : ExtramaLookupTimes
+            Respectively: returns the minimum and maximum times (fields ``tmin`` and ``tmax``) and the elements indices
+            corresponding to these values. If several couples of elements are matching, the first couple is returned.
+
+        Notes
+        -----
+
+            $$\min\limits_{i,j}{\(a_i + b_j\)} = \min\limits_{i}{a_i} + \min\limits_{j}{b_j}$$
+
+        """
+        area_of_interest = self.grid.points_in_rectbox(xmin, xmax, ymin, ymax,
+                                                       zmin, zmax).ravel()
+
+        all_lookup_times_tx = self.get_lookup_times_tx()
+        all_lookup_times_rx = self.get_lookup_times_rx()
+        lookup_times_tx = np.ascontiguousarray(all_lookup_times_tx[area_of_interest, ...])
+        lookup_times_rx = np.ascontiguousarray(all_lookup_times_rx[area_of_interest, ...])
+        tx = np.ascontiguousarray(self.frame.tx)
+        rx = np.ascontiguousarray(self.frame.rx)
+        out = _extrema_lookup_times(lookup_times_tx, lookup_times_rx, tx, rx)
+        return ExtramaLookupTimes(*out)
 
 
 class ContactTFM(BaseTFM):
@@ -236,10 +279,10 @@ class SingleViewTFM(BaseTFM):
         tx_rays = view.tx_path.rays
         rx_rays = view.rx_path.rays
 
-        #assert rays_rx.indices.flags.fortran
-        #assert rays_tx.indices.flags.fortran
-        #assert rays_tx.times.flags.fortran
-        #assert rays_rx.times.flags.fortran
+        # assert rays_rx.indices.flags.fortran
+        # assert rays_tx.indices.flags.fortran
+        # assert rays_tx.times.flags.fortran
+        # assert rays_rx.times.flags.fortran
         assert tx_rays.path[0] is frame.probe.locations
         assert rx_rays.path[0] is frame.probe.locations
         assert tx_rays.path[-1] is grid.as_points
@@ -320,3 +363,27 @@ class SingleViewTFM(BaseTFM):
 
         return views
 
+
+@numba.jit(nopython=True)
+def _extrema_lookup_times(lookup_times_tx, lookup_times_rx, tx_list, rx_list):
+    numpoints, _ = lookup_times_tx.shape
+    numscanlines = tx_list.shape[0]
+    tmin = np.inf
+    tmax = -np.inf
+    tx_elt_for_tmin = tx_list[0]
+    tx_elt_for_tmax = tx_list[0]
+    rx_elt_for_tmin = rx_list[0]
+    rx_elt_for_tmax = rx_list[0]
+
+    for point in range(numpoints):
+        for scanline in range(numscanlines):
+            t = lookup_times_tx[point, scanline] + lookup_times_rx[point, scanline]
+            if t > tmax:
+                tmax = t
+                tx_elt_for_tmax = tx_list[scanline]
+                rx_elt_for_tmax = rx_list[scanline]
+            if t < tmin:
+                tmin = t
+                tx_elt_for_tmin = tx_list[scanline]
+                rx_elt_for_tmin = rx_list[scanline]
+    return tmin, tmax, tx_elt_for_tmin, rx_elt_for_tmin, tx_elt_for_tmax, rx_elt_for_tmax
