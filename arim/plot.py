@@ -1,10 +1,43 @@
 """
 Plotting utilities
+
+Some default values are configurable via the dictionary ``arim.plot.conf``.
+
+.. py:data:: conf
+
+    Dictionary of default values. For some functions, if an argument is not populated,
+    its values will be populated from this dictionary. Example::
+
+        # save the figure (independently on conf['savefig])
+        plot_oyz(data, grid, savefig=True, filename='foo')
+
+        # do not save the figure independently on conf['savefig])
+        plot_oyz(data, grid, savefig=False, filename='foo')
+
+        # save the figure depending only if conf['savefig'] is True
+        plot_oyz(data, grid, filename='foo')
+
+.. py:data:: mm_formatter
+
+    Format an axis whose values are in meter to millimeter. Usage::
+
+        ax = plt.plot(distance_vector, data)
+        ax.xaxis.set_major_formatter(mm_formatter)
+
+.. py:data:: us_formatter
+
+    Format an axis whose values are in second to microsecond. Usage::
+
+        ax = plt.plot(time_vector, data)
+        ax.xaxis.set_major_formatter(us_formatter)
+
+
 """
 
 import functools
 from warnings import warn
 import logging
+import os
 
 import matplotlib as mpl
 from matplotlib import ticker
@@ -14,15 +47,24 @@ import numpy as np
 from . import utils, model
 from .exceptions import ArimWarning
 from . import geometry as g
+from .config import Config
 
 __all__ = ['mm_formatter', 'us_formatter',
            'plot_bscan_pulse_echo', 'plot_oxz', 'plot_tfm', 'plot_directivity_finite_width_2d',
-           'draw_rays_on_click', 'RayPlotter']
+           'draw_rays_on_click', 'RayPlotter', 'conf']
 
 logger = logging.getLogger(__name__)
 
 mm_formatter = ticker.FuncFormatter(lambda x, pos: '{:.1f}'.format(x * 1e3))
 us_formatter = ticker.FuncFormatter(lambda x, pos: '{:.1f}'.format(x * 1e6))
+
+conf = Config([
+    ('savefig', False),  # save the figure?
+    ('plot_oxz.figsize', None),
+    ('plot_oxz.axis_limits', None),
+    ('plot_oxz.add_scale_to_title', True),
+    ('plot_oxz.add_scale_to_filename', True),
+])
 
 
 def _elements_ticker(i, pos, elements):
@@ -35,6 +77,25 @@ def _elements_ticker(i, pos, elements):
 
 def plot_bscan_pulse_echo(frame, use_dB=True, ax=None, title='B-scan', clim=None, interpolation='none', draw_cbar=True,
                           cmap=None):
+    """
+    Plot a B-scan. Use the pulse-echo scanlines.
+
+    Parameters
+    ----------
+    frame
+    use_dB
+    ax
+    title
+    clim
+    interpolation
+    draw_cbar
+    cmap
+
+    Returns
+    -------
+    axis, image
+
+    """
     if ax is None:
         fig, ax = plt.subplots()
     else:
@@ -80,20 +141,106 @@ def plot_bscan_pulse_echo(frame, use_dB=True, ax=None, title='B-scan', clim=None
     return ax, im
 
 
-def plot_oxz(data, grid, ax=None, title=None, clim=None, interpolation='none', draw_cbar=True, cmap=None):
+def plot_oxz(data, grid, ax=None, title=None, clim=None, interpolation='none',
+             draw_cbar=True, cmap=None, axis_limits=None, figsize=None, savefig=None,
+             filename=None, scale='none', add_scale_to_title=True,
+             add_scale_to_filename=True, ref_db=None,
+             ):
     """
-    Plot an image on plane Oxz.
+    Plot data in the plane Oxz.
+
+    Parameters
+    ----------
+    data : ndarray
+        Shape: 2D matrix ``(grid.numx, grid.numz)`` or 3D matrix ``(grid.numx, 1, grid.numz)``
+    grid : Grid
+    ax : matplotlib.Axis or None
+        Axis where to plot.
+    title : str or None
+    clim : List[Float] or None
+    interpolation : str or None
+    draw_cbar : boolean
+    cmap
+    axis_limits
+    figsize
+    savefig : boolean or None
+        If True, save the figure. Default: ``conf['savefig']``
+    filename : str or None
+        If True
+    scale : str or None
+        Default: 'none'
+    add_scale_to_title : str or None
+        Add the name of the scale in the title. Default: ``conf['plot_oyz.add_scale_to_title']``
+    add_scale_to_filename
+        Add the name of the scale in the filename. Default: ``conf['plot_oyz.add_scale_to_filename']``
+    ref_db
+
+    Returns
+    -------
+    axis, image
+
+    Examples
+    --------
+    ::
+
+        grid = arim.geometry.Grid(-5e-3, 5e-3, 0, 0, 0, 15e-3, .1e-3)
+        k = 2 * np.pi / 10e-3
+        data = (np.cos(grid.xx * 2 * k) * np.sin(grid.zz * k))
+        ax, im = aplt.plot_oxz(data, grid)
+
+
     """
+    if figsize is None:
+        figsize = conf['plot_oxz.figsize']
+    else:
+        if ax is not None:
+            warn('figsize is ignored because an axis is provided', ArimWarning)
+    if axis_limits is None:
+        axis_limits = conf['plot_oxz.axis_limits']
+    if savefig is None:
+        savefig = conf['savefig']
+    if add_scale_to_title:
+        add_scale_to_title = conf['plot_oxz.add_scale_to_title']
+    if add_scale_to_filename:
+        add_scale_to_filename = conf['plot_oxz.add_scale_to_filename']
+
     if ax is None:
-        fig, ax = plt.subplots()
+        fig, ax = plt.subplots(figsize=figsize)
     else:
         fig = ax.figure
 
-    assert data.ndim == 2
-    if data.shape != (grid.numx, grid.numz):
-        warn('The shape of the data is not (grid.numx, grid.numz).', ArimWarning)
+    if data.ndim == 3 and data.shape == (grid.numx, 1, grid.numz):
+        data = data.reshape((grid.numx, grid.numz))
+    elif data.ndim == 2 and data.shape == (grid.numx, grid.numz):
+        pass
+    else:
+        raise ValueError('invalid data shape (got {}, expected {} or {})'.format(data.shape, (grid.numx, 1, grid.numz),
+                                                                                (grid.numx, grid.numz)))
 
     data = np.rot90(data)
+
+    scale = scale.lower()
+    if scale == 'linear':
+        if ref_db is not None:
+            warn("ref_db is ignored for linear plot", ArimWarning)
+        filename_scale = '_linear'
+        title_scale = ' [lin. scale]'
+    elif scale == 'db':
+        filename_scale = '_db'
+        title_scale = ' [dB scale]'
+        data = utils.decibel(data, ref_db)
+    elif scale == 'none':
+        filename_scale = ''
+        title_scale = ''
+    else:
+        raise ValueError('invalid scale: {}'.format(scale))
+    if not add_scale_to_filename:
+        # overwrite:
+        filename_scale = ''
+    if not add_scale_to_title:
+        # overwrite:
+        title_scale = ''
+
     image = ax.imshow(data, interpolation=interpolation, origin='lower',
                       extent=(grid.xmin, grid.xmax, grid.zmax, grid.zmin),
                       cmap=cmap)
@@ -108,9 +255,17 @@ def plot_oxz(data, grid, ax=None, title=None, clim=None, interpolation='none', d
     if clim is not None:
         image.set_clim(clim)
     if title is not None:
-        ax.set_title(title)
+        ax.set_title(title + title_scale)
 
     ax.axis('equal')
+    if axis_limits is not None:
+        ax.axis(axis_limits)
+    if savefig:
+        if filename is None:
+            raise ValueError('filename must be provided when savefig is true')
+        root, ext = os.path.splitext(filename)
+        filename = root + filename_scale + ext
+        fig.savefig(filename)
     return ax, image
 
 
