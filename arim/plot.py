@@ -247,19 +247,23 @@ def plot_oxz_many(data_list, grid, nrows, ncols, title_list=None, suptitle=None,
                   draw_colorbar=True, figsize=None, savefig=None, clim=None, filename=None,
                   y_title=1.0, y_suptitle=1.0, **plot_oxz_kwargs):
     """
+    Plot many Oxz plots on the same figure.
 
     Parameters
     ----------
-    data_list
-    grid
-    nrows
-    ncols
-    title_list
-    suptitle
-    draw_colorbar
+    data_list : List[ndarray]
+        Data are plotted from top left to bottom right, row per row.
+    grid : Grid
+    nrows : int
+    ncols : int
+    title_list : List[str] or None
+    suptitle : str or None
+    draw_colorbar : boolean
+        Default: True
     figsize : List[Float] or None
         Default: ``conf['plot_oxz_many.figsize']``
-    savefig
+    savefig: boolean
+        Default: ``conf['savefig']``
     clim :
         Color limit. Common for all plots.
     filename
@@ -272,6 +276,8 @@ def plot_oxz_many(data_list, grid, nrows, ncols, title_list=None, suptitle=None,
 
     Returns
     -------
+    ax_list
+    im_list
 
     """
     if savefig is None:
