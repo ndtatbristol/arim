@@ -50,7 +50,7 @@ from . import geometry as g
 from .config import Config
 
 __all__ = ['mm_formatter', 'us_formatter',
-           'plot_bscan_pulse_echo', 'plot_oxz', 'plot_tfm', 'plot_directivity_finite_width_2d',
+           'plot_bscan_pulse_echo', 'plot_oxz', 'plot_oxz_many', 'plot_tfm', 'plot_directivity_finite_width_2d',
            'draw_rays_on_click', 'RayPlotter', 'conf']
 
 logger = logging.getLogger(__name__)
@@ -64,6 +64,9 @@ conf = Config([
     ('plot_oxz.axis_limits', None),
     ('plot_oxz.add_scale_to_title', True),
     ('plot_oxz.add_scale_to_filename', True),
+
+    ('plot_oxz_many.figsize', None),
+
 ])
 
 
@@ -217,7 +220,7 @@ def plot_oxz(data, grid, ax=None, title=None, clim=None, interpolation='none',
         pass
     else:
         raise ValueError('invalid data shape (got {}, expected {} or {})'.format(data.shape, (grid.numx, 1, grid.numz),
-                                                                                (grid.numx, grid.numz)))
+                                                                                 (grid.numx, grid.numz)))
 
     data = np.rot90(data)
 
@@ -260,8 +263,7 @@ def plot_oxz(data, grid, ax=None, title=None, clim=None, interpolation='none',
         ax.set_title(title + title_scale)
 
     ax.axis('equal')
-    if axis_limits is not None:
-        ax.axis(axis_limits)
+    ax.axis([grid.xmin, grid.xmax, grid.zmax, grid.zmin])
     if savefig:
         if filename is None:
             raise ValueError('filename must be provided when savefig is true')
@@ -269,6 +271,48 @@ def plot_oxz(data, grid, ax=None, title=None, clim=None, interpolation='none',
         filename = root + filename_scale + ext
         fig.savefig(filename)
     return ax, image
+
+
+def plot_oxz_many(data_list, grid, nrows, ncols, title_list=None, suptitle=None,
+                  draw_colorbar=True, figsize=None, savefig=None, clim=None, filename=None,
+                  y_title=1.0, y_subtitle=1.0, **plot_oxz_kwargs):
+    if savefig is None:
+        savefig = conf['savefig']
+    if figsize is None:
+        figsize = conf['plot_oxz_many.figsize']
+
+    if title_list is None:
+        title_list = [None] * len(data_list)
+
+    # must use a common clim (otherwise the figure does not make sense)
+    if clim is None:
+        clim = (min(np.nanmin(x) for x in data_list), max(np.nanmax(x) for x in data_list))
+
+    fig, axes = plt.subplots(nrows=nrows, ncols=ncols, sharex=True, sharey=True,
+                             figsize=figsize)
+    images = []
+    for data, title, ax in zip(data_list, title_list, axes.ravel()):
+        # the current function handles saving fig, drawing the cbar and displaying the title
+        # so we prevent plot_oxz to do it.
+        ax, im = plot_oxz(data, grid, ax=ax, clim=clim, draw_cbar=False, savefig=False, **plot_oxz_kwargs, title=None)
+        images.append(im)
+        ax.set_xlabel('')
+        ax.set_ylabel('')
+        if title is not None:
+            ax.set_title(title, y=y_title)
+    for ax in axes[-1, :]:
+        ax.set_xlabel("x (mm)")
+    for ax in axes[:, 0]:
+        ax.set_ylabel("z (mm)")
+    if suptitle is not None:
+        fig.suptitle(suptitle, y=y_subtitle, size="x-large")
+    if draw_colorbar:
+        fig.colorbar(im, ax=axes.ravel().tolist())
+    if savefig:
+        if filename is None:
+            raise ValueError('filename must be provided when savefig is true')
+        fig.savefig(filename)
+    return axes, images
 
 
 def plot_tfm(tfm, y=0., func_res=None, ax=None, title='TFM', clim=None, interpolation='bilinear', draw_cbar=True,
