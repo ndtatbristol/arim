@@ -168,16 +168,18 @@ def plot_oxz(data, grid, ax=None, title=None, clim=None, interpolation='none',
     filename : str or None
         If True
     scale : str or None
-        Default: 'none'
+        'linear', 'db' or 'none. 'none' adds no mention of the scale in the figure. Default: 'none'
     add_scale_to_title : str or None
         Add the name of the scale in the title. Default: ``conf['plot_oyz.add_scale_to_title']``
     add_scale_to_filename
         Add the name of the scale in the filename. Default: ``conf['plot_oyz.add_scale_to_filename']``
-    ref_db
+    ref_db : float or None
+        Value for 0 dB. Used only for scale=db.
 
     Returns
     -------
-    axis, image
+    axis
+    image
 
     Examples
     --------

@@ -6,6 +6,7 @@ from .misc import get_git_version
 from .path import *
 
 from . import _probes, signal, geometry, io, im, registration, model, config
+from .geometry import Points, Grid
 
 probes = _probes.probes
 
