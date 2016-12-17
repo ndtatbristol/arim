@@ -23,7 +23,7 @@ def test_plot_oxz_many(show_plots):
     plt.close('all')
 
     ax_list, im_list = aplt.plot_oxz_many(data_list, grid, nrows, ncols, title_list=title_list,
-                                          suptitle='Many plots', figsize=figsize, y_subtitle=0.98)
+                                          suptitle='Many plots', figsize=figsize, y_suptitle=0.98)
     if show_plots:
         plt.show()
     else:
@@ -39,21 +39,11 @@ def test_plot_oxz(show_plots):
     ax, im = aplt.plot_oxz(data, grid)
     plt.close('all')
 
-    ax, im = aplt.plot_oxz(data.reshape((grid.numx, grid.numz)), grid)
-    plt.close('all')
-
-    # force export format to png
-    mpl.rcParams['savefig.format'] = 'png'
-
-    with tempfile.TemporaryDirectory() as dirname:
-        out_file = Path(dirname) / Path('toto')
-        ax, im = aplt.plot_oxz(data, grid, title='some linear stuff', scale='linear', savefig=True,
-                               filename=str(out_file))
-        if show_plots:
-            plt.show()
-        else:
-            plt.close('all')
-        assert (Path(dirname) / Path('toto_linear.png')).exists()
+    ax, im = aplt.plot_oxz(data.reshape((grid.numx, grid.numz)), grid, scale='linear', title='some linear stuff')
+    if show_plots:
+        plt.show()
+    else:
+        plt.close('all')
 
     with tempfile.TemporaryDirectory() as dirname:
         out_file = Path(dirname) / Path('toto.png')
@@ -63,5 +53,4 @@ def test_plot_oxz(show_plots):
             plt.show()
         else:
             plt.close('all')
-        real_filename = Path(dirname) / Path('toto_db.png')
-        assert real_filename.exists()
+        assert out_file.exists()

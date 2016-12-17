@@ -61,10 +61,6 @@ us_formatter = ticker.FuncFormatter(lambda x, pos: '{:.1f}'.format(x * 1e6))
 conf = Config([
     ('savefig', False),  # save the figure?
     ('plot_oxz.figsize', None),
-    ('plot_oxz.axis_limits', None),
-    ('plot_oxz.add_scale_to_title', True),
-    ('plot_oxz.add_scale_to_filename', True),
-
     ('plot_oxz_many.figsize', None),
 
 ])
@@ -145,9 +141,8 @@ def plot_bscan_pulse_echo(frame, use_dB=True, ax=None, title='B-scan', clim=None
 
 
 def plot_oxz(data, grid, ax=None, title=None, clim=None, interpolation='none',
-             draw_cbar=True, cmap=None, axis_limits=None, figsize=None, savefig=None,
-             filename=None, scale='none', add_scale_to_title=True,
-             add_scale_to_filename=True, ref_db=None,
+             draw_cbar=True, cmap=None, figsize=None, savefig=None,
+             filename=None, scale='linear', ref_db=None,
              ):
     """
     Plot data in the plane Oxz.
@@ -164,18 +159,14 @@ def plot_oxz(data, grid, ax=None, title=None, clim=None, interpolation='none',
     interpolation : str or None
     draw_cbar : boolean
     cmap
-    axis_limits
-    figsize
+    figsize : List[Float] or None
+        Default: ``conf['plot_oxz.figsize']``
     savefig : boolean or None
         If True, save the figure. Default: ``conf['savefig']``
     filename : str or None
         If True
     scale : str or None
-        'linear', 'db' or 'none. 'none' adds no mention of the scale in the figure. Default: 'none'
-    add_scale_to_title : str or None
-        Add the name of the scale in the title. Default: ``conf['plot_oyz.add_scale_to_title']``
-    add_scale_to_filename
-        Add the name of the scale in the filename. Default: ``conf['plot_oyz.add_scale_to_filename']``
+        'linear' or 'db'. Default: 'linear'
     ref_db : float or None
         Value for 0 dB. Used only for scale=db.
 
@@ -200,14 +191,8 @@ def plot_oxz(data, grid, ax=None, title=None, clim=None, interpolation='none',
     else:
         if ax is not None:
             warn('figsize is ignored because an axis is provided', ArimWarning)
-    if axis_limits is None:
-        axis_limits = conf['plot_oxz.axis_limits']
     if savefig is None:
         savefig = conf['savefig']
-    if add_scale_to_title:
-        add_scale_to_title = conf['plot_oxz.add_scale_to_title']
-    if add_scale_to_filename:
-        add_scale_to_filename = conf['plot_oxz.add_scale_to_filename']
 
     if ax is None:
         fig, ax = plt.subplots(figsize=figsize)
@@ -228,23 +213,10 @@ def plot_oxz(data, grid, ax=None, title=None, clim=None, interpolation='none',
     if scale == 'linear':
         if ref_db is not None:
             warn("ref_db is ignored for linear plot", ArimWarning)
-        filename_scale = '_linear'
-        title_scale = ' [lin. scale]'
     elif scale == 'db':
-        filename_scale = '_db'
-        title_scale = ' [dB scale]'
         data = utils.decibel(data, ref_db)
-    elif scale == 'none':
-        filename_scale = ''
-        title_scale = ''
     else:
         raise ValueError('invalid scale: {}'.format(scale))
-    if not add_scale_to_filename:
-        # overwrite:
-        filename_scale = ''
-    if not add_scale_to_title:
-        # overwrite:
-        title_scale = ''
 
     image = ax.imshow(data, interpolation=interpolation, origin='lower',
                       extent=(grid.xmin, grid.xmax, grid.zmax, grid.zmin),
@@ -260,22 +232,48 @@ def plot_oxz(data, grid, ax=None, title=None, clim=None, interpolation='none',
     if clim is not None:
         image.set_clim(clim)
     if title is not None:
-        ax.set_title(title + title_scale)
+        ax.set_title(title)
 
     ax.axis('equal')
     ax.axis([grid.xmin, grid.xmax, grid.zmax, grid.zmin])
     if savefig:
         if filename is None:
             raise ValueError('filename must be provided when savefig is true')
-        root, ext = os.path.splitext(filename)
-        filename = root + filename_scale + ext
         fig.savefig(filename)
     return ax, image
 
 
 def plot_oxz_many(data_list, grid, nrows, ncols, title_list=None, suptitle=None,
                   draw_colorbar=True, figsize=None, savefig=None, clim=None, filename=None,
-                  y_title=1.0, y_subtitle=1.0, **plot_oxz_kwargs):
+                  y_title=1.0, y_suptitle=1.0, **plot_oxz_kwargs):
+    """
+
+    Parameters
+    ----------
+    data_list
+    grid
+    nrows
+    ncols
+    title_list
+    suptitle
+    draw_colorbar
+    figsize : List[Float] or None
+        Default: ``conf['plot_oxz_many.figsize']``
+    savefig
+    clim :
+        Color limit. Common for all plots.
+    filename
+    y_title : float
+        Adjust y location of the titles.
+    y_suptitle : float
+        Adjust y location of the titles.
+
+    plot_oxz_kwargs
+
+    Returns
+    -------
+
+    """
     if savefig is None:
         savefig = conf['savefig']
     if figsize is None:
@@ -305,7 +303,7 @@ def plot_oxz_many(data_list, grid, nrows, ncols, title_list=None, suptitle=None,
     for ax in axes[:, 0]:
         ax.set_ylabel("z (mm)")
     if suptitle is not None:
-        fig.suptitle(suptitle, y=y_subtitle, size="x-large")
+        fig.suptitle(suptitle, y=y_suptitle, size="x-large")
     if draw_colorbar:
         fig.colorbar(im, ax=axes.ravel().tolist())
     if savefig:
