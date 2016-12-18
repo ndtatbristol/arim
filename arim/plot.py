@@ -221,8 +221,11 @@ def plot_oxz(data, grid, ax=None, title=None, clim=None, interpolation='none',
     image = ax.imshow(data, interpolation=interpolation, origin='lower',
                       extent=(grid.xmin, grid.xmax, grid.zmax, grid.zmin),
                       cmap=cmap)
-    ax.set_xlabel('x (mm)')
-    ax.set_ylabel('z (mm)')
+    if ax.get_xlabel() == '':
+        # avoid overwriting labels
+        ax.set_xlabel('x (mm)')
+    if ax.get_ylabel() == '':
+        ax.set_ylabel('z (mm)')
     ax.xaxis.set_major_formatter(mm_formatter)
     ax.xaxis.set_minor_formatter(mm_formatter)
     ax.yaxis.set_major_formatter(mm_formatter)
@@ -481,3 +484,102 @@ def draw_rays_on_click(grid, ray, element_index, ax=None, linestyle='m--', ):
     ray_plotter = RayPlotter(grid=grid, ray=ray, element_index=element_index, linestyle=linestyle)
     ray_plotter.connect(ax)
     return ray_plotter
+
+
+def plot_interfaces(interfaces_list, ax=None, show_probe=True, show_grid=False, show_orientations=False,
+                    n_arrows=10, title='Interfaces', savefig=None, markers=None, show_legend=True, quiver_kwargs=None):
+    """
+    Plot interfaces on the Oxz plane.
+
+    Assume the first interface is for the probe and the last is for the grid.
+
+    Parameters
+    ----------
+    interfaces_list : List[Interface]
+    ax : matplotlib.axis.Axis
+    show_probe : boolean
+        Default True
+    show_grid : boolean
+        Default: False
+    show_orientations : boolean
+        Plot arrows for the orientations. Default: False
+    n_arrows : int
+        Number of arrows per interface to plot.
+    title : str or None
+        Title to display. None for no title.
+    savefig : boolean
+        Default: ``conf['savefig']``. Save to file 'interfaces.png' (or other extension depending on your configuration).
+    markers : List[str]
+        Matplotlib markers for each interfaces. Default: '.' for probe, ',k' for the grid, '.' for the rest.
+    show_legend : boolean
+        Default True
+    quiver_kwargs : dict
+        Arguments for displaying the arrows (cf. matplotlib function 'quiver')
+
+    Returns
+    -------
+    ax : matplotlib.axis.Axis
+
+    """
+    if savefig is None:
+        savefig = conf['savefig']
+
+    if ax is None:
+        fig, ax = plt.subplots()
+    else:
+        fig = ax.figure
+
+    if quiver_kwargs is None:
+        quiver_kwargs = dict(width=0.0003)
+
+    numinterfaces = len(interfaces_list)
+
+    if markers is None:
+        markers = ['.'] + ['.'] * (numinterfaces - 2) + [',k']
+
+    for i, (interface, marker) in enumerate(zip(interfaces_list, markers)):
+        if i == 0 and not show_probe:
+            continue
+        if i == numinterfaces - 1 and not show_grid:
+            continue
+        line, = ax.plot(interface.points.x, interface.points.z, marker, label=interface.points.name)
+
+        if show_orientations:
+            # arrow every k points
+            k = len(interface.points) // n_arrows
+            if k == 0:
+                k = 1
+            # import pytest; pytest.set_trace()
+            ax.quiver(interface.points.x[::k],
+                      interface.points.z[::k],
+                      interface.orientations.x[::k, 2],
+                      interface.orientations.z[::k, 2],
+                      color=line.get_color(), units='xy', angles='xy',
+                      **quiver_kwargs)
+
+    # set labels only if there is none in the axis yet
+    if ax.get_xlabel() == '':
+        ax.set_xlabel('x (mm)')
+    if ax.get_ylabel() == '':
+        ax.set_ylabel('z (mm)')
+
+    ax.xaxis.set_major_formatter(mm_formatter)
+    ax.yaxis.set_major_formatter(mm_formatter)
+    ax.xaxis.set_minor_formatter(mm_formatter)
+    ax.yaxis.set_minor_formatter(mm_formatter)
+
+    if title is not None:
+        ax.set_title(title)
+
+    ylim = ax.get_ylim()
+    if ylim[0] < ylim[1]:
+        ax.invert_yaxis()
+
+    if show_legend:
+        ax.legend(loc='best')
+
+    ax.axis('equal')
+
+    if savefig:
+        fig.savefig("interfaces")
+    return ax
