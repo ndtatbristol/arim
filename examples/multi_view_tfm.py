@@ -61,7 +61,7 @@ frame.apply_filter(arim.signal.Abs() + arim.signal.Hilbert())
 ax, imag = aplt.plot_bscan_pulse_echo(frame, clim=[-40, 0])
 
 # Detect frontwall:
-_, _, time_to_surface = registration_by_flat_frontwall_detection(frame, couplant, tmin=10e-6, tmax=30e-6)
+_, _, time_to_surface = registration_by_flat_frontwall_detection(frame, arim.Material(v_couplant), tmin=10e-6, tmax=30e-6)
 
 if PLOT_TIME_TO_SURFACE:
     plt.figure()
