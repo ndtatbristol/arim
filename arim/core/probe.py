@@ -1,4 +1,5 @@
 from enum import IntEnum
+from collections.abc import Sequence
 
 import numpy as np
 
@@ -24,19 +25,24 @@ class Probe:
 
     Parameters
     ----------
-    locations :
+    locations : Points or array-like
+        Accepted array shape: ``(numelements, 3)``
         Cf. corresponding attribute.
-    frequency :
+    frequency : float
         Cf. corresponding attribute.
-    dimensions :
+    dimensions : Points or array-like
+        Accepted array shapes: ``(numelements, 3)`` or ``(3, )`` (if same for all).
         Cf. corresponding attribute. Default: None
-    orientations :
+    orientations : Points or array-like
+        Accepted array shapes: ``(numelements, 3)`` or ``(3, )`` (if same for all).
         Cf. corresponding attribute. Default: None
-    shapes :
+    shapes : ElementShape or List[ElementShape] or array-like
+        Accepted values: one value or ``numelements`` values.
         Cf. corresponding attribute. Default: None
-    dead_elements :
+    dead_elements : bool or List[bool]
+        Accepted values: one value or ``numelements`` values.
         Cf. corresponding attribute. Default: all elements are working.
-    bandwidth :
+    bandwidth : float
         Cf. corresponding attribute. Default: None
     pcs : CoordinateSystem
         Cf. corresponding attribute. Default: PCS = GCS
@@ -58,7 +64,7 @@ class Probe:
         Normal vector of elements surfaces in the GCS, towards the front of the probe. Norm: 1. 'None' if unknown.
     orientations_pcs : Points or None
         Normal vector of elements surfaces in the PCS, towards the front of the probe. Norm: 1. 'None' if unknown.
-    dead_elements : ndarray
+    dead_elements : ndarray of bool
         1D array of size `numelements`. For each element, ``True`` if the element is dead (not working), ``False`` if
         the element is working.
     shapes : ndarray of ElementShape
@@ -86,22 +92,35 @@ class Probe:
             metadata=None,
     ):
         # Check shape and dimensions
-        assert isinstance(locations, g.Points)
+        locations = g.aspoints(locations)
         numelements = len(locations)
+        assert locations.ndim == 1
         if dimensions is not None:
-            assert isinstance(dimensions, g.Points)
-            assert len(dimensions) == numelements
+            dimensions = g.aspoints(dimensions)
+            if dimensions.shape == ():
+                dimensions = g.Points(np.resize(dimensions.coords, (numelements, 3)), name=dimensions.name)
+            assert dimensions.shape == (numelements,)
         if orientations is not None:
-            assert isinstance(orientations, g.Points)
-            assert len(orientations) == numelements
+            orientations = g.aspoints(orientations)
+            if orientations.shape == ():
+                orientations = g.Points(np.resize(orientations.coords, (numelements, 3)), name=orientations.name)
+            assert orientations.shape == (numelements,)
         if shapes is not None:
-            _ = u.get_shape_safely(shapes, 'shapes', (numelements,))
-        if dead_elements is not None:
-            _ = u.get_shape_safely(dead_elements, 'dead_elements', (numelements,))
+            # force dtype=object in the case we got a IntEnum (which would be convert to int otherwise)
+            shapes = np.asarray(shapes, dtype=object)
+            if shapes.shape == ():
+                shapes = np.resize(shapes, (numelements,))
+            assert shapes.shape == (numelements,)
 
-        # Populate optional parameters
         if dead_elements is None:
             dead_elements = np.full((numelements,), False, dtype=np.bool)
+        else:
+            dead_elements = np.asarray(dead_elements, dtype=bool)
+            if dead_elements.shape == ():
+                dead_elements = np.resize(dead_elements, (numelements,))
+        assert dead_elements.shape == (numelements,)
+
+        # Populate optional parameters
         if metadata is None:
             metadata = {}
         if pcs is None:
@@ -115,8 +134,8 @@ class Probe:
         self.pcs = pcs
         self.metadata = metadata
         self.numelements = numelements
-        self.frequency = frequency
-        self.bandwidth = bandwidth
+        self.frequency = None if frequency is None else float(frequency)
+        self.bandwidth = None if bandwidth is None else float(bandwidth)
 
         # Try to infer probe_type:
         if self.metadata.get('probe_type', None) is None:
@@ -355,4 +374,3 @@ class Probe:
         rotation_matrix = np.stack((self.pcs.i_hat, self.pcs.j_hat, self.pcs.k_hat), axis=0)
 
         self.rotate(rotation_matrix)
-

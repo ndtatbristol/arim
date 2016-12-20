@@ -280,6 +280,68 @@ class TestProbe:
         str(probe)
         repr(probe)
 
+        assert probe.frequency is not None
+        assert isinstance(probe.locations, g.Points)
+        assert isinstance(probe.orientations, g.Points) or probe.orientations is None
+        assert isinstance(probe.dimensions, g.Points) or probe.dimensions is None
+        assert isinstance(probe.shapes, np.ndarray) or probe.shapes is None
+        assert isinstance(probe.dead_elements, np.ndarray) or probe.dead_elements is None
+
+    def test_linear_probe(self):
+        linear_probe = self.linear_probe()
+        self.test_probe(linear_probe)
+
+    def test_tolerant_probe(self):
+        probe_bak = self.linear_probe()
+
+        # that's a ndarray:
+        locations = probe_bak.locations.coords.copy()
+
+        # that's lists:
+        orientations = [probe_bak.orientations.x[0],
+                        probe_bak.orientations.y[0],
+                        probe_bak.orientations.z[0]]
+        dimensions = [probe_bak.dimensions.x[0],
+                      probe_bak.dimensions.y[0],
+                      probe_bak.dimensions.z[0]]
+
+        # that's just one value:
+        shapes = c.ElementShape.rectangular
+        dead_elements = False
+
+        bandwidth = probe_bak.bandwidth
+        frequency = probe_bak.frequency
+
+        pcs = probe_bak.pcs.copy()
+
+        # I love my new API:
+        probe = c.Probe(locations, frequency, dimensions, orientations, shapes, dead_elements, bandwidth, pcs=pcs)
+
+        self.test_probe(probe)
+        self.assert_probe_equal_in_gcs(probe, probe_bak)
+
+    def test_tolerant_linear_probe(self):
+        probe_bak = self.linear_probe()
+
+        # that's lists:
+        orientations = [probe_bak.orientations.x[0],
+                        probe_bak.orientations.y[0],
+                        probe_bak.orientations.z[0]]
+        dimensions = [probe_bak.dimensions.x[0],
+                      probe_bak.dimensions.y[0],
+                      probe_bak.dimensions.z[0]]
+
+        # that's just one value:
+        shapes = c.ElementShape.rectangular
+        dead_elements = False
+
+        probe = c.Probe.make_matrix_probe(pitch_x=1e-3, numx=10, pitch_y=np.nan, numy=1,
+                                          frequency=1e6, shapes=shapes,
+                                          orientations=orientations, dimensions=dimensions, bandwidth=0.5e6,
+                                          dead_elements=dead_elements)
+        self.test_probe(probe)
+        self.assert_probe_equal_in_gcs(probe, probe_bak)
+
     def linear_probe(self):
         numelements = 10
 
@@ -314,7 +376,6 @@ class TestProbe:
         probe = probe.translate(translation)
         self.assert_probe_equal_in_pcs(probe, probe_bak)
 
-
     def test_reset_location(self):
         probe = self.linear_probe()
         probe2 = self.linear_probe()
@@ -344,8 +405,6 @@ class TestProbe:
         assert g.GCS.isclose(probe2.pcs)
         self.assert_probe_equal_in_gcs(probe, probe2)
         self.assert_probe_equal_in_pcs(probe, probe2)
-
-
 
     def test_reference_element(self):
         """
