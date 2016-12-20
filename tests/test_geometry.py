@@ -258,6 +258,14 @@ points_parameters_ids = [
 ]
 
 
+def test_aspoints():
+    points = g.aspoints([1., 2., 3.])
+    assert points.shape == ()
+    assert points.x == 1.
+    assert points.y == 2.
+    assert points.z == 3.
+
+
 class TestPoints:
     @pytest.fixture(scope="class", params=points_parameters, ids=points_parameters_ids)
     def points(self, request):
@@ -551,6 +559,12 @@ class TestPoints:
         np.testing.assert_equal(points.points_in_rectbox(xmin=3.), [False, True, True, True, True])
         np.testing.assert_equal(points.points_in_rectbox(xmin=3., xmax=11), [False, True, True, True, False])
         np.testing.assert_equal(points.points_in_rectbox(xmin=3., zmax=8.), [False, True, True, False, False])
+
+    def test_aspoints(self, points):
+        assert g.aspoints(points) is points
+        points2 = g.aspoints(points.coords)
+        assert isinstance(points2, g.Points)
+        assert np.allclose(points.coords, points2.coords)
 
 
 class TestCoordinateSystem:

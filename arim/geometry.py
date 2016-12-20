@@ -35,11 +35,31 @@ from .core.cache import Cache, NoCache
 __all__ = ['rotation_matrix_x', 'rotation_matrix_y', 'rotation_matrix_z',
            'rotation_matrix_ypr', 'are_points_aligned', 'norm2', 'norm2_2d', 'direct_isometry_2d', 'points_in_rectbox',
            'direct_isometry_3d',
-           'Grid', 'Points', 'GCS', 'are_points_close', 'distance_pairwise',
+           'Grid', 'Points', 'GCS', 'are_points_close', 'distance_pairwise', 'aspoints',
            'GeometryHelper']
 import numba
 
 SphericalCoordinates = namedtuple('SphericalCoordinates', 'r theta phi')
+
+
+def aspoints(array_like):
+    """
+    Returns a Point object: the input itself if it is a point, or wrap the object
+    as a Point otherwise.
+
+    Parameters
+    ----------
+    array_like : Iterable or Points
+
+    Returns
+    -------
+    Points
+
+    """
+    if isinstance(array_like, Points):
+        return array_like
+    else:
+        return Points(array_like)
 
 
 class Points:
@@ -88,7 +108,10 @@ class Points:
 
     def __init__(self, coords, name=None):
         coords = np.asarray(coords)
-        assert coords.shape[-1] == 3
+        if coords.shape[-1] != 3:
+            msg = "The dimension of the coords array should be (..., 3)"
+            msg += " where 3 stands for x, y and z."
+            raise ValueError(msg)
 
         self.coords = coords
         self.name = name
