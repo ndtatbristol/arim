@@ -17,6 +17,7 @@ Submodules
 .. toctree::
 
    arim.cli
+   arim.config
    arim.enums
    arim.exceptions
    arim.geometry

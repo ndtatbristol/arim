@@ -491,18 +491,18 @@ class Grid:
 
     Attributes
     ----------
-    x: 1d array
+    x: ndarray
         Unique points along first axis
-    x: 1d array
+    y: ndarray
         Unique points along second axis
-    z: 1d array
+    z: ndarray
         Unique points along third axis
-    xx: 3d array
-        First coordinate of all points
-    yy: 3d array
-        Second coordinate of all points
-    zz: 3d array
-        Third coordinate of all points
+    xx: ndarray
+        First coordinate of all points. Shape: ``(numx, numy, numz)``
+    yy: ndarray
+        Second coordinate of all points. Shape: ``(numx, numy, numz)``
+    zz: ndarray
+        Third coordinate of all points. Shape: ``(numx, numy, numz)``
     dx, dy, dz: float
         Exact distance between points
     numx, numy, numz, numpoints
