@@ -1,5 +1,7 @@
 import pprint
 import re
+import copy
+import collections
 
 __all__ = ['Config']
 
@@ -58,3 +60,43 @@ class Config(dict):
         return self.__class__((key, value)
                               for key, value in self.items()
                               if pattern_re.search(key))
+
+    def copy(self):
+        """
+        Returns a deep copy of the object.
+        """
+        return copy.deepcopy(self)
+
+    def merge(self, conf):
+        """
+        Merge the dict-like parameter into the current object.
+        This is a recursive update.
+
+        Parameters
+        ----------
+        conf : dict
+            Dictionary or Config object
+
+        Returns
+        -------
+        None
+
+        Notes
+        -----
+        Adapted from `configobj <https://github.com/DiffSK/configobj/>`_, license BSD 3-clause
+        """
+        return recursive_dict_merge(self, conf)
+
+
+def recursive_dict_merge(base_dict, top_dict):
+    """
+    Merge `top_dict` to `base_dict`. This is a recursive version of::
+
+    base_dict.update(top_dict)
+    """
+    for key, val in list(top_dict.items()):
+        if (key in base_dict and isinstance(base_dict[key], collections.Mapping) and
+                isinstance(val, collections.Mapping)):
+            recursive_dict_merge(base_dict[key], val)
+        else:
+            base_dict[key] = val
