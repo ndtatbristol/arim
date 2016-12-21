@@ -86,9 +86,9 @@ def points_from_probe(probe, name='Probe'):
         points.name = name
 
     orientations_arr = np.zeros((3, 3), dtype=points.dtype)
-    orientations_arr[..., 0] = probe.pcs.i_hat
-    orientations_arr[..., 1] = probe.pcs.j_hat
-    orientations_arr[..., 2] = probe.pcs.k_hat
+    orientations_arr[0] = probe.pcs.i_hat
+    orientations_arr[1] = probe.pcs.j_hat
+    orientations_arr[2] = probe.pcs.k_hat
     orientations = g.Points(np.broadcast_to(orientations_arr, (*points.shape, 3, 3)))
 
     return points, orientations
