@@ -76,6 +76,8 @@ def test_plot_interfaces(show_plots, plot_interfaces_kwargs):
     points = points.translate((0, 0, -10e-3))
     orientations = orientations.rotate(rot)
     probe = arim.Interface(points, orientations)
+    assert probe.orientations[0, 2, 0] > 0
+    assert probe.orientations[0, 2, 2] > 0
 
     points, orientations = arim.points_1d_wall_z(xmin, xmax,
                                                  z=0., numpoints=numinterface,

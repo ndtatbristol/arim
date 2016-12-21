@@ -505,7 +505,7 @@ class TestInterface:
                                 are_normals_on_out_rays_side=True)
 
         assert interface.points is points
-        assert interface.orientations is orientations
+        assert np.allclose(interface.orientations[np.newaxis, ...], interface.orientations[...])
         str(interface)
         repr(interface)
 
@@ -522,7 +522,7 @@ class TestInterface:
                         reflection_against=water)
 
         assert interface.points is points
-        assert interface.orientations is orientations
+        assert np.allclose(interface.orientations[np.newaxis, ...], interface.orientations[...])
         assert interface.transmission_reflection is None
         str(interface)
         repr(interface)
@@ -541,7 +541,7 @@ class TestInterface:
                         reflection_against=water)
 
         assert interface.points is points
-        assert interface.orientations is orientations
+        assert np.allclose(interface.orientations[np.newaxis, ...], interface.orientations[...])
         assert interface.transmission_reflection is c.TransmissionReflection.transmission
         str(interface)
         repr(interface)
@@ -561,7 +561,7 @@ class TestInterface:
                         reflection_against=None)
 
         assert interface.points is points
-        assert interface.orientations is orientations
+        assert np.allclose(interface.orientations[np.newaxis, ...], interface.orientations[...])
         assert interface.transmission_reflection is c.TransmissionReflection.reflection
         assert interface.reflection_against is water
         str(interface)

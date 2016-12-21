@@ -347,11 +347,16 @@ class SingleViewTFM(BaseTFM):
         warnings.warn(DeprecationWarning(
             "Using arim.make_view_for_block_in_immersion is recommended. This method will be removed in future versions."))
 
+        probe = g.aspoints(probe)
+        frontwall = g.aspoints(frontwall)
+        backwall = g.aspoints(backwall)
+        grid = g.aspoints(grid)
+
         # Create dummy interfaces:
-        probe_interface = core.Interface(probe, None)
-        frontwall_interface = core.Interface(frontwall, None)
-        backwall_interface = core.Interface(backwall, None)
-        grid_interface = core.Interface(grid, None)
+        probe_interface = core.Interface(probe, np.resize(np.eye(3), (*probe.shape, 3, 3)))
+        frontwall_interface = core.Interface(frontwall, np.resize(np.eye(3), (*frontwall.shape, 3, 3)))
+        backwall_interface = core.Interface(backwall, np.resize(np.eye(3), (*backwall.shape, 3, 3)))
+        grid_interface = core.Interface(grid, np.resize(np.eye(3), (*grid.shape, 3, 3)))
 
         # Create Dummy material:
         block = core.Material(v_longi, v_shear, state_of_matter='solid')

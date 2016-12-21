@@ -6,6 +6,7 @@ import numpy as np
 
 from ..utils import linspace2, get_shape_safely, get_name, parse_enum_constant
 from .. import settings as s
+from .. import geometry as g
 
 __all__ = ['Time', 'Material', 'ExaminationObject', 'BoundedMedium', 'InfiniteMedium',
            'StateMatter', 'TransmissionReflection', 'Mode', 'InterfaceKind', 'Interface',
@@ -43,7 +44,8 @@ class Interface:
     points : Points
         Cf. attributes.
     orientations : Points
-        Cf. attributes.
+        Cf. attributes. Accepted shape: (3, ) or (*points.shape, 3). In the first case,
+        the orientation is assumed to be the same for all points.
     kind : InterfaceKind or None
         Cf. attributes. Remark: accept strings but values are stored as :class:`InterfaceKind` constants.
     transmission_reflection : TransmissionReflection or str or None
@@ -86,20 +88,37 @@ class Interface:
         If not relevant (no outgoing rays): None.
     """
 
-    def __init__(self, points, orientations, kind=None, transmission_reflection=None, reflection_against=None,
+    def __init__(self, points, orientations, kind=None, transmission_reflection=None,
+                 reflection_against=None,
                  are_normals_on_inc_rays_side=None, are_normals_on_out_rays_side=None):
-        assert are_normals_on_inc_rays_side is None or isinstance(are_normals_on_inc_rays_side, bool)
-        assert are_normals_on_out_rays_side is None or isinstance(are_normals_on_out_rays_side, bool)
+        assert are_normals_on_inc_rays_side is None or isinstance(
+            are_normals_on_inc_rays_side, bool)
+        assert are_normals_on_out_rays_side is None or isinstance(
+            are_normals_on_out_rays_side, bool)
 
         if transmission_reflection is not None:
-            transmission_reflection = parse_enum_constant(transmission_reflection, TransmissionReflection)
+            transmission_reflection = parse_enum_constant(transmission_reflection,
+                                                          TransmissionReflection)
         if kind is not None:
             kind = parse_enum_constant(kind, InterfaceKind)
 
-        if (reflection_against is not None) and (transmission_reflection is not TransmissionReflection.reflection):
-            raise ValueError("Parameter 'reflection_against' must be None for anything but a reflection")
-        if (reflection_against is None) and (transmission_reflection is TransmissionReflection.reflection):
-            raise ValueError("Parameter 'reflection_against' must be defined for a reflection")
+        if (reflection_against is not None) and (
+            transmission_reflection is not TransmissionReflection.reflection):
+            raise ValueError(
+                "Parameter 'reflection_against' must be None for anything but a reflection")
+        if (reflection_against is None) and (
+            transmission_reflection is TransmissionReflection.reflection):
+            raise ValueError(
+                "Parameter 'reflection_against' must be defined for a reflection")
+
+        points = g.aspoints(points)
+        orientations = g.aspoints(orientations)
+        if orientations.shape == (3, ):
+            # only one value has been given, assume it is the same for every point:
+            orientations = g.Points(np.resize(orientations.coords, (*points.shape, 3, 3)),
+                                    orientations.name)
+        if orientations.shape != (*points.shape, 3):
+            raise ValueError("inconsistent shapes for points and orientations")
 
         self.points = points
         self.orientations = orientations
@@ -121,8 +140,10 @@ class Interface:
             infos.append("Interface kind: {}".format(self.kind.name))
 
         infos.append("Orientations: {}".format(self.orientations))
-        infos.append("Normals are on INC.. rays side: {}".format(self.are_normals_on_inc_rays_side))
-        infos.append("Normals are on OUT. rays side: {}".format(self.are_normals_on_out_rays_side))
+        infos.append("Normals are on INC.. rays side: {}".format(
+            self.are_normals_on_inc_rays_side))
+        infos.append(
+            "Normals are on OUT. rays side: {}".format(self.are_normals_on_out_rays_side))
         infos_str = "\n".join(["    " + x if i > 0 else x for i, x in enumerate(infos)])
         return infos_str
 
@@ -207,7 +228,8 @@ class Path:
 
     @property
     def velocities(self):
-        return tuple(material.velocity(mode) for material, mode in zip(self.materials, self.modes))
+        return tuple(
+            material.velocity(mode) for material, mode in zip(self.materials, self.modes))
 
     def to_fermat_path(self):
         """
@@ -221,7 +243,8 @@ class Path:
         return FermatPath.from_path(self)
 
 
-class Material(namedtuple('Material', 'longitudinal_vel transverse_vel density state_of_matter metadata')):
+class Material(namedtuple('Material',
+                          'longitudinal_vel transverse_vel density state_of_matter metadata')):
     """Material(longitudinal_vel, transverse_vel=None, density=None, state_of_matter=None, metadata=None)
 
     Parameters
@@ -237,7 +260,8 @@ class Material(namedtuple('Material', 'longitudinal_vel transverse_vel density s
         >>> alu = Material(6300, 3120, 2700, 'solid', {'long_name': 'Aluminium'})
     """
 
-    def __new__(cls, longitudinal_vel, transverse_vel=None, density=None, state_of_matter=None, metadata=None):
+    def __new__(cls, longitudinal_vel, transverse_vel=None, density=None,
+                state_of_matter=None, metadata=None):
         longitudinal_vel = longitudinal_vel * 1.
 
         if transverse_vel is not None:
@@ -252,7 +276,8 @@ class Material(namedtuple('Material', 'longitudinal_vel transverse_vel density s
         if metadata is None:
             metadata = {}
 
-        return super().__new__(cls, longitudinal_vel, transverse_vel, density, state_of_matter, metadata)
+        return super().__new__(cls, longitudinal_vel, transverse_vel, density,
+                               state_of_matter, metadata)
 
     def __str__(self):
         name = get_name(self.metadata)
@@ -380,7 +405,8 @@ class Time:
 
     def __str__(self):
         r = '{} from {:.1f} to {:.1f} µs ({} samples, step={:.2f} µs)'
-        return r.format(self.__class__.__qualname__, self.start * 1e6, self.end * 1e6, len(self), self.step * 1e6)
+        return r.format(self.__class__.__qualname__, self.start * 1e6, self.end * 1e6,
+                        len(self), self.step * 1e6)
 
     def __repr__(self):
         return '<{} at {}>'.format(str(self), hex(id(self)))
