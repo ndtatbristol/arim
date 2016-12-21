@@ -3,6 +3,7 @@ Formulas for modelling the physics of ultrasonic testing.
 
 """
 import logging
+from collections import namedtuple
 
 import numpy as np
 from numpy import sin, cos
@@ -10,10 +11,14 @@ from numpy import sin, cos
 from . import core
 from .core import Mode, InterfaceKind, StateMatter, TransmissionReflection
 
-__all__ = ['directivity_finite_width_2d', 'fluid_solid', 'solid_l_fluid', 'solid_t_fluid', 'snell_angles',
+__all__ = ['directivity_finite_width_2d', 'directivity_finite_width_2d_for_path',
+           'fluid_solid', 'solid_l_fluid', 'solid_t_fluid',
+           'snell_angles',
            'transmission_at_interface', 'reflection_at_interface',
-           'transmission_reflection_per_interface_for_path', 'transmission_reflection_for_path',
-           'beamspread_after_interface', 'beamspread_per_interface_for_path', 'beamspread_for_path']
+           'transmission_reflection_per_interface_for_path',
+           'transmission_reflection_for_path',
+           'beamspread_after_interface', 'beamspread_per_interface_for_path',
+           'beamspread_for_path']
 
 logger = logging.getLogger(__name__)
 
@@ -52,7 +57,7 @@ def directivity_finite_width_2d(theta, element_width, wavelength):
 
     Returns
     -------
-    directivity
+    directivity : ndarray
         Signed directivity for each angle.
 
     References
@@ -72,6 +77,25 @@ def directivity_finite_width_2d(theta, element_width, wavelength):
     return np.sinc(x)
 
 
+def directivity_finite_width_2d_for_path(ray_geometry, element_width, wavelength):
+    """
+    Wrapper for :func:`directivity_finite_width_2d` that uses a :class:`RayGeometry` object.
+
+    Parameters
+    ----------
+    ray_geometry : RayGeometry
+    element_width : float
+    wavelength : float
+
+    Returns
+    -------
+    directivity : ndarray
+        Signed directivity for each angle.
+    """
+    return directivity_finite_width_2d(ray_geometry.out_angles_list[0], element_width,
+                                       wavelength)
+
+
 def snell_angles(incidents_angles, c_incident, c_refracted):
     """
     Returns the angles of the refracted rays according to Snell–Descartes law:
@@ -87,7 +111,8 @@ def snell_angles(incidents_angles, c_incident, c_refracted):
     return np.arcsin(c_refracted / c_incident * sin(incidents_angles))
 
 
-def _fluid_solid_n(alpha_fluid, alpha_l, alpha_t, rho_fluid, rho_solid, c_fluid, c_l, c_t):
+def _fluid_solid_n(alpha_fluid, alpha_l, alpha_t, rho_fluid, rho_solid, c_fluid, c_l,
+                   c_t):
     """
     Coefficient N defined by Krautkrämer in equation (A8).
     """
@@ -97,7 +122,8 @@ def _fluid_solid_n(alpha_fluid, alpha_l, alpha_t, rho_fluid, rho_solid, c_fluid,
     return N
 
 
-def fluid_solid(alpha_fluid, rho_fluid, rho_solid, c_fluid, c_l, c_t, alpha_l=None, alpha_t=None):
+def fluid_solid(alpha_fluid, rho_fluid, rho_solid, c_fluid, c_l, c_t, alpha_l=None,
+                alpha_t=None):
     """
     Returns the transmission and reflection coefficients for an incident wave at a fluid-to-solid interface.
 
@@ -149,12 +175,14 @@ def fluid_solid(alpha_fluid, rho_fluid, rho_solid, c_fluid, c_l, c_t, alpha_l=No
     if alpha_t is None:
         alpha_t = snell_angles(alpha_fluid, c_fluid, c_t)
 
-    N = _fluid_solid_n(alpha_fluid, alpha_l, alpha_t, rho_fluid, rho_solid, c_fluid, c_l, c_t)
+    N = _fluid_solid_n(alpha_fluid, alpha_l, alpha_t, rho_fluid, rho_solid, c_fluid, c_l,
+                       c_t)
 
     # Eq A.7
     reflection = ((c_t / c_l) ** 2 * sin(2 * alpha_l) * sin(2 * alpha_t) \
                   + cos(2 * alpha_t) ** 2 \
-                  - (rho_fluid * c_fluid * cos(alpha_l)) / (rho_solid * c_l * cos(alpha_fluid))) / N
+                  - (rho_fluid * c_fluid * cos(alpha_l)) / (
+                      rho_solid * c_l * cos(alpha_fluid))) / N
 
     # Eq A.8
     transmission_l = 2. * cos(2 * alpha_t) / N
@@ -165,7 +193,8 @@ def fluid_solid(alpha_fluid, rho_fluid, rho_solid, c_fluid, c_l, c_t, alpha_l=No
     return reflection, transmission_l, transmission_t
 
 
-def solid_l_fluid(alpha_l, rho_fluid, rho_solid, c_fluid, c_l, c_t, alpha_fluid=None, alpha_t=None):
+def solid_l_fluid(alpha_l, rho_fluid, rho_solid, c_fluid, c_l, c_t, alpha_fluid=None,
+                  alpha_t=None):
     """
     Returns the transmission and reflection coefficients for an incident longitudinal wave at a solid-to-fluid interface.
 
@@ -215,22 +244,27 @@ def solid_l_fluid(alpha_l, rho_fluid, rho_solid, c_fluid, c_l, c_t, alpha_fluid=
     if alpha_t is None:
         alpha_t = snell_angles(alpha_l, c_l, c_t)
 
-    N = _fluid_solid_n(alpha_fluid, alpha_l, alpha_t, rho_fluid, rho_solid, c_fluid, c_l, c_t)
+    N = _fluid_solid_n(alpha_fluid, alpha_l, alpha_t, rho_fluid, rho_solid, c_fluid, c_l,
+                       c_t)
 
     # Eq A.10
-    reflection_l = ((c_t / c_l) ** 2 * sin(2 * alpha_l) * sin(2 * alpha_t) - cos(2 * alpha_t) ** 2 \
-                    + rho_fluid * c_fluid / (rho_solid * c_l) * cos(alpha_l) / cos(alpha_fluid)) / N
+    reflection_l = ((c_t / c_l) ** 2 * sin(2 * alpha_l) * sin(2 * alpha_t) - cos(
+        2 * alpha_t) ** 2 \
+                    + rho_fluid * c_fluid / (rho_solid * c_l) * cos(alpha_l) / cos(
+        alpha_fluid)) / N
 
     # Eq A.11
     reflection_t = (2 * (c_t / c_l) ** 2 * sin(2 * alpha_l) * cos(2 * alpha_t)) / N
 
     # Eq A.12
-    transmission = 2 * rho_fluid * c_fluid * cos(alpha_l) * cos(2 * alpha_t) / (N * rho_solid * c_l * cos(alpha_fluid))
+    transmission = 2 * rho_fluid * c_fluid * cos(alpha_l) * cos(2 * alpha_t) / (
+        N * rho_solid * c_l * cos(alpha_fluid))
 
     return reflection_l, reflection_t, transmission
 
 
-def solid_t_fluid(alpha_t, rho_fluid, rho_solid, c_fluid, c_l, c_t, alpha_fluid=None, alpha_l=None):
+def solid_t_fluid(alpha_t, rho_fluid, rho_solid, c_fluid, c_l, c_t, alpha_fluid=None,
+                  alpha_l=None):
     """
     Returns the transmission and reflection coefficients for an incident transverse wave at a solid-to-fluid interface.
 
@@ -279,22 +313,27 @@ def solid_t_fluid(alpha_t, rho_fluid, rho_solid, c_fluid, c_l, c_t, alpha_fluid=
     if alpha_l is None:
         alpha_l = snell_angles(alpha_t, c_t, c_l)
 
-    N = _fluid_solid_n(alpha_fluid, alpha_l, alpha_t, rho_fluid, rho_solid, c_fluid, c_l, c_t)
+    N = _fluid_solid_n(alpha_fluid, alpha_l, alpha_t, rho_fluid, rho_solid, c_fluid, c_l,
+                       c_t)
 
     # Eq A.14
     reflection_l = -sin(4 * alpha_t) / N
 
     # Eq A.13
-    reflection_t = ((c_t / c_l) ** 2 * sin(2 * alpha_l) * sin(2 * alpha_t) - cos(2 * alpha_t) ** 2 \
-                    - rho_fluid * c_fluid / (rho_solid * c_l) * cos(alpha_l) / cos(alpha_fluid)) / N
+    reflection_t = ((c_t / c_l) ** 2 * sin(2 * alpha_l) * sin(2 * alpha_t) - cos(
+        2 * alpha_t) ** 2 \
+                    - rho_fluid * c_fluid / (rho_solid * c_l) * cos(alpha_l) / cos(
+        alpha_fluid)) / N
 
     # Eq A.15
-    transmission = 2 * rho_fluid * c_fluid * cos(alpha_l) * sin(2 * alpha_t) / (N * rho_solid * c_l * cos(alpha_fluid))
+    transmission = 2 * rho_fluid * c_fluid * cos(alpha_l) * sin(2 * alpha_t) / (
+        N * rho_solid * c_l * cos(alpha_fluid))
 
     return reflection_l, reflection_t, transmission
 
 
-def transmission_at_interface(interface_kind, material_inc, material_out, mode_inc, mode_out, angles_inc,
+def transmission_at_interface(interface_kind, material_inc, material_out, mode_inc,
+                              mode_out, angles_inc,
                               force_complex=True):
     """
     Compute the transmission coefficients for an interface.
@@ -343,7 +382,8 @@ def transmission_at_interface(interface_kind, material_inc, material_out, mode_i
         assert fluid.state_of_matter.name != StateMatter.solid
 
         alpha_fluid = angles_inc
-        alpha_l = snell_angles(alpha_fluid, fluid.longitudinal_vel, solid.longitudinal_vel)
+        alpha_l = snell_angles(alpha_fluid, fluid.longitudinal_vel,
+                               solid.longitudinal_vel)
         alpha_t = snell_angles(alpha_fluid, fluid.longitudinal_vel, solid.transverse_vel)
 
         params = dict(
@@ -367,7 +407,8 @@ def transmission_at_interface(interface_kind, material_inc, material_out, mode_i
         raise NotImplementedError
 
 
-def reflection_at_interface(interface_kind, material_inc, material_against, mode_inc, mode_out, angles_inc,
+def reflection_at_interface(interface_kind, material_inc, material_against, mode_inc,
+                            mode_out, angles_inc,
                             force_complex=True):
     """
     Compute the reflection coefficients for an interface.
@@ -446,7 +487,8 @@ def reflection_at_interface(interface_kind, material_inc, material_against, mode
         raise NotImplementedError
 
 
-def transmission_reflection_per_interface_for_path(path, angles_inc_list, force_complex=True):
+def transmission_reflection_per_interface_for_path(path, angles_inc_list,
+                                                   force_complex=True):
     """
     Yield the transmission-reflection coefficients interface per interface for a given path.
 
@@ -491,8 +533,9 @@ def transmission_reflection_per_interface_for_path(path, angles_inc_list, force_
             force_complex=force_complex,
         )
 
-        logger.info("compute {} coefficients at interface {}".format(interface.transmission_reflection.name,
-                                                                     interface.points))
+        logger.info("compute {} coefficients at interface {}".format(
+            interface.transmission_reflection.name,
+            interface.points))
 
         if interface.transmission_reflection is TransmissionReflection.transmission:
             params['material_out'] = path.materials[i]
@@ -504,7 +547,7 @@ def transmission_reflection_per_interface_for_path(path, angles_inc_list, force_
             raise ValueError('invalid constant for transmission/reflection')
 
 
-def transmission_reflection_for_path(path, angles_inc_list, force_complex=True):
+def transmission_reflection_for_path(path, ray_geometry, force_complex=True):
     """
     Return the transmission-reflection coefficients for a given path.
 
@@ -522,7 +565,7 @@ def transmission_reflection_for_path(path, angles_inc_list, force_complex=True):
     Parameters
     ----------
     path : Path
-    angles_inc_list : list of ndarray
+    ray_geometry : RayGeometry
     force_complex : bool
         If True, return complex coefficients. If not, return coefficients with the same datatype as ``angles_inc``.
         Default: True.
@@ -534,7 +577,11 @@ def transmission_reflection_for_path(path, angles_inc_list, force_complex=True):
     """
     amps = None
 
-    for amps_per_interface in transmission_reflection_per_interface_for_path(path, angles_inc_list, force_complex=force_complex):
+    inc_angles_list = ray_geometry.inc_angles_list
+
+    for amps_per_interface in transmission_reflection_per_interface_for_path(path,
+                                                                             inc_angles_list,
+                                                                             force_complex=force_complex):
         if amps_per_interface is None:
             continue
         if amps is None:
@@ -575,7 +622,8 @@ def beamspread_after_interface(inc_angles_last_interface, out_angles_last_interf
     return (distance_virtual / (distance_virtual + leg_sizes_after_last_interface)) ** p
 
 
-def beamspread_per_interface_for_path(inc_angles_list, out_angles_list, inc_leg_sizes_list, p=0.5):
+def beamspread_per_interface_for_path(inc_angles_list, out_angles_list,
+                                      inc_leg_sizes_list, p=0.5):
     """
     Compute the beamspread for a path as a list of the contribution of each interface.
 
@@ -616,27 +664,19 @@ def beamspread_per_interface_for_path(inc_angles_list, out_angles_list, inc_leg_
             inc_angles_last_interface = inc_angles_list[i - 1]
             out_angles_last_interface = out_angles_list[i - 1]
 
-            yield beamspread_after_interface(inc_angles_last_interface, out_angles_last_interface,
+            yield beamspread_after_interface(inc_angles_last_interface,
+                                             out_angles_last_interface,
                                              leg_sizes_before_last_interface,
                                              leg_sizes_after_last_interface, p=p)
 
 
-def beamspread_for_path(inc_angles_list, out_angles_list, inc_leg_sizes_list, p=0.5):
+def beamspread_for_path(ray_geometry, p=0.5):
     """
     Compute the beamspread for a path.
 
     Parameters
     ----------
-    inc_angles_list : list of ndarray
-        Each array of the list is the angle of the incoming ray to the interface. One array per interface.
-        None if not relevant.
-    out_angles_list : list of ndarray
-        Each array of the list is the angle of the outgoing ray from the interface. One array per interface.
-        None if not relevant.
-    inc_leg_sizes_list : list of ndarray
-        Each array of the list is the size of the incoming leg to the interface. Legs are assumed to be straight.
-        One array per interface.
-        None if not relevant.
+    ray_geometry : RayGeometry
     p : float
         Beamspread is ``1/distance**p`` (distance power p). Use 0.5 for 2D and 1.0 for 3D. Default: 0.5
 
@@ -645,8 +685,15 @@ def beamspread_for_path(inc_angles_list, out_angles_list, inc_leg_sizes_list, p=
     beamspread : ndarray
 
     """
+    inc_angles_list = ray_geometry.inc_angles_list
+    out_angles_list = ray_geometry.out_angles_list
+    inc_leg_sizes_list = ray_geometry.inc_leg_sizes_list
+
     beamspread = None
-    for relative_beamspread in beamspread_per_interface_for_path(inc_angles_list, out_angles_list, inc_leg_sizes_list, p=p):
+    for relative_beamspread in beamspread_per_interface_for_path(inc_angles_list,
+                                                                 out_angles_list,
+                                                                 inc_leg_sizes_list,
+                                                                 p=p):
         if relative_beamspread is None:
             continue
         if beamspread is None:
@@ -654,3 +701,56 @@ def beamspread_for_path(inc_angles_list, out_angles_list, inc_leg_sizes_list, p=
         else:
             beamspread *= relative_beamspread
     return beamspread
+
+
+def sensitivity_conjugate_for_path(ray_weights):
+    ray_weights = ray_weights
+    return np.mean(np.abs(ray_weights) ** 2, axis=0)
+
+
+def sensitivity_conjugate_for_view(tx_ray_weights, rx_ray_weights):
+    return tx_ray_weights * rx_ray_weights
+
+
+class RayGeometry(namedtuple("RayGeometry", "inc_angles_list out_angles_list "
+                                            "inc_leg_sizes_list")):
+    """
+    RayGeometry(inc_angles_list, out_angles_list, inc_leg_sizes_list)
+
+    Storage object: holds the angles and the sizes of the legs of rays.
+
+    Parameters
+    ----------
+    inc_angles_list : list of ndarray
+        Each array of the list is the angle of the incoming ray to the interface.
+        One array per interface. None if not relevant.
+    out_angles_list : list of ndarray
+        Each array of the list is the angle of the outgoing ray from the interface. One array per interface.
+        None if not relevant.
+    inc_leg_sizes_list : list of ndarray
+        Each array of the list is the size of the incoming leg to the interface. Legs are assumed to be straight.
+        One array per interface.
+        None if not relevant.
+
+    See Also
+    --------
+    :meth:`Rays.get_outgoing_angles`, :meth:`Rays.get_incoming_angles`
+
+    """
+
+    @classmethod
+    def from_path(cls, path):
+        if path.rays is None:
+            raise ValueError("Ray-tracing must be performed first.")
+
+        out_angles_list = []
+        for alpha in path.rays.get_outgoing_angles(path.interfaces):
+            out_angles_list.append(alpha)
+
+        inc_angles_list = []
+        inc_leg_sizes_list = []
+        for alpha, distances in path.rays.get_incoming_angles(path.interfaces, True):
+            inc_angles_list.append(alpha)
+            inc_leg_sizes_list.append(distances)
+
+        return cls(inc_angles_list, out_angles_list, inc_leg_sizes_list)
