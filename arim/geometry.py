@@ -12,8 +12,11 @@ A basis (i_hat, j_hat, k_hat) is stored as a matrix::
 
 where (i1, i2, i3) is the coordinate of the basis vector i_hat in the global coordinate system.
 
-Remark: this storage is consistent with the Points layout: ``basis[0, :] = (i1, i2, i3)``. A basis can be seen as three
+Remark: this storage is consistent with the :class:`Points` layout: ``basis[0, :] = (i1, i2, i3)``. A basis can be seen as three
 points (i_hat, j_hat, k_hat).
+
+Warning: basis in :class:`CoordinateSystem` objects are stored in a different convention:
+they are transposed i.e. ``basis[:, 0] = (i1, i2, i3)``.
 
 """
 
@@ -34,7 +37,7 @@ from .core.cache import Cache, NoCache
 
 __all__ = ['rotation_matrix_x', 'rotation_matrix_y', 'rotation_matrix_z',
            'rotation_matrix_ypr', 'are_points_aligned', 'norm2', 'norm2_2d', 'direct_isometry_2d', 'points_in_rectbox',
-           'direct_isometry_3d',
+           'direct_isometry_3d', 'CoordinateSystem',
            'Grid', 'Points', 'GCS', 'are_points_close', 'distance_pairwise', 'aspoints',
            'GeometryHelper']
 import numba

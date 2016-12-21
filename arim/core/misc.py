@@ -44,7 +44,7 @@ class Interface:
     points : Points
         Cf. attributes.
     orientations : Points
-        Cf. attributes. Accepted shape: (3, ) or (*points.shape, 3). In the first case,
+        Cf. attributes. Accepted shape: ``(3, )`` or  ``(*points.shape, 3)``. In the first case,
         the orientation is assumed to be the same for all points.
     kind : InterfaceKind or None
         Cf. attributes. Remark: accept strings but values are stored as :class:`InterfaceKind` constants.
