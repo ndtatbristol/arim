@@ -18,7 +18,8 @@ import numba
 
 __all__ = ['BaseTFM', 'ContactTFM', 'SingleViewTFM', 'IMAGING_MODES']
 
-ExtramaLookupTimes = namedtuple('ExtramaLookupTimes', 'tmin tmax tx_elt_for_tmin rx_elt_for_tmin tx_elt_for_tmax rx_elt_for_tmax')
+ExtramaLookupTimes = namedtuple('ExtramaLookupTimes',
+                                'tmin tmax tx_elt_for_tmin rx_elt_for_tmin tx_elt_for_tmax rx_elt_for_tmax')
 
 
 class BaseTFM:
@@ -40,9 +41,9 @@ class BaseTFM:
 
     Attributes
     ----------
-    result
-    frame
-    grid
+    result : ndarray
+    frame : Frame
+    grid : Grid
     dtype
     amplitudes : Amplitudes
     geom_probe_to_grid
@@ -61,7 +62,8 @@ class BaseTFM:
         self.res = None
 
         if geom_probe_to_grid is None:
-            geom_probe_to_grid = g.GeometryHelper(frame.probe.locations, grid.as_points, frame.probe.pcs)
+            geom_probe_to_grid = g.GeometryHelper(frame.probe.locations, grid.as_points,
+                                                  frame.probe.pcs)
         else:
             assert geom_probe_to_grid.is_valid(frame.probe, grid.as_points)
         self._geom_probe_to_grid = geom_probe_to_grid
@@ -96,7 +98,8 @@ class BaseTFM:
         amplitudes_rx = self.get_amplitudes_rx()
         scanline_weights = self.get_scanline_weights()
 
-        focal_law = FocalLaw(lookup_times_tx, lookup_times_rx, amplitudes_tx, amplitudes_rx, scanline_weights)
+        focal_law = FocalLaw(lookup_times_tx, lookup_times_rx, amplitudes_tx,
+                             amplitudes_rx, scanline_weights)
 
         focal_law = self.hook_focal_law(focal_law)
         self.focal_law = focal_law
@@ -196,7 +199,26 @@ class BaseTFM:
         assert self.res is not None
         area_of_interest = self.grid.points_in_rectbox(xmin, xmax, ymin, ymax,
                                                        zmin, zmax)
-        return np.nanmax(np.abs(self.res[area_of_interest]))
+        return self.maximum_intensity_in_area(area_of_interest)
+
+    def maximum_intensity_in_area(self, area):
+        """
+        Returns the maximum absolute intensity of the TFM image in an area.
+
+        Intensity is given as it is (no dB conversion).
+
+        Parameters
+        ----------
+        area : ndarray or None or slice
+            Indices of the grid.
+
+        Returns
+        -------
+        intensity : float
+        """
+        if area is None:
+            area = slice(None)
+        return np.nanmax(np.abs(self.res[area]))
 
     def extrema_lookup_times_in_rectbox(self, xmin=None, xmax=None, ymin=None, ymax=None,
                                         zmin=None, zmax=None):
@@ -353,16 +375,20 @@ class SingleViewTFM(BaseTFM):
         grid = g.aspoints(grid)
 
         # Create dummy interfaces:
-        probe_interface = core.Interface(probe, np.resize(np.eye(3), (*probe.shape, 3, 3)))
-        frontwall_interface = core.Interface(frontwall, np.resize(np.eye(3), (*frontwall.shape, 3, 3)))
-        backwall_interface = core.Interface(backwall, np.resize(np.eye(3), (*backwall.shape, 3, 3)))
+        probe_interface = core.Interface(probe,
+                                         np.resize(np.eye(3), (*probe.shape, 3, 3)))
+        frontwall_interface = core.Interface(frontwall, np.resize(np.eye(3), (
+            *frontwall.shape, 3, 3)))
+        backwall_interface = core.Interface(backwall,
+                                            np.resize(np.eye(3), (*backwall.shape, 3, 3)))
         grid_interface = core.Interface(grid, np.resize(np.eye(3), (*grid.shape, 3, 3)))
 
         # Create Dummy material:
         block = core.Material(v_longi, v_shear, state_of_matter='solid')
         couplant = core.Material(v_couplant, state_of_matter='liquid')
 
-        paths_dict = paths_for_block_in_immersion(block, couplant, probe_interface, frontwall_interface,
+        paths_dict = paths_for_block_in_immersion(block, couplant, probe_interface,
+                                                  frontwall_interface,
                                                   backwall_interface, grid_interface)
         views = views_for_block_in_immersion(paths_dict)
 

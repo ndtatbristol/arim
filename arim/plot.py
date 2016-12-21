@@ -50,8 +50,9 @@ from . import geometry as g
 from .config import Config
 
 __all__ = ['mm_formatter', 'us_formatter',
-           'plot_bscan_pulse_echo', 'plot_oxz', 'plot_oxz_many', 'plot_tfm', 'plot_directivity_finite_width_2d',
-           'draw_rays_on_click', 'RayPlotter', 'conf']
+           'plot_bscan_pulse_echo', 'plot_oxz', 'plot_oxz_many', 'plot_tfm',
+           'plot_directivity_finite_width_2d',
+           'draw_rays_on_click', 'RayPlotter', 'conf', 'common_dynamic_db_scale']
 
 logger = logging.getLogger(__name__)
 
@@ -74,7 +75,8 @@ def _elements_ticker(i, pos, elements):
         return str(elements[i])
 
 
-def plot_bscan_pulse_echo(frame, use_dB=True, ax=None, title='B-scan', clim=None, interpolation='none', draw_cbar=True,
+def plot_bscan_pulse_echo(frame, use_dB=True, ax=None, title='B-scan', clim=None,
+                          interpolation='none', draw_cbar=True,
                           cmap=None):
     """
     Plot a B-scan. Use the pulse-echo scanlines.
@@ -110,7 +112,8 @@ def plot_bscan_pulse_echo(frame, use_dB=True, ax=None, title='B-scan', clim=None
         if clim is None:
             clim = [-40., 0.]
 
-    im = ax.imshow(scanlines, extent=[frame.time.start, frame.time.end, 0, numpulseecho - 1],
+    im = ax.imshow(scanlines,
+                   extent=[frame.time.start, frame.time.end, 0, numpulseecho - 1],
                    interpolation=interpolation, cmap=cmap, origin='lower')
     ax.set_xlabel('Time (µs)')
     ax.set_ylabel('Element')
@@ -124,7 +127,8 @@ def plot_bscan_pulse_echo(frame, use_dB=True, ax=None, title='B-scan', clim=None
         return s
 
     # elements_ticker = ticker.FuncFormatter(lambda x, pos: '{:d}'.format(elements[int(x)]))
-    elements_ticker = ticker.FuncFormatter(functools.partial(_elements_ticker, elements=elements))
+    elements_ticker = ticker.FuncFormatter(
+        functools.partial(_elements_ticker, elements=elements))
     ax.yaxis.set_major_formatter(elements_ticker)
     ax.yaxis.set_minor_formatter(elements_ticker)
     ax.yaxis.set_major_locator(ticker.MultipleLocator(4))
@@ -204,8 +208,11 @@ def plot_oxz(data, grid, ax=None, title=None, clim=None, interpolation='none',
     elif data.ndim == 2 and data.shape == (grid.numx, grid.numz):
         pass
     else:
-        raise ValueError('invalid data shape (got {}, expected {} or {})'.format(data.shape, (grid.numx, 1, grid.numz),
-                                                                                 (grid.numx, grid.numz)))
+        raise ValueError(
+            'invalid data shape (got {}, expected {} or {})'.format(data.shape, (
+                grid.numx, 1, grid.numz),
+                                                                    (grid.numx,
+                                                                     grid.numz)))
 
     data = np.rot90(data)
 
@@ -247,7 +254,8 @@ def plot_oxz(data, grid, ax=None, title=None, clim=None, interpolation='none',
 
 
 def plot_oxz_many(data_list, grid, nrows, ncols, title_list=None, suptitle=None,
-                  draw_colorbar=True, figsize=None, savefig=None, clim=None, filename=None,
+                  draw_colorbar=True, figsize=None, savefig=None, clim=None,
+                  filename=None,
                   y_title=1.0, y_suptitle=1.0, **plot_oxz_kwargs):
     """
     Plot many Oxz plots on the same figure.
@@ -293,7 +301,8 @@ def plot_oxz_many(data_list, grid, nrows, ncols, title_list=None, suptitle=None,
 
     # must use a common clim (otherwise the figure does not make sense)
     if clim is None:
-        clim = (min(np.nanmin(x) for x in data_list), max(np.nanmax(x) for x in data_list))
+        clim = (
+            min(np.nanmin(x) for x in data_list), max(np.nanmax(x) for x in data_list))
 
     fig, axes = plt.subplots(nrows=nrows, ncols=ncols, sharex=True, sharey=True,
                              figsize=figsize)
@@ -301,7 +310,8 @@ def plot_oxz_many(data_list, grid, nrows, ncols, title_list=None, suptitle=None,
     for data, title, ax in zip(data_list, title_list, axes.ravel()):
         # the current function handles saving fig, drawing the cbar and displaying the title
         # so we prevent plot_oxz to do it.
-        ax, im = plot_oxz(data, grid, ax=ax, clim=clim, draw_cbar=False, savefig=False, **plot_oxz_kwargs, title=None)
+        ax, im = plot_oxz(data, grid, ax=ax, clim=clim, draw_cbar=False, savefig=False,
+                          **plot_oxz_kwargs, title=None)
         images.append(im)
         ax.set_xlabel('')
         ax.set_ylabel('')
@@ -322,8 +332,7 @@ def plot_oxz_many(data_list, grid, nrows, ncols, title_list=None, suptitle=None,
     return axes, images
 
 
-def plot_tfm(tfm, y=0., func_res=None, ax=None, title='TFM', clim=None, interpolation='bilinear', draw_cbar=True,
-             cmap=None):
+def plot_tfm(tfm, y=0., func_res=None, interpolation='bilinear', **plot_oxz_kwargs):
     """
     Plot a TFM in plane Oxz.
 
@@ -331,27 +340,22 @@ def plot_tfm(tfm, y=0., func_res=None, ax=None, title='TFM', clim=None, interpol
     ----------
     tfm : BaseTFM
     y : float
-    ax
-    clim
     interpolation : str
         Cf matplotlib.pyplot.imshow
-    draw_cbar : boolean, optional
-        Default: True
     func_res : function
         Function to apply on tfm.res before plotting it. Example: ``lambda x: np.abs(x)``
-
+    plot_oxz_kwargs : dict
 
     Returns
     -------
     ax
     image
 
-    """
-    if ax is None:
-        fig, ax = plt.subplots()
-    else:
-        fig = ax.figure
+    See Also
+    --------
+    :func:`plot_oxz`
 
+    """
     grid = tfm.grid
     iy = np.argmin(np.abs(grid.y - y))
 
@@ -362,8 +366,7 @@ def plot_tfm(tfm, y=0., func_res=None, ax=None, title='TFM', clim=None, interpol
 
     data = func_res(tfm.res[:, iy, :])
 
-    return plot_oxz(data, grid=grid, ax=ax, title=title, clim=clim,
-                    interpolation=interpolation, draw_cbar=draw_cbar, cmap=cmap)
+    return plot_oxz(data, grid=grid, interpolation=interpolation, **plot_oxz_kwargs)
 
 
 def plot_directivity_finite_width_2d(element_width, wavelength, ax=None, **kwargs):
@@ -385,13 +388,15 @@ def plot_directivity_finite_width_2d(element_width, wavelength, ax=None, **kwarg
     else:
         fig = ax.figure
 
-    title = kwargs.get('title', 'Directivity of an element (uniform sources along a straight line)')
+    title = kwargs.get('title',
+                       'Directivity of an element (uniform sources along a straight line)')
 
     ratio = element_width / wavelength
     theta = np.linspace(-np.pi / 2, np.pi / 2, 100)
     directivity = model.directivity_finite_width_2d(theta, element_width, wavelength)
 
-    ax.plot(np.rad2deg(theta), directivity, label=r'$a/\lambda = {:.2f}$'.format(ratio), **kwargs)
+    ax.plot(np.rad2deg(theta), directivity, label=r'$a/\lambda = {:.2f}$'.format(ratio),
+            **kwargs)
     ax.set_xlabel(r'Polar angle $\theta$ (deg)')
     ax.set_ylabel('directivity (1)')
     ax.set_title(title)
@@ -405,7 +410,8 @@ def plot_directivity_finite_width_2d(element_width, wavelength, ax=None, **kwarg
 
 
 class RayPlotter:
-    def __init__(self, grid, ray, element_index, linestyle='m--', tolerance_distance=1e-3):
+    def __init__(self, grid, ray, element_index, linestyle='m--',
+                 tolerance_distance=1e-3):
         self.grid = grid
         self.ray = ray
         self.element_index = element_index
@@ -417,7 +423,8 @@ class RayPlotter:
 
     def __call__(self, event):
         logger.debug(
-            'button=%d, x=%d, y=%d, xdata=%f, ydata=%f' % (event.button, event.x, event.y, event.xdata, event.ydata))
+            'button=%d, x=%d, y=%d, xdata=%f, ydata=%f' % (
+                event.button, event.x, event.y, event.xdata, event.ydata))
         ax = event.canvas.figure.axes[0]
         if event.button == 1:
             self.draw_ray(ax, event.xdata, event.ydata)
@@ -434,7 +441,9 @@ class RayPlotter:
 
         distance = g.norm2(*(obtained_point - wanted_point))
         if distance > self.tolerance_distance:
-            logger.warning("The closest grid point is far from what you want (dist: {:.2f} mm)".format(distance * 1000))
+            logger.warning(
+                "The closest grid point is far from what you want (dist: {:.2f} mm)".format(
+                    distance * 1000))
 
         legs = self.ray.get_coordinates_one(self.element_index, point_index)
         line = ax.plot(legs.x, legs.z, self.linestyle)
@@ -481,13 +490,16 @@ def draw_rays_on_click(grid, ray, element_index, ax=None, linestyle='m--', ):
     """
     if ax is None:
         ax = plt.gca()
-    ray_plotter = RayPlotter(grid=grid, ray=ray, element_index=element_index, linestyle=linestyle)
+    ray_plotter = RayPlotter(grid=grid, ray=ray, element_index=element_index,
+                             linestyle=linestyle)
     ray_plotter.connect(ax)
     return ray_plotter
 
 
-def plot_interfaces(interfaces_list, ax=None, show_probe=True, show_grid=False, show_orientations=False,
-                    n_arrows=10, title='Interfaces', savefig=None, markers=None, show_legend=True, quiver_kwargs=None):
+def plot_interfaces(interfaces_list, ax=None, show_probe=True, show_grid=False,
+                    show_orientations=False,
+                    n_arrows=10, title='Interfaces', savefig=None, markers=None,
+                    show_legend=True, quiver_kwargs=None):
     """
     Plot interfaces on the Oxz plane.
 
@@ -542,7 +554,8 @@ def plot_interfaces(interfaces_list, ax=None, show_probe=True, show_grid=False, 
             continue
         if i == numinterfaces - 1 and not show_grid:
             continue
-        line, = ax.plot(interface.points.x, interface.points.z, marker, label=interface.points.name)
+        line, = ax.plot(interface.points.x, interface.points.z, marker,
+                        label=interface.points.name)
 
         if show_orientations:
             # arrow every k points
@@ -583,3 +596,44 @@ def plot_interfaces(interfaces_list, ax=None, show_probe=True, show_grid=False, 
     if savefig:
         fig.savefig("interfaces")
     return ax
+
+
+def common_dynamic_db_scale(data_list, area=None, db_range=40.):
+    """
+    Scale such as:
+      - 0 dB corresponds to the maximum value in the area for all data arrays,
+      - the clim for each data array are bound by the maximum value in the area.
+
+    Parameters
+    ----------
+    data_list
+    db_range : float
+
+    Yields
+    ------
+    ref_db
+    (clim_min, clim_max)
+
+    Examples
+    --------
+
+        >>> area = grid.points_in_rectbox(xmin=10, xmax=20)
+        >>> common_db_scale_iter = common_dynamic_db_scale(data_list, area)
+        >>> for data in data_list:
+        ...     ref_db, clim = next(common_db_scale_iter)
+        ...     plot_oxz(data, grid, scale='db', ref_db=ref_db, clim=clim)
+
+    """
+    data_max_list = []
+
+    if area is None:
+        area = slice(None)
+
+    for data in data_list:
+        data_max_list.append(np.nanmax(np.abs(data[area])))
+    ref_db = max(data_max_list)
+
+    data_max_db_list = utils.decibel(data_max_list, ref_db)
+
+    for data_max_db in data_max_db_list:
+        yield ref_db, (data_max_db - db_range, data_max_db)
