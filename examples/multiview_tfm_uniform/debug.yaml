@@ -1,0 +1,20 @@
+# Debug configuration file
+# This is very verbose.
+#
+# To use this configuration file, call the script with flag --debug.
+# If used, this configuration file is applied at the top of conf.yaml (first)
+# and dryrun.yaml (second) if the latter is also in used.
+
+plot.bscan: true
+plot.interfaces: true
+plot.registration: true
+plot.tfm: true
+plot.interfaces: true
+plot.tfm: true
+
+arim.plot:
+  savefig: false
+
+tfm.fillvalue: !!float nan
+
+save_to_csv: false

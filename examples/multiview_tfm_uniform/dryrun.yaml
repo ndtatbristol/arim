@@ -1,0 +1,18 @@
+# Dry-run configuration file
+# Use this configuration file to check the computation runs
+# as expected.
+#
+# To use this configuration file, call the script with flag --dryrun.
+# If used, this configuration file is applied at the top of conf.yaml.
+
+interfaces.frontwall:
+  numpoints: 500
+interfaces.backwall:
+  numpoints: 500
+interfaces.grid:
+  pixel_size: 2.e-3
+
+arim.plot:
+  savefig: false
+
+save_to_csv: false
