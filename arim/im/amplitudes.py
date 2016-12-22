@@ -8,8 +8,11 @@ from ..core import NoCache, ElementShape
 from ..exceptions import ArimWarning
 from .. import model
 
-__all__ = ["Amplitudes", "UniformAmplitudes", "FixedAmplitudes", "AmplitudesRays", "MultiAmplitudes",
-           "DirectivityCosine", "DirectivityFiniteWidth2D", "DirectivityFiniteWidth2D_Rays", "AmplitudesRemoveExtreme"]
+__all__ = ["Amplitudes", "UniformAmplitudes", "FixedAmplitudes", "AmplitudesRays",
+           "MultiAmplitudes",
+           "DirectivityCosine", "DirectivityFiniteWidth2D",
+           "DirectivityFiniteWidth2D_Rays", "AmplitudesRemoveExtreme",
+           "SensitivityConjugateAmplitudes"]
 
 
 class Amplitudes:
@@ -82,7 +85,9 @@ class FixedAmplitudes(Amplitudes):
         super().__init__(frame, grid, dtype, fillvalue=None, cache_res=True)
 
         if amps.shape != self.shape:
-            raise ValueError("invalid amplitudes shape: expected {}, got {}".format(self.shape, amps.shape))
+            raise ValueError(
+                "invalid amplitudes shape: expected {}, got {}".format(self.shape,
+                                                                       amps.shape))
         self._amps = amps
 
     def _compute_amplitudes(self):
@@ -111,7 +116,8 @@ class AmplitudesRays(Amplitudes):
 
         # TODO : use global cache here
         first_interface = rays.path.points[1]
-        geom_first_leg = g.GeometryHelper(frame.probe.locations, first_interface, frame.probe.pcs)
+        geom_first_leg = g.GeometryHelper(frame.probe.locations, first_interface,
+                                          frame.probe.pcs)
         self.geom_first_leg = geom_first_leg
 
     def first_leg_spherical(self):
@@ -161,7 +167,8 @@ class MultiAmplitudes(Amplitudes):
         """
         self.amplitudes_list = amplitudes_list
         if len(set(amp.frame for amp in amplitudes_list)) > 1:
-            warn('Different Frame objects are used in amplitudes. Use first.', ArimWarning)
+            warn('Different Frame objects are used in amplitudes. Use first.',
+                 ArimWarning)
         if len(set(amp.grid for amp in amplitudes_list)) > 1:
             warn('Different Grid objects are used in amplitudes. Use first.', ArimWarning)
         super().__init__(frame=amplitudes_list[0].frame, grid=amplitudes_list[0].grid)
@@ -209,10 +216,12 @@ class DirectivityFiniteWidth2D(Amplitudes):
             raise ValueError('Dimensions of the elements must be specified.')
 
         if probe.orientations is None:
-            warn('The orientations of elements are not provided. Assume they are all [0., 0., 1.] in the PCS',
-                 ArimWarning)
+            warn(
+                'The orientations of elements are not provided. Assume they are all [0., 0., 1.] in the PCS',
+                ArimWarning)
         else:
-            expected_orientations = np.tile([0, 0., 1.], numelements).reshape(numelements, 3)
+            expected_orientations = np.tile([0, 0., 1.], numelements).reshape(numelements,
+                                                                              3)
             assert np.allclose(probe.orientations_pcs, expected_orientations), \
                 'This function works only if element orientations in the PCS are all [0., 0., 1.].'
 
@@ -223,7 +232,8 @@ class DirectivityFiniteWidth2D(Amplitudes):
                 'Elements shapes must be rectangular.'
 
         # TODO : use global cache here
-        self.geom_probe_to_grid = g.GeometryHelper(frame.probe.locations, grid.as_points, frame.probe.pcs)
+        self.geom_probe_to_grid = g.GeometryHelper(frame.probe.locations, grid.as_points,
+                                                   frame.probe.pcs)
 
         super().__init__(frame=frame, grid=grid, **kwargs)
 
@@ -235,10 +245,12 @@ class DirectivityFiniteWidth2D(Amplitudes):
         wavelength = self.speed / probe.frequency
 
         spher = self.geom_probe_to_grid.points2_to_pcs_pairwise_spherical()
-        for (element, (elt_dim, elt_loc)) in enumerate(zip(probe.dimensions, probe.locations)):
+        for (element, (elt_dim, elt_loc)) in enumerate(
+                zip(probe.dimensions, probe.locations)):
             elt_width = elt_dim[0]
-            amplitudes[..., element] = model.directivity_finite_width_2d(spher.theta[..., element], elt_width,
-                                                                         wavelength)
+            amplitudes[..., element] = model.directivity_finite_width_2d(
+                spher.theta[..., element], elt_width,
+                wavelength)
         return amplitudes
 
 
@@ -272,10 +284,12 @@ class DirectivityFiniteWidth2D_Rays(AmplitudesRays):
 
         spher = self.first_leg_spherical()
 
-        for (element, (elt_dim, elt_loc)) in enumerate(zip(probe.dimensions, probe.locations)):
+        for (element, (elt_dim, elt_loc)) in enumerate(
+                zip(probe.dimensions, probe.locations)):
             elt_width = elt_dim[0]
-            amplitudes[..., element] = model.directivity_finite_width_2d(spher.theta[..., element], elt_width,
-                                                                         self.wavelength)
+            amplitudes[..., element] = model.directivity_finite_width_2d(
+                spher.theta[..., element], elt_width,
+                self.wavelength)
         return amplitudes
 
     # def get_theta_first_interface(self):
@@ -327,3 +341,43 @@ class AmplitudesRemoveExtreme(Amplitudes):
 
         amps[extreme_points] = self.fillvalue
         return amps
+
+
+class SensitivityConjugateAmplitudes(Amplitudes):
+    """
+
+
+    Parameters
+    ----------
+    frame : Frame
+    grid : Grid
+    ray_weights : ndarray
+        Shape:
+    sensitivity
+    divide_by_sensitivity
+    kwargs
+    """
+
+    def __init__(self, frame, grid, ray_weights, sensitivity=None,
+                 divide_by_sensitivity=False, **kwargs):
+        ray_weights = np.asarray(ray_weights)
+        assert ray_weights.shape == (frame.probe.numelements, grid.numpoints)
+
+        if sensitivity is not None:
+            sensitivity = np.asarray(sensitivity)
+            assert sensitivity.shape == (grid.numpoints,)
+
+        self.ray_weights = ray_weights
+        self.sensitivity = sensitivity
+        self.divide_by_sensitivity = divide_by_sensitivity
+        super().__init__(frame, grid, **kwargs)
+
+    def _compute_amplitudes(self):
+        amps = np.conjugate(self.ray_weights)
+        if self.divide_by_sensitivity:
+            sensitivity = self.sensitivity
+            if sensitivity is None:
+                sensitivity = model.sensitivity_conjugate_for_path(self.ray_weights)
+            assert np.can_cast(sensitivity, amps.dtype, 'safe')
+            amps /= sensitivity[np.newaxis, ...]
+        return np.ascontiguousarray(amps.T)

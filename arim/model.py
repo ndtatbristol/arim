@@ -533,7 +533,7 @@ def transmission_reflection_per_interface_for_path(path, angles_inc_list,
             force_complex=force_complex,
         )
 
-        logger.info("compute {} coefficients at interface {}".format(
+        logger.debug("compute {} coefficients at interface {}".format(
             interface.transmission_reflection.name,
             interface.points))
 
@@ -704,11 +704,39 @@ def beamspread_for_path(ray_geometry, p=0.5):
 
 
 def sensitivity_conjugate_for_path(ray_weights):
+    """
+
+    Parameters
+    ----------
+    ray_weights : ndarray
+        Shape: (numelements, numgridpoints)
+
+    Returns
+    -------
+    sensitivity : ndarray
+        Shape : (numgridpoints, )
+
+    """
     ray_weights = ray_weights
     return np.mean(np.abs(ray_weights) ** 2, axis=0)
 
 
 def sensitivity_conjugate_for_view(tx_sensitivity, rx_sensitivity):
+    """
+
+    Parameters
+    ----------
+    tx_sensitivity : ndarray
+        Shape: (numgridpoints, )
+    rx_sensitivity
+        Shape: (numgridpoints, )
+
+    Returns
+    -------
+    sensitivity_for_view : ndarray
+        Shape: (numgridpoints, )
+
+    """
     return tx_sensitivity * rx_sensitivity
 
 
