@@ -26,7 +26,7 @@ __all__ = ['FermatSolver', 'FermatPath', 'Rays', 'ray_tracing']
 logger = logging.getLogger(__name__)
 
 
-def ray_tracing(views_list):
+def ray_tracing(views_list, convert_to_fortran_order=False):
     """
     Perform the ray tracing for different views. Save the result in ``Path.rays``.
 
@@ -46,6 +46,9 @@ def ray_tracing(views_list):
 
     fermat_solver = FermatSolver(fermat_paths_tuple)
     rays_dict = fermat_solver.solve()
+
+    if convert_to_fortran_order:
+        rays_dict = {k:v.to_fortran_order() for k, v in rays_dict.items()}
 
     # Save results in attribute path.rays:
     for path, fermat_path in zip(paths_tuple, fermat_paths_tuple):
@@ -101,7 +104,8 @@ class Rays:
     def __init__(self, times, interior_indices, fermat_path):
         assert times.ndim == 2
         assert interior_indices.ndim == 3
-        assert times.shape == interior_indices.shape[1:] == (len(fermat_path.points[0]), len(fermat_path.points[-1]))
+        assert times.shape == interior_indices.shape[1:] == (
+            len(fermat_path.points[0]), len(fermat_path.points[-1]))
         assert fermat_path.num_points_sets == interior_indices.shape[0] + 2
 
         if interior_indices.dtype.kind != 'u':
@@ -151,7 +155,7 @@ class Rays:
         return self.indices[1:-1, ...]
 
     @staticmethod
-    def make_indices(interior_indices):
+    def make_indices(interior_indices, order=None):
         """
         Parameters
         ----------
@@ -167,7 +171,15 @@ class Rays:
         """
         dm2, n, m = interior_indices.shape
 
-        indices = np.zeros((dm2 + 2, n, m), dtype=interior_indices.dtype)
+        if order is None:
+            if interior_indices.flags.c_contiguous:
+                order = 'C'
+            elif interior_indices.flags.fortran:
+                order = 'F'
+            else:
+                order = 'C'
+
+        indices = np.zeros((dm2 + 2, n, m), dtype=interior_indices.dtype, order=order)
 
         indices[0, ...] = np.repeat(np.arange(n), m).reshape((n, m))
         indices[-1, ...] = np.tile(np.arange(m), n).reshape((n, m))
@@ -248,6 +260,24 @@ class Rays:
             np.logical_or(out, interior_indices[d, ...] == (len(points) - 1), out=out)
         return out
 
+    def to_fortran_order(self):
+        """
+        Returns a Ray object with the .
+
+        TFM objects except to have lookup times indexed by (grid_idx, probe_idx) whereas
+        the arrays in this object are indexed by (probe_idx, grid_idx). By converting
+        them to Fortran array, their transpose are C-contiguous and indexed as expected
+        by TFM objects.
+
+        Returns
+        -------
+        Rays
+
+        """
+        return self.__class__(np.asfortranarray(self.times),
+                              np.asfortranarray(self.interior_indices),
+                              self.fermat_path)
+
     @staticmethod
     def expand_rays(interior_indices, indices_new_interface):
         """
@@ -284,7 +314,8 @@ class Rays:
             return indices_new_interface.reshape(new_shape)
         else:
             expanded_indices = np.empty((d + 1, n, p), dtype=interior_indices.dtype)
-            _expand_rays(interior_indices, indices_new_interface, expanded_indices, n, m, p, d)
+            _expand_rays(interior_indices, indices_new_interface, expanded_indices, n, m,
+                         p, d)
             return expanded_indices
 
     def get_outgoing_angles(self, interfaces, return_distances=False):
@@ -350,7 +381,8 @@ class Rays:
             orientations = orientations_all_points[self.indices[interface_idx]]
 
             # direction of the legs in the coordinates expressed from the interface
-            leg_directions_local = g.to_gcs(leg_directions, orientations, np.array([0., 0., 0.]))
+            leg_directions_local = g.to_gcs(leg_directions, orientations,
+                                            np.array([0., 0., 0.]))
 
             leg_directions_spher = g.spherical_coordinates(leg_directions_local[..., 0],
                                                            leg_directions_local[..., 1],
@@ -433,7 +465,8 @@ class Rays:
 
             # leg_direction[i, j] is the leg (as a 3d vector) of the ray (i,j)
             # at the current interface (incoming leg)
-            leg_directions = previous_points[self.indices[interface_idx - 1]] - leg_origins
+            leg_directions = previous_points[
+                                 self.indices[interface_idx - 1]] - leg_origins
 
             # orientations[i, j] is the orientation of the interface point through
             # which the ray (i,j) goes.
@@ -441,7 +474,8 @@ class Rays:
             orientations = orientations_all_points[self.indices[interface_idx]]
 
             # direction of the legs in the coordinates expressed from the interface
-            leg_directions_local = g.to_gcs(leg_directions, orientations, np.array([0., 0., 0.]))
+            leg_directions_local = g.to_gcs(leg_directions, orientations,
+                                            np.array([0., 0., 0.]))
 
             leg_directions_spher = g.spherical_coordinates(leg_directions_local[..., 0],
                                                            leg_directions_local[..., 1],
@@ -629,7 +663,8 @@ class FermatSolver:
         -------
 
         """
-        paths = set((path for v in views_list for path in (v.tx_path.to_fermat_path(), v.rx_path.to_fermat_path())))
+        paths = set((path for v in views_list for path in
+                     (v.tx_path.to_fermat_path(), v.rx_path.to_fermat_path())))
         return cls(paths, dtype=dtype, dtype_indices=dtype_indices)
 
     def solve(self):
@@ -686,7 +721,8 @@ class FermatSolver:
         assert isinstance(res_tail, Rays)
 
         self.num_minimization += 1
-        logger.debug("Ray tracing: solve for subpaths {} and {}".format(str(head), str(tail)))
+        logger.debug(
+            "Ray tracing: solve for subpaths {} and {}".format(str(head), str(tail)))
         times, indices_at_interface = find_minimum_times(
             res_head.times,
             res_tail.times,

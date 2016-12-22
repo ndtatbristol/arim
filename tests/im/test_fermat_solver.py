@@ -139,6 +139,13 @@ class TestRays4:
         out = rays.gone_through_extreme_points()
         np.testing.assert_equal(out, expected)
 
+    def test_fortran_rays(self, rays):
+        rays_f = rays.to_fortran_order()
+        assert rays_f.times.flags.fortran
+        assert rays_f.indices.flags.fortran
+        np.testing.assert_equal(rays_f.indices, rays.indices)
+        np.testing.assert_almost_equal(rays_f.times, rays.times)
+
 
 class TestRays2:
     """
