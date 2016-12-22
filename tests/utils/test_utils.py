@@ -2,6 +2,7 @@ import enum
 
 import numpy as np
 import pytest
+import logging
 
 import arim.utils as u
 from arim.exceptions import InvalidShape, InvalidDimension, NotAnArray
@@ -36,6 +37,7 @@ def test_hmc():
     assert rx.shape == shape
     assert np.all(tx == tx2)
     assert np.all(rx == rx2)
+
 
 def test_infer_capture_method():
     # Valid HMC
@@ -89,6 +91,7 @@ def test_infer_capture_method():
     rx = [0, 1]
     assert u.infer_capture_method(tx, rx) == CaptureMethod.unsupported
 
+
 def test_get_name():
     metadata = dict(long_name='Nicolas', short_name='Nic')
     assert u.get_name(metadata) == 'Nicolas'
@@ -112,3 +115,19 @@ def test_parse_enum_constant():
         u.parse_enum_constant("baz", Foo)
     with pytest.raises(ValueError):
         u.parse_enum_constant(Foo, Foo)
+
+
+def test_timeit(capsys):
+    logger = logging.getLogger(__name__)
+    with u.timeit(logger=logger):
+        1 + 1
+
+    out, err = capsys.readouterr()
+    assert out == ''
+    assert err == ''
+
+    with u.timeit('Foobar'):
+        1 + 1
+    out, err = capsys.readouterr()
+    assert out.startswith('Foobar')
+    assert err == ''

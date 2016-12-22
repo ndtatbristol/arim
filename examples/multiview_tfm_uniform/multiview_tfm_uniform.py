@@ -165,11 +165,9 @@ for i, view in enumerate(views.values()):
 
 # %% Run all TFM
 
-_tic = time.clock()
-for tfm in tfms:
-    tfm.run(fillvalue=conf['tfm.fillvalue'])
-_toc = time.clock()
-logger.info("Performed {} delay-and-sum's in {:.2f} s".format(len(tfms), _toc - _tic))
+with arim.utils.timeit('Delay-and-sum', logger=logger):
+    for tfm in tfms:
+        tfm.run(fillvalue=conf['tfm.fillvalue'])
 
 # %% Plot all TFM
 
