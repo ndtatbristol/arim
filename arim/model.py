@@ -708,8 +708,8 @@ def sensitivity_conjugate_for_path(ray_weights):
     return np.mean(np.abs(ray_weights) ** 2, axis=0)
 
 
-def sensitivity_conjugate_for_view(tx_ray_weights, rx_ray_weights):
-    return tx_ray_weights * rx_ray_weights
+def sensitivity_conjugate_for_view(tx_sensitivity, rx_sensitivity):
+    return tx_sensitivity * rx_sensitivity
 
 
 class RayGeometry(namedtuple("RayGeometry", "inc_angles_list out_angles_list "
