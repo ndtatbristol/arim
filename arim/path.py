@@ -8,6 +8,7 @@ import numpy as np
 
 from collections import OrderedDict
 from .core import Path, Interface, View
+from .exceptions import ArimWarning
 from . import geometry as g
 from . import settings as s
 
@@ -177,7 +178,7 @@ def paths_for_block_in_immersion(block_material, couplant_material, probe_interf
 
 
     if backwall_interface.reflection_against != couplant_material:
-        warnings.warn("Different couplant materials are used.")
+        warnings.warn("Different couplant materials are used.", ArimWarning)
 
     paths['L'] = Path(
         interfaces=(probe_interface, frontwall_interface, grid_interface),

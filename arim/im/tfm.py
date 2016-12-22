@@ -309,10 +309,10 @@ class SingleViewTFM(BaseTFM):
         tx_rays = view.tx_path.rays
         rx_rays = view.rx_path.rays
 
-        if (tx_rays.indices.flags.fortran
-            or rx_rays.indices.flags.fortran
-            or tx_rays.times.flags.fortran
-            or rx_rays.times.flags.fortran):
+        if (not tx_rays.indices.flags.fortran
+            or not rx_rays.indices.flags.fortran
+            or not tx_rays.times.flags.fortran
+            or not rx_rays.times.flags.fortran):
             msg = "Rays will be converted to fortran order. If multiple TFM are performed, "
             msg += "converting the rays before passing them to this object is more computationally "
             msg += "efficient."
