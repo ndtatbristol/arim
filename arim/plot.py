@@ -155,6 +155,7 @@ def plot_oxz(data, grid, ax=None, title=None, clim=None, interpolation='none',
     ----------
     data : ndarray
         Shape: 2D matrix ``(grid.numx, grid.numz)`` or 3D matrix ``(grid.numx, 1, grid.numz)``
+        or 1D matrix ``(grid.numx * grid.numz)``
     grid : Grid
     ax : matplotlib.Axis or None
         Axis where to plot.
@@ -203,16 +204,15 @@ def plot_oxz(data, grid, ax=None, title=None, clim=None, interpolation='none',
     else:
         fig = ax.figure
 
-    if data.ndim == 3 and data.shape == (grid.numx, 1, grid.numz):
+    valid_shapes = [(grid.numx, 1, grid.numz),
+                    (grid.numx, grid.numz),
+                    (grid.numx * grid.numz, )]
+    if data.shape in valid_shapes:
         data = data.reshape((grid.numx, grid.numz))
-    elif data.ndim == 2 and data.shape == (grid.numx, grid.numz):
-        pass
     else:
-        raise ValueError(
-            'invalid data shape (got {}, expected {} or {})'.format(data.shape, (
-                grid.numx, 1, grid.numz),
-                                                                    (grid.numx,
-                                                                     grid.numz)))
+        msg = 'invalid data shape (got {}, expected {} or {} or {})'\
+            .format(data.shape, *valid_shapes)
+        raise ValueError(msg)
 
     data = np.rot90(data)
 
