@@ -148,7 +148,7 @@ views = arim.views_for_block_in_immersion(paths)
 
 # %% Setup Fermat solver and compute rays
 
-arim.im.ray_tracing(views.values())
+arim.im.ray_tracing(views.values(), convert_to_fortran_order=True)
 
 # %% Setups TFM
 frame.apply_filter(

@@ -48,7 +48,7 @@ def ray_tracing(views_list, convert_to_fortran_order=False):
     rays_dict = fermat_solver.solve()
 
     if convert_to_fortran_order:
-        rays_dict = {k:v.to_fortran_order() for k, v in rays_dict.items()}
+        rays_dict = {k: v.to_fortran_order() for k, v in rays_dict.items()}
 
     # Save results in attribute path.rays:
     for path, fermat_path in zip(paths_tuple, fermat_paths_tuple):
@@ -369,11 +369,13 @@ class Rays:
 
             # leg_origins[i, j] is the interface point through which the ray (i,j)
             # goes (ray between the i-th probe element and the j-th grid point)
-            leg_origins = points[self.indices[interface_idx]]
+            leg_origins = points.coords.take(self.indices[interface_idx], axis=0)
 
             # leg_direction[i, j] is the leg (as a 3d vector) of the ray (i,j)
             # at the current interface
-            leg_directions = next_points[self.indices[interface_idx + 1]] - leg_origins
+            leg_directions = next_points.coords.take(self.indices[interface_idx + 1],
+                                                     axis=0)
+            leg_directions -= leg_origins
 
             # orientations[i, j] is the orientation of the interface point through
             # which the ray (i,j) goes.
@@ -384,17 +386,21 @@ class Rays:
             leg_directions_local = g.to_gcs(leg_directions, orientations,
                                             np.array([0., 0., 0.]))
 
-            leg_directions_spher = g.spherical_coordinates(leg_directions_local[..., 0],
-                                                           leg_directions_local[..., 1],
-                                                           leg_directions_local[..., 2])
-            theta = leg_directions_spher.theta
-            distances = leg_directions_spher.r
+            x = leg_directions_local[..., 0]
+            y = leg_directions_local[..., 1]
+            z = leg_directions_local[..., 2]
+
+            distances = g.spherical_coordinates_r(x, y, z)
+            theta = g.spherical_coordinates_theta(z, distances)
 
             # Flip angle if necessary
             if interface.are_normals_on_out_rays_side:
                 alpha = theta
             else:
-                alpha = np.pi - theta
+                # alpha = np.pi - theta
+                alpha = theta
+                alpha *= -1
+                alpha += np.pi
 
             if return_distances:
                 yield alpha, distances
@@ -461,12 +467,13 @@ class Rays:
 
             # leg_origins[i, j] is the interface point through which the ray (i,j)
             # goes (ray between the i-th probe element and the j-th grid point)
-            leg_origins = points[self.indices[interface_idx]]
+            leg_origins = points.coords.take(self.indices[interface_idx], axis=0)
 
             # leg_direction[i, j] is the leg (as a 3d vector) of the ray (i,j)
             # at the current interface (incoming leg)
-            leg_directions = previous_points[
-                                 self.indices[interface_idx - 1]] - leg_origins
+            leg_directions = previous_points.coords.take(self.indices[interface_idx - 1],
+                                                         axis=0)
+            leg_directions -= leg_origins
 
             # orientations[i, j] is the orientation of the interface point through
             # which the ray (i,j) goes.
@@ -477,17 +484,21 @@ class Rays:
             leg_directions_local = g.to_gcs(leg_directions, orientations,
                                             np.array([0., 0., 0.]))
 
-            leg_directions_spher = g.spherical_coordinates(leg_directions_local[..., 0],
-                                                           leg_directions_local[..., 1],
-                                                           leg_directions_local[..., 2])
-            theta = leg_directions_spher.theta
-            distances = leg_directions_spher.r
+            x = leg_directions_local[..., 0]
+            y = leg_directions_local[..., 1]
+            z = leg_directions_local[..., 2]
+
+            distances = g.spherical_coordinates_r(x, y, z)
+            theta = g.spherical_coordinates_theta(z, distances)
 
             # Flip angle if necessary
             if interface.are_normals_on_inc_rays_side:
                 alpha = theta
             else:
-                alpha = np.pi - theta
+                # alpha = np.pi - theta
+                alpha = theta
+                alpha *= -1
+                alpha += np.pi
 
             if return_distances:
                 yield alpha, distances
