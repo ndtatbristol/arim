@@ -405,7 +405,7 @@ class Rays:
             if return_distances:
                 yield alpha, distances
             else:
-                yield distances
+                yield alpha
         # Last interface:
         if return_distances:
             yield None, None
@@ -503,7 +503,7 @@ class Rays:
             if return_distances:
                 yield alpha, distances
             else:
-                yield distances
+                yield alpha
 
 
 class FermatPath(tuple):
