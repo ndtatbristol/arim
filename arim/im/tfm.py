@@ -7,16 +7,16 @@ import warnings
 from collections import namedtuple
 
 from .. import geometry as g
-from .amplitudes import UniformAmplitudes, AmplitudesRemoveExtreme
-from .fermat_solver import FermatPath, Rays
+from . import amplitudes
 from .. import settings as s
 from .. import core
-from ..core import Frame, FocalLaw, View
+from ..core import Frame, FocalLaw
 from ..enums import CaptureMethod
 from ..path import IMAGING_MODES  # import for backward compatibility
+from ..exceptions import ArimWarning
 import numba
 
-__all__ = ['BaseTFM', 'ContactTFM', 'SingleViewTFM', 'IMAGING_MODES']
+__all__ = ['BaseTFM', 'ContactTFM', 'SingleViewTFM', 'IMAGING_MODES', 'SimpleTFM']
 
 ExtramaLookupTimes = namedtuple('ExtramaLookupTimes',
                                 'tmin tmax tx_elt_for_tmin rx_elt_for_tmin tx_elt_for_tmax rx_elt_for_tmax')
@@ -37,6 +37,7 @@ class BaseTFM:
     amplitudes : Amplitudes or str
         An amplitude object. Accepted keywords: 'uniform'.
     dtype : numpy.dtype
+    scanlines_weight : ndarray or None
     geom_probe_to_grid : GeometryHelper
 
     Attributes
@@ -51,7 +52,7 @@ class BaseTFM:
     """
 
     def __init__(self, frame, grid, amplitudes_tx='uniform', amplitudes_rx='uniform',
-                 dtype=None, geom_probe_to_grid=None):
+                 scanline_weights=None, dtype=None, geom_probe_to_grid=None):
         self.frame = frame
         self.grid = grid
 
@@ -68,10 +69,15 @@ class BaseTFM:
             assert geom_probe_to_grid.is_valid(frame.probe, grid.as_points)
         self._geom_probe_to_grid = geom_probe_to_grid
 
+        if scanline_weights is not None:
+            scanline_weights = np.asarray(scanline_weights)
+            assert scanline_weights.shape == frame.numscanlines
+        self._scanline_weights = scanline_weights
+
         if amplitudes_tx == 'uniform':
-            amplitudes_tx = UniformAmplitudes(frame, grid)
+            amplitudes_tx = amplitudes.UniformAmplitudes(frame, grid)
         if amplitudes_rx == 'uniform':
-            amplitudes_rx = UniformAmplitudes(frame, grid)
+            amplitudes_rx = amplitudes.UniformAmplitudes(frame, grid)
         self.amplitudes_tx = amplitudes_tx
         self.amplitudes_rx = amplitudes_rx
 
@@ -138,19 +144,23 @@ class BaseTFM:
         For HMC: weights 2.0 for scanlines where TX and RX elements are different, 1.0 otherwise.
 
         """
-        capture_method = self.frame.metadata.get('capture_method', None)
-        if capture_method is None:
-            raise NotImplementedError
-        elif capture_method is CaptureMethod.fmc:
-            weights = np.ones(self.frame.numscanlines, dtype=self.dtype)
-            return weights
-        elif capture_method is CaptureMethod.hmc:
-            weights = np.full(self.frame.numscanlines, 2.0, dtype=self.dtype)
-            same_tx_rx = self.frame.tx == self.frame.rx
-            weights[same_tx_rx] = 1.0
-            return weights
+        if self._scanline_weights is not None:
+            return self._scanline_weights
         else:
-            raise NotImplementedError
+            capture_method = self.frame.metadata.get('capture_method', None)
+            if capture_method is None:
+                raise NotImplementedError
+            elif capture_method is CaptureMethod.fmc:
+                weights = np.ones(self.frame.numscanlines, dtype=self.dtype)
+                return weights
+            elif capture_method is CaptureMethod.hmc:
+                weights = np.full(self.frame.numscanlines, 2.0, dtype=self.dtype)
+                same_tx_rx = self.frame.tx == self.frame.rx
+                weights[same_tx_rx] = 1.0
+                return weights
+            else:
+                raise ValueError("Cannot infer the scanline weights from the frame. "
+                                 "Scanline weights must be provided manually.")
 
     def hook_start_run(self):
         """Implement this method in child class if necessary."""
@@ -291,8 +301,6 @@ class ContactTFM(BaseTFM):
 
 class SingleViewTFM(BaseTFM):
     def __init__(self, frame, grid, view, **kwargs):
-        # assert grid is view.tx_path[-1]
-        # assert grid is view.rx_path[-1]
         if grid.numpoints != len(view.tx_path.interfaces[-1].points):
             raise ValueError("Inconsistent grid")
         if grid.numpoints != len(view.rx_path.interfaces[-1].points):
@@ -301,10 +309,15 @@ class SingleViewTFM(BaseTFM):
         tx_rays = view.tx_path.rays
         rx_rays = view.rx_path.rays
 
-        # assert rays_rx.indices.flags.fortran
-        # assert rays_tx.indices.flags.fortran
-        # assert rays_tx.times.flags.fortran
-        # assert rays_rx.times.flags.fortran
+        if (tx_rays.indices.flags.fortran
+            or rx_rays.indices.flags.fortran
+            or tx_rays.times.flags.fortran
+            or rx_rays.times.flags.fortran):
+            msg = "Rays will be converted to fortran order. If multiple TFM are performed, "
+            msg += "converting the rays before passing them to this object is more computationally "
+            msg += "efficient."
+            warnings.warn(msg, ArimWarning)
+
         assert tx_rays.path[0] is frame.probe.locations
         assert rx_rays.path[0] is frame.probe.locations
         assert tx_rays.path[-1] is grid.as_points
@@ -318,12 +331,12 @@ class SingleViewTFM(BaseTFM):
 
         amplitudes_tx = kwargs.get('amplitudes_tx')
         if amplitudes_tx is None:
-            amplitudes_tx = AmplitudesRemoveExtreme(frame, grid, tx_rays)
+            amplitudes_tx = amplitudes.AmplitudesRemoveExtreme(frame, grid, tx_rays)
         kwargs['amplitudes_tx'] = amplitudes_tx
 
         amplitudes_rx = kwargs.get('amplitudes_rx')
         if amplitudes_rx is None:
-            amplitudes_rx = AmplitudesRemoveExtreme(frame, grid, rx_rays)
+            amplitudes_rx = amplitudes.AmplitudesRemoveExtreme(frame, grid, rx_rays)
         kwargs['amplitudes_rx'] = amplitudes_rx
 
         super().__init__(frame, grid, **kwargs)
@@ -393,6 +406,39 @@ class SingleViewTFM(BaseTFM):
         views = views_for_block_in_immersion(paths_dict)
 
         return views
+
+
+class SimpleTFM(BaseTFM):
+    """
+    A TFM class that takes as input the lookup times array.
+    """
+
+    def __init__(self, frame, grid, lookup_times_tx, lookup_times_rx,
+                 amplitudes_tx='uniform', amplitudes_rx='uniform',
+                 **kwargs):
+        lookup_times_tx = np.asarray(lookup_times_tx)
+        lookup_times_rx = np.asarray(lookup_times_rx)
+
+        assert lookup_times_tx.shape == (grid.numpoints, frame.probe.numelements)
+        assert lookup_times_rx.shape == (grid.numpoints, frame.probe.numelements)
+
+        if not lookup_times_tx.flags.contiguous:
+            warnings.warn("Lookup times are converted to contiguous array.", ArimWarning)
+            lookup_times_rx = np.ascontiguousarray(lookup_times_tx)
+        if not lookup_times_tx.flags.contiguous:
+            warnings.warn("Lookup times are converted to contiguous array.", ArimWarning)
+            lookup_times_rx = np.ascontiguousarray(lookup_times_rx)
+
+        self._lookup_times_tx = lookup_times_tx
+        self._lookup_times_rx = lookup_times_rx
+
+        super().__init__(frame, grid, amplitudes_tx, amplitudes_rx, **kwargs)
+
+    def get_lookup_times_tx(self):
+        return self._lookup_times_tx
+
+    def get_lookup_times_rx(self):
+        return self._lookup_times_rx
 
 
 @numba.jit(nopython=True)

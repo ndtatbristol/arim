@@ -2,6 +2,7 @@ import numpy as np
 import pytest
 from unittest.mock import Mock, patch
 import math
+import copy
 
 import arim
 import arim.im as im
@@ -9,7 +10,6 @@ import arim.im.amplitudes
 import arim.im.tfm
 import arim.io
 import arim.geometry as g
-from arim.im import fermat_solver as t
 
 from tests.helpers import get_data_filename
 
@@ -84,6 +84,24 @@ class TestTFM:
         assert out.rx_elt_for_tmax == 1
 
 
+    def test_simple_tfm(self, grid, frame):
+        # Check that SimpleTFM and ContactTFM gives consistent values:
+        frame_bak = copy.deepcopy(frame)
+        grid_bak = copy.deepcopy(grid)
+
+        speed = 6300
+        tfm_contact = im.ContactTFM(speed, frame=frame, grid=grid)
+        res_contact = tfm_contact.run()
+
+        lookup_times_tx = tfm_contact.get_lookup_times_tx()
+        lookup_times_rx = tfm_contact.get_lookup_times_rx()
+
+        tfm = im.SimpleTFM(frame_bak, grid_bak, lookup_times_tx, lookup_times_rx)
+        res = tfm.run()
+
+        np.testing.assert_allclose(res, res_contact)
+
+
 
 
 
@@ -130,3 +148,4 @@ def test_make_views():
     view = views['LT-LT']
     assert view.tx_path.to_fermat_path() == (probe, v_couplant, frontwall, v_longi, backwall, v_shear, grid)
     assert view.rx_path.to_fermat_path() == (probe, v_couplant, frontwall, v_shear, backwall, v_longi, grid)
+
