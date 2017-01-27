@@ -703,6 +703,127 @@ def beamspread_for_path(ray_geometry, p=0.5):
     return beamspread
 
 
+def beamspread_after_interface_snell(inc_angles_last_interface,
+                                     leg_sizes_before_last_interface,
+                                     leg_sizes_after_last_interface, refractive_index,
+                                     p=0.5):
+    """
+    Compute the contribution to beamspread of an interface.
+
+
+    Parameters
+    ----------
+    inc_angles_last_interface
+        Angles of the incoming rays at the last interface.
+    leg_sizes_before_last_interface
+        For each ray, size of the leg between the second to last interface and the last interface.
+    leg_sizes_after_last_interface : ndarray
+        For each ray, size of the leg between the last interface and the current point.
+    refractive_indices : list of float
+        Refractive index for each interface. None if not relevant.
+    p : float
+        Beamspread is ``1/distance**p`` (distance power p). Use 0.5 for 2D and 1.0 for 3D. Default: 0.5
+
+    Returns
+    -------
+    beamspread : ndarray
+
+    """
+    beta = (refractive_index ** 2 - np.sin(inc_angles_last_interface) ** 2) \
+           / (refractive_index * np.cos(inc_angles_last_interface) ** 2)
+    distance_virtual = leg_sizes_before_last_interface * beta
+    return (distance_virtual / (distance_virtual + leg_sizes_after_last_interface)) ** p
+
+
+def beamspread_per_interface_for_path_snell(inc_angles_list, inc_leg_sizes_list,
+                                            refractive_indices,
+                                            p=0.5):
+    """
+    Compute the beamspread for a path as a list of the contribution of each interface.
+
+    Parameters
+    ----------
+    inc_angles_list : list of ndarray
+        Each array of the list is the angle of the incoming ray to the interface. One array per interface.
+        None if not relevant.
+    inc_leg_sizes_list : list of ndarray
+        Each array of the list is the size of the incoming leg to the interface. Legs are assumed to be straight.
+        One array per interface.
+        None if not relevant.
+    refractive_indices : list of float
+        Refractive index for each interface. None if not relevant.
+    p : float
+        Beamspread is ``1/distance**p`` (distance power p). Use 0.5 for 2D and 1.0 for 3D. Default: 0.5
+
+    Returns
+    -------
+    beamspread_list : list of ndarray
+
+    """
+    # At the first interface, beamspread is not defined
+    yield None
+
+    assert len(inc_angles_list) == len(inc_leg_sizes_list) == len(refractive_indices)
+    numinterfaces = len(inc_angles_list)
+
+    for i in range(1, numinterfaces):
+        if i == 1:
+            # Leg size between the probe and the first interface
+            yield inc_leg_sizes_list[1] ** (-p)
+        else:
+            leg_sizes_before_last_interface = inc_leg_sizes_list[i - 1]
+            leg_sizes_after_last_interface = inc_leg_sizes_list[i]
+
+            inc_angles_last_interface = inc_angles_list[i - 1]
+
+            yield beamspread_after_interface_snell(inc_angles_last_interface,
+                                                   leg_sizes_before_last_interface,
+                                                   leg_sizes_after_last_interface,
+                                                   refractive_indices[i - 1], p=p)
+
+
+def beamspread_for_path_snell(path, ray_geometry, p=0.5):
+    """
+    Compute the beamspread for a path.
+
+    Compared to the function beamspread_for_path: compute outgoing angles with
+    Snell-Descartes law instead of the using the actual rays. This solves numerical issues
+    for small angles.
+
+    Parameters
+    ----------
+    path : Path
+    ray_geometry : RayGeometry
+    p : float
+        Beamspread is ``1/distance**p`` (distance power p). Use 0.5 for 2D and 1.0 for 3D. Default: 0.5
+
+    Returns
+    -------
+    beamspread : ndarray
+
+    """
+    inc_angles_list = ray_geometry.inc_angles_list
+    inc_leg_sizes_list = ray_geometry.inc_leg_sizes_list
+
+    refractive_indices = [None]
+    for inc_velocity, out_velocity in zip(path.velocities, path.velocities[1:]):
+        refractive_indices.append(inc_velocity / out_velocity)
+    refractive_indices.append(None)
+
+    beamspread = None
+    for relative_beamspread in beamspread_per_interface_for_path_snell(inc_angles_list,
+                                                                       inc_leg_sizes_list,
+                                                                       refractive_indices,
+                                                                       p=p):
+        if relative_beamspread is None:
+            continue
+        if beamspread is None:
+            beamspread = relative_beamspread
+        else:
+            beamspread *= relative_beamspread
+    return beamspread
+
+
 def sensitivity_conjugate_for_path(ray_weights):
     """
 
