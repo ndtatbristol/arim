@@ -3,7 +3,7 @@ import pytest
 
 import arim.io.brain as mat
 from arim.exceptions import InvalidShape, InvalidDimension, NotAnArray
-from arim import CaptureMethod
+from arim.core import CaptureMethod
 
 from tests.helpers import get_data_filename
 

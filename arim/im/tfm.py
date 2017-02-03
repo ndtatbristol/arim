@@ -5,15 +5,15 @@ This module defines classes to perform TFM and TFM-like imaging.
 import numpy as np
 import warnings
 from collections import namedtuple
+import numba
 
 from .. import geometry as g
 from . import amplitudes
 from .. import settings as s
 from .. import core as c
-from ..enums import CaptureMethod
 from ..path import IMAGING_MODES  # import for backward compatibility
 from ..exceptions import ArimWarning
-import numba
+from ..utils import parse_enum_constant
 
 __all__ = ['BaseTFM', 'ContactTFM', 'SingleViewTFM', 'IMAGING_MODES', 'SimpleTFM']
 
@@ -104,7 +104,7 @@ class BaseTFM:
         scanline_weights = self.get_scanline_weights()
 
         focal_law = c.FocalLaw(lookup_times_tx, lookup_times_rx, amplitudes_tx,
-                                  amplitudes_rx, scanline_weights)
+                               amplitudes_rx, scanline_weights)
 
         focal_law = self.hook_focal_law(focal_law)
         self.focal_law = focal_law
@@ -148,11 +148,15 @@ class BaseTFM:
         else:
             capture_method = self.frame.metadata.get('capture_method', None)
             if capture_method is None:
+                pass
+            else:
+                capture_method = parse_enum_constant(capture_method, c.CaptureMethod)
+            if capture_method is None:
                 raise NotImplementedError
-            elif capture_method is CaptureMethod.fmc:
+            elif capture_method is c.CaptureMethod.fmc:
                 weights = np.ones(self.frame.numscanlines, dtype=self.dtype)
                 return weights
-            elif capture_method is CaptureMethod.hmc:
+            elif capture_method is c.CaptureMethod.hmc:
                 weights = np.full(self.frame.numscanlines, 2.0, dtype=self.dtype)
                 same_tx_rx = self.frame.tx == self.frame.rx
                 weights[same_tx_rx] = 1.0
@@ -388,14 +392,14 @@ class SingleViewTFM(BaseTFM):
 
         # Create dummy interfaces:
         probe_interface = c.Interface(probe,
-                                              np.resize(np.eye(3), (*probe.shape, 3, 3)))
+                                      np.resize(np.eye(3), (*probe.shape, 3, 3)))
         frontwall_interface = c.Interface(frontwall, np.resize(np.eye(3), (
             *frontwall.shape, 3, 3)))
         backwall_interface = c.Interface(backwall,
-                                                 np.resize(np.eye(3),
-                                                           (*backwall.shape, 3, 3)))
+                                         np.resize(np.eye(3),
+                                                   (*backwall.shape, 3, 3)))
         grid_interface = c.Interface(grid,
-                                             np.resize(np.eye(3), (*grid.shape, 3, 3)))
+                                     np.resize(np.eye(3), (*grid.shape, 3, 3)))
 
         # Create Dummy material:
         block = c.Material(v_longi, v_shear, state_of_matter='solid')

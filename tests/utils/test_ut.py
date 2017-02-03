@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 
 import arim.utils.ut as ut
-from arim import utils as u, CaptureMethod
+from arim import utils as u
 
 
 def test_decibel():
@@ -48,7 +48,7 @@ def test_fmc():
     tx2 = [0, 0, 0, 1, 1, 1, 2, 2, 2]
     rx2 = [0, 1, 2, 0, 1, 2, 0, 1, 2]
 
-    tx, rx = u.fmc(numelements)
+    tx, rx = ut.fmc(numelements)
 
     shape = (numelements * numelements,)
 
@@ -63,7 +63,7 @@ def test_hmc():
     tx2 = [0, 0, 0, 1, 1, 2]
     rx2 = [0, 1, 2, 1, 2, 2]
 
-    tx, rx = u.hmc(numelements)
+    tx, rx = ut.hmc(numelements)
 
     shape = (numelements * (numelements + 1) / 2,)
 
@@ -77,50 +77,50 @@ def test_infer_capture_method():
     # Valid HMC
     tx = [0, 0, 0, 1, 1, 2]
     rx = [0, 1, 2, 1, 2, 2]
-    assert u.infer_capture_method(tx, rx) == CaptureMethod.hmc
+    assert ut.infer_capture_method(tx, rx) == 'hmc'
 
     # HMC with duplicate signals
     tx = [0, 0, 0, 1, 1, 2, 1]
     rx = [0, 1, 2, 1, 2, 2, 1]
-    assert u.infer_capture_method(tx, rx) == CaptureMethod.unsupported
+    assert ut.infer_capture_method(tx, rx) == 'unsupported'
 
     # HMC with missing signals
     tx = [0, 0, 0, 2, 1]
     rx = [0, 1, 2, 2, 1]
-    assert u.infer_capture_method(tx, rx) == CaptureMethod.unsupported
+    assert ut.infer_capture_method(tx, rx) == 'unsupported'
 
     # Valid HMC
     tx = [0, 1, 2, 1, 2, 2]
     rx = [0, 0, 0, 1, 1, 2]
-    assert u.infer_capture_method(tx, rx) == CaptureMethod.hmc
+    assert ut.infer_capture_method(tx, rx) == 'hmc'
 
     # Something weird
     tx = [0, 1, 2, 1, 2, 2]
     rx = [0, 0, 0, 1]
     with pytest.raises(Exception):
-        u.infer_capture_method(tx, rx)
+        ut.infer_capture_method(tx, rx)
 
     # Valid FMC
     tx = [0, 0, 0, 1, 1, 1, 2, 2, 2]
     rx = [0, 1, 2, 0, 1, 2, 0, 1, 2]
-    assert u.infer_capture_method(tx, rx) == CaptureMethod.fmc
+    assert ut.infer_capture_method(tx, rx) == 'fmc'
 
     # FMC with duplicate signals
     tx = [0, 0, 0, 1, 1, 1, 2, 2, 2, 0]
     rx = [0, 1, 2, 0, 1, 2, 0, 1, 2, 0]
-    assert u.infer_capture_method(tx, rx) == CaptureMethod.unsupported
+    assert ut.infer_capture_method(tx, rx) == 'unsupported'
 
     # FMC with missing signals
     tx = [0, 0, 0, 1, 1, 1, 2, 2]
     rx = [0, 1, 2, 0, 1, 2, 0, 1]
-    assert u.infer_capture_method(tx, rx) == CaptureMethod.unsupported
+    assert ut.infer_capture_method(tx, rx) == 'unsupported'
 
     # Negative values
     tx = [0, -1]
     rx = [0, 1]
-    assert u.infer_capture_method(tx, rx) == CaptureMethod.unsupported
+    assert ut.infer_capture_method(tx, rx) == 'unsupported'
 
     # Weird
     tx = [0, 5]
     rx = [0, 1]
-    assert u.infer_capture_method(tx, rx) == CaptureMethod.unsupported
+    assert ut.infer_capture_method(tx, rx) == 'unsupported'

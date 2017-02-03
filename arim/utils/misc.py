@@ -1,3 +1,5 @@
+import os
+import subprocess
 import time
 from collections import Counter
 from contextlib import contextmanager
@@ -7,7 +9,8 @@ from warnings import warn
 
 from arim.exceptions import ArimWarning
 
-__all__ = ['get_name', 'parse_enum_constant', 'timeit', 'Cache', 'NoCache']
+__all__ = ['get_name', 'parse_enum_constant', 'timeit', 'Cache', 'NoCache',
+           'get_git_version']
 
 
 def get_name(metadata):
@@ -170,3 +173,27 @@ class NoCache(Cache):
 
     def __setitem__(self, key, value):
         self.ignored += 1
+
+
+def get_git_version(short=True):
+    """
+    Returns the current git revision as a string. Returns an empty string
+    if git is not available or if the library is not not in a repository.
+    """
+    curdir = os.getcwd()
+    filedir, _ = os.path.split(__file__)
+    os.chdir(filedir)
+
+    if short:
+        cmd = ['git', 'rev-parse', '--short', 'HEAD']
+    else:
+        cmd = ['git', 'rev-parse', 'HEAD']
+
+    try:
+        githash = subprocess.check_output(cmd)
+        githash = githash.decode('ascii').strip()
+    except (FileNotFoundError, subprocess.CalledProcessError)  as e:
+        githash = ''
+
+    os.chdir(curdir)
+    return githash

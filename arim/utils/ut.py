@@ -7,9 +7,8 @@ Several helpers related to ultrasonic testing (UT)
 
 import numpy as np
 
-from ..enums import CaptureMethod
-
 __all__ = ['fmc', 'hmc', 'infer_capture_method', 'decibel']
+
 
 def fmc(numelements):
     """
@@ -65,7 +64,20 @@ def hmc(numelements):
 
 def infer_capture_method(tx, rx):
     """
-    FMC, HMC, or other?
+    Infers the capture method from the indices of transmitters and receivers.
+
+    Returns: 'hmc', 'fmc', 'unsupported'
+
+    Parameters
+    ----------
+    tx : list
+        One per scanline
+    rx : list
+        One per scanline
+
+    Returns
+    -------
+    capture_method : string
     """
     numelements = max(np.max(tx), np.max(rx)) + 1
     assert len(tx) == len(rx)
@@ -80,17 +92,18 @@ def infer_capture_method(tx, rx):
     combinations_hmc1 = set(zip(tx_hmc, rx_hmc))
     combinations_hmc2 = set(zip(rx_hmc, tx_hmc))
 
-    if (len(tx_hmc) == len(tx)) and ((combinations == combinations_hmc1) or (combinations == combinations_hmc2)):
-        return CaptureMethod.hmc
+    if (len(tx_hmc) == len(tx)) and ((combinations == combinations_hmc1) or
+                                         (combinations == combinations_hmc2)):
+        return 'hmc'
 
     # Could it be a FMC?
     tx_fmc, rx_fmc = fmc(numelements)
     combinations_fmc = set(zip(tx_fmc, rx_fmc))
     if (len(tx_fmc) == len(tx)) and (combinations == combinations_fmc):
-        return CaptureMethod.fmc
+        return 'fmc'
 
     # At this point we are hopeless
-    return CaptureMethod.unsupported
+    return 'unsupported'
 
 
 def decibel(arr, reference=None, neginf_value=-1000., return_reference=False):
@@ -123,10 +136,10 @@ def decibel(arr, reference=None, neginf_value=-1000., return_reference=False):
     """
     # Disable warnings messages for log10(0.0)
     arr_abs = np.abs(arr)
-    
+
     if arr_abs.shape == ():
         orig_shape = ()
-        arr_abs = arr_abs.reshape((1, ))
+        arr_abs = arr_abs.reshape((1,))
     else:
         orig_shape = None
 
@@ -140,7 +153,7 @@ def decibel(arr, reference=None, neginf_value=-1000., return_reference=False):
 
     if neginf_value is not None:
         arr_db[np.isneginf(arr_db)] = neginf_value
-                   
+
     if orig_shape is not None:
         arr_db = arr_db.reshape(orig_shape)
 
@@ -148,5 +161,3 @@ def decibel(arr, reference=None, neginf_value=-1000., return_reference=False):
         return arr_db, reference
     else:
         return arr_db
-
-

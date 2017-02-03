@@ -36,12 +36,10 @@ from .exceptions import ArimWarning, InvalidDimension, InvalidShape
 
 __all__ = ['rotation_matrix_x', 'rotation_matrix_y', 'rotation_matrix_z',
            'rotation_matrix_ypr', 'are_points_aligned', 'norm2', 'norm2_2d',
-           'direct_isometry_2d', 'points_in_rectbox',
-           'direct_isometry_3d', 'CoordinateSystem',
-           'Grid', 'Points', 'GCS', 'are_points_close', 'distance_pairwise', 'aspoints',
-           'GeometryHelper',
-           'spherical_coordinates', 'spherical_coordinates_phi',
-           'spherical_coordinates_r',
+           'direct_isometry_2d', 'points_in_rectbox', 'direct_isometry_3d',
+           'CoordinateSystem', 'Grid', 'Points', 'GCS', 'are_points_close',
+           'distance_pairwise', 'aspoints', 'GeometryHelper', 'spherical_coordinates',
+           'spherical_coordinates_phi', 'spherical_coordinates_r',
            'spherical_coordinates_theta']
 
 SphericalCoordinates = namedtuple('SphericalCoordinates', 'r theta phi')

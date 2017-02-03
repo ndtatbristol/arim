@@ -1,10 +1,8 @@
 """
 Defines core objects of arim.
 """
-import enum
 from collections import namedtuple
-from enum import IntEnum
-
+import enum
 import numpy as np
 
 from . import geometry as g
@@ -12,7 +10,7 @@ from . import utils as u
 
 __all__ = ['FocalLaw', 'StateMatter', 'TransmissionReflection', 'Frame', 'ElementShape',
            'Probe', 'Mode', 'Interface', 'Path', 'Material', 'ExaminationObject', 'Time',
-           'View']
+           'View', 'CaptureMethod']
 
 FocalLaw = namedtuple('FocalLaw', ['lookup_times_tx', 'lookup_times_rx', 'amplitudes_tx',
                                    'amplitudes_rx', 'scanline_weights'])
@@ -21,6 +19,12 @@ StateMatter = enum.Enum('StateMatter', 'liquid solid')
 StateMatter.__doc__ = "Enumerated constants for the states of matter."
 TransmissionReflection = enum.Enum('TransmissionReflection', 'transmission reflection')
 TransmissionReflection.__doc__ = "Enumerated constants: transmission or reflection."
+
+
+class CaptureMethod(enum.Enum):
+    unsupported = 0
+    fmc = 1
+    hmc = 2
 
 
 class Frame:
@@ -107,7 +111,7 @@ class Frame:
         if metadata is None:
             metadata = {}
         if metadata.get('capture_method', None) is None:
-            metadata['capture_method'] = u.infer_capture_method(tx, rx)
+            metadata['capture_method'] = CaptureMethod[u.infer_capture_method(tx, rx)]
         self.metadata = metadata
 
     def apply_filter(self, filt):
@@ -156,7 +160,7 @@ class Frame:
         return scanlines[match, ...].reshape((self.numsamples,))
 
 
-class ElementShape(IntEnum):
+class ElementShape(enum.IntEnum):
     """Enumeration which describes the shape of an element.
     The values are compliant with the specifications of MFMC format
     (field ``ELEMENT_SHAPE``).
