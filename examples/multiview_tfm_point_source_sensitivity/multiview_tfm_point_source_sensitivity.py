@@ -22,7 +22,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 import arim
-import arim.core.misc
 import arim.plot as aplt
 from arim.registration import registration_by_flat_frontwall_detection
 

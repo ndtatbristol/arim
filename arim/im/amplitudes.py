@@ -4,7 +4,8 @@ import numpy as np
 
 from .. import geometry as g
 from .. import settings as s
-from ..core import NoCache, ElementShape
+from ..core import ElementShape
+from ..utils import NoCache
 from ..exceptions import ArimWarning
 from .. import model
 
@@ -45,7 +46,7 @@ class Amplitudes:
 
     @property
     def shape(self):
-        return (self.grid.numpoints, self.frame.probe.numelements)
+        return self.grid.numpoints, self.frame.probe.numelements
 
     def __call__(self):
         """
@@ -334,7 +335,7 @@ class AmplitudesRemoveExtreme(Amplitudes):
         super().__init__(frame, grid, **kwargs)
 
     def _compute_amplitudes(self):
-        amps = np.ones((self.shape), dtype=self.dtype)
+        amps = np.ones(self.shape, dtype=self.dtype)
 
         # get rays that goes through extreme points (non-physical rays in general)
         extreme_points = self.rays.gone_through_extreme_points().T

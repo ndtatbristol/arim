@@ -8,8 +8,7 @@ from collections import namedtuple
 import numpy as np
 from numpy import sin, cos
 
-from . import core
-from .core import Mode, InterfaceKind, StateMatter, TransmissionReflection
+from . import core as c
 
 __all__ = ['directivity_finite_width_2d', 'directivity_finite_width_2d_for_path',
            'fluid_solid', 'solid_l_fluid', 'solid_t_fluid',
@@ -370,16 +369,16 @@ def transmission_at_interface(interface_kind, material_inc, material_out, mode_i
     if force_complex:
         angles_inc = np.asarray(angles_inc, dtype=complex)
 
-    if interface_kind is core.InterfaceKind.fluid_solid:
+    if interface_kind is c.InterfaceKind.fluid_solid:
         # Fluid-solid interface in transmission
         #   "in" is in the fluid
         #   "out" is in the solid
-        assert mode_inc is core.Mode.L, "you've broken the physics"
+        assert mode_inc is c.Mode.L, "you've broken the physics"
 
         fluid = material_inc
         solid = material_out
-        assert solid.state_of_matter == StateMatter.solid
-        assert fluid.state_of_matter.name != StateMatter.solid
+        assert solid.state_of_matter == c.StateMatter.solid
+        assert fluid.state_of_matter.name != c.StateMatter.solid
 
         alpha_fluid = angles_inc
         alpha_l = snell_angles(alpha_fluid, fluid.longitudinal_vel,
@@ -397,9 +396,9 @@ def transmission_at_interface(interface_kind, material_inc, material_out, mode_i
             c_t=solid.transverse_vel)
 
         refl, trans_l, trans_t = fluid_solid(**params)
-        if mode_out is Mode.L:
+        if mode_out is c.Mode.L:
             return trans_l
-        elif mode_out is Mode.T:
+        elif mode_out is c.Mode.T:
             return trans_t
         else:
             raise ValueError("invalid mode")
@@ -445,20 +444,20 @@ def reflection_at_interface(interface_kind, material_inc, material_against, mode
     if force_complex:
         angles_inc = np.asarray(angles_inc, dtype=complex)
 
-    if interface_kind is InterfaceKind.solid_fluid:
+    if interface_kind is c.InterfaceKind.solid_fluid:
         # Reflection against a solid-fluid interface
         #   "in" is in the solid
         #   "out" is also in the solid
         solid = material_inc
         fluid = material_against
-        assert solid.state_of_matter == StateMatter.solid
-        assert fluid.state_of_matter != StateMatter.solid
+        assert solid.state_of_matter == c.StateMatter.solid
+        assert fluid.state_of_matter != c.StateMatter.solid
 
-        if mode_inc is Mode.L:
+        if mode_inc is c.Mode.L:
             angles_l = angles_inc
             angles_t = None
             solid_fluid = solid_l_fluid
-        elif mode_inc is Mode.T:
+        elif mode_inc is c.Mode.T:
             angles_l = None
             angles_t = angles_inc
             solid_fluid = solid_t_fluid
@@ -477,9 +476,9 @@ def reflection_at_interface(interface_kind, material_inc, material_against, mode
         with np.errstate(invalid='ignore'):
             refl_l, refl_t, trans = solid_fluid(**params)
 
-        if mode_out is Mode.L:
+        if mode_out is c.Mode.L:
             return refl_l
-        elif mode_out is Mode.T:
+        elif mode_out is c.Mode.T:
             return refl_t
         else:
             raise ValueError("invalid mode")
@@ -537,10 +536,10 @@ def transmission_reflection_per_interface_for_path(path, angles_inc_list,
             interface.transmission_reflection.name,
             interface.points))
 
-        if interface.transmission_reflection is TransmissionReflection.transmission:
+        if interface.transmission_reflection is c.TransmissionReflection.transmission:
             params['material_out'] = path.materials[i]
             yield transmission_at_interface(**params)
-        elif interface.transmission_reflection is TransmissionReflection.reflection:
+        elif interface.transmission_reflection is c.TransmissionReflection.reflection:
             params['material_against'] = interface.reflection_against
             yield reflection_at_interface(**params)
         else:

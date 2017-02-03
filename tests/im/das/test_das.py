@@ -4,8 +4,7 @@ import numpy as np
 from collections import OrderedDict
 
 import arim.geometry as g
-from arim import Probe, InfiniteMedium, Material, Time, Frame, FocalLaw
-from arim import im
+from arim import Probe, ExaminationObject, Material, Time, FocalLaw, Frame
 import arim.im.das as das
 
 
@@ -32,7 +31,7 @@ def make_delay_and_sum_case1():
     # examination object:
     vel = 10.
     material = Material(vel)
-    examination_object = InfiniteMedium(material)
+    examination_object = ExaminationObject(material)
 
     # scanlines
     time = Time(start=0.35, step=0.001, num=100)
@@ -90,7 +89,7 @@ def make_delay_and_sum_case_random(dtype_float, dtype_data):
     # examination object:
     vel = 10.
     material = Material(vel)
-    examination_object = InfiniteMedium(material)
+    examination_object = ExaminationObject(material)
 
     # scanlines
     # time = Time(start=0.35, step=0.001, num=100)

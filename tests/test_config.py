@@ -1,7 +1,7 @@
 import arim
 import pytest
 
-class TestConfig():
+class TestConfig:
     @pytest.fixture()
     def conf(self):
         return arim.config.Config([

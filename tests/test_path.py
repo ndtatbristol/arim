@@ -1,6 +1,8 @@
 import arim
 import numpy as np
 
+import arim.core
+
 
 def test_points_1d_wall_z():
     args = dict(xmin=10, xmax=20, numpoints=6, y=1, z=2, name='toto')
@@ -19,10 +21,10 @@ def test_path_in_immersion():
     xmin = -20e-3
     xmax = 100e-3
 
-    couplant = arim.Material(longitudinal_vel=1480, transverse_vel=None, density=1000.,
-                          state_of_matter='liquid', metadata={'long_name': 'Water'})
-    block = arim.Material(longitudinal_vel=6320., transverse_vel=3130., density=2700.,
-                          state_of_matter='solid', metadata={'long_name': 'Aluminium'})
+    couplant = arim.core.Material(longitudinal_vel=1480, transverse_vel=None, density=1000.,
+                                  state_of_matter='liquid', metadata={'long_name': 'Water'})
+    block = arim.core.Material(longitudinal_vel=6320., transverse_vel=3130., density=2700.,
+                               state_of_matter='solid', metadata={'long_name': 'Aluminium'})
 
     probe_points, probe_orientations = arim.points_1d_wall_z(0e-3, 15e-3,
         z=0., numpoints=16, name='Frontwall')

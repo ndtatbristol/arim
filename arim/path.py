@@ -7,7 +7,7 @@ Remark: Interface and Path objects are defined in arim.core
 import numpy as np
 
 from collections import OrderedDict
-from .core import Path, Interface, View
+from .core import Path, View, Interface
 from .exceptions import ArimWarning
 from . import geometry as g
 from . import settings as s

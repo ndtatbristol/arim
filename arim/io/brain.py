@@ -16,7 +16,7 @@ from scipy.io import loadmat
 
 from .. import geometry as g
 from .. import settings as s
-from ..core import Probe, Frame, Time, InfiniteMedium, Material
+from ..core import Probe, Time, ExaminationObject, Material, Frame
 
 __all__ = ['NotHandledByScipy', 'InvalidExpData', 'load_expdata']
 
@@ -44,7 +44,7 @@ def load_expdata(file):
 
     Returns
     -------
-    Frame
+    arim.core.Frame
 
     Raises
     ------
@@ -55,9 +55,10 @@ def load_expdata(file):
     except NotHandledByScipy:
         # It seems the file is HDF5 (matlab 7.3)
         if h5py is None:
-            raise Exception("Unable to import Matlab file because its file format version is unsupported. "
-                            "Try importing the file in Matlab and exporting it with the "
-                            "command 'save' and the flag '-v7'. Alternatively, try to install the Python library 'h5py'.")
+            raise Exception(
+                "Unable to import Matlab file because its file format version is unsupported. "
+                "Try importing the file in Matlab and exporting it with the "
+                "command 'save' and the flag '-v7'. Alternatively, try to install the Python library 'h5py'.")
         (exp_data, array, filename) = _load_from_hdf5(file)
 
     # As this point exp_data and array are populated either by scipy.io or hdf5:
@@ -84,31 +85,37 @@ def _load_probe(array):
     """
     frequency = array['centre_freq'][0, 0]
 
-    #dtype = np.result_type(array['el_xc'], array['el_yc'], array['el_zc'])
-    dtype=s.FLOAT
-    
+    # dtype = np.result_type(array['el_xc'], array['el_yc'], array['el_zc'])
+    dtype = s.FLOAT
+
     # Get locations
     locations_x = np.squeeze(array['el_xc']).astype(dtype)
     locations_y = np.squeeze(array['el_yc']).astype(dtype)
     locations_z = np.squeeze(array['el_zc']).astype(dtype)
 
     locations = g.Points.from_xyz(locations_x, locations_y, locations_z)
-    
-    #Calculate Probe Dimensions (using el_x1, el_x2 and el_xc etc for each dimension)
-    dimensions_x = 2*np.maximum(np.absolute(np.squeeze(array['el_x1']).astype(dtype) - locations_x),np.absolute(np.squeeze(array['el_x2']).astype(dtype) - locations_x))
-    dimensions_y = 2*np.maximum(np.absolute(np.squeeze(array['el_y1']).astype(dtype) - locations_y),np.absolute(np.squeeze(array['el_y2']).astype(dtype) - locations_y))
-    dimensions_z = 2*np.maximum(np.absolute(np.squeeze(array['el_z1']).astype(dtype) - locations_z),np.absolute(np.squeeze(array['el_z2']).astype(dtype) - locations_z)) 
+
+    # Calculate Probe Dimensions (using el_x1, el_x2 and el_xc etc for each dimension)
+    dimensions_x = 2 * np.maximum(
+        np.absolute(np.squeeze(array['el_x1']).astype(dtype) - locations_x),
+        np.absolute(np.squeeze(array['el_x2']).astype(dtype) - locations_x))
+    dimensions_y = 2 * np.maximum(
+        np.absolute(np.squeeze(array['el_y1']).astype(dtype) - locations_y),
+        np.absolute(np.squeeze(array['el_y2']).astype(dtype) - locations_y))
+    dimensions_z = 2 * np.maximum(
+        np.absolute(np.squeeze(array['el_z1']).astype(dtype) - locations_z),
+        np.absolute(np.squeeze(array['el_z2']).astype(dtype) - locations_z))
     dimensions = g.Points.from_xyz(dimensions_x, dimensions_y, dimensions_z)
-    
-    return Probe(locations, frequency,dimensions=dimensions)
+
+    return Probe(locations, frequency, dimensions=dimensions)
 
 
 def _load_frame(exp_data, probe):
     # NB: Matlab is 1-indexed, Python is 0-indexed
     tx = np.squeeze(exp_data['tx'])
     rx = np.squeeze(exp_data['rx'])
-    tx=tx.astype(s.UINT)-1
-    rx=rx.astype(s.UINT)-1
+    tx = tx.astype(s.UINT) - 1
+    rx = rx.astype(s.UINT) - 1
     # Remark: [...] is required to read in the case of HDF5 file
     # (and does nothing if we have a regular array
     scanlines = np.squeeze(exp_data['time_data'][...])
@@ -120,13 +127,13 @@ def _load_frame(exp_data, probe):
         scanlines = scanlines.T
 
     timevect = np.squeeze(exp_data['time'])
-    timevect=timevect.astype(s.FLOAT)
+    timevect = timevect.astype(s.FLOAT)
     time = Time.from_vect(timevect)
-    
+
     velocity = np.squeeze(exp_data['ph_velocity'])
     velocity = velocity.astype(s.FLOAT)
     material = Material(velocity)
-    examination_object = InfiniteMedium(material)
+    examination_object = ExaminationObject(material)
 
     return Frame(scanlines, time, tx, rx, probe, examination_object)
 
@@ -173,4 +180,3 @@ def _load_from_hdf5(file):
     filename = f.filename
 
     return exp_data, array, filename
-

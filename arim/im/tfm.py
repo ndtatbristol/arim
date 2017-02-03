@@ -9,8 +9,7 @@ from collections import namedtuple
 from .. import geometry as g
 from . import amplitudes
 from .. import settings as s
-from .. import core
-from ..core import Frame, FocalLaw
+from .. import core as c
 from ..enums import CaptureMethod
 from ..path import IMAGING_MODES  # import for backward compatibility
 from ..exceptions import ArimWarning
@@ -104,8 +103,8 @@ class BaseTFM:
         amplitudes_rx = self.get_amplitudes_rx()
         scanline_weights = self.get_scanline_weights()
 
-        focal_law = FocalLaw(lookup_times_tx, lookup_times_rx, amplitudes_tx,
-                             amplitudes_rx, scanline_weights)
+        focal_law = c.FocalLaw(lookup_times_tx, lookup_times_rx, amplitudes_tx,
+                                  amplitudes_rx, scanline_weights)
 
         focal_law = self.hook_focal_law(focal_law)
         self.focal_law = focal_law
@@ -388,17 +387,19 @@ class SingleViewTFM(BaseTFM):
         grid = g.aspoints(grid)
 
         # Create dummy interfaces:
-        probe_interface = core.Interface(probe,
-                                         np.resize(np.eye(3), (*probe.shape, 3, 3)))
-        frontwall_interface = core.Interface(frontwall, np.resize(np.eye(3), (
+        probe_interface = c.Interface(probe,
+                                              np.resize(np.eye(3), (*probe.shape, 3, 3)))
+        frontwall_interface = c.Interface(frontwall, np.resize(np.eye(3), (
             *frontwall.shape, 3, 3)))
-        backwall_interface = core.Interface(backwall,
-                                            np.resize(np.eye(3), (*backwall.shape, 3, 3)))
-        grid_interface = core.Interface(grid, np.resize(np.eye(3), (*grid.shape, 3, 3)))
+        backwall_interface = c.Interface(backwall,
+                                                 np.resize(np.eye(3),
+                                                           (*backwall.shape, 3, 3)))
+        grid_interface = c.Interface(grid,
+                                             np.resize(np.eye(3), (*grid.shape, 3, 3)))
 
         # Create Dummy material:
-        block = core.Material(v_longi, v_shear, state_of_matter='solid')
-        couplant = core.Material(v_couplant, state_of_matter='liquid')
+        block = c.Material(v_longi, v_shear, state_of_matter='solid')
+        couplant = c.Material(v_couplant, state_of_matter='liquid')
 
         paths_dict = paths_for_block_in_immersion(block, couplant, probe_interface,
                                                   frontwall_interface,

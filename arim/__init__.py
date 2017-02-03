@@ -17,4 +17,4 @@ __copyright__ = "2016, Nicolas Budyn"
 
 # Must respect PEP 440: https://www.python.org/dev/peps/pep-0440/
 # Must be bumped at each release
-__version__ = '0.5.dev4'
+__version__ = '0.6.dev0'

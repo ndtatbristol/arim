@@ -23,17 +23,16 @@ they are transposed i.e. ``basis[:, 0] = (i1, i2, i3)``.
 # Remark: declaration of constant GCS at the end of this file
 import math
 from collections import namedtuple
-import collections.abc
 from concurrent.futures import ThreadPoolExecutor
 from warnings import warn
 
+import numba
 import numpy as np
 import numpy.linalg as linalg
 
-from .utils import get_shape_safely, chunk_array
+from .utils import chunk_array, Cache, NoCache
 from . import settings as s
 from .exceptions import ArimWarning, InvalidDimension, InvalidShape
-from .core.cache import Cache, NoCache
 
 __all__ = ['rotation_matrix_x', 'rotation_matrix_y', 'rotation_matrix_z',
            'rotation_matrix_ypr', 'are_points_aligned', 'norm2', 'norm2_2d',
@@ -41,9 +40,9 @@ __all__ = ['rotation_matrix_x', 'rotation_matrix_y', 'rotation_matrix_z',
            'direct_isometry_3d', 'CoordinateSystem',
            'Grid', 'Points', 'GCS', 'are_points_close', 'distance_pairwise', 'aspoints',
            'GeometryHelper',
-           'spherical_coordinates', 'spherical_coordinates_phi', 'spherical_coordinates_r',
+           'spherical_coordinates', 'spherical_coordinates_phi',
+           'spherical_coordinates_r',
            'spherical_coordinates_theta']
-import numba
 
 SphericalCoordinates = namedtuple('SphericalCoordinates', 'r theta phi')
 
@@ -69,7 +68,7 @@ def aspoints(array_like):
 
 
 class Points:
-    '''
+    """
     Set of points in a 3D space.
 
     The coordinates (x, y, z) are stored contiguously.
@@ -109,7 +108,7 @@ class Points:
     size_npoints : int
         Total number of points.
 
-    '''
+    """
     __slots__ = ('coords', 'name')
 
     def __init__(self, coords, name=None):
@@ -916,13 +915,13 @@ def from_gcs(points_gcs, bases, origins):
 
 
 def rotation_matrix_ypr(yaw, pitch, roll):
-    '''Returns the rotation matrix (as a ndarray) from the yaw, pitch and roll
+    """Returns the rotation matrix (as a ndarray) from the yaw, pitch and roll
     in radians.
 
     This matrix corresponds to a intrinsic rotation around axes z, y, x respectively.
 
     https://en.wikipedia.org/wiki/Rotation_matrix#General_rotations
-    '''
+    """
     return rotation_matrix_z(yaw) @ rotation_matrix_y(pitch) @ rotation_matrix_x(roll)
 
 
@@ -1147,7 +1146,7 @@ def direct_isometry_3d(A, i_hat, j_hat, B, u_hat, v_hat):
 
 def distance_pairwise(points1, points2, out=None, dtype=None, block_size=None,
                       numthreads=None):
-    '''
+    """
     Compute the Euclidean distances of flight between two sets of points.
 
     The time of flight between the two points ``A(x1[i], y1[i], z1[i])`` and ``B(x2[i], y2[i], z2[i])`` is:
@@ -1179,7 +1178,7 @@ def distance_pairwise(points1, points2, out=None, dtype=None, block_size=None,
     -------
     distance : ndarray [num1 x num2]
         Euclidean distances between the points of the two input sets.
-    '''
+    """
     # Check dimensions and shapes
     try:
         (num1,) = points1.x.shape

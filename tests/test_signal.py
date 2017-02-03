@@ -2,7 +2,8 @@ import pytest
 import numpy as np
 
 from arim import signal
-from arim import Time
+from arim.core import Time
+
 
 def test_butterworth_bandpass():
     dt = 1/25e6

@@ -6,7 +6,8 @@ from unittest.mock import Mock
 import arim
 import arim.geometry as g
 import arim.utils as u
-from arim import Time, ExaminationObject, Material, Frame, Probe
+from arim import Time, ExaminationObject, Material, Probe
+from arim.core import Frame, Probe, Material, ExaminationObject, Time
 
 _MOVE_PROBE_ON_OXY_DATA = [
     ((0., 0., 0.), (5., 0., 0.), 6., 10.),
@@ -17,7 +18,7 @@ _MOVE_PROBE_ON_OXY_DATA = [
 
 
 def test_manual_registration():
-    from .core.test_core import TestProbe
+    from tests.test_core import TestProbe
     probe = TestProbe().linear_probe()
     frame = Mock(spec=['probe'])
     frame.probe = probe

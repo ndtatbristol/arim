@@ -11,7 +11,7 @@ import pytest
 from arim.geometry import Points, norm2
 from arim.im import fermat_solver as t
 from arim.im import Rays
-from arim import Material
+from arim.core import Material
 import arim
 
 

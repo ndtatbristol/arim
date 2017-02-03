@@ -1,95 +1,9 @@
 import enum
-
-import numpy as np
-import pytest
 import logging
 
+import pytest
+
 import arim.utils as u
-from arim.exceptions import InvalidShape, InvalidDimension, NotAnArray
-from arim.enums import CaptureMethod
-
-
-def test_fmc():
-    numelements = 3
-    tx2 = [0, 0, 0, 1, 1, 1, 2, 2, 2]
-    rx2 = [0, 1, 2, 0, 1, 2, 0, 1, 2]
-
-    tx, rx = u.fmc(numelements)
-
-    shape = (numelements * numelements,)
-
-    assert tx.shape == shape
-    assert rx.shape == shape
-    assert np.all(tx == tx2)
-    assert np.all(rx == rx2)
-
-
-def test_hmc():
-    numelements = 3
-    tx2 = [0, 0, 0, 1, 1, 2]
-    rx2 = [0, 1, 2, 1, 2, 2]
-
-    tx, rx = u.hmc(numelements)
-
-    shape = (numelements * (numelements + 1) / 2,)
-
-    assert tx.shape == shape
-    assert rx.shape == shape
-    assert np.all(tx == tx2)
-    assert np.all(rx == rx2)
-
-
-def test_infer_capture_method():
-    # Valid HMC
-    tx = [0, 0, 0, 1, 1, 2]
-    rx = [0, 1, 2, 1, 2, 2]
-    assert u.infer_capture_method(tx, rx) == CaptureMethod.hmc
-
-    # HMC with duplicate signals
-    tx = [0, 0, 0, 1, 1, 2, 1]
-    rx = [0, 1, 2, 1, 2, 2, 1]
-    assert u.infer_capture_method(tx, rx) == CaptureMethod.unsupported
-
-    # HMC with missing signals
-    tx = [0, 0, 0, 2, 1]
-    rx = [0, 1, 2, 2, 1]
-    assert u.infer_capture_method(tx, rx) == CaptureMethod.unsupported
-
-    # Valid HMC
-    tx = [0, 1, 2, 1, 2, 2]
-    rx = [0, 0, 0, 1, 1, 2]
-    assert u.infer_capture_method(tx, rx) == CaptureMethod.hmc
-
-    # Something weird
-    tx = [0, 1, 2, 1, 2, 2]
-    rx = [0, 0, 0, 1]
-    with pytest.raises(Exception):
-        u.infer_capture_method(tx, rx)
-
-    # Valid FMC
-    tx = [0, 0, 0, 1, 1, 1, 2, 2, 2]
-    rx = [0, 1, 2, 0, 1, 2, 0, 1, 2]
-    assert u.infer_capture_method(tx, rx) == CaptureMethod.fmc
-
-    # FMC with duplicate signals
-    tx = [0, 0, 0, 1, 1, 1, 2, 2, 2, 0]
-    rx = [0, 1, 2, 0, 1, 2, 0, 1, 2, 0]
-    assert u.infer_capture_method(tx, rx) == CaptureMethod.unsupported
-
-    # FMC with missing signals
-    tx = [0, 0, 0, 1, 1, 1, 2, 2]
-    rx = [0, 1, 2, 0, 1, 2, 0, 1]
-    assert u.infer_capture_method(tx, rx) == CaptureMethod.unsupported
-
-    # Negative values
-    tx = [0, -1]
-    rx = [0, 1]
-    assert u.infer_capture_method(tx, rx) == CaptureMethod.unsupported
-
-    # Weird
-    tx = [0, 5]
-    rx = [0, 1]
-    assert u.infer_capture_method(tx, rx) == CaptureMethod.unsupported
 
 
 def test_get_name():
@@ -131,3 +45,84 @@ def test_timeit(capsys):
     out, err = capsys.readouterr()
     assert out.startswith('Foobar')
     assert err == ''
+
+
+def test_cache():
+    cache = u.Cache()
+    assert len(cache) == 0
+    assert cache.hits == 0
+    assert cache.misses == 0
+
+    cache['toto'] = 'titi'
+    assert len(cache) == 1
+    assert cache.hits == 0
+    assert cache.misses == 0
+
+    a = cache['toto']
+    assert a == 'titi'
+    assert len(cache) == 1
+    assert cache.hits == 1
+    assert cache.misses == 0
+
+    a = cache.get('toto')
+    assert a == 'titi'
+    assert len(cache) == 1
+    assert cache.hits == 2
+    assert cache.misses == 0
+
+    b = cache.get('foo', None)
+    assert len(cache) == 1
+    assert cache.hits == 2
+    assert cache.misses == 1
+
+    with pytest.raises(KeyError):
+        b = cache['another_miss']
+    assert len(cache) == 1
+    assert cache.hits == 2
+    assert cache.misses == 2
+
+    # 'in' statement do not change the hits/misses count:
+    'toto' in cache
+    'tata' in cache
+    assert len(cache) == 1
+    assert cache.hits == 2
+    assert cache.misses == 2
+
+    str(cache)
+    cache.stat()
+    cache.clear()
+
+
+def test_nocache():
+    cache = u.NoCache()
+    assert len(cache) == 0
+    assert cache.hits == 0
+    assert cache.misses == 0
+
+    cache['toto'] = 'titi'  # this should do nothing
+    assert 'toto' not in cache
+    assert len(cache) == 0
+    assert cache.hits == 0
+    assert cache.misses == 0
+
+    with pytest.raises(KeyError):
+        a = cache['toto']
+    assert len(cache) == 0
+    assert cache.hits == 0
+    assert cache.misses == 1
+
+    a = cache.get('toto')
+    assert len(cache) == 0
+    assert cache.hits == 0
+    assert cache.misses == 2
+
+    # 'in' statement do not change the hits/misses count:
+    'toto' in cache
+    'tata' in cache
+    assert len(cache) == 0
+    assert cache.hits == 0
+    assert cache.misses == 2
+
+    str(cache)
+    cache.stat()
+    cache.clear()

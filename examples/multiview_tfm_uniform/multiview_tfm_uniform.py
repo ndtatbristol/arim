@@ -8,7 +8,6 @@ Output: figures, intensities as csv.
     
 """
 import logging
-import time
 import yaml
 import hashlib
 import pandas
@@ -18,7 +17,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 import arim
-import arim.core.misc
 import arim.plot as aplt
 from arim.registration import registration_by_flat_frontwall_detection
 

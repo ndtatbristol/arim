@@ -2,8 +2,6 @@ import math
 
 import numpy as np
 
-import arim.geometry as g
-from arim import Probe, InfiniteMedium, Material, Time, Frame, FocalLaw
 from arim import im
 
 
