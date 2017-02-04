@@ -43,11 +43,11 @@ class Frame:
     time : Time
         Time vector associated to all scanlines.
     tx : ndarray
-        1D array of length `numscanlines`. `tx[i]` is the index of the element transmitting during the acquisition of the
-        i-th scanline.
-    tx : ndarray
-        1D array of length `numscanlines`. `tx[i]` is the index of the element receiving during the acquisition of the
-        i-th scanline.
+        1D array of length `numscanlines`. `tx[i]` is the index of the element
+        transmitting during the acquisition of the i-th scanline.
+    rx : ndarray
+        1D array of length `numscanlines`. `rx[i]` is the index of the element
+        receiving during the acquisition of the i-th scanline.
     probe : Probe
         Probe used during acquisition.
     examination_object : ExaminationObject
@@ -88,6 +88,14 @@ class Frame:
             raise TypeError(
                 "'time' should be an object 'Time' (current: {}).".format(type(time)))
         numsamples = len(time)
+
+        scanlines = np.asarray(scanlines)
+        tx = np.asarray(tx)
+        rx = np.asarray(rx)
+        if tx.dtype.kind not in('i', 'u'):
+            raise TypeError('transmitters must be integer indices (got {})'.format(tx.dtype))
+        if rx.dtype.kind not in('i', 'u'):
+            raise TypeError('receivers must be integer indices (got {})'.format(rx.dtype))
 
         if scanlines_raw is None:
             scanlines_raw = scanlines
