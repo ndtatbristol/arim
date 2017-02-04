@@ -4,13 +4,13 @@
 Materials, interfaces and paths
 ===============================
 
-.. py:currentmodule:: arim.core.misc
+.. py:currentmodule:: arim.core
 
 
 Materials
 =========
 
-:class:`arim.core.misc.Material`
+:class:`Material`
 
 
 Interfaces

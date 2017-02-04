@@ -4,14 +4,46 @@
 Frame
 =====
 
-A frame is an acquisition for a given spatial location of the probe. A frame contains the voltage-time data
-(:attr:`arim.core.frame.Frame.scanlines`).
+.. py:currentmodule:: arim.core
+
+.. seealso::
+
+  Reference of class :class:`Frame`
+
+A frame corresponds to one ultrasonic acquisition for a given spatial location of the probe. It describes the capture method that was used (example: FMC, HMC) and contains the voltage-time data...
+(:attr:`Frame.scanlines`).
 
 Limits:
 
   - A frame can contain only one probe.
-  - A frame contains only scanlines, i.e. data associated to exactly one transmitter and one receiver.
+  - In a frame, each ultrasonic scanline is associated to exactly one transmitter and one receiver.
 
+Creating a Frame from scratch::
 
-:class:`arim.core.frame.Frame`
+    import arim
+    import numpy
 
+    # Scanline per scanline, the list of transmitters and receivers.
+    # For the first scanline, the first element transmits (tx[0] = 0) and
+    # also receives (rx[0] = 0).
+    # For the second scanline, the first element transmits (tx[1] = 0) and
+    # the second element receives (rx[1] = 1).
+    # Et caetera.
+    # In this example there are 9 scanlines.
+    tx = [0, 0, 0, 1, 1, 1, 2, 2, 2]
+    rx = [0, 1, 2, 0, 1, 2, 0, 1, 2]
+
+    probe = arim.probes['ima_50_MHz_128_1d']
+
+    examination_object = arim.ExaminationObject(arim.Material(6300.))
+
+    time = arim.Time(start=0., step=50e-9, num=1000)
+
+    # The ultrasonic data stored as a matrix. One scanline per row.
+    scanlines = np.zeros((len(tx), len(time)))
+
+    frame = arim.Frame(scanlines, time, tx, rx, probe, examination_object)
+
+Remark: the functions :func:`arim.utils.fmc` and :func:`arim.utils.hmc` creates lists of transmitters and receivers for HMC and FMC acquisitions.
+
+To load a frame exported from BRAIN (Matlab), cf. :ref:`io_brain`.
