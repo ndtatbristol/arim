@@ -8,7 +8,6 @@ Submodules
 
    arim.utils.array
    arim.utils.misc
-   arim.utils.null
    arim.utils.ut
 
 Module contents

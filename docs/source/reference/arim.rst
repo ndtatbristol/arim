@@ -6,7 +6,6 @@ Subpackages
 
 .. toctree::
 
-    arim.core
     arim.im
     arim.io
     arim.utils
@@ -18,10 +17,9 @@ Submodules
 
    arim.cli
    arim.config
-   arim.enums
+   arim.core
    arim.exceptions
    arim.geometry
-   arim.misc
    arim.model
    arim.path
    arim.plot

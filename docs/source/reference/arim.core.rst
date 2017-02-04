@@ -1,19 +1,5 @@
-arim.core package
-=================
-
-Submodules
-----------
-
-.. toctree::
-
-   arim.core.cache
-   arim.core.focal_law
-   arim.core.frame
-   arim.core.misc
-   arim.core.probe
-
-Module contents
----------------
+arim.core module
+================
 
 .. automodule:: arim.core
     :members:
