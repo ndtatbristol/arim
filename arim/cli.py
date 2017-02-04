@@ -9,11 +9,14 @@ from .__init__ import __version__
 
 import sys
 
+
 def print_err(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
 
+
 def print_version():
     print("arim version {}".format(__version__))
+
 
 def main():
     """
@@ -21,7 +24,7 @@ def main():
     """
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--version", help="print software version",
-                    action="store_true")
+                        action="store_true")
     args = parser.parse_args()
 
     if args.version:

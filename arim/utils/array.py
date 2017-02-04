@@ -84,14 +84,17 @@ def get_shape_safely(array, array_name, expected_shape=None):
     # Check shape if expected_shape was provided:
     if len(shape) != len(expected_shape):
         raise InvalidDimension.message_auto(array_name, len(expected_shape), len(shape))
-    for (dim, (expected_size, current_size)) in enumerate(zip(expected_shape, shape), start=1):
+    for (dim, (expected_size, current_size)) in enumerate(zip(expected_shape, shape),
+                                                          start=1):
         if expected_size is None:
             continue
         if expected_size != current_size:
-            raise InvalidShape("Array '{}' must have a size of {} (current: {}) for its dimension {}."
-                               .format(array_name, expected_size, current_size, dim))
+            raise InvalidShape(
+                "Array '{}' must have a size of {} (current: {}) for its dimension {}."
+                .format(array_name, expected_size, current_size, dim))
 
     return shape
+
 
 def chunk_array(array_shape, block_size, axis=0):
     """Yield selectors to split a array into multiple chunk.
@@ -116,7 +119,7 @@ def chunk_array(array_shape, block_size, axis=0):
 
     """
     ndim = len(array_shape)
-    axis = list(range(ndim))[axis] # works if axis is positive or negative
+    axis = list(range(ndim))[axis]  # works if axis is positive or negative
     length = array_shape[axis]
 
     numchunks = math.ceil(length / block_size)
@@ -124,13 +127,14 @@ def chunk_array(array_shape, block_size, axis=0):
     if axis == 0:
         for i in range(numchunks):
             yield (slice(i * block_size, (i + 1) * block_size), ...)
-    elif axis == (ndim-1):
+    elif axis == (ndim - 1):
         for i in range(numchunks):
             yield (..., slice(i * block_size, (i + 1) * block_size))
     else:
-        fillers = (slice(None), ) * axis
+        fillers = (slice(None),) * axis
         for i in range(numchunks):
             yield (*fillers, slice(i * block_size, (i + 1) * block_size), ...)
+
 
 def smallest_uint_that_fits(max_value):
     """Return the smallest unsigned integer datatype (dtype) such as all numbers
@@ -142,4 +146,3 @@ def smallest_uint_that_fits(max_value):
             return dtype
     return TypeError("Cannot stored '{}' with numpy (max: '{}')"
                      .format(max_value, allowed_max_value))
-

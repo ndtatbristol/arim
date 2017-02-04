@@ -11,9 +11,7 @@ import pytest
 from arim.geometry import Points, norm2
 from arim.im import fermat_solver as t
 from arim.im import Rays
-from arim.core import Material
-import arim
-
+from arim import Material
 
 def test_fermat_path():
     s1 = t.FermatPath(('frontwall', 1.234, 'backwall'))

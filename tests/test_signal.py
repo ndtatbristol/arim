@@ -2,11 +2,11 @@ import pytest
 import numpy as np
 
 from arim import signal
-from arim.core import Time
+from arim import Time
 
 
 def test_butterworth_bandpass():
-    dt = 1/25e6
+    dt = 1 / 25e6
     time = Time(0, dt, 1000)
 
     f1 = 0.5e-6
@@ -17,7 +17,8 @@ def test_butterworth_bandpass():
     x_all = x_raw + np.sin(time.samples * 2 * np.pi * f2)
 
     # Objective: get f1 without f2
-    filt = signal.ButterworthBandpass(order=3, cutoff_min=0, cutoff_max=(f1+f2)/2, time=time)
+    filt = signal.ButterworthBandpass(order=3, cutoff_min=0, cutoff_max=(f1 + f2) / 2,
+                                      time=time)
 
     # This should work without error:
     str(filt)
@@ -26,6 +27,7 @@ def test_butterworth_bandpass():
     x_filt = filt(x_all)
 
     assert np.allclose(x_filt, x_raw, atol=0.001)
+
 
 def test_composed_filters():
     class MultiplyBy2(signal.Filter):
@@ -60,8 +62,3 @@ def test_composed_filters():
     assert (add3 + (multiply2 + substract1))(x) == 11.0
 
     composed = multiply2 + add3
-
-
-
-
-

@@ -3,11 +3,9 @@ import pytest
 import arim.registration as reg
 from unittest.mock import Mock
 
-import arim
 import arim.geometry as g
 import arim.utils as u
-from arim import Time, ExaminationObject, Material, Probe
-from arim.core import Frame, Probe, Material, ExaminationObject, Time
+from arim import Time, ExaminationObject, Material, Probe, Frame
 
 _MOVE_PROBE_ON_OXY_DATA = [
     ((0., 0., 0.), (5., 0., 0.), 6., 10.),

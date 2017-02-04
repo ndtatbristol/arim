@@ -1,5 +1,4 @@
 import arim
-import arim.core
 import arim.plot as aplt
 import arim.geometry as g
 import numpy as np
@@ -76,20 +75,20 @@ def test_plot_interfaces(show_plots, plot_interfaces_kwargs):
     points = points.rotate(rot)
     points = points.translate((0, 0, -10e-3))
     orientations = orientations.rotate(rot)
-    probe = arim.core.Interface(points, orientations)
+    probe = arim.Interface(points, orientations)
     assert probe.orientations[0, 2, 0] > 0
     assert probe.orientations[0, 2, 2] > 0
 
     points, orientations = arim.path.points_1d_wall_z(xmin, xmax,
                                                  z=0., numpoints=numinterface,
                                                  name='Frontwall')
-    frontwall = arim.core.Interface(points, orientations)
+    frontwall = arim.Interface(points, orientations)
 
     points, orientations = arim.path.points_1d_wall_z(xmin, xmax, z=z_backwall, numpoints=numinterface2, name='Backwall')
-    backwall = arim.core.Interface(points, orientations)
+    backwall = arim.Interface(points, orientations)
 
     grid_obj = arim.Grid(xmin, xmax, 0, 0, 0, z_backwall, 1e-3)
-    grid = arim.core.Interface(*arim.path.points_from_grid(grid_obj))
+    grid = arim.Interface(*arim.path.points_from_grid(grid_obj))
 
     interfaces = [probe, frontwall, backwall, grid]
     # end setup interfaces
