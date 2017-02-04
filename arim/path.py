@@ -14,12 +14,13 @@ from . import settings as s
 
 import warnings
 
-__all__ = ['interfaces_for_block_in_immersion', 'default_orientations', 'points_1d_wall_z', 'points_from_grid',
-           'points_from_probe', 'paths_for_block_in_immersion', 'views_for_block_in_immersion', 'IMAGING_MODES']
-
+__all__ = ['interfaces_for_block_in_immersion', 'default_orientations',
+           'points_1d_wall_z', 'points_from_grid',
+           'points_from_probe', 'paths_for_block_in_immersion',
+           'views_for_block_in_immersion', 'IMAGING_MODES']
 
 # Order by length then by lexicographic order
-# Remark: independant views for one array (i.e. consider that view AB-CD is the
+# Remark: independent views for one array (i.e. consider that view AB-CD is the
 # same as view DC-BA).
 IMAGING_MODES = ["L-L", "L-T", "T-T",
                  "LL-L", "LL-T", "LT-L", "LT-T", "TL-L", "TL-T", "TT-L", "TT-T",
@@ -142,11 +143,15 @@ def interfaces_for_block_in_immersion(couplant_material,
                                 are_normals_on_out_rays_side=True)
     frontwall_interface = Interface(frontwall_points, frontwall_orientations,
                                     'fluid_solid', 'transmission',
-                                    are_normals_on_inc_rays_side=False, are_normals_on_out_rays_side=True)
+                                    are_normals_on_inc_rays_side=False,
+                                    are_normals_on_out_rays_side=True)
     backwall_interface = Interface(backwall_points, backwall_orientations,
-                                   'solid_fluid', 'reflection', reflection_against=couplant_material,
-                                   are_normals_on_inc_rays_side=True, are_normals_on_out_rays_side=False)
-    grid_interface = Interface(grid_points, grid_orientations, are_normals_on_inc_rays_side=True)
+                                   'solid_fluid', 'reflection',
+                                   reflection_against=couplant_material,
+                                   are_normals_on_inc_rays_side=True,
+                                   are_normals_on_out_rays_side=False)
+    grid_interface = Interface(grid_points, grid_orientations,
+                               are_normals_on_inc_rays_side=True)
 
     return probe_interface, frontwall_interface, backwall_interface, grid_interface
 
@@ -176,7 +181,6 @@ def paths_for_block_in_immersion(block_material, couplant_material, probe_interf
     """
     paths = OrderedDict()
 
-
     if backwall_interface.reflection_against != couplant_material:
         warnings.warn("Different couplant materials are used.", ArimWarning)
 
@@ -193,30 +197,35 @@ def paths_for_block_in_immersion(block_material, couplant_material, probe_interf
         name='T')
 
     paths['LL'] = Path(
-        interfaces=(probe_interface, frontwall_interface, backwall_interface, grid_interface),
+        interfaces=(
+        probe_interface, frontwall_interface, backwall_interface, grid_interface),
         materials=(couplant_material, block_material, block_material),
         modes=('L', 'L', 'L'),
         name='LL')
 
     paths['LT'] = Path(
-        interfaces=(probe_interface, frontwall_interface, backwall_interface, grid_interface),
+        interfaces=(
+        probe_interface, frontwall_interface, backwall_interface, grid_interface),
         materials=(couplant_material, block_material, block_material),
         modes=('L', 'L', 'T'),
         name='LT')
 
     paths['TL'] = Path(
-        interfaces=(probe_interface, frontwall_interface, backwall_interface, grid_interface),
+        interfaces=(
+        probe_interface, frontwall_interface, backwall_interface, grid_interface),
         materials=(couplant_material, block_material, block_material),
         modes=('L', 'T', 'L'),
         name='TL')
 
     paths['TT'] = Path(
-        interfaces=(probe_interface, frontwall_interface, backwall_interface, grid_interface),
+        interfaces=(
+        probe_interface, frontwall_interface, backwall_interface, grid_interface),
         materials=(couplant_material, block_material, block_material),
         modes=('L', 'T', 'T'),
         name='TT')
 
     return paths
+
 
 def views_for_block_in_immersion(paths_dict):
     """

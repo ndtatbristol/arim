@@ -18,8 +18,6 @@ def _delay_and_sum_amplitudes_nearest(weighted_scanlines, tx, rx, lookup_times_t
         Times of flight (floats) between the grid points and the receivers.
     amplitudes_tx : ndarray [numpoints x numelements]
     amplitudes_rx : ndarray [numpoints x numelements]
-    scanline_weights : ndarray [numscanlines]
-        Allow to scale specific scanlines. Useful for HMC, where we want a coefficient 2 when tx=rx, and 1 otherwise.
     result : ndarray [numpoints]
         Result.
     tx, rx : ndarray [numscanlines]
@@ -65,8 +63,6 @@ def _delay_and_sum_amplitudes_linear(weighted_scanlines, tx, rx, lookup_times_tx
         Times of flight (floats) between the grid points and the receivers.
     amplitudes_tx : ndarray [numpoints x numelements]
     amplitudes_rx : ndarray [numpoints x numelements]
-    scanline_weights : ndarray [numscanlines]
-        Allow to scale specific scanlines. Useful for HMC, where we want a coefficient 2 when tx=rx, and 1 otherwise.
     result : ndarray [numpoints]
         Result.
     tx, rx : ndarray [numscanlines]

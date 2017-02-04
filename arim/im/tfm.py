@@ -126,6 +126,7 @@ class BaseTFM:
     def get_amplitudes_tx(self):
         return self.amplitudes_tx()
 
+
     def get_amplitudes_rx(self):
         return self.amplitudes_rx()
 
@@ -380,7 +381,7 @@ class SingleViewTFM(BaseTFM):
         -------
         views : List[View]
         """
-        from .. import paths_for_block_in_immersion, views_for_block_in_immersion
+        from ..path import paths_for_block_in_immersion, views_for_block_in_immersion
 
         warnings.warn(DeprecationWarning(
             "Using arim.make_view_for_block_in_immersion is recommended. This method will be removed in future versions."))

@@ -119,27 +119,27 @@ if conf['plot.registration']:
 # -------------------------------------------------------------------------
 # %% Define interfaces
 
-probe_points, probe_orientations = arim.points_from_probe(frame.probe)
+probe_points, probe_orientations = arim.path.points_from_probe(frame.probe)
 
 frontwall_points, frontwall_orientations \
-    = arim.points_1d_wall_z(**conf.pop('interfaces.frontwall'), name='Frontwall')
+    = arim.path.points_1d_wall_z(**conf.pop('interfaces.frontwall'), name='Frontwall')
 backwall_points, backwall_orientations = \
-    arim.points_1d_wall_z(**conf.pop('interfaces.backwall'), name='Backwall')
+    arim.path.points_1d_wall_z(**conf.pop('interfaces.backwall'), name='Backwall')
 
 grid = arim.geometry.Grid(**conf.pop('interfaces.grid'), ymin=0., ymax=0.)
-grid_points, grid_orientation = arim.points_from_grid(grid)
+grid_points, grid_orientation = arim.path.points_from_grid(grid)
 area_of_interest = grid.points_in_rectbox(**conf.pop('area_of_interest'))
 reference_area = grid.points_in_rectbox(**conf.pop('reference_area'))
 
-interfaces = arim.interfaces_for_block_in_immersion(couplant, probe_points,
-                                                    probe_orientations,
-                                                    frontwall_points,
-                                                    frontwall_orientations,
-                                                    backwall_points,
-                                                    backwall_orientations,
-                                                    grid_points, grid_orientation)
+interfaces = arim.path.interfaces_for_block_in_immersion(couplant, probe_points,
+                                                         probe_orientations,
+                                                         frontwall_points,
+                                                         frontwall_orientations,
+                                                         backwall_points,
+                                                         backwall_orientations,
+                                                         grid_points, grid_orientation)
 
-paths = arim.paths_for_block_in_immersion(block, couplant, *interfaces)
+paths = arim.path.paths_for_block_in_immersion(block, couplant, *interfaces)
 
 if conf.pop('plot.interfaces'):
     aplt.plot_interfaces(interfaces, show_orientations=True, show_grid=True)
@@ -148,7 +148,7 @@ for p in interfaces:
     logger.debug(p)
 
 # Make views
-views = arim.views_for_block_in_immersion(paths)
+views = arim.path.views_for_block_in_immersion(paths)
 
 # %% Setup Fermat solver and compute rays
 
@@ -217,7 +217,7 @@ with arim.utils.timeit('Computation of sensitivity'):
             sensitivity_path_dict[view.rx_path.name],
         )
 
-#%% Plot sensitivity
+# %% Plot sensitivity
 
 if conf['plot.sensitivity_view']:
     ref_db = max(np.nanmax(np.abs(v)) for v in sensitivity_view_dict.values())
@@ -303,12 +303,3 @@ if conf['save_to_csv']:
 print(out)
 print()
 print('hash: {}'.format(hashlib.md5(str(out).encode()).hexdigest()))
-
-# %% benchmark
-
-path = paths['LT']
-rays = path.rays
-
-points = interfaces[1].points
-indices_c = np.ascontiguousarray(rays.indices[1])
-indices_f = np.asfortranarray(rays.indices[1])
