@@ -518,3 +518,58 @@ def test_make_timevect():
         np.testing.assert_allclose(x[0], start)
         np.testing.assert_allclose(x[-1], end)
         assert x.dtype == dtype
+
+
+def test_make_toneburst():
+    dt = 50e-9
+    num_samples = 70
+    f0 = 2e6
+
+    # Test 1: unwrapped, 5 cycles
+    num_cycles = 5
+    toneburst = ut.make_toneburst(num_cycles, num_samples, dt, f0)
+    toneburst_complex = ut.make_toneburst(num_cycles, num_samples, dt, f0,
+                                          analytical=True)
+    # ensure we don't accidently change the tested function by hardcoding a result
+    toneburst_ref = [-0.0, -0.003189670321154915, -0.004854168560396212,
+                     0.010850129632629638, 0.05003499896758611, 0.09549150281252627,
+                     0.10963449321242304, 0.056021074460159935, -0.07171870434248846,
+                     -0.23227715582293904, -0.3454915028125263, -0.3287111632233889,
+                     -0.14480682837737863, 0.16421016599756882, 0.4803058311515585,
+                     0.6545084971874735, 0.5767398385520084, 0.23729829003245898,
+                     -0.25299591991478754, -0.6993825011625243, -0.9045084971874737,
+                     -0.7589819954073612, -0.2981668647423177, 0.30416282581455123,
+                     0.8058273240537925, 1.0, 0.8058273240537925, 0.30416282581455123,
+                     -0.2981668647423177, -0.7589819954073612, -0.904508497187474,
+                     -0.6993825011625244, -0.2529959199147875, 0.23729829003245886,
+                     0.5767398385520082, 0.6545084971874737, 0.4803058311515585,
+                     0.1642101659975688, -0.14480682837737874, -0.32871116322338906,
+                     -0.3454915028125264, -0.2322771558229394, -0.07171870434248843,
+                     0.056021074460160004, 0.10963449321242318, 0.09549150281252633,
+                     0.05003499896758629, 0.010850129632629638, -0.004854168560396229,
+                     -0.00318967032115496, -0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                     0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    max_toneburst = np.argmax(toneburst_ref)
+
+    assert len(toneburst) == num_samples
+    assert toneburst.dtype == np.float
+    assert toneburst_complex.dtype == np.complex
+    np.testing.assert_allclose(toneburst_complex.real, toneburst)
+    assert np.count_nonzero(np.isclose(toneburst, 1.0)) == 1, "1.0 does not appear"
+    np.testing.assert_allclose(toneburst, toneburst_ref)
+
+    # Test 2: wrapped, 5 cycles
+    num_cycles = 5
+    toneburst = ut.make_toneburst(num_cycles, num_samples, dt, f0, wrap=True)
+    toneburst_complex = ut.make_toneburst(num_cycles, num_samples, dt, f0,
+                                          analytical=True, wrap=True)
+
+    assert len(toneburst) == num_samples
+    assert toneburst.dtype == np.float
+    assert toneburst_complex.dtype == np.complex
+    np.testing.assert_allclose(toneburst_complex.real, toneburst)
+    np.testing.assert_allclose(toneburst[0.], 1.0)
+    np.testing.assert_allclose(toneburst[:10],
+                               toneburst_ref[max_toneburst:10 + max_toneburst])
+    np.testing.assert_allclose(toneburst[-10:],
+                               toneburst_ref[-10 + max_toneburst:max_toneburst])

@@ -551,3 +551,80 @@ def make_timevect(num, step, start=0., dtype=None):
     y += start
 
     return y.astype(dtype, copy=False)
+
+
+def _rotate_array(arr, n):
+    """
+        >>> _rotate_array([1, 2, 3, 4, 5, 6, 7], 2)
+        array([3, 4, 5, 6, 7, 1, 2])
+        >>> _rotate_array([1, 2, 3, 4, 5, 6, 7], -2)
+        array([6, 7, 1, 2, 3, 4, 5])
+
+    """
+    return np.concatenate([arr[n:], arr[:n]])
+
+
+def make_toneburst(num_cycles, num_samples, dt, centre_freq, wrap=False,
+                   analytical=False):
+    """
+    Returns a toneburst defined by centre frequency and a number of cycles.
+
+    The signal is windowed by a Hann window (strictly zero outside the window). The
+    toneburst is always symmetrical and its maximum is 1.0.
+
+    Parameters
+    ----------
+    num_cycles : int
+        Number of cycles of the toneburst.
+    num_samples : int
+        Number of the vector.
+    dt : float
+        Time step
+    centre_freq : float
+        Centre frequency
+    wrap : bool, optional
+        If False, the signal starts at n=0. If True, the signal is wrapped around such
+         as its maximum is at n=0. The beginning of the signal is at the end of the vector.
+         Default: False.
+    analytical : bool, optional
+        If True, returns the corresponding analytical signal (cos(...) + i sin(...)).
+
+    Returns
+    -------
+    toneburst : ndarray
+        Array of length ``num_samples``
+
+    """
+    if dt <= 0.:
+        raise ValueError('negative time step')
+    if dt <= 0.:
+        raise ValueError('negative centre frequency')
+    if num_cycles <= 0:
+        raise ValueError('negative number of cycles')
+    if num_samples <= 0:
+        raise ValueError('negative number of time samples')
+
+    len_pulse = int(round(num_cycles / centre_freq / dt))
+    # force an odd length for pulse symmetry
+    if len_pulse % 2 == 0:
+        len_pulse += 1
+    half_len_window = len_pulse // 2
+
+    if len_pulse > num_samples:
+        raise ValueError('time vector is too short for this pulse')
+
+    t = np.arange(len_pulse)
+    if analytical:
+        sig = np.exp(2j * np.pi * dt * centre_freq * (t - half_len_window))
+    else:
+        sig = cos(2 * np.pi * dt * centre_freq * (t - half_len_window))
+    window = np.hanning(len_pulse)
+
+    toneburst = sig * window
+    full_toneburst = np.zeros(num_samples, toneburst.dtype)
+    full_toneburst[:len_pulse] = toneburst
+
+    if wrap:
+        full_toneburst = _rotate_array(full_toneburst, half_len_window)
+
+    return full_toneburst
