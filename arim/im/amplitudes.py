@@ -7,7 +7,7 @@ from .. import settings as s
 from ..core import ElementShape
 from ..helpers import NoCache
 from ..exceptions import ArimWarning
-from .. import model
+from .. import model, ut
 
 __all__ = ["Amplitudes", "UniformAmplitudes", "FixedAmplitudes", "AmplitudesRays",
            "MultiAmplitudes",
@@ -249,7 +249,7 @@ class DirectivityFiniteWidth2D(Amplitudes):
         for (element, (elt_dim, elt_loc)) in enumerate(
                 zip(probe.dimensions, probe.locations)):
             elt_width = elt_dim[0]
-            amplitudes[..., element] = model.directivity_finite_width_2d(
+            amplitudes[..., element] = ut.directivity_finite_width_2d(
                 spher.theta[..., element], elt_width,
                 wavelength)
         return amplitudes
@@ -288,7 +288,7 @@ class DirectivityFiniteWidth2D_Rays(AmplitudesRays):
         for (element, (elt_dim, elt_loc)) in enumerate(
                 zip(probe.dimensions, probe.locations)):
             elt_width = elt_dim[0]
-            amplitudes[..., element] = model.directivity_finite_width_2d(
+            amplitudes[..., element] = ut.directivity_finite_width_2d(
                 spher.theta[..., element], elt_width,
                 self.wavelength)
         return amplitudes

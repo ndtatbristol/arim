@@ -391,7 +391,7 @@ def plot_directivity_finite_width_2d(element_width, wavelength, ax=None, **kwarg
 
     ratio = element_width / wavelength
     theta = np.linspace(-np.pi / 2, np.pi / 2, 100)
-    directivity = model.directivity_finite_width_2d(theta, element_width, wavelength)
+    directivity = ut.directivity_finite_width_2d(theta, element_width, wavelength)
 
     ax.plot(np.rad2deg(theta), directivity, label=r'$a/\lambda = {:.2f}$'.format(ratio),
             **kwargs)

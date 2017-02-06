@@ -9,8 +9,8 @@ Transmission-reflection coefficients
 Fluid-solid interface
 ----------------------
 
-  - Fluid to solid: :func:`arim.model.fluid_solid`
-  - Solid to fluid: :func:`arim.model.solid_l_fluid` and :func:`arim.model.solid_t_fluid`
+  - Fluid to solid: :func:`arim.ut.fluid_solid`
+  - Solid to fluid: :func:`arim.ut.solid_l_fluid` and :func:`arim.ut.solid_t_fluid`
 
 References: [KK]_ and [Schmerr]_.
 
@@ -22,5 +22,8 @@ References: [KK]_ and [Schmerr]_.
 
 .. seealso::
 
-    Full reference: :mod:`arim.model`
+    Full reference: :mod:`arim.model`, :mod:`arim.ut`
 
+
+.. todo::
+  Write a more complete example of :mod:`arim.model` functions.
