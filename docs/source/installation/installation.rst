@@ -22,7 +22,8 @@ Strict dependencies:
 
 Optional dependencies:
 
-- `matplotlib <http://matplotlib.org/>`_: plotting library (used in :mod:`arim.plot`)
+- `matplotlib <http://matplotlib.org/>`_: plotting library (used in :mod:`arim.plot` and in scripts). Recommended version: 2.0 or above
+- `pyyaml <http://pyyaml.org/>`_: used in scripts for reading configuration files.
 - `h5py <http://www.h5py.org/>`_: for reading MATLAB v7 file (used in :mod:`arim.io`)
 
 
@@ -37,7 +38,7 @@ Install conda (`conda installation guide <http://conda.pydata.org/docs/download.
 
 Create a new virtual environment::
 
-  conda create --name arim python=3.5 numpy scipy matplotlib hdf5 numba
+  conda create --name arim python=3.5 numpy scipy matplotlib hdf5 numba pyyaml
 
 Activate the virtual environment::
 

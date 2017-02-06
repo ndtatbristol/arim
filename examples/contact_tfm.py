@@ -44,7 +44,6 @@ frame.apply_filter(filt)
 #%% Plot scanlines
 plt.figure()
 tx, rx = (19, 19)
-plt.hold(True)
 plt.plot(frame.time.samples, frame.get_scanline(tx, rx, use_raw=True), label='raw')
 plt.plot(frame.time.samples, np.abs(frame.get_scanline(tx, rx, use_raw=False)), label='filtered')
 plt.gca().xaxis.set_major_formatter(aplt.us_formatter)
