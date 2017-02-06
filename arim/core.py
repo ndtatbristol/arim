@@ -853,13 +853,22 @@ class Time:
 
     Parameters
     ----------
-
+    samples : ndarray
+    start : float
+        Start time (second)
+    step : float
+        Time step (second)
+    num : int
+        Number of samples
+    dtype : numpy.dtype
 
     Attributes
     ----------
     samples : ndarray
+        Time vector
     start : float
     end : float
+    step : float
 
     Notes
     -----
@@ -872,7 +881,7 @@ class Time:
         step = step * 1.
         if step < 0:
             raise ValueError("'step' must be positive.")
-        samples = helpers.linspace2(start, step, num, dtype)
+        samples = ut.make_timevect(num, step, start, dtype)
         self._samples = samples
         self._step = step
 

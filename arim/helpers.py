@@ -199,62 +199,6 @@ def get_git_version(short=True):
     return githash
 
 
-def linspace2(start, step, num, dtype=None):
-    """
-    Return a linearly spaced vector.
-
-    Parameters
-    ----------
-    start : scalar
-        Starting value of the sequence.
-    step : float, optional
-        Size of spacing between samples.
-    num : int
-        Number of samples to generate.
-    dtype : dtype, optional
-        The type of the output array.  If `dtype` is not given, infer the data
-        type from the other input arguments.
-
-    Returns
-    -------
-    samples : ndarray
-        Linearly spaced vector ``[start, stop]`` where ``end = start + (num - 1)*step``
-
-
-    Examples
-    --------
-    >>> linspace2(2.0, 3.0, num=5)
-        array([ 2.  ,  2.25,  2.5 ,  2.75,  3.  ])
-
-    Notes
-    -----
-
-    Adapted from ``numpy.linspace``
-    (License: http://www.numpy.org/license.html)
-
-    """
-    num = int(num)
-    if num < 0:
-        raise ValueError("Number of samples, %s, must be non-negative." % num)
-
-    # Convert float/complex array scalars to float
-    start = start * 1.
-    step = step * 1.
-
-    dt = np.result_type(start, step)
-    if dtype is None:
-        dtype = dt
-
-    y = np.arange(0, num, dtype=dt)
-
-    if num > 1:
-        y *= step
-
-    y += start
-
-    return y.astype(dtype, copy=False)
-
-
 def get_shape_safely(array, array_name, expected_shape=None):
     """
     Return the shape of an array.

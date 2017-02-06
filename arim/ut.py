@@ -490,3 +490,64 @@ def solid_t_fluid(alpha_t, rho_fluid, rho_solid, c_fluid, c_l, c_t, alpha_fluid=
         N * rho_solid * c_l * cos(alpha_fluid))
 
     return reflection_l, reflection_t, transmission
+
+
+def make_timevect(num, step, start=0., dtype=None):
+    """
+    Return a linearly spaced time vector.
+
+    Remark: using this method is preferable to ``numpy.arange(start, start + num * step, step``
+    which may yield an incorrect number of samples due to numerical inaccuracy.
+
+    Parameters
+    ----------
+    num : int
+        Number of samples to generate.
+    step : float, optional
+        Time step (time between consecutive samples).
+    start : scalar
+        Starting value of the sequence. Default: 0.
+    dtype : dtype, optional
+        The type of the output array.  If `dtype` is not given, infer the data
+        type from the other input arguments.
+
+    Returns
+    -------
+    samples : ndarray
+        Linearly spaced vector ``[start, stop]`` where ``end = start + (num - 1)*step``
+
+    Examples
+    --------
+    >>> make_timevect(10, .1)
+    array([ 0. ,  0.1,  0.2,  0.3,  0.4,  0.5,  0.6,  0.7,  0.8,  0.9])
+    >>> make_timevect(10, .1, start=1.)
+    array([ 1. ,  1.1,  1.2,  1.3,  1.4,  1.5,  1.6,  1.7,  1.8,  1.9])
+
+    Notes
+    -----
+
+    Adapted from ``numpy.linspace``
+    (License: http://www.numpy.org/license.html ; 3 clause BSD)
+
+    """
+    if not isinstance(num, int):
+        raise TypeError('num must be an integer (got {})'.format(type(num)))
+    if num < 0:
+        raise ValueError("Number of samples, %s, must be non-negative." % num)
+
+    # Convert float/complex array scalars to float
+    start = start * 1.
+    step = step * 1.
+
+    dt = np.result_type(start, step)
+    if dtype is None:
+        dtype = dt
+
+    y = np.arange(0, num, dtype=dt)
+
+    if num > 1:
+        y *= step
+
+    y += start
+
+    return y.astype(dtype, copy=False)

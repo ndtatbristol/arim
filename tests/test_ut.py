@@ -488,3 +488,33 @@ def test_stokes_relation():
 
     np.testing.assert_allclose(transmission_l_sf_stokes, transmission_l_sf)
     np.testing.assert_allclose(transmission_t_sf_stokes, transmission_t_sf)
+
+
+def test_make_timevect():
+    # loop over different values to check numerical robustness
+    num_list = list(range(30, 40)) + list(range(2000, 2020))
+    for num in num_list:
+        start = 300e-6
+        step = 50e-9
+        end = start + (num - 1) * step
+
+        # Standard case without start
+        x = ut.make_timevect(num, step)
+        assert len(x) == num
+        np.testing.assert_allclose(x[1] - x[0], step)
+        np.testing.assert_allclose(x[0], 0.)
+        np.testing.assert_allclose(x[-1], (num - 1) * step)
+
+        # Standard case
+        x = ut.make_timevect(num, step, start)
+        np.testing.assert_allclose(x[1] - x[0], step)
+        np.testing.assert_allclose(x[0], start)
+        np.testing.assert_allclose(x[-1], end)
+
+        # Check dtype
+        dtype = np.complex
+        x = ut.make_timevect(num, step, start, dtype)
+        np.testing.assert_allclose(x[1] - x[0], step)
+        np.testing.assert_allclose(x[0], start)
+        np.testing.assert_allclose(x[-1], end)
+        assert x.dtype == dtype

@@ -144,38 +144,6 @@ def test_git_version():
     assert len(v_long) >= len(v_short)
 
 
-def test_linspace2():
-    start = 10.
-    num = 21
-    step = 0.5
-    end = start + (num - 1) * step
-
-    # Standard case
-    x = arim.helpers.linspace2(start, step, num)
-    assert len(x) == num
-    assert x[0] == start
-    assert x[-1] == end
-
-    # Check dtype
-    dtype = np.complex
-    x = arim.helpers.linspace2(start, step, num, dtype)
-    assert len(x) == num
-    assert x[0] == start
-    assert x[-1] == end
-    assert x.dtype == dtype
-
-    # Roundoff errors?
-    start = 10.
-    num = 1300
-    step = 1e-7
-    end = start + (num - 1) * step
-
-    x = arim.helpers.linspace2(start, step, num)
-    assert len(x) == num
-    assert x[0] == start
-    assert x[-1] == end
-
-
 def test_get_shape_safely():
     shape = (3, 4, 5)
     x = np.arange(3 * 4 * 5).reshape(shape)
