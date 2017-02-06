@@ -1,5 +1,5 @@
 """
-Plotting utilities
+Plotting utilities based on `matplotib <http://matplotlib.org/>`_.
 
 Some default values are configurable via the dictionary ``arim.plot.conf``.
 
@@ -17,20 +17,15 @@ Some default values are configurable via the dictionary ``arim.plot.conf``.
         # save the figure depending only if conf['savefig'] is True
         plot_oyz(data, grid, filename='foo')
 
-.. py:data:: mm_formatter
+.. py:data:: micro_formatter
+.. py:data:: milli_formatter
+.. py:data:: mega_formatter
 
-    Format an axis whose values are in meter to millimeter. Usage::
+    Format the labels of an axis in a given unit prefix. Usage::
 
+        import matplotlib.pyplot as plt
         ax = plt.plot(distance_vector, data)
-        ax.xaxis.set_major_formatter(mm_formatter)
-
-.. py:data:: us_formatter
-
-    Format an axis whose values are in second to microsecond. Usage::
-
-        ax = plt.plot(time_vector, data)
-        ax.xaxis.set_major_formatter(us_formatter)
-
+        ax.xaxis.set_major_formatter(arim.plot.milli_formatter)
 
 """
 
@@ -42,20 +37,30 @@ from matplotlib import ticker
 import matplotlib.pyplot as plt
 import numpy as np
 
-from . import ut, model
+from . import ut
 from .exceptions import ArimWarning
 from . import geometry as g
 from .config import Config
 
-__all__ = ['mm_formatter', 'us_formatter',
+__all__ = ['micro_formatter', 'mega_formatter', 'milli_formatter',
            'plot_bscan_pulse_echo', 'plot_oxz', 'plot_oxz_many', 'plot_tfm',
            'plot_directivity_finite_width_2d',
            'draw_rays_on_click', 'RayPlotter', 'conf', 'common_dynamic_db_scale']
 
 logger = logging.getLogger(__name__)
 
-mm_formatter = ticker.FuncFormatter(lambda x, pos: '{:.1f}'.format(x * 1e3))
-us_formatter = ticker.FuncFormatter(lambda x, pos: '{:.1f}'.format(x * 1e6))
+micro_formatter = ticker.FuncFormatter(lambda x, pos: '{:.1f}'.format(x * 1e6))
+micro_formatter.__doc__ = 'Format an axis to micro (µ).\nExample: ``ax.xaxis.set_major_formatter(micro_formatter)``'
+
+milli_formatter = ticker.FuncFormatter(lambda x, pos: '{:.1f}'.format(x * 1e3))
+milli_formatter.__doc__ = 'Format an axis to milli (m).\nExample: ``ax.xaxis.set_major_formatter(milli_formatter)``'
+
+mega_formatter = ticker.FuncFormatter(lambda x, pos: '{:.1f}'.format(x * 1e-6))
+mega_formatter.__doc__ = 'Format an axis to mega (M).\nExample: ``ax.xaxis.set_major_formatter(mega_formatter)``'
+
+# Backward compatibility:
+us_formatter = micro_formatter
+mm_formatter = milli_formatter
 
 conf = Config([
     ('savefig', False),  # save the figure?
@@ -204,11 +209,11 @@ def plot_oxz(data, grid, ax=None, title=None, clim=None, interpolation='none',
 
     valid_shapes = [(grid.numx, 1, grid.numz),
                     (grid.numx, grid.numz),
-                    (grid.numx * grid.numz, )]
+                    (grid.numx * grid.numz,)]
     if data.shape in valid_shapes:
         data = data.reshape((grid.numx, grid.numz))
     else:
-        msg = 'invalid data shape (got {}, expected {} or {} or {})'\
+        msg = 'invalid data shape (got {}, expected {} or {} or {})' \
             .format(data.shape, *valid_shapes)
         raise ValueError(msg)
 
@@ -231,10 +236,10 @@ def plot_oxz(data, grid, ax=None, title=None, clim=None, interpolation='none',
         ax.set_xlabel('x (mm)')
     if ax.get_ylabel() == '':
         ax.set_ylabel('z (mm)')
-    ax.xaxis.set_major_formatter(mm_formatter)
-    ax.xaxis.set_minor_formatter(mm_formatter)
-    ax.yaxis.set_major_formatter(mm_formatter)
-    ax.yaxis.set_minor_formatter(mm_formatter)
+    ax.xaxis.set_major_formatter(milli_formatter)
+    ax.xaxis.set_minor_formatter(milli_formatter)
+    ax.yaxis.set_major_formatter(milli_formatter)
+    ax.yaxis.set_minor_formatter(milli_formatter)
     if draw_cbar:
         fig.colorbar(image, ax=ax)
     if clim is not None:

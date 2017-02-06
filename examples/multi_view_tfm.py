@@ -68,8 +68,8 @@ if PLOT_TIME_TO_SURFACE:
     plt.plot(time_to_surface[frame.tx==frame.rx])
     plt.xlabel('element')
     plt.ylabel('time (µs)')
-    plt.gca().yaxis.set_major_formatter(aplt.us_formatter)
-    plt.gca().yaxis.set_minor_formatter(aplt.us_formatter)
+    plt.gca().yaxis.set_major_formatter(aplt.micro_formatter)
+    plt.gca().yaxis.set_minor_formatter(aplt.micro_formatter)
 
     plt.title('time between elements and frontwall - must be a line!')
 
