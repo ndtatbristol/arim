@@ -1,8 +1,7 @@
 import numpy as np
 import pytest
 
-import arim.utils.ut as ut
-from arim import utils as u
+import arim.ut as ut
 
 
 def test_decibel():

@@ -164,7 +164,7 @@ for i, view in enumerate(views.values()):
 
 # %% Run all TFM
 
-with arim.utils.timeit('Delay-and-sum', logger=logger):
+with arim.helpers.timeit('Delay-and-sum', logger=logger):
     for tfm in tfms:
         tfm.run(fillvalue=conf['tfm.fillvalue'])
 
@@ -206,9 +206,9 @@ for tfm in tfms:
     viewname = tfm.view.name
     intensity = tfm.maximum_intensity_in_area(area_of_interest)
     tmp.append((viewname, intensity))
-    # intensity_db = arim.utils.decibel(intensity, ref_db)
+    # intensity_db = arim.ut.decibel(intensity, ref_db)
 out = pandas.DataFrame(tmp, columns='view intensity'.split())
-out['intensity_db'] = arim.utils.decibel(out['intensity'], ref_db)
+out['intensity_db'] = arim.ut.decibel(out['intensity'], ref_db)
 
 if conf['save_to_csv']:
     out.to_csv('intensities.csv')

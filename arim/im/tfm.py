@@ -13,7 +13,7 @@ from .. import settings as s
 from .. import core as c
 from ..path import IMAGING_MODES  # import for backward compatibility
 from ..exceptions import ArimWarning
-from ..utils import parse_enum_constant
+from ..helpers import parse_enum_constant
 
 __all__ = ['BaseTFM', 'ContactTFM', 'SingleViewTFM', 'IMAGING_MODES', 'SimpleTFM']
 

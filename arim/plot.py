@@ -37,14 +37,12 @@ Some default values are configurable via the dictionary ``arim.plot.conf``.
 import functools
 from warnings import warn
 import logging
-import os
 
-import matplotlib as mpl
 from matplotlib import ticker
 import matplotlib.pyplot as plt
 import numpy as np
 
-from . import utils, model
+from . import ut, model
 from .exceptions import ArimWarning
 from . import geometry as g
 from .config import Config
@@ -108,7 +106,7 @@ def plot_bscan_pulse_echo(frame, use_dB=True, ax=None, title='B-scan', clim=None
 
     scanlines = frame.scanlines[pulse_echo, :]
     if use_dB:
-        scanlines = utils.decibel(scanlines)
+        scanlines = ut.decibel(scanlines)
         if clim is None:
             clim = [-40., 0.]
 
@@ -221,7 +219,7 @@ def plot_oxz(data, grid, ax=None, title=None, clim=None, interpolation='none',
         if ref_db is not None:
             warn("ref_db is ignored for linear plot", ArimWarning)
     elif scale == 'db':
-        data = utils.decibel(data, ref_db)
+        data = ut.decibel(data, ref_db)
     else:
         raise ValueError('invalid scale: {}'.format(scale))
 
@@ -633,7 +631,7 @@ def common_dynamic_db_scale(data_list, area=None, db_range=40.):
         data_max_list.append(np.nanmax(np.abs(data[area])))
     ref_db = max(data_max_list)
 
-    data_max_db_list = utils.decibel(data_max_list, ref_db)
+    data_max_db_list = ut.decibel(data_max_list, ref_db)
 
     for data_max_db in data_max_db_list:
         yield ref_db, (data_max_db - db_range, data_max_db)

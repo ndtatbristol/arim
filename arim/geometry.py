@@ -30,7 +30,7 @@ import numba
 import numpy as np
 import numpy.linalg as linalg
 
-from .utils import chunk_array, Cache, NoCache
+from .helpers import Cache, NoCache, chunk_array
 from . import settings as s
 from .exceptions import ArimWarning, InvalidDimension, InvalidShape
 

@@ -180,7 +180,7 @@ logger.info("Performed {} delay-and-sum's in {:.2f} s".format(len(tfms), toc-tic
 #%% Plot all TFM
 
 if PLOT_TFM:
-    func_res = lambda x: arim.utils.decibel(x)
+    func_res = lambda x: arim.ut.decibel(x)
     # func_res = lambda x: np.imag(x)
     clim = [-40, 0]
 

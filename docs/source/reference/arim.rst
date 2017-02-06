@@ -8,7 +8,6 @@ Subpackages
 
     arim.im
     arim.io
-    arim.utils
 
 Submodules
 ----------
@@ -20,12 +19,14 @@ Submodules
    arim.core
    arim.exceptions
    arim.geometry
+   arim.helpers
    arim.model
    arim.path
    arim.plot
    arim.registration
    arim.settings
    arim.signal
+   arim.ut
 
 Module contents
 ---------------

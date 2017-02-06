@@ -75,7 +75,7 @@ plt.axis('tight')
 #%% Plot TFM in dB scale
 
 clim = [-40, 0]
-func_res = lambda x: arim.utils.decibel(x)
+func_res = lambda x: arim.ut.decibel(x)
 aplt.plot_tfm(tfm, func_res=func_res, interpolation='none', clim=clim)
 plt.title('TFM image - dB scale')
 plt.axis('tight')

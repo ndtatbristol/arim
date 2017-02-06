@@ -1,8 +1,8 @@
 """
-Several helpers related to ultrasonic testing (UT)
+Toolbox of functions for ultrasonic testing/acoustics.
 
-
-
+Keep this module free from other arim dependencies because it could be useful to simply
+copy/paste it in project that does not require the full arim package.
 """
 
 import numpy as np

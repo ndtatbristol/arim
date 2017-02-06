@@ -6,7 +6,7 @@ import pytest
 
 import arim.core as c
 from arim import geometry as g
-from arim import utils
+from arim import ut
 from arim.exceptions import InvalidDimension
 
 
@@ -245,7 +245,7 @@ def aluminium():
 
 @pytest.fixture(scope='module')
 def frame(probe, examination_object):
-    tx, rx = utils.hmc(probe.numelements)
+    tx, rx = ut.hmc(probe.numelements)
     metadata = dict(capture_method=c.CaptureMethod.fmc)
 
     time = c.Time(start=5e-6, step=1 / 25e6, num=1000)

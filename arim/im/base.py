@@ -10,7 +10,7 @@ import numpy as np
 
 from .. import settings as s
 from ..exceptions import InvalidDimension
-from ..utils import chunk_array
+from ..helpers import chunk_array
 
 __all__ = ['find_minimum_times']
 

@@ -22,6 +22,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 import arim
+import arim.helpers
 import arim.plot as aplt
 from arim.registration import registration_by_flat_frontwall_detection
 
@@ -156,7 +157,7 @@ arim.im.ray_tracing(views.values())
 
 # %% Compute sensitivity images
 
-with arim.utils.timeit('Computation of ray geometry', logger=logger):
+with arim.helpers.timeit('Computation of ray geometry', logger=logger):
     ray_geometry_dict = OrderedDict([(k, arim.model.RayGeometry.from_path(v))
                                      for (k, v) in paths.items()])
 
@@ -185,7 +186,7 @@ if False:
 # %% Computation ray weights
 
 ray_weights_dict = OrderedDict()
-with arim.utils.timeit('Computation of ray weights'):
+with arim.helpers.timeit('Computation of ray weights'):
     for pathname, path in paths.items():
         ray_geometry = ray_geometry_dict[pathname]
         shape = (frame.probe.numelements, grid.numpoints)
@@ -207,7 +208,7 @@ with arim.utils.timeit('Computation of ray weights'):
         ray_weights_dict[pathname] = np.resize(directivity * transrefl * beamspread,
                                                shape)
 
-with arim.utils.timeit('Computation of sensitivity'):
+with arim.helpers.timeit('Computation of sensitivity'):
     sensitivity_path_dict = OrderedDict((k, arim.model.sensitivity_conjugate_for_path(v))
                                         for k, v in ray_weights_dict.items())
     sensitivity_view_dict = OrderedDict()
@@ -249,7 +250,7 @@ for viewname, view in views.items():
 
 # %% Run all TFM
 
-with arim.utils.timeit('Delay-and-sum', logger=logger):
+with arim.helpers.timeit('Delay-and-sum', logger=logger):
     for tfm in tfms:
         tfm.run(fillvalue=conf['tfm.fillvalue'])
 
@@ -293,9 +294,9 @@ for tfm in tfms:
     viewname = tfm.view.name
     intensity = tfm.maximum_intensity_in_area(area_of_interest)
     tmp.append((viewname, intensity))
-    # intensity_db = arim.utils.decibel(intensity, ref_db)
+    # intensity_db = arim.ut.decibel(intensity, ref_db)
 out = pandas.DataFrame(tmp, columns='view intensity'.split())
-out['intensity_db'] = arim.utils.decibel(out['intensity'], ref_db)
+out['intensity_db'] = arim.ut.decibel(out['intensity'], ref_db)
 
 if conf['save_to_csv']:
     out.to_csv('intensities.csv')

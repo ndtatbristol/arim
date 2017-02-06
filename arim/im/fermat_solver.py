@@ -19,7 +19,7 @@ from ._fermat_solver import _expand_rays
 from .base import find_minimum_times
 from .. import geometry as g
 from .. import settings as s
-from ..utils import Cache
+from ..helpers import Cache
 
 __all__ = ['FermatSolver', 'FermatPath', 'Rays', 'ray_tracing']
 

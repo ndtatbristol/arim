@@ -3,6 +3,10 @@ from collections import OrderedDict
 import logging
 
 from ... import settings as s
+from ._das_numba import _delay_and_sum_amplitudes_linear, \
+    _delay_and_sum_amplitudes_nearest
+from concurrent.futures import ThreadPoolExecutor
+from ...helpers import chunk_array
 
 _DATATYPES = OrderedDict()
 _DATATYPES['f'] = (np.float32, np.float32)
@@ -63,10 +67,6 @@ def delay_and_sum_numba(frame, focal_law, fillvalue=0., result=None, block_size=
     :param numthreads:
     :return:
     """
-    from ._das_numba import _delay_and_sum_amplitudes_linear, _delay_and_sum_amplitudes_nearest
-    from concurrent.futures import ThreadPoolExecutor
-    from ...utils import chunk_array
-
     # numscanlines = frame.numscanlines
     numpoints, numelements = focal_law.lookup_times_tx.shape
 

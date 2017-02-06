@@ -5,7 +5,7 @@ import numpy as np
 from .. import geometry as g
 from .. import settings as s
 from ..core import ElementShape
-from ..utils import NoCache
+from ..helpers import NoCache
 from ..exceptions import ArimWarning
 from .. import model
 

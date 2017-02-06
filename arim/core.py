@@ -6,7 +6,7 @@ import enum
 import numpy as np
 
 from . import geometry as g
-from . import utils as u
+from . import ut, helpers
 
 __all__ = ['FocalLaw', 'StateMatter', 'TransmissionReflection', 'Frame', 'ElementShape',
            'Probe', 'Mode', 'Interface', 'Path', 'Material', 'ExaminationObject', 'Time',
@@ -100,10 +100,10 @@ class Frame:
         if scanlines_raw is None:
             scanlines_raw = scanlines
 
-        (numscanlines, _) = u.get_shape_safely(scanlines, 'scanlines', (None, numsamples))
-        _ = u.get_shape_safely(tx, 'tx', (numscanlines,))
-        _ = u.get_shape_safely(rx, 'rx', (numscanlines,))
-        _ = u.get_shape_safely(scanlines_raw, 'scanlines_raw', (numscanlines, numsamples))
+        (numscanlines, _) = helpers.get_shape_safely(scanlines, 'scanlines', (None, numsamples))
+        _ = helpers.get_shape_safely(tx, 'tx', (numscanlines,))
+        _ = helpers.get_shape_safely(rx, 'rx', (numscanlines,))
+        _ = helpers.get_shape_safely(scanlines_raw, 'scanlines_raw', (numscanlines, numsamples))
 
         self.scanlines = scanlines
         self.scanlines_raw = scanlines_raw
@@ -119,7 +119,7 @@ class Frame:
         if metadata is None:
             metadata = {}
         if metadata.get('capture_method', None) is None:
-            metadata['capture_method'] = CaptureMethod[u.infer_capture_method(tx, rx)]
+            metadata['capture_method'] = CaptureMethod[ut.infer_capture_method(tx, rx)]
         self.metadata = metadata
 
     def apply_filter(self, filt):
@@ -308,7 +308,7 @@ class Probe:
 
     def __str__(self):
         return "{} - {} elements, {:.1f} MHz".format(
-            u.get_name(self.metadata),
+            helpers.get_name(self.metadata),
             self.numelements,
             self.frequency / 1e6)
 
@@ -617,10 +617,10 @@ class Interface:
             are_normals_on_out_rays_side, bool)
 
         if transmission_reflection is not None:
-            transmission_reflection = u.parse_enum_constant(transmission_reflection,
-                                                            TransmissionReflection)
+            transmission_reflection = helpers.parse_enum_constant(transmission_reflection,
+                                                                       TransmissionReflection)
         if kind is not None:
-            kind = u.parse_enum_constant(kind, InterfaceKind)
+            kind = helpers.parse_enum_constant(kind, InterfaceKind)
 
         if (reflection_against is not None) and (
                     transmission_reflection is not TransmissionReflection.reflection):
@@ -732,7 +732,7 @@ class Path:
 
         self.interfaces = interfaces
         self.materials = materials
-        self.modes = tuple(u.parse_enum_constant(mode, Mode) for mode in modes)
+        self.modes = tuple(helpers.parse_enum_constant(mode, Mode) for mode in modes)
         self.name = name
 
     @property
@@ -792,7 +792,7 @@ class Material(namedtuple('Material',
             density = density * 1.
 
         if state_of_matter is not None:
-            state_of_matter = u.parse_enum_constant(state_of_matter, StateMatter)
+            state_of_matter = helpers.parse_enum_constant(state_of_matter, StateMatter)
 
         if metadata is None:
             metadata = {}
@@ -801,7 +801,7 @@ class Material(namedtuple('Material',
                                state_of_matter, metadata)
 
     def __str__(self):
-        name = u.get_name(self.metadata)
+        name = helpers.get_name(self.metadata)
 
         return "{} (v_l: {} m/s, v_t: {} m/s)".format(
             name,
@@ -810,7 +810,7 @@ class Material(namedtuple('Material',
             hex(id(self)))
 
     def __repr__(self):
-        name = u.get_name(self.metadata)
+        name = helpers.get_name(self.metadata)
 
         return "<{}: {} at {}>".format(
             self.__class__.__name__,
@@ -830,7 +830,7 @@ class Material(namedtuple('Material',
         velocitity: float
 
         """
-        mode = u.parse_enum_constant(mode, Mode)
+        mode = helpers.parse_enum_constant(mode, Mode)
         if mode is Mode.longitudinal:
             return self.longitudinal_vel
         elif mode is Mode.transverse:
@@ -872,7 +872,7 @@ class Time:
         step = step * 1.
         if step < 0:
             raise ValueError("'step' must be positive.")
-        samples = u.linspace2(start, step, num, dtype)
+        samples = helpers.linspace2(start, step, num, dtype)
         self._samples = samples
         self._step = step
 
@@ -921,7 +921,7 @@ class Time:
         ValueError
 
         """
-        (num,) = u.get_shape_safely(timevect, 'timevect', (None,))
+        (num,) = helpers.get_shape_safely(timevect, 'timevect', (None,))
 
         start = timevect[0]
         steps = np.diff(timevect)

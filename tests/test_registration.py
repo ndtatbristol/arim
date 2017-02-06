@@ -3,8 +3,8 @@ import pytest
 import arim.registration as reg
 from unittest.mock import Mock
 
+import arim
 import arim.geometry as g
-import arim.utils as u
 from arim import Time, ExaminationObject, Material, Probe, Frame
 
 _MOVE_PROBE_ON_OXY_DATA = [
@@ -99,7 +99,7 @@ def test_move_probe_over_flat_surface_real(theta_deg):
     locations_gcs[:, 2] += standoff
 
     # empty fmc data
-    tx, rx = u.fmc(numelements)
+    tx, rx = arim.ut.fmc(numelements)
     time = Time(0., 1.0, 50)
     scanlines = np.zeros((len(tx), len(time)))
     frame = Frame(scanlines, time, tx, rx, probe, ExaminationObject(Material(1.0)))
