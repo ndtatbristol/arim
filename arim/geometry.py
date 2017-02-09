@@ -18,6 +18,17 @@ points (i_hat, j_hat, k_hat).
 Warning: basis in :class:`CoordinateSystem` objects are stored in a different convention:
 they are transposed i.e. ``basis[:, 0] = (i1, i2, i3)``.
 
+Spherical coordinate system
+===========================
+
+Physics and ISO convention (r, theta, phi):
+
+- r is the radial distance,
+- theta is the polar angle (inclination) in the rangle in the range [0, pi],
+- phi is the azimuthal angle in the range [-pi, pi].
+
+Cf. `Wikipedia article on Spherical coordinate system <https://en.wikipedia.org/wiki/Spherical_coordinate_system>`_
+
 """
 
 # Remark: declaration of constant GCS at the end of this file
@@ -42,7 +53,25 @@ __all__ = ['rotation_matrix_x', 'rotation_matrix_y', 'rotation_matrix_z',
            'spherical_coordinates_phi', 'spherical_coordinates_r',
            'spherical_coordinates_theta']
 
-SphericalCoordinates = namedtuple('SphericalCoordinates', 'r theta phi')
+
+class SphericalCoordinates(namedtuple('SphericalCoordinates', 'r theta phi')):
+    """
+    Spherical coordinates as usually defined in physics
+
+    Cf. https://en.wikipedia.org/wiki/Spherical_coordinate_system
+    """
+
+    @property
+    def radius(self):
+        return self.r
+
+    @property
+    def polar(self):
+        return self.theta
+
+    @property
+    def azimuth(self):
+        return self.phi
 
 
 def aspoints(array_like):
@@ -249,12 +278,12 @@ class Points:
 
     def spherical_coordinates(self):
         """
-        (r, θ, φ)
+        (r, theta, phi)
 
         Quoted from [Spherical coordinate system](https://en.wikipedia.org/wiki/Spherical_coordinate_system):
 
-            Spherical coordinates (r, θ, φ) as commonly used in physics: radial distance r, polar angle θ (theta),
-            and azimuthal angle φ (phi).
+            Spherical coordinates (r, θ, φ) as commonly used in physics: radial distance r,
+            polar angle θ (theta), and azimuthal angle φ (phi).
 
         Returns
         -------
@@ -750,7 +779,7 @@ def spherical_coordinates_r(x, y, z, out=None):
 
 
 def spherical_coordinates_theta(z, r, out=None):
-    """inclination angle"""
+    """polar angle"""
     return np.arccos(z / r, out=out)
 
 
