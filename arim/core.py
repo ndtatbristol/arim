@@ -92,18 +92,21 @@ class Frame:
         scanlines = np.asarray(scanlines)
         tx = np.asarray(tx)
         rx = np.asarray(rx)
-        if tx.dtype.kind not in('i', 'u'):
-            raise TypeError('transmitters must be integer indices (got {})'.format(tx.dtype))
-        if rx.dtype.kind not in('i', 'u'):
+        if tx.dtype.kind not in ('i', 'u'):
+            raise TypeError(
+                'transmitters must be integer indices (got {})'.format(tx.dtype))
+        if rx.dtype.kind not in ('i', 'u'):
             raise TypeError('receivers must be integer indices (got {})'.format(rx.dtype))
 
         if scanlines_raw is None:
             scanlines_raw = scanlines
 
-        (numscanlines, _) = helpers.get_shape_safely(scanlines, 'scanlines', (None, numsamples))
+        (numscanlines, _) = helpers.get_shape_safely(scanlines, 'scanlines',
+                                                     (None, numsamples))
         _ = helpers.get_shape_safely(tx, 'tx', (numscanlines,))
         _ = helpers.get_shape_safely(rx, 'rx', (numscanlines,))
-        _ = helpers.get_shape_safely(scanlines_raw, 'scanlines_raw', (numscanlines, numsamples))
+        _ = helpers.get_shape_safely(scanlines_raw, 'scanlines_raw',
+                                     (numscanlines, numsamples))
 
         self.scanlines = scanlines
         self.scanlines_raw = scanlines_raw
@@ -618,7 +621,7 @@ class Interface:
 
         if transmission_reflection is not None:
             transmission_reflection = helpers.parse_enum_constant(transmission_reflection,
-                                                                       TransmissionReflection)
+                                                                  TransmissionReflection)
         if kind is not None:
             kind = helpers.parse_enum_constant(kind, InterfaceKind)
 
@@ -734,6 +737,7 @@ class Path:
         self.materials = materials
         self.modes = tuple(helpers.parse_enum_constant(mode, Mode) for mode in modes)
         self.name = name
+        self.rays = None
 
     @property
     def numinterfaces(self):

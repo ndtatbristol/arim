@@ -802,7 +802,9 @@ def spherical_coordinates(x, y, z, r=None):
 
     Parameters
     ----------
-    x, y, z : ndarray
+    x : ndarray
+    y : ndarray
+    z : ndarray
     r : ndarray or None
         Computed on the fly is not provided.
 
@@ -1019,7 +1021,9 @@ def norm2(x, y, z, out=None):
 
     Parameters
     ----------
-    x, y, z : ndarray
+    x : ndarray
+    y : ndarray
+    z : ndarray
     out : ndarray or None
         For inplace operations.
 
@@ -1041,7 +1045,9 @@ def norm2_2d(x, y, out=None):
 
     Parameters
     ----------
-    x, y, z : ndarray
+    x : ndarray
+    y : ndarray
+    z : ndarray
     out : ndarray or None
         For inplace operations.
 

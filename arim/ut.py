@@ -507,8 +507,8 @@ def make_timevect(num, step, start=0., dtype=None):
         Time step (time between consecutive samples).
     start : scalar
         Starting value of the sequence. Default: 0.
-    dtype : dtype, optional
-        The type of the output array.  If `dtype` is not given, infer the data
+    dtype : numpy.dtype
+        Optional, the type of the output array.  If `dtype` is not given, infer the data
         type from the other input arguments.
 
     Returns

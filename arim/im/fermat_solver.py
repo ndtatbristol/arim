@@ -20,6 +20,7 @@ from .base import find_minimum_times
 from .. import geometry as g
 from .. import settings as s
 from ..helpers import Cache
+from ..path import RayGeometry
 
 __all__ = ['FermatSolver', 'FermatPath', 'Rays', 'ray_tracing']
 
@@ -159,11 +160,13 @@ class Rays:
         """
         Parameters
         ----------
-        interior_indices : shape (d, n, m)
+        interior_indices : ndarray
+            Shape (d, n, m)
 
         Returns
         -------
-        indices : shape (n, m, d+2) such as:
+        indices : ndarray
+            Shape (n, m, d+2) such as:
             - indices[0, i, j] := i for all i, j
             - indices[-1, i, j] := j for all i, j
             - indices[k, i, j] := interior_indices[i, j, k+1] for all i, j and for k=1:(d-1)
@@ -318,111 +321,16 @@ class Rays:
                          p, d)
             return expanded_indices
 
-    def get_outgoing_angles(self, interfaces, return_distances=False):
-        """
-        Yield the angles between the normals of the interface
-        and the outcoming rays.
-        
-        These angles are the angles of refraction or reflection in case of
-        respectively refraction or reflection at this interface.
-
-        Distances can also be returned by setting ``return_distances`` to True.
-        They are computed any way; they are free of additional computation.
-
-        For the last interface, yield None or (None, None) depending ``return_distances``.
-        
-        Parameters
-        ----------
-        interfaces : tuple of Interfaces
-        return_distance : bool
-            Default False.
-            
-        Yields
-        ------
-        alpha : ndarray or None
-            ``alpha[i, j]`` is the angle between the outgoing leg of the ray (i, j)
-            at the current interface and the normal to this interface.
-            One array (or None) is yielded per interface.
-        distance : ndarray or None
-            ``distance[i, j]`` is the size of the leg of the ray (i, j) at the current
-            interface.
-            One array (or None) is yielded per interface.
-            Yielded only if ``return_distances`` is True.
-        
-        """
-        for interface_idx in range(len(interfaces) - 1):
-            interface = interfaces[interface_idx]
-            next_interface = interfaces[interface_idx + 1]
-
-            if interface.are_normals_on_out_rays_side is None:
-                if return_distances:
-                    yield None, None
-                else:
-                    yield None
-                continue
-
-            points = interface.points
-            next_points = next_interface.points
-
-            # Orientations for all points of the current interface
-            orientations_all_points = interface.orientations
-
-            # leg_origins[i, j] is the interface point through which the ray (i,j)
-            # goes (ray between the i-th probe element and the j-th grid point)
-            leg_origins = points.coords.take(self.indices[interface_idx], axis=0)
-
-            # leg_direction[i, j] is the leg (as a 3d vector) of the ray (i,j)
-            # at the current interface
-            leg_directions = next_points.coords.take(self.indices[interface_idx + 1],
-                                                     axis=0)
-            leg_directions -= leg_origins
-
-            # orientations[i, j] is the orientation of the interface point through
-            # which the ray (i,j) goes.
-            # orientations[i, j] is a 3x3 orthonormal matrix (basis matrix)
-            orientations = orientations_all_points[self.indices[interface_idx]]
-
-            # direction of the legs in the coordinates expressed from the interface
-            leg_directions_local = g.to_gcs(leg_directions, orientations,
-                                            np.array([0., 0., 0.]))
-
-            x = leg_directions_local[..., 0]
-            y = leg_directions_local[..., 1]
-            z = leg_directions_local[..., 2]
-
-            distances = g.spherical_coordinates_r(x, y, z)
-            theta = g.spherical_coordinates_theta(z, distances)
-
-            # Flip angle if necessary
-            if interface.are_normals_on_out_rays_side:
-                alpha = theta
-            else:
-                # alpha = np.pi - theta
-                alpha = theta
-                alpha *= -1
-                alpha += np.pi
-
-            if return_distances:
-                yield alpha, distances
-            else:
-                yield alpha
-        # Last interface:
-        if return_distances:
-            yield None, None
-        else:
-            yield None
-
     def get_incoming_angles(self, interfaces, return_distances=False):
         """
-        Yield the angles between the normals of the interface
-        and the incoming rays.
+        .. note::
 
-        These angles are the angles of incidence.
+            Deprecated. Use RayGeometry.conventional_inc_angles() instead.
+
+        Yield the conventional incoming angles interface per interface. For the first
+        interface which has no incoming legs, yield None.
 
         Distances can also be returned by setting ``return_distances`` to True.
-        They are computed any way; they are free of additional computation.
-
-        For the last interface, yield None or (None, None) depending ``return_distances``.
 
         Parameters
         ----------
@@ -443,67 +351,57 @@ class Rays:
             Yielded only if ``return_distances`` is True.
 
         """
-        # First interface:
-        if return_distances:
-            yield None, None
-        else:
-            yield None
-        for interface_idx in range(1, len(interfaces)):
-            interface = interfaces[interface_idx]
-            previous_interface = interfaces[interface_idx - 1]
+        warnings.warn('Use RayGeometry.conventional_inc_angles() instead.',
+                      DeprecationWarning)
 
-            if interface.are_normals_on_inc_rays_side is None:
-                if return_distances:
-                    yield None, None
-                else:
-                    yield None
-                continue
-
-            points = interface.points
-            previous_points = previous_interface.points
-
-            # Orientations for all points of the current interface
-            orientations_all_points = interface.orientations
-
-            # leg_origins[i, j] is the interface point through which the ray (i,j)
-            # goes (ray between the i-th probe element and the j-th grid point)
-            leg_origins = points.coords.take(self.indices[interface_idx], axis=0)
-
-            # leg_direction[i, j] is the leg (as a 3d vector) of the ray (i,j)
-            # at the current interface (incoming leg)
-            leg_directions = previous_points.coords.take(self.indices[interface_idx - 1],
-                                                         axis=0)
-            leg_directions -= leg_origins
-
-            # orientations[i, j] is the orientation of the interface point through
-            # which the ray (i,j) goes.
-            # orientations[i, j] is a 3x3 orthonormal matrix (basis matrix)
-            orientations = orientations_all_points[self.indices[interface_idx]]
-
-            # direction of the legs in the coordinates expressed from the interface
-            leg_directions_local = g.to_gcs(leg_directions, orientations,
-                                            np.array([0., 0., 0.]))
-
-            x = leg_directions_local[..., 0]
-            y = leg_directions_local[..., 1]
-            z = leg_directions_local[..., 2]
-
-            distances = g.spherical_coordinates_r(x, y, z)
-            theta = g.spherical_coordinates_theta(z, distances)
-
-            # Flip angle if necessary
-            if interface.are_normals_on_inc_rays_side:
-                alpha = theta
-            else:
-                # alpha = np.pi - theta
-                alpha = theta
-                alpha *= -1
-                alpha += np.pi
-
+        ray_geometry = RayGeometry(interfaces, self)
+        for i in range(len(interfaces)):
             if return_distances:
-                yield alpha, distances
+                yield (ray_geometry.conventional_inc_angle(i),
+                       ray_geometry.inc_leg_size(i))
             else:
-                yield alpha
+                yield ray_geometry.conventional_inc_angle(i)
+
+    def get_outgoing_angles(self, interfaces, return_distances=False):
+        """
+        .. note::
+
+            Deprecated. Use RayGeometry.conventional_out_angles() instead.
+
+        Yield the conventional outgoing angles interface per interface. For the last
+        interface which has no outgoing legs, yield None.
+
+        Distances can also be returned by setting ``return_distances`` to True.
+
+        Parameters
+        ----------
+        interfaces : tuple of Interfaces
+        return_distance : bool
+            Default False.
+
+        Yields
+        ------
+        alpha : ndarray or None
+            ``alpha[i, j]`` is the angle between the outgoing leg of the ray (i, j)
+            at the current interface and the normal to this interface.
+            One array (or None) is yielded per interface.
+        distance : ndarray or None
+            ``distance[i, j]`` is the size of the leg of the ray (i, j) at the current
+            interface.
+            One array (or None) is yielded per interface.
+            Yielded only if ``return_distances`` is True.
+
+        """
+        warnings.warn('Use RayGeometry.conventional_out_angles() instead.',
+                      DeprecationWarning)
+
+        ray_geometry = RayGeometry(interfaces, self)
+        for i in range(len(interfaces)):
+            if return_distances:
+                yield (ray_geometry.conventional_out_angle(i),
+                       ray_geometry.inc_leg_size(i))
+            else:
+                yield ray_geometry.conventional_out_angle(i)
 
 
 class FermatPath(tuple):
@@ -666,9 +564,9 @@ class FermatSolver:
 
         Parameters
         ----------
-        views : List[Views]
-        dtype : dtype or None
-        dtype_indices : dtype or None
+        views : list of Views
+        dtype : numpy.dtype or None
+        dtype_indices : numpy.dtype or None
 
         Returns
         -------

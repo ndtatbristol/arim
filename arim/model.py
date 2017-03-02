@@ -10,13 +10,15 @@ Functions related to the forward model.
 # Functions that rely on simpler logic should be put in arim.ut and imported here.
 
 import logging
-from collections import namedtuple
 
 import numpy as np
 
 from . import core as c
 from .ut import snell_angles, fluid_solid, solid_l_fluid, solid_t_fluid, \
     directivity_finite_width_2d
+
+# for backward compatiblity:
+from .path import RayGeometry
 
 logger = logging.getLogger(__name__)
 
@@ -36,8 +38,8 @@ def directivity_finite_width_2d_for_path(ray_geometry, element_width, wavelength
     directivity : ndarray
         Signed directivity for each angle.
     """
-    return directivity_finite_width_2d(ray_geometry.out_angles_list[0], element_width,
-                                       wavelength)
+    return directivity_finite_width_2d(ray_geometry.conventional_out_angle(0),
+                                       element_width, wavelength)
 
 
 def transmission_at_interface(interface_kind, material_inc, material_out, mode_inc,
@@ -46,7 +48,8 @@ def transmission_at_interface(interface_kind, material_inc, material_out, mode_i
     """
     Compute the transmission coefficients for an interface.
 
-    The angles of transmission or reflection are obtained using Snell-Descartes laws (:func:`snell_angles`).
+    The angles of transmission or reflection are obtained using Snell-Descartes laws
+    (:func:`snell_angles`).
     Warning: do not check whether the angles of incidence are physical.
 
     Warning: only fluid-to-solid interface is implemented yet.
@@ -121,7 +124,8 @@ def reflection_at_interface(interface_kind, material_inc, material_against, mode
     """
     Compute the reflection coefficients for an interface.
 
-    The angles of transmission or reflection are obtained using Snell-Descartes laws (:func:`snell_angles`).
+    The angles of transmission or reflection are obtained using Snell-Descartes laws
+    (:func:`snell_angles`).
     Warning: do not check whether the angles of incidence are physical.
 
     Warning: only fluid-to-solid interface is implemented yet.
@@ -142,7 +146,8 @@ def reflection_at_interface(interface_kind, material_inc, material_against, mode
     angles_inc : ndarray
         Angle of incidence of the ray legs.
     force_complex : bool
-        If True, return complex coefficients. If not, return coefficients with the same datatype as ``angles_inc``. Default: True.
+        If True, return complex coefficients. If not, return coefficients with the same
+        datatype as ``angles_inc``. Default: True.
 
     Returns
     -------
@@ -202,10 +207,12 @@ def transmission_reflection_per_interface_for_path(path, angles_inc_list,
 
     For non-relevant interfaces  (attribute ``transmission_reflection`` set to None), yield None.
 
-    Requires to have computed the angles of incidence at each interface (cf. :meth:`Rays.get_incoming_angles`).
+    Requires to have computed the angles of incidence at each interface
+    (cf. :meth:`RayGeometry.conventional_inc_angle`).
     Use internally :func:`transmission_at_interface`` and :func:``reflection_at_interface``.
 
-    The angles of transmission or reflection are obtained using Snell-Descartes laws (:func:`snell_angles`).
+    The angles of transmission or reflection are obtained using Snell-Descartes laws
+    (:func:`snell_angles`).
 
     Warning: do not check whether the angles of incidence are physical.
 
@@ -261,7 +268,8 @@ def transmission_reflection_for_path(path, ray_geometry, force_complex=True):
 
     This function takes into account all relevant interfaces defined in ``path``.
 
-    Requires to have computed the angles of incidence at each interface (cf. :meth:`Rays.get_incoming_angles`).
+    Requires to have computed the angles of incidence at each interface
+    (cf. :meth:`RayGeometry.conventional_inc_angle`).
     Use internally :func:`transmission_at_interface`` and :func:``reflection_at_interface``.
 
     The angles of transmission or reflection are obtained using Snell-Descartes laws (:func:`snell_angles`).
@@ -285,7 +293,8 @@ def transmission_reflection_for_path(path, ray_geometry, force_complex=True):
     """
     amps = None
 
-    inc_angles_list = ray_geometry.inc_angles_list
+    inc_angles_list = [ray_geometry.conventional_inc_angle(k) for k in
+                       range(ray_geometry.numinterfaces)]
 
     for amps_per_interface in transmission_reflection_per_interface_for_path(path,
                                                                              inc_angles_list,
@@ -393,9 +402,12 @@ def beamspread_for_path(ray_geometry, p=0.5):
     beamspread : ndarray
 
     """
-    inc_angles_list = ray_geometry.inc_angles_list
-    out_angles_list = ray_geometry.out_angles_list
-    inc_leg_sizes_list = ray_geometry.inc_leg_sizes_list
+    inc_angles_list = [ray_geometry.conventional_inc_angle(i) for i in
+                       range(ray_geometry.numinterfaces)]
+    out_angles_list = [ray_geometry.conventional_out_angle(i) for i in
+                       range(ray_geometry.numinterfaces)]
+    inc_leg_sizes_list = [ray_geometry.inc_leg_size(i) for i in
+                          range(ray_geometry.numinterfaces)]
 
     beamspread = None
     for relative_beamspread in beamspread_per_interface_for_path(inc_angles_list,
@@ -501,7 +513,7 @@ def beamspread_for_path_snell(path, ray_geometry, p=0.5):
     Parameters
     ----------
     path : Path
-    ray_geometry : RayGeometry
+    ray_geometry : arim.path.RayGeometry
     p : float
         Beamspread is ``1/distance**p`` (distance power p). Use 0.5 for 2D and 1.0 for 3D. Default: 0.5
 
@@ -510,8 +522,10 @@ def beamspread_for_path_snell(path, ray_geometry, p=0.5):
     beamspread : ndarray
 
     """
-    inc_angles_list = ray_geometry.inc_angles_list
-    inc_leg_sizes_list = ray_geometry.inc_leg_sizes_list
+    inc_angles_list = [ray_geometry.conventional_inc_angle(i) for i in
+                       range(ray_geometry.numinterfaces)]
+    inc_leg_sizes_list = [ray_geometry.inc_leg_size(i) for i in
+                          range(ray_geometry.numinterfaces)]
 
     refractive_indices = [None]
     for inc_velocity, out_velocity in zip(path.velocities, path.velocities[1:]):
@@ -567,47 +581,3 @@ def sensitivity_conjugate_for_view(tx_sensitivity, rx_sensitivity):
 
     """
     return tx_sensitivity * rx_sensitivity
-
-
-class RayGeometry(namedtuple("RayGeometry", "inc_angles_list out_angles_list "
-                                            "inc_leg_sizes_list")):
-    """
-    RayGeometry(inc_angles_list, out_angles_list, inc_leg_sizes_list)
-
-    Storage object: holds the angles and the sizes of the legs of rays.
-
-    Parameters
-    ----------
-    inc_angles_list : list of ndarray
-        Each array of the list is the angle of the incoming ray to the interface.
-        One array per interface. None if not relevant.
-    out_angles_list : list of ndarray
-        Each array of the list is the angle of the outgoing ray from the interface. One array per interface.
-        None if not relevant.
-    inc_leg_sizes_list : list of ndarray
-        Each array of the list is the size of the incoming leg to the interface. Legs are assumed to be straight.
-        One array per interface.
-        None if not relevant.
-
-    See Also
-    --------
-    :meth:`Rays.get_outgoing_angles`, :meth:`Rays.get_incoming_angles`
-
-    """
-
-    @classmethod
-    def from_path(cls, path):
-        if path.rays is None:
-            raise ValueError("Ray-tracing must be performed first.")
-
-        out_angles_list = []
-        for alpha in path.rays.get_outgoing_angles(path.interfaces):
-            out_angles_list.append(alpha)
-
-        inc_angles_list = []
-        inc_leg_sizes_list = []
-        for alpha, distances in path.rays.get_incoming_angles(path.interfaces, True):
-            inc_angles_list.append(alpha)
-            inc_leg_sizes_list.append(distances)
-
-        return cls(inc_angles_list, out_angles_list, inc_leg_sizes_list)

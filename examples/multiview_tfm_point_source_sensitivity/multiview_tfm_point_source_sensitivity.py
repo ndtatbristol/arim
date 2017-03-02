@@ -23,6 +23,7 @@ import numpy as np
 
 import arim
 import arim.helpers
+import arim.path
 import arim.plot as aplt
 from arim.registration import registration_by_flat_frontwall_detection
 
@@ -155,33 +156,54 @@ views = arim.path.views_for_block_in_immersion(paths)
 
 arim.im.ray_tracing(views.values())
 
-# %% Compute sensitivity images
+# %% Precompute ray geometry
 
+# Precomputing is not mandatory but is helpful for performance monitoring.
 with arim.helpers.timeit('Computation of ray geometry', logger=logger):
-    ray_geometry_dict = OrderedDict([(k, arim.model.RayGeometry.from_path(v))
-                                     for (k, v) in paths.items()])
+    ray_geometry_dict = OrderedDict()
+    for path in paths.values():
+        ray_geometry = arim.path.RayGeometry.from_path(path)
+        with ray_geometry.precompute():
+            # For directivity:
+            ray_geometry.conventional_out_angle(0)
+            
+            # For beamspread and transmission-reflection:
+            for i in range(path.numinterfaces - 1):
+                ray_geometry.conventional_inc_angle(i)
+
+        ray_geometry_dict[path.name] = ray_geometry
 
 # %% Debug angle
 
-# if conf.get('debug', None):
-if False:
+if conf.get('debug', None):
     for pathname, path in paths.items():
         if pathname not in ['L', 'LT']:
             continue
         ray_geometry = ray_geometry_dict[pathname]
-        for i, data in enumerate(ray_geometry.inc_angles_list):
+        for i in range(ray_geometry.numinterfaces):
+            data = ray_geometry.conventional_inc_angle(i)
             if data is None:
                 continue
             aplt.plot_oxz(np.rad2deg(data[0]), grid,
-                          title='{pathname} angle inc {i}'.format(**globals()),
+                          title='{pathname} conv. angle inc {i}'.format(**globals()),
                           savefig=False)
+        # For scattering:
+        data = ray_geometry.signed_inc_angle(i)
+        aplt.plot_oxz(np.rad2deg(data[0]), grid,
+                      title='{pathname} signed angle inc {i}'.format(**globals()),
+                      savefig=False)
+        
 
-        for i, data in enumerate(ray_geometry.out_angles_list):
-            if data is None:
-                continue
-            aplt.plot_oxz(np.rad2deg(data[0]), grid,
-                          title='{pathname} angle out {i}'.format(**globals()),
-                          savefig=False)
+        # For directivity:
+        i = 0
+        data = ray_geometry.conventional_out_angle(i)
+        
+        if data is None:
+            continue
+        aplt.plot_oxz(np.rad2deg(data[0]), grid,
+                      title='{pathname} conv. angle out {i}'.format(**globals()),
+                      savefig=False)
+
 
 # %% Computation ray weights
 
