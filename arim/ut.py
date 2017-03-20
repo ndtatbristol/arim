@@ -7,8 +7,11 @@ Toolbox of functions for ultrasonic testing/acoustics.
 
 import numpy as np
 import warnings
+import numba
+import math
+from scipy.special import hankel1, hankel2
 
-from numpy.core.umath import sin, cos
+from numpy.core.umath import sin, cos, pi, exp
 
 
 class UtWarning(UserWarning):
@@ -490,6 +493,187 @@ def solid_t_fluid(alpha_t, rho_fluid, rho_solid, c_fluid, c_l, c_t, alpha_fluid=
         N * rho_solid * c_l * cos(alpha_fluid))
 
     return reflection_l, reflection_t, transmission
+
+
+def elastic_scattering_2d_cylinder(theta, radius, longitudinal_wavelength,
+                                   transverse_wavelength,
+                                   min_terms=10, term_factor=4,
+                                   to_compute={'LL', 'LT', 'TL', 'TT'}):
+    """
+    Scattering coefficients for a 2D circle (or infinitely-long cylinder in 3D).
+
+    The scattered field is given by::
+
+        u_scat(r, theta) = u0 * 1/sqrt(r) * exp(-i k r + i omega i t) *
+                           (A(theta) e_r + B(theta) e_theta)
+
+    where A(theta) and B(theta) are the scattering coefficients for respectively L and
+    T scattered waves and where e_r and e_theta are the two vectors of the cylindrical
+    coordinate system.
+
+    Keys for the coefficients: 'LL', 'LT', 'TL', 'TT'. The first letter refers to the kind
+    of the incident wave, the second letter refers to the kind of the scattered wave.
+
+    The coefficient for LL, LT, TL and TT are obtained from Lopez-Sanchez's paper,
+    equations 33, 34, 39, 40. See also Brind's paper. Compared to these papers, the
+    complex conjugate coefficients are returned because these papers use the
+    convention ``u(t) = u(omega) exp(-i omega t)`` whereas we use the convention
+    ``u(t) = u(omega) exp(+i omega t)``.
+
+    Another difference with these papers is the definition of theta. We use the NDT
+    convention where pulse-echo corresponds to theta=0. For Brind, Lopez-Sanchez et al.
+    pulse-echo corresponds to theta=pi.
+
+    The number of factor in the sum is::
+
+        maxn = max(min_terms, ceil(term_factor * alpha), ceil(term_factor * beta))
+
+
+    Parameters
+    ----------
+    theta : ndarray
+        Angle in radians. theta=0 corresponds to pulse-echo. Arbitrary shape.
+    radius : float
+    longitudinal_wavelength : float
+    transverse_wavelength : float
+    min_terms : int
+    term_factor : int
+    to_compute : set
+        Coefficients to compute. Default: compute all.
+
+    Returns
+    -------
+    result : dict
+        Keys corresponds to 'to_compute' argument. Values have the shape of theta.
+
+    References
+    ----------
+    [Lopez-Sanchez] Lopez-Sanchez, Ana L., Hak-Joon Kim, Lester W. Schmerr, and Alexander
+    Sedov. 2005. ‘Measurement Models and Scattering Models for Predicting the Ultrasonic
+    Pulse-Echo Response From Side-Drilled Holes’. Journal of Nondestructive Evaluation 24
+    3): 83–96. doi:10.1007/s10921-005-7658-4.
+
+    [Brind] Brind, R. J., J. D. Achenbach, and J. E. Gubernatis. 1984. ‘High-Frequency
+    Scattering of Elastic Waves from Cylindrical Cavities’. Wave Motion 6 (1):
+    41–60. doi:10.1016/0165-2125(84)90022-2.
+
+    """
+    valid_keys = {'LL', 'LT', 'TL', 'TT'}
+
+    if not valid_keys.issuperset(to_compute):
+        raise ValueError("Valid 'to_compute' arguments are {} (got {})".format(valid_keys,
+                                                                               to_compute))
+
+    # wavenumber
+    kl = 2 * pi / longitudinal_wavelength
+    kt = 2 * pi / transverse_wavelength
+
+    # Brind eq 2.8
+    alpha = kl * radius
+    beta = kt * radius
+    beta2 = beta * beta
+
+    # sum from n=0 to n=maxn (inclusive)
+    # The larger maxn, the better the axppromixation
+    maxn = max([int(min_terms),
+                math.ceil(term_factor * alpha), math.ceil(term_factor * beta)])
+    n = np.arange(0, maxn + 1)
+    n2 = n * n
+
+    # Brind eq 2.8
+    epsilon = np.full(n.shape, 2.)
+    epsilon[0] = 1.
+
+    # Definition of C_n^(i)(x) and D_n^(i)(x)
+    # Brind, eq 31
+    c1 = lambda x: (n2 + n - beta2 / 2) * hankel1(n, x) - x * hankel1(n - 1, x)
+    c2 = lambda x: (n2 + n - beta2 / 2) * hankel2(n, x) - x * hankel2(n - 1, x)
+    d1 = lambda x: (n2 + n) * hankel1(n, x) - n * x * hankel1(n - 1, x)
+    d2 = lambda x: (n2 + n) * hankel2(n, x) - n * x * hankel2(n - 1, x)
+    c1_alpha = c1(alpha)
+    c2_alpha = c2(alpha)
+    d1_alpha = d1(alpha)
+    d2_alpha = d2(alpha)
+    c1_beta = c1(beta)
+    c2_beta = c2(beta)
+    d1_beta = d1(beta)
+    d2_beta = d2(beta)
+
+    # in angle
+    phi = theta + pi
+
+    # import pytest;pytest.set_trace()
+
+    # n_phi[i1, ..., id, j] := phi[i1, ..., id] * n[j]
+    n_phi = np.einsum('...,j->...j', phi, n)
+    cos_n_phi = cos(n_phi)
+    sin_n_phi = sin(n_phi)
+    del n_phi
+
+    result = dict()
+
+    if 'LL' in to_compute:
+        # Lopez-Sanchez eq (29)
+        A_n = 1j / (2 * alpha) * (
+            1 + (c2_alpha * c1_beta - d2_alpha * d1_beta) /
+            (c1_alpha * c1_beta - d1_alpha * d1_beta))
+
+        # Brind (2.9) without:
+        #   - u0, the amplitude of the incident wave,
+        #   - 'exp(i k r)'  which in Bristol LTI model is in the propagation term,
+        #   - '1/sqrt(r)' which in Bristol LTI model is the 2D beamspread term,
+        #
+        # This is consistent with Lopez-Sanchez eq (33).
+        #
+        # NB: exp(i pi /4) = sqrt(i)
+        #
+        # The line:
+        #   out = np.einsum('...j,j->...', n_phi, coeff)
+        # gives the result:
+        #   out[i1, ..., id] = sum_j (n_phi[i1, ..., id, j] * coeff[j])
+        r = (np.sqrt(2j / (pi * kl)) * alpha) * \
+            np.einsum('...j,j->...', cos_n_phi, epsilon * A_n)
+        result['LL'] = r.conjugate()
+
+    if 'LT' in to_compute:
+        # Lopez-Sanchez eq (30)
+        B_n = 2 * n / (pi * alpha) * ((n2 - beta2 / 2 - 1) /
+                       (c1_alpha * c1_beta - d1_alpha * d1_beta))
+
+        # Lopez-Sanchez (34)
+        # Warning: there is a minus sign in Brind (2.10). We trust LS here.
+        # See also comments for result['LL']
+        r = (np.sqrt(2j / (pi * kt)) * beta) * \
+            np.einsum('...j,j->...', sin_n_phi, epsilon * B_n)
+        result['LT'] = r.conjugate()
+
+    if 'TL' in to_compute:
+        # Lopez-Sanchez eq (41)
+        A_n = 2 * n / (pi * beta) * (n2 - beta2 / 2 - 1) / (
+            c1_alpha * c1_beta - d1_alpha * d1_beta)
+
+        # Lopez-Sanchez eq (39)
+        # See also comments for result['LL']
+        r = (np.sqrt(2j / (pi * kl)) * alpha) * \
+            np.einsum('...j,j->...', sin_n_phi, epsilon * A_n)
+        result['TL'] = r.conjugate()
+
+    if 'TT' in to_compute:
+        # Lopez-Sanchez eq (42)
+        B_n = 1j / (2 * beta) * (1 + (c2_beta * c1_alpha - d2_beta * d1_alpha) /
+                                 (c1_alpha * c1_beta - d1_alpha * d1_beta))
+
+        # Lopez-Sanchez eq (40)
+        # See also comments for result['LL']
+        r = (np.sqrt(2j / (pi * kt)) * beta) * \
+            np.einsum('...j,j->...', cos_n_phi, epsilon * B_n)
+        result['TT'] = r.conjugate()
+
+    return result
+
+
+# S_LL = 1 / pi * exp(i * pi / 4) * sum(ones(size(theta)) * (epsilon * alpha * A_n) * cos((theta + phi) * n), 2);
+# S_LS = -1 / pi * exp(i * pi / 4) * sum(ones(size(theta)) * (epsilon * beta * B_n) * sin((theta + phi) * n), 2);
 
 
 def make_timevect(num, step, start=0., dtype=None):

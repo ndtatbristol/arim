@@ -363,7 +363,7 @@ def test_solid_t_fluid_complex():
 
     inc_energy = 0.5 * pres_i ** 2 / (rho_solid * c_t) * area_t
     energy_trans = 0.5 * (np.abs(transmission) * pres_i) ** 2 / (
-    rho_fluid * c_fluid) * area_fluid
+        rho_fluid * c_fluid) * area_fluid
     energy_l = 0.5 * (np.abs(reflection_l) * pres_i) ** 2 / (rho_solid * c_l) * area_l
     energy_t = 0.5 * (np.abs(reflection_t) * pres_i) ** 2 / (rho_solid * c_t) * area_t
 
@@ -461,6 +461,121 @@ def test_stokes_relation():
 
     np.testing.assert_allclose(transmission_l_sf_stokes, transmission_l_sf)
     np.testing.assert_allclose(transmission_t_sf_stokes, transmission_t_sf)
+
+
+def test_elastic_scattering_2d_cylinder():
+    theta = np.array(
+        [-3.141592653589793, -2.722713633111154, -2.303834612632515, -1.884955592153876,
+         -1.466076571675237, -1.047197551196598, -0.628318530717959, -0.209439510239319,
+         0.209439510239319, 0.628318530717959, 1.047197551196597, 1.466076571675236,
+         1.884955592153876, 2.303834612632516, 2.722713633111154, ])
+    matlab_res = dict()
+    matlab_res['LL'] = np.array([
+        -0.206384032591909 + 0.336645038756022j, -0.194171819277630 + 0.313226502544485j,
+        -0.155687913654758 + 0.264243478643578j, -0.090375683177214 + 0.226391506237526j,
+        -0.005253862284530 + 0.211028560232004j, 0.085889202419455 + 0.204053854945626j,
+        0.165030960663520 + 0.193967940239943j, 0.212013086087838 + 0.184664953622806j,
+        0.212013086087838 + 0.184664953622806j, 0.165030960663520 + 0.193967940239943j,
+        0.085889202419455 + 0.204053854945626j, -0.005253862284530 + 0.211028560232004j,
+        -0.090375683177214 + 0.226391506237526j, -0.155687913654758 + 0.264243478643578j,
+        -0.194171819277630 + 0.313226502544484j,
+    ])
+    matlab_res['LT'] = np.array([
+        -0.000000000000000 + 0.000000000000000j, 0.173514558396338 - 0.235915394468874j,
+        0.363162600270786 - 0.165777746007565j, 0.503786047970495 + 0.061137988770260j,
+        0.546299366197900 + 0.133217223565162j, 0.506680725919996 + 0.029760392507310j,
+        0.380878711540161 - 0.059504104563334j, 0.145732609209624 - 0.037889115351498j,
+        -0.145732609209624 + 0.037889115351498j, -0.380878711540162 + 0.059504104563334j,
+        -0.506680725919996 - 0.029760392507310j, -0.546299366197900 - 0.133217223565162j,
+        -0.503786047970495 - 0.061137988770261j, -0.363162600270786 + 0.165777746007565j,
+        -0.173514558396338 + 0.235915394468874j,
+    ])
+    matlab_res['TL'] = np.array([
+        0.000000000000000 - 0.000000000000000j, -0.043378639599085 + 0.058978848617218j,
+        -0.090790650067696 + 0.041444436501891j, -0.125946511992624 - 0.015284497192565j,
+        -0.136574841549475 - 0.033304305891291j, -0.126670181479999 - 0.007440098126828j,
+        -0.095219677885040 + 0.014876026140834j, -0.036433152302406 + 0.009472278837875j,
+        0.036433152302406 - 0.009472278837875j, 0.095219677885040 - 0.014876026140834j,
+        0.126670181479999 + 0.007440098126828j, 0.136574841549475 + 0.033304305891291j,
+        0.125946511992624 + 0.015284497192565j, 0.090790650067697 - 0.041444436501891j,
+        0.043378639599085 - 0.058978848617218j,
+    ])
+    matlab_res['TT'] = np.array([
+        -0.262017703125609 + 0.771353787922999j, -0.376441609988753 + 0.188374651320542j,
+        -0.429903377994878 - 0.562524535327520j, -0.243229145424068 - 0.367845549589069j,
+        -0.126223795958403 + 0.187399980358998j, -0.136416167137459 + 0.230680597518463j,
+        -0.019016110619602 - 0.071187589718864j, 0.181910208019545 - 0.257602560262746j,
+        0.181910208019545 - 0.257602560262746j, -0.019016110619602 - 0.071187589718863j,
+        -0.136416167137459 + 0.230680597518463j, -0.126223795958403 + 0.187399980358999j,
+        -0.243229145424068 - 0.367845549589067j, -0.429903377994878 - 0.562524535327520j,
+        -0.376441609988753 + 0.188374651320541j,
+    ])
+    freq = 2.e6
+    v_l = 6000
+    v_t = 3000
+    hole_radius = 5e-4
+    lambda_l = v_l / freq
+    lambda_t = v_t / freq
+
+    result = ut.elastic_scattering_2d_cylinder(theta, hole_radius, lambda_l, lambda_t)
+
+    # Matlab NDT library uses a different scaling than in Lopez-Sanchez et al. paper
+    correction = dict()
+    correction['LL'] = np.sqrt(lambda_l)
+    correction['LT'] = - np.sqrt(lambda_t)
+    correction['TL'] = np.sqrt(lambda_l)
+    correction['TT'] = np.sqrt(lambda_t)
+
+    assert len(result) == 4
+    assert result['LL'].shape == theta.shape
+    assert result['LT'].shape == theta.shape
+    assert result['TL'].shape == theta.shape
+    assert result['TT'].shape == theta.shape
+
+    corr_matlab_res = {key: (correction[key] * val).conjugate()
+                       for key, val in matlab_res.items()}
+
+    # thetadeg = np.rad2deg(theta)
+    # import matplotlib.pyplot as plt
+    # for key in corr_matlab_res:
+    #     fig, ax = plt.subplots()
+    #     ax.plot(thetadeg, np.abs(result[key]), label='ours')
+    #     ax.plot(thetadeg, np.abs(corr_matlab_res[key]), '--', label='matlab')
+    #     ax.legend()
+    #     ax.set_title('test_elastic_scattering_2d_cylinder - ' + key)
+    #     plt.show()
+
+    args = dict(rtol=1e-5)
+    np.testing.assert_allclose(result['LL'], corr_matlab_res['LL'], **args)
+    np.testing.assert_allclose(result['LT'], corr_matlab_res['LT'], **args)
+    np.testing.assert_allclose(result['TL'], corr_matlab_res['TL'], **args)
+    np.testing.assert_allclose(result['TT'], corr_matlab_res['TT'], **args)
+
+
+def test_elastic_scattering_2d_cylinder2():
+    shape = (4, 5, 7)
+    theta = np.random.uniform(low=-np.pi, high=np.pi, size=shape)
+
+    freq = 2.e6
+    v_l = 6000
+    v_t = 3000
+    hole_radius = 5e-4
+    lambda_l = v_l / freq
+    lambda_t = v_t / freq
+
+    result = ut.elastic_scattering_2d_cylinder(theta, hole_radius, lambda_l, lambda_t)
+
+    assert set(result.keys()) == {'LL', 'LT', 'TL', 'TT'}
+    for key, val in result.items():
+        assert val.shape == shape
+
+    to_compute = {'LL', 'TL'}
+    result2 = ut.elastic_scattering_2d_cylinder(theta, hole_radius, lambda_l, lambda_t,
+                                                to_compute=to_compute)
+    assert set(result2.keys()) == to_compute
+    for key, val in result2.items():
+        assert val.shape == shape
+        assert np.allclose(val, result[key])
 
 
 def test_make_timevect():
