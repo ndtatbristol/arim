@@ -151,19 +151,38 @@ def test_wrap_phase():
     np.testing.assert_allclose(ut.wrap_phase(unwrapped), wrapped)
 
 
-def test_directivity_directivity_finite_width_2d():
+def test_directivity_2d_rectangular_in_fluid():
     theta = 0.
     element_width = 1e-3
     wavelength = 0.5e-3
-    directivity = ut.directivity_finite_width_2d(theta, element_width, wavelength)
+    directivity = ut.directivity_2d_rectangular_in_fluid(theta, element_width, wavelength)
 
     assert np.isclose(directivity, 1.0)
 
     # From the NDT library (2016/03/22):
     # >>> fn_calc_directivity_main(0.7, 1., 0.3, 'wooh')
     matlab_res = 0.931080327325574
-    assert np.isclose(ut.directivity_finite_width_2d(0.3, 0.7, 1.),
+    assert np.isclose(ut.directivity_2d_rectangular_in_fluid(0.3, 0.7, 1.),
                       0.931080327325574)
+
+
+def test_radiation_in_fluid():
+    # water:
+    v = 1480.
+    impedance = v * 1000.
+
+    freq = 2e6
+    wavelength = freq / v
+
+    source_radius = 0.2e-3
+    rad = ut.radiation_2d_cylinder_in_fluid(source_radius, wavelength, impedance)
+    assert isinstance(rad, complex)
+
+    theta = np.linspace(-np.pi, np.pi, 50)
+    rad = ut.radiation_2d_rectangular_in_fluid(theta, source_radius * 2, wavelength,
+                                               impedance)
+    assert rad.shape == theta.shape
+    assert rad.dtype.kind == 'c', 'datatype is not complex'
 
 
 def test_fluid_solid_real():

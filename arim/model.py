@@ -14,8 +14,9 @@ import logging
 import numpy as np
 
 from . import core as c
+from . import ut
 from .ut import snell_angles, fluid_solid, solid_l_fluid, solid_t_fluid, \
-    directivity_finite_width_2d
+    directivity_2d_rectangular_in_fluid
 
 # for backward compatiblity:
 from .path import RayGeometry
@@ -23,9 +24,32 @@ from .path import RayGeometry
 logger = logging.getLogger(__name__)
 
 
+def radiation_2d_rectangular_in_fluid_for_path(ray_geometry, element_width, wavelength,
+                                               impedance):
+    """
+    Wrapper for :func:`radiation_2d_rectangular_in_fluid` that uses
+    a :class:`RayGeometry` object.
+
+
+    Parameters
+    ----------
+    ray_geometry : RayGeometry
+    element_width
+    wavelength
+    impedance
+
+    Returns
+    -------
+
+    """
+    return ut.radiation_2d_rectangular_in_fluid(ray_geometry.conventional_out_angle(0),
+                                                element_width, wavelength, impedance)
+
+
 def directivity_finite_width_2d_for_path(ray_geometry, element_width, wavelength):
     """
-    Wrapper for :func:`directivity_finite_width_2d` that uses a :class:`RayGeometry` object.
+    Wrapper for :func:`directivity_2d_rectangular_in_fluid` that uses a
+    :class:`RayGeometry` object.
 
     Parameters
     ----------
@@ -38,8 +62,8 @@ def directivity_finite_width_2d_for_path(ray_geometry, element_width, wavelength
     directivity : ndarray
         Signed directivity for each angle.
     """
-    return directivity_finite_width_2d(ray_geometry.conventional_out_angle(0),
-                                       element_width, wavelength)
+    return directivity_2d_rectangular_in_fluid(ray_geometry.conventional_out_angle(0),
+                                               element_width, wavelength)
 
 
 def transmission_at_interface(interface_kind, material_inc, material_out, mode_inc,

@@ -205,7 +205,7 @@ def instantaneous_phase_shift(analytic_sig, time_vect, carrier_frequency):
     return phase
 
 
-def directivity_finite_width_2d(theta, element_width, wavelength):
+def directivity_2d_rectangular_in_fluid(theta, element_width, wavelength):
     """
     Returns the directivity of an element based on the integration of uniformally radiating sources
     along a straight line in 2D.
@@ -248,6 +248,10 @@ def directivity_finite_width_2d(theta, element_width, wavelength):
     ..  [WO] Wooh, Shi-Chang, and Yijun Shi. 1999. ‘Three-Dimensional Beam Directivity of Phase-Steered Ultrasound’.
              The Journal of the Acoustical Society of America 105 (6): 3275–82. doi:10.1121/1.424655.
 
+    See Also
+    --------
+    :func:`transmission_2d_rectangular_in_fluid`
+
     """
     if element_width < 0:
         raise ValueError('Negative width')
@@ -257,6 +261,78 @@ def directivity_finite_width_2d(theta, element_width, wavelength):
     # /!\ numpy.sinc defines sinc(x) := sin(pi * x)/(pi * x)
     x = element_width * np.sin(theta) / wavelength
     return np.sinc(x)
+
+
+# backward compatibility
+directivity_finite_width_2d = directivity_2d_rectangular_in_fluid
+
+
+def radiation_2d_rectangular_in_fluid(theta, element_width, wavelength, impedance):
+    """
+    Piston model.
+
+    Field is::
+
+        p(r, theta, t) = V0(omega) * P(theta) * exp(i omega t - k r) / sqrt(r)
+
+    where:
+        - V0 is the (uniform) velocity on the piston
+        - P(theta) is the output of the current function,
+
+    Reference: Schmerr, Fundamentals of ultrasonic phased array, eq (2.38)
+
+    Parameters
+    ----------
+    theta : ndarray
+    element_width
+    wavelength
+    impedance
+
+    Returns
+    -------
+    radiation : ndarray
+
+
+    """
+    directivity = directivity_2d_rectangular_in_fluid(theta, element_width, wavelength)
+
+    # wavenumber:
+    k = 2 * np.pi / wavelength
+
+    r = np.sqrt(2j / (np.pi * k)) * k * (element_width / 2.) * directivity * impedance
+    return r
+
+
+def radiation_2d_cylinder_in_fluid(source_radius, wavelength, impedance):
+    """
+    Radiation term in far field for a cylinder radiating uniform in a fluid.
+
+    The field generated is::
+
+        p(r, t) = V0(omega) * P * exp(i omega t - k r) / sqrt(r)
+
+    where:
+        - V0 is the (uniform) velocity on the piston
+        - P is the output of the current function
+
+    Reference: Theoretical Acoustics, Philip M. Morse & K. Uno Ingard, equation 7.3.3
+
+    Parameters
+    ----------
+    source_radius : float
+    wavelength : float
+    impedance : float
+
+    Returns
+    -------
+    transmission_term : complex
+
+    """
+    # wavenumber:
+    k = 2 * np.pi / wavelength
+
+    r = np.sqrt(2j / (np.pi * k)) * k * source_radius * impedance
+    return r
 
 
 def snell_angles(incidents_angles, c_incident, c_refracted):
@@ -638,7 +714,7 @@ def elastic_scattering_2d_cylinder(theta, radius, longitudinal_wavelength,
     if 'LT' in to_compute:
         # Lopez-Sanchez eq (30)
         B_n = 2 * n / (pi * alpha) * ((n2 - beta2 / 2 - 1) /
-                       (c1_alpha * c1_beta - d1_alpha * d1_beta))
+                                      (c1_alpha * c1_beta - d1_alpha * d1_beta))
 
         # Lopez-Sanchez (34)
         # Warning: there is a minus sign in Brind (2.10). We trust LS here.

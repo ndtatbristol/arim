@@ -16,7 +16,11 @@ References: [KK]_ and [Schmerr]_.
 
 *Example:*
 
-.. literalinclude:: ../../../examples/transmission_coefficients.py
+.. literalinclude:: ../../../examples/transmission_coefficients/solid_to_liquid.py
+   :language: python
+   :linenos:
+
+.. literalinclude:: ../../../examples/transmission_coefficients/liquid_to_solid.py
    :language: python
    :linenos:
 
