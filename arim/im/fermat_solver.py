@@ -478,7 +478,11 @@ class FermatPath(tuple):
         """
         Returns all the Points objects in Path as a tuple.
         """
-        return tuple(obj for (i, obj) in enumerate(self) if i % 2 == 0)
+        return tuple(self[0::2])
+
+    @property
+    def velocities(self):
+        return tuple(self[1::2])
 
     @property
     def num_points_sets(self):

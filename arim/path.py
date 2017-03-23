@@ -385,8 +385,10 @@ def _cache_ray_geometry(user_func):
 
 class RayGeometry:
     """
-    RayGeometry uses an internal cache during the computation. The cache has two levels:
-    intermediate results and final results.
+    RayGeometry computes the leg sizes and various angles in rays.
+
+    RayGeometry uses an internal cache during the computation which reduces the
+    computational time. The cache has two levels: intermediate results and final results.
 
     """
 

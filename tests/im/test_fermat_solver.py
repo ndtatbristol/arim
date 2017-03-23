@@ -45,6 +45,8 @@ def test_fermat_path():
     assert tail == t.FermatPath(('C', 3.0, 'D'))
 
     assert tuple(s1.points) == ('frontwall', 'backwall')
+    assert s1.velocities == (1.234, )
+    assert s3.velocities == (1.0, 2.0, 3.0)
 
     assert s1.num_points_sets == 2
     assert s12.num_points_sets == 3
