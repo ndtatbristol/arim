@@ -355,9 +355,11 @@ def _fluid_solid_n(alpha_fluid, alpha_l, alpha_t, rho_fluid, rho_solid, c_fluid,
     """
     Coefficient N defined by Krautkrämer in equation (A8).
     """
-    N = (c_t / c_l) ** 2 * sin(2 * alpha_l) * sin(2 * alpha_t) \
-        + cos(2 * alpha_t) ** 2 \
-        + rho_fluid * c_fluid / (rho_solid * c_l) * cos(alpha_l) / cos(alpha_fluid)
+    ct_cl2 = (c_t * c_t) / (c_l * c_l)
+    cos_2_alpha_t = cos(2 * alpha_t)
+    N = (ct_cl2 * sin(2 * alpha_l) * sin(2 * alpha_t)
+         + cos_2_alpha_t * cos_2_alpha_t
+         + rho_fluid * c_fluid / (rho_solid * c_l) * cos(alpha_l) / cos(alpha_fluid))
     return N
 
 
@@ -418,16 +420,21 @@ def fluid_solid(alpha_fluid, rho_fluid, rho_solid, c_fluid, c_l, c_t, alpha_l=No
                        c_t)
 
     # Eq A.7
-    reflection = ((c_t / c_l) ** 2 * sin(2 * alpha_l) * sin(2 * alpha_t) \
-                  + cos(2 * alpha_t) ** 2 \
-                  - (rho_fluid * c_fluid * cos(alpha_l)) / (
-                      rho_solid * c_l * cos(alpha_fluid))) / N
+    ct_cl2 = (c_t * c_t) / (c_l * c_l)
+    cos_2_alpha_t = cos(2 * alpha_t)
+
+    reflection = (
+                     ct_cl2 * sin(2 * alpha_l) * sin(2 * alpha_t)
+                     + cos_2_alpha_t * cos_2_alpha_t
+                     - (rho_fluid * c_fluid * cos(alpha_l)) /
+                     (rho_solid * c_l * cos(alpha_fluid))
+                 ) / N
 
     # Eq A.8
-    transmission_l = 2. * cos(2 * alpha_t) / N
+    transmission_l = 2. * cos_2_alpha_t / N
 
     # Eq A.9
-    transmission_t = -2. * (c_t / c_l) ** 2 * sin(2 * alpha_l) / N
+    transmission_t = -2. * ct_cl2 * sin(2 * alpha_l) / N
 
     return reflection, transmission_l, transmission_t
 
@@ -487,13 +494,15 @@ def solid_l_fluid(alpha_l, rho_fluid, rho_solid, c_fluid, c_l, c_t, alpha_fluid=
                        c_t)
 
     # Eq A.10
-    reflection_l = ((c_t / c_l) ** 2 * sin(2 * alpha_l) * sin(2 * alpha_t) - cos(
-        2 * alpha_t) ** 2 \
+    ct_cl2 = (c_t * c_t) / (c_l * c_l)
+    cos_2_alpha_t = cos(2 * alpha_t)
+    reflection_l = (ct_cl2 * sin(2 * alpha_l) * sin(2 * alpha_t)
+                    - cos_2_alpha_t * cos_2_alpha_t
                     + rho_fluid * c_fluid / (rho_solid * c_l) * cos(alpha_l) / cos(
         alpha_fluid)) / N
 
     # Eq A.11
-    reflection_t = (2 * (c_t / c_l) ** 2 * sin(2 * alpha_l) * cos(2 * alpha_t)) / N
+    reflection_t = (2 * ct_cl2 * sin(2 * alpha_l) * cos(2 * alpha_t)) / N
 
     # Eq A.12
     transmission = 2 * rho_fluid * c_fluid * cos(alpha_l) * cos(2 * alpha_t) / (
@@ -559,10 +568,12 @@ def solid_t_fluid(alpha_t, rho_fluid, rho_solid, c_fluid, c_l, c_t, alpha_fluid=
     reflection_l = -sin(4 * alpha_t) / N
 
     # Eq A.13
-    reflection_t = ((c_t / c_l) ** 2 * sin(2 * alpha_l) * sin(2 * alpha_t) - cos(
-        2 * alpha_t) ** 2 \
-                    - rho_fluid * c_fluid / (rho_solid * c_l) * cos(alpha_l) / cos(
-        alpha_fluid)) / N
+    ct_cl2 = (c_t * c_t) / (c_l * c_l)
+    cos_2_alpha_t = cos(2 * alpha_t)
+    reflection_t = (ct_cl2 * sin(2 * alpha_l) * sin(2 * alpha_t)
+                    - cos_2_alpha_t * cos_2_alpha_t
+                    - rho_fluid * c_fluid / (rho_solid * c_l)
+                    * cos(alpha_l) / cos(alpha_fluid)) / N
 
     # Eq A.15
     transmission = 2 * rho_fluid * c_fluid * cos(alpha_l) * sin(2 * alpha_t) / (
