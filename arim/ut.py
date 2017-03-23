@@ -245,8 +245,8 @@ def directivity_2d_rectangular_in_fluid(theta, element_width, wavelength):
     References
     ----------
 
-    ..  [WO] Wooh, Shi-Chang, and Yijun Shi. 1999. ‘Three-Dimensional Beam Directivity of Phase-Steered Ultrasound’.
-             The Journal of the Acoustical Society of America 105 (6): 3275–82. doi:10.1121/1.424655.
+    Wooh, Shi-Chang, and Yijun Shi. 1999. ‘Three-Dimensional Beam Directivity of Phase-Steered Ultrasound’.
+        The Journal of the Acoustical Society of America 105 (6): 3275–82. doi:10.1121/1.424655.
 
     See Also
     --------

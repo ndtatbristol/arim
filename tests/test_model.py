@@ -274,14 +274,12 @@ def test_ray_tracing():
         np.testing.assert_allclose(first_leg_size[0][0], 10e-3, rtol=1e-5)
 
 
-def test_beamspread_direct():
+def test_beamspread_2d_direct():
     context = make_context()
     block = context['block']
     """:type : arim.Material"""
     couplant = context['couplant']
     """:type : arim.Material"""
-    paths = context['paths']
-    """:type : dict[str, arim.Path]"""
     ray_geometry_dict = context['ray_geometry_dict']
     """:type : dict[str, arim.path.RayGeometry]"""
     frontwall_points = context['frontwall_points']
@@ -301,10 +299,12 @@ def test_beamspread_direct():
         'TT': array([[0.09358452, 0.0935845]]),
     }
     beamspread = dict()
-    for pathname, path in paths.items():
-        ray_geometry = ray_geometry_dict[pathname]
-        beamspread[pathname] = arim.model.beamspread_for_path_snell(path, ray_geometry)
+    for pathname, ray_geometry in ray_geometry_dict.items():
+        beamspread[pathname] = arim.model.beamspread_2d_for_path(ray_geometry)
         np.testing.assert_allclose(beamspread[pathname], expected_beamspread[pathname])
+        # Uncomment the following line to generate hardcoded-values:
+        # (use -s flag in pytest to show output)
+        # print("'{}': {},".format(pathname, repr(beamspread[pathname])))
 
     # For the case L - scat 0:
     first_leg = 10e-3
