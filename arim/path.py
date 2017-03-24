@@ -406,6 +406,9 @@ class RayGeometry:
         self.interfaces = interfaces
         self.rays = rays
 
+        assert rays.fermat_path.points == tuple(i.points for i in interfaces), \
+            'Inconsistent rays and interfaces'
+
         # self.legs = [] * path.numlegs
         # self.incoming_legs = [None] + [] * path.numlegs
         # self.outgoing_legs = [] * (path.numlegs - 1) + [None]

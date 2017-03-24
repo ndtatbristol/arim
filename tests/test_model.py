@@ -37,7 +37,7 @@ def make_context():
         = arim.path.points_1d_wall_z(numpoints=1000, xmin=-5.e-3, xmax=20.e-3,
                                      z=0., name='Frontwall')
     backwall_points, backwall_orientations = \
-        arim.path.points_1d_wall_z(numpoints=1000, xmin=-5.e-3, xmax=50.e-3, z=30 - 3,
+        arim.path.points_1d_wall_z(numpoints=1000, xmin=-5.e-3, xmax=50.e-3, z=30.e-3,
                                    name='Backwall')
 
     scatterer_points = arim.Points([[0., 0., 20e-3], [50e-3, 0., 20e-3]],
@@ -61,18 +61,18 @@ def make_context():
     expected_ray_indices = {
         'L': [[[200, 288]]],
         'T': [[[200, 391]]],
-        'LL': [[[200, 200]], [[91, 545]]],
-        'LT': [[[200, 200]], [[91, 698]]],
-        'TL': [[[200, 200]], [[91, 392]]],
-        'TT': [[[200, 200]], [[91, 545]]],
+        'LL': [[[200, 273]], [[91, 780]]],
+        'LT': [[[200, 278]], [[91, 918]]],
+        'TL': [[[200, 291]], [[91, 424]]],
+        'TT': [[[200, 353]], [[91, 789]]],
     }
     expected_ray_times = {
-        'L': [[9.921314664158826e-06, 1.5116980035762513e-05]],
-        'T': [[1.314653416095097e-05, 2.3286238145058415e-05]],
-        'LL': [[0.008547895998109739, 0.00854789966141407]],
-        'LT': [[0.012898716963047152, 0.01289872186234908]],
-        'TL': [[0.012901942182442729, 0.012901947082967543]],
-        'TT': [[0.01725276314738014, 0.01725277054421189]],
+        'L': array([[9.92131466e-06, 1.51169800e-05]]),
+        'T': array([[1.31465342e-05, 2.32862381e-05]]),
+        'LL': array([[1.30858724e-05, 1.67760353e-05]]),
+        'LT': array([[1.46984829e-05, 1.87550216e-05]]),
+        'TL': array([[1.79237015e-05, 2.30552458e-05]]),
+        'TT': array([[1.95363121e-05, 2.67521168e-05]]),
     }
     for pathname, path in paths.items():
         rays = arim.im.Rays(np.asarray(expected_ray_times[pathname]),
@@ -80,9 +80,9 @@ def make_context():
                             path.to_fermat_path())
         path.rays = rays
 
-    # ray tracing
-    ray_geometry_dict = OrderedDict([(k, arim.model.RayGeometry.from_path(v))
-                                     for (k, v) in paths.items()])
+    # Ray geometry
+    ray_geometry_dict = OrderedDict((k, arim.model.RayGeometry.from_path(v))
+                                    for (k, v) in paths.items())
 
     context = dict()
     context['block'] = block
@@ -169,66 +169,72 @@ def test_ray_tracing():
     interfaces = context['interfaces']
     """:type : list[arim.Interface]"""
     paths = context['paths']
-    """:type : list[arim.Path]"""
+    """:type : dict[str, arim.Path]"""
     views = context['views']
     """:type : dict[str, arim.View]"""
     ray_geometry_dict = context['ray_geometry_dict']
     """:type : dict[str, arim.path.RayGeometry]"""
 
+    expected_rays = OrderedDict()
+
     # Actually perform ray-tracing:
-    for path in paths.values():
+    for pathname, path in paths.items():
+        expected_rays[path.name] = path.rays
         path.rays = None
     arim.im.ray_tracing(views.values())
 
     # check all intersection points (as indices)
-    expected_indices = {'L': [[[0, 0]], [[200, 288]], [[0, 1]]],
-                        'T': [[[0, 0]], [[200, 391]], [[0, 1]]],
-                        'LL': [[[0, 0]], [[200, 200]], [[91, 545]], [[0, 1]]],
-                        'LT': [[[0, 0]], [[200, 200]], [[91, 698]], [[0, 1]]],
-                        'TL': [[[0, 0]], [[200, 200]], [[91, 392]], [[0, 1]]],
-                        'TT': [[[0, 0]], [[200, 200]], [[91, 545]], [[0, 1]]], }
     for pathname, path in paths.items():
-        np.testing.assert_equal(path.rays.indices, expected_indices[pathname])
+        # print("'{}': {},".format(pathname, path.rays.interior_indices.tolist()))
+        np.testing.assert_equal(path.rays.indices, expected_rays[pathname].indices)
+
+    # check times (as indices)
+    for pathname, path in paths.items():
+        # print("'{}': {},".format(pathname, repr(path.rays.times)))
+        np.testing.assert_allclose(path.rays.times, expected_rays[pathname].times)
 
     tol = dict(atol=0., rtol=1e-5)
 
     # check intersection points on frontwall (as coordinates)
     expected_frontwall_points = {
-        'L': [[[5.00500501e-06, 0.00000000e+00, 0.00000000e+00],
-               [2.20720721e-03, 0.00000000e+00, 0.00000000e+00]]],
-        'T': [[[5.00500501e-06, 0.00000000e+00, 0.00000000e+00],
-               [4.78478478e-03, 0.00000000e+00, 0.00000000e+00]]],
-        'LL': [[[5.00500501e-06, 0.00000000e+00, 0.00000000e+00],
-                [5.00500501e-06, 0.00000000e+00, 0.00000000e+00]]],
-        'LT': [[[5.00500501e-06, 0.00000000e+00, 0.00000000e+00],
-                [5.00500501e-06, 0.00000000e+00, 0.00000000e+00]]],
-        'TL': [[[5.00500501e-06, 0.00000000e+00, 0.00000000e+00],
-                [5.00500501e-06, 0.00000000e+00, 0.00000000e+00]]],
-        'TT': [[[5.00500501e-06, 0.00000000e+00, 0.00000000e+00],
-                [5.00500501e-06, 0.00000000e+00, 0.00000000e+00]]], }
+        'L': array([[[5.00500501e-06, 0.00000000e+00, 0.00000000e+00],
+                     [2.20720721e-03, 0.00000000e+00, 0.00000000e+00]]]),
+        'T': array([[[5.00500501e-06, 0.00000000e+00, 0.00000000e+00],
+                     [4.78478478e-03, 0.00000000e+00, 0.00000000e+00]]]),
+        'LL': array([[[5.00500501e-06, 0.00000000e+00, 0.00000000e+00],
+                      [1.83183183e-03, 0.00000000e+00, 0.00000000e+00]]]),
+        'LT': array([[[5.00500501e-06, 0.00000000e+00, 0.00000000e+00],
+                      [1.95695696e-03, 0.00000000e+00, 0.00000000e+00]]]),
+        'TL': array([[[5.00500501e-06, 0.00000000e+00, 0.00000000e+00],
+                      [2.28228228e-03, 0.00000000e+00, 0.00000000e+00]]]),
+        'TT': array([[[5.00500501e-06, 0.00000000e+00, 0.00000000e+00],
+                      [3.83383383e-03, 0.00000000e+00, 0.00000000e+00]]]),
+    }
 
     for pathname, path in paths.items():
         idx = 1
         coords = interfaces[idx].points.coords.take(path.rays.indices[idx], axis=0)
+        # print("'{}': {},".format(pathname, repr(coords)))
         np.testing.assert_allclose(coords, expected_frontwall_points[pathname], **tol)
 
     # check intersection points on backwall (as coordinates)
     expected_backwall_points = {
         'L': None,
         'T': None,
-        'LL': [[[1.00100100e-05, 0.00000000e+00, 2.70000000e+01],
-                [2.50050050e-02, 0.00000000e+00, 2.70000000e+01]]],
-        'LT': [[[1.00100100e-05, 0.00000000e+00, 2.70000000e+01],
-                [3.34284284e-02, 0.00000000e+00, 2.70000000e+01]]],
-        'TL': [[[1.00100100e-05, 0.00000000e+00, 2.70000000e+01],
-                [1.65815816e-02, 0.00000000e+00, 2.70000000e+01]]],
-        'TT': [[[1.00100100e-05, 0.00000000e+00, 2.70000000e+01],
-                [2.50050050e-02, 0.00000000e+00, 2.70000000e+01]]]
+        'LL': array([[[1.00100100e-05, 0.00000000e+00, 3.00000000e-02],
+                      [3.79429429e-02, 0.00000000e+00, 3.00000000e-02]]]),
+        'LT': array([[[1.00100100e-05, 0.00000000e+00, 3.00000000e-02],
+                      [4.55405405e-02, 0.00000000e+00, 3.00000000e-02]]]),
+        'TL': array([[[1.00100100e-05, 0.00000000e+00, 3.00000000e-02],
+                      [1.83433433e-02, 0.00000000e+00, 3.00000000e-02]]]),
+        'TT': array([[[1.00100100e-05, 0.00000000e+00, 3.00000000e-02],
+                      [3.84384384e-02, 0.00000000e+00, 3.00000000e-02]]]),
     }
     for pathname, path in paths.items():
         if expected_backwall_points[pathname] is not None:
             idx = 2
             coords = interfaces[idx].points.coords.take(path.rays.indices[idx], axis=0)
+            # print("'{}': {},".format(pathname, repr(coords)))
             np.testing.assert_allclose(coords, expected_backwall_points[pathname], **tol)
 
     # check Snell-laws for frontwall
@@ -266,12 +272,19 @@ def test_ray_tracing():
         expected_refracted_angles = arim.ut.snell_angles(incident_angles, c_incident,
                                                          c_refracted)
         np.testing.assert_allclose(refracted_angles, expected_refracted_angles, rtol=0.,
-                                   atol=1e-3)
+                                   atol=1e-2)
 
     # check the leg sizes
     for pathname, ray_geometry in ray_geometry_dict.items():
         first_leg_size = ray_geometry.inc_leg_size(1)
+        second_leg_size = ray_geometry.inc_leg_size(2)
         np.testing.assert_allclose(first_leg_size[0][0], 10e-3, rtol=1e-5)
+        if pathname in {'L', 'T'}:
+            np.testing.assert_allclose(second_leg_size[0][0], 20e-3, rtol=1e-5)
+        else:
+            third_leg_size = ray_geometry.inc_leg_size(3)
+            np.testing.assert_allclose(second_leg_size[0][0], 30e-3, rtol=1e-5)
+            np.testing.assert_allclose(third_leg_size[0][0], 10e-3, rtol=1e-5)
 
 
 def test_beamspread_2d_direct():
@@ -282,21 +295,15 @@ def test_beamspread_2d_direct():
     """:type : arim.Material"""
     ray_geometry_dict = context['ray_geometry_dict']
     """:type : dict[str, arim.path.RayGeometry]"""
-    frontwall_points = context['frontwall_points']
-    frontwall_orientations = context['frontwall_orientations']
-    backwall_points = context['backwall_points']
-    backwall_orientations = context['backwall_orientations']
-    scatterer_points = context['scatterer_points']
-    scatterer_orientations = context['scatterer_orientations']
 
     # hardcoded results
     expected_beamspread = {
         'L': array([[3.2375215, 0.84817938]]),
         'T': array([[4.37280604, 1.38511721]]),
-        'LL': array([[0.06586218, 0.06586217]]),
-        'LT': array([[0.07616695, 0.07616695]]),
-        'TL': array([[0.07617325, 0.07617319]]),
-        'TT': array([[0.09358452, 0.0935845]]),
+        'LL': array([[2.33034458, 1.24259583]]),
+        'LT': array([[2.49293429, 1.19394661]]),
+        'TL': array([[2.85272935, 0.75913334]]),
+        'TT': array([[3.19555665, 1.8960812]]),
     }
     beamspread = dict()
     for pathname, ray_geometry in ray_geometry_dict.items():
@@ -306,7 +313,7 @@ def test_beamspread_2d_direct():
         # (use -s flag in pytest to show output)
         # print("'{}': {},".format(pathname, repr(beamspread[pathname])))
 
-    # For the case L - scat 0:
+    # Path L - scat 0:
     first_leg = 10e-3
     second_leg = 20e-3
     c1 = couplant.longitudinal_vel
@@ -314,6 +321,64 @@ def test_beamspread_2d_direct():
     beta = c1 / c2
     beamspread_L = np.sqrt(1 / (first_leg + second_leg / beta))
     np.testing.assert_allclose(beamspread['L'][0][0], beamspread_L, rtol=1e-5)
+
+    # Path LL - scat 0:
+    first_leg = 10e-3
+    second_leg = 30e-3
+    third_leg = 10.e-3
+    c1 = couplant.longitudinal_vel
+    c2 = block.longitudinal_vel
+    beta = c1 / c2
+    beamspread_LL = 1. / np.sqrt(((first_leg + second_leg / beta) *
+                                  (1. + third_leg / second_leg)))
+    np.testing.assert_allclose(beamspread['LL'][0][0], beamspread_LL, rtol=1e-5)
+
+
+def test_beamspread_2d_reverse():
+    context = make_context()
+    block = context['block']
+    """:type : arim.Material"""
+    couplant = context['couplant']
+    """:type : arim.Material"""
+    ray_geometry_dict = context['ray_geometry_dict']
+    """:type : dict[str, arim.path.RayGeometry]"""
+
+    # hardcoded results
+    expected_beamspread = {
+        'L': array([[6.69023357, 4.37716144]]),
+        'T': array([[6.35918872, 4.44926218]]),
+        'LL': array([[4.81558177, 3.95438967]]),
+        'LT': array([[3.62537617, 1.84938364]]),
+        'TL': array([[5.89506311, 5.04457277]]),
+        'TT': array([[4.64716424, 3.94081983]]),
+    }
+    beamspread = dict()
+    for pathname, ray_geometry in ray_geometry_dict.items():
+        beamspread[pathname] = arim.model.beamspread_2d_for_reversed_path(ray_geometry)
+        np.testing.assert_allclose(beamspread[pathname], expected_beamspread[pathname])
+        # Uncomment the following line to generate hardcoded-values:
+        # (use -s flag in pytest to show output)
+        # print("'{}': {},".format(pathname, repr(beamspread[pathname])))
+
+    # Reversed path L - scat 0:
+    first_leg = 20e-3
+    second_leg = 10e-3
+    c1 = block.longitudinal_vel
+    c2 = couplant.longitudinal_vel
+    beta = c1 / c2
+    beamspread_L = np.sqrt(1 / (first_leg + second_leg / beta))
+    np.testing.assert_allclose(beamspread['L'][0][0], beamspread_L, rtol=1e-5)
+
+    # Path LL - scat 0:
+    first_leg = 10e-3
+    second_leg = 30e-3
+    third_leg = 10.e-3
+    c1 = block.longitudinal_vel
+    c2 = couplant.longitudinal_vel
+    beta = c1 / c2
+    beamspread_LL = 1. / np.sqrt(((first_leg + second_leg) *
+                                  (1. + third_leg / (beta * second_leg))))
+    np.testing.assert_allclose(beamspread['LL'][0][0], beamspread_LL, rtol=1e-5)
 
 
 def test_transmission_reflection_direct():
@@ -327,10 +392,10 @@ def test_transmission_reflection_direct():
     expected_transrefl = {
         'L': array([[1.84037966 + 0.j, 2.24977557 + 0.j]]),
         'T': array([[-1.92953093e-03 + 0.j, -2.06170606e+00 + 0.76785004j]]),
-        'LL': array([[-2.18993843 + 0.j, -2.18994043 + 0.j]]),
-        'LT': array([[-3.65598421e-07 + 0.j, -2.44743435e-03 + 0.j]]),
-        'TL': array([[-1.31331720e-09 + 0.j, -4.36034322e-06 + 0.j]]),
-        'TT': array([[0.00192953 - 0.j, 0.00192954 - 0.j]]),
+        'LL': array([[-2.18993849 + 0.j, -5.11477179 + 0.j]]),
+        'LT': array([[-3.29842870e-04 + 0.j, -2.72427011e+00 + 0.j]]),
+        'TL': array([[-1.18487478e-06 + 0.j, -2.69978593e+00 + 0.j]]),
+        'TT': array([[1.92953113e-03 - 0.j, -2.31008884e+00 - 0.05936071j]]),
     }
     transrefl = dict()
     for pathname, path in paths.items():
@@ -339,6 +404,7 @@ def test_transmission_reflection_direct():
                                                                           ray_geometry)
         np.testing.assert_allclose(transrefl[pathname], expected_transrefl[pathname],
                                    rtol=0., atol=1e-6)
+        # print("'{}': {},".format(pathname, repr(transrefl[pathname])))
 
 
 def test_radiation_2d_rectangular_in_fluid():

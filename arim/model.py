@@ -376,25 +376,25 @@ def beamspread_2d_for_path(ray_geometry):
 
     refractive_indices = [None]
     velocities = ray_geometry.rays.fermat_path.velocities
-    for inc_velocity, out_velocity in zip(velocities, velocities[1:]):
+    for inc_velocity, out_velocity in zip(velocities[:-1], velocities[1:]):
         refractive_indices.append(inc_velocity / out_velocity)
     refractive_indices.append(None)
 
     numinterfaces = len(inc_angles_list)
     beamspread = None
-    for i in range(1, numinterfaces):
-        if i == 1:
-            # Leg size between the probe and the first interface
+    for i in range(0, numinterfaces - 1):
+        if i == 0:
+            # Between the probe and the first interface, beamspread of an unbounded medium.
             # res := 1/sqrt(leg_size)
             _tmp = np.sqrt(inc_leg_sizes_list[1])
             beamspread = np.reciprocal(_tmp, _tmp)
         else:
-            leg_sizes_before_last_interface = inc_leg_sizes_list[i - 1]
-            leg_sizes_after_last_interface = inc_leg_sizes_list[i]
+            r1 = inc_leg_sizes_list[i]
+            r2 = inc_leg_sizes_list[i + 1]
 
-            theta_inc = inc_angles_list[i - 1]
+            theta_inc = inc_angles_list[i]
 
-            alpha = refractive_indices[i - 1]
+            alpha = refractive_indices[i]
 
             sin_theta = np.sin(theta_inc)
             cos_theta = np.cos(theta_inc)
@@ -402,14 +402,57 @@ def beamspread_2d_for_path(ray_geometry):
                     / (alpha * cos_theta * cos_theta))
 
             # res = 1/sqrt(1 + leg_after / (beta * leg_before))
-            beamspread *= np.reciprocal(np.sqrt(
-                1. + leg_sizes_after_last_interface / (
-                    leg_sizes_before_last_interface * beta)))
+            beamspread *= np.reciprocal(np.sqrt(1. + r2 / (r1 * beta)))
+
+    return beamspread
+
+
+def beamspread_2d_for_reversed_path(ray_geometry):
+    inc_angles_list = [None] + [ray_geometry.conventional_inc_angle(i) for i in
+                                reversed(range(1, ray_geometry.numinterfaces))]
+    inc_leg_sizes_list = [None] + [ray_geometry.inc_leg_size(i) for i in
+                                   reversed(range(1, ray_geometry.numinterfaces))]
+    numinterfaces = len(inc_angles_list)
+
+    refractive_indices = [None]
+    velocities = ray_geometry.rays.fermat_path.velocities
+    for i in range(numinterfaces - 2, 0, -1):
+        refractive_indices.append(velocities[i] / velocities[i - 1])
+    refractive_indices.append(None)
+
+    beamspread = None
+    for i in range(0, numinterfaces - 1):
+        if i == 0:
+            # Between the scatterer and the first interface, beamspread of an
+            # unbounded medium.
+            # res := 1/sqrt(leg_size)
+            _tmp = np.sqrt(inc_leg_sizes_list[1])
+            beamspread = np.reciprocal(_tmp, _tmp)
+        else:
+            r1 = inc_leg_sizes_list[i]
+            r2 = inc_leg_sizes_list[i + 1]
+
+            theta_out = inc_angles_list[i + 1]
+
+            alpha = refractive_indices[i]
+
+            sin_theta = np.sin(theta_out)
+            cos_theta = np.cos(theta_out)
+            beta = ((alpha * cos_theta * cos_theta)
+                    / (1 - alpha * alpha * sin_theta * sin_theta))
+
+            # res = 1/sqrt(1 + leg_after / (beta * leg_before))
+            beamspread *= np.reciprocal(np.sqrt(1. + r2 / (r1 * beta)))
 
     return beamspread
 
 
 def beamspread_for_path(ray_geometry):
+    """
+    Deprecation warning
+    -------------------
+    Use :func:`beamspread_2d_for_path` instead.
+    """
     warnings.warn(DeprecationWarning('beamspread_for_path is deprecated and will be '
                                      'removed. Use beamspread_2d_for_path instead.'))
     return beamspread_2d_for_path(ray_geometry)
