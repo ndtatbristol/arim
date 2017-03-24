@@ -13,6 +13,7 @@ from arim.im import fermat_solver as t
 from arim.im import Rays
 from arim import Material
 
+
 def test_fermat_path():
     s1 = t.FermatPath(('frontwall', 1.234, 'backwall'))
     s1_bis = t.FermatPath(('frontwall', 1.234, 'backwall'))
@@ -45,7 +46,7 @@ def test_fermat_path():
     assert tail == t.FermatPath(('C', 3.0, 'D'))
 
     assert tuple(s1.points) == ('frontwall', 'backwall')
-    assert s1.velocities == (1.234, )
+    assert s1.velocities == (1.234,)
     assert s3.velocities == (1.0, 2.0, 3.0)
 
     assert s1.num_points_sets == 2
@@ -64,7 +65,8 @@ class TestRays4:
     def path(self):
         interfaces = [Points.from_xyz(np.random.rand(n),
                                       np.random.rand(n),
-                                      np.random.rand(n), 'A{}'.format(i)) for (i, n) in enumerate(self.numpoints)]
+                                      np.random.rand(n), 'A{}'.format(i)) for (i, n) in
+                      enumerate(self.numpoints)]
 
         path = t.FermatPath((interfaces[0], 1.0, interfaces[1],
                              2.0, interfaces[2], 3.0, interfaces[3]))
@@ -84,8 +86,7 @@ class TestRays4:
     def rays(self, path, interior_indices):
         n, m, p, q = self.numpoints
 
-        times = np.full((n, q), np.nan, dtype=np.double)
-
+        times = np.random.uniform(10., 20., size=(n, q))
         rays = Rays(times, interior_indices, path)
         assert np.all(interior_indices == rays.interior_indices)
         return rays
@@ -100,10 +101,10 @@ class TestRays4:
         assert indices.dtype == interior_indices.dtype
         assert indices.shape == (self.d, n, q)
 
-        assert np.all(indices[0, ...] == np.fromfunction(
-            lambda i, j: i, (n, q), dtype=dtype_indices))
-        assert np.all(indices[-1, ...] == np.fromfunction(lambda i,
-                                                                 j: j, (n, q), dtype=dtype_indices))
+        assert np.all(indices[0, ...] == np.fromfunction(lambda i, j: i, (n, q),
+                                                         dtype=dtype_indices))
+        assert np.all(indices[-1, ...] == np.fromfunction(lambda i, j: j, (n, q),
+                                                          dtype=dtype_indices))
 
         for k in range(self.d - 2):
             np.testing.assert_allclose(interior_indices[k, ...], indices[k + 1, ...])
@@ -112,7 +113,8 @@ class TestRays4:
         dtype_indices = interior_indices.dtype
         n, _, _, q = self.numpoints
         r = q + 1
-        indices_new_interface = (np.arange(n * r, dtype=dtype_indices) % q)[::-1].reshape((n, r))
+        indices_new_interface = (np.arange(n * r, dtype=dtype_indices) % q)[::-1].reshape(
+            (n, r))
         indices_new_interface = np.ascontiguousarray(indices_new_interface)
 
         expanded_indices = Rays.expand_rays(interior_indices, indices_new_interface)
@@ -146,6 +148,22 @@ class TestRays4:
         np.testing.assert_equal(rays_f.indices, rays.indices)
         np.testing.assert_almost_equal(rays_f.times, rays.times)
 
+    def test_reverse_rays(self, rays):
+        rev_rays = rays.reverse()
+
+        n, m, p, q = self.numpoints
+
+        assert rev_rays.times.shape == (q, n)
+        assert rev_rays.indices.shape == (self.d, q, n)
+
+        for i in range(n):
+            for j in range(m):
+                assert rays.times[i, j] == rev_rays.times[j, i]
+                for k in range(self.d):
+                    idx = rev_rays.indices[-k - 1, j, i]
+                    expected_idx = rays.indices[k, i, j]
+                    assert idx == expected_idx, 'err for i={}, j={}, k={}'.format(i, j, k)
+
 
 class TestRays2:
     """
@@ -158,7 +176,8 @@ class TestRays2:
     def path(self):
         interfaces = [Points.from_xyz(np.random.rand(n),
                                       np.random.rand(n),
-                                      np.random.rand(n), 'A{}'.format(i)) for (i, n) in enumerate(self.numpoints)]
+                                      np.random.rand(n), 'A{}'.format(i)) for (i, n) in
+                      enumerate(self.numpoints)]
 
         path = t.FermatPath((interfaces[0], 2.0, interfaces[1]))
         return path
@@ -167,7 +186,7 @@ class TestRays2:
     def rays(self, path, dtype_indices):
         """Test alternative constructor of Rays"""
         n, m = self.numpoints
-        times = np.full((n, m), np.nan, dtype=np.double)
+        times = np.random.uniform(10., 20., size=(n, m))
         rays = Rays.make_rays_two_interfaces(times, path, dtype_indices)
         return rays
 
@@ -175,14 +194,17 @@ class TestRays2:
         dtype_indices = rays.indices.dtype
         n, m = self.numpoints
         assert rays.indices.shape == (2, n, m)
-        assert np.all(rays.indices[0, ...] == np.fromfunction(lambda i, j: i, (n, m), dtype=dtype_indices))
-        assert np.all(rays.indices[1, ...] == np.fromfunction(lambda i, j: j, (n, m), dtype=dtype_indices))
+        assert np.all(rays.indices[0, ...] == np.fromfunction(lambda i, j: i, (n, m),
+                                                              dtype=dtype_indices))
+        assert np.all(rays.indices[1, ...] == np.fromfunction(lambda i, j: j, (n, m),
+                                                              dtype=dtype_indices))
 
     def test_expand_rays(self, rays):
         dtype_indices = rays.indices.dtype
         n, m = self.numpoints
         r = m + 1
-        indices_new_interface = (np.arange(n * r, dtype=dtype_indices) % m)[::-1].reshape((n, r))
+        indices_new_interface = (np.arange(n * r, dtype=dtype_indices) % m)[::-1].reshape(
+            (n, r))
         indices_new_interface = np.ascontiguousarray(indices_new_interface)
 
         expanded_indices = Rays.expand_rays(rays.interior_indices, indices_new_interface)
@@ -228,12 +250,15 @@ def test_fermat_solver():
     standoff = 11.1
     z = 66.6
     theta = np.deg2rad(30.)
-    interface_a = Points.from_xyz(x_n, standoff + x_n * np.sin(theta), np.full(n, z), 'Interface A')
+    interface_a = Points.from_xyz(x_n, standoff + x_n * np.sin(theta), np.full(n, z),
+                                  'Interface A')
     interface_b = Points.from_xyz(x_m, np.zeros(m), np.full(m, z), 'Interface B')
-    interface_c = Points.from_xyz(x_m, -(x_m - 5) ** 2 - 10., np.full(m, z), 'Interface C')
+    interface_c = Points.from_xyz(x_m, -(x_m - 5) ** 2 - 10., np.full(m, z),
+                                  'Interface C')
 
     path_1 = t.FermatPath((interface_a, v1, interface_b, v2, interface_c))
-    path_2 = t.FermatPath((interface_a, v1, interface_b, v3, interface_c, v4, interface_b))
+    path_2 = t.FermatPath(
+        (interface_a, v1, interface_b, v3, interface_c, v4, interface_b))
 
     # The test function must return a dictionary of Rays:
     solver = t.FermatSolver([path_1, path_2])
@@ -300,5 +325,6 @@ def test_fermat_solver():
 
             assert np.isclose(min_tof, rays_dict[path_2].times[i, j]), \
                 "Wrong time of flight for ray (start={}, end={}) in path 2 ".format(i, j)
-            assert (best_index_1, best_index_2) == tuple(rays_dict[path_2].indices[1:3, i, j]), \
+            assert (best_index_1, best_index_2) == tuple(
+                rays_dict[path_2].indices[1:3, i, j]), \
                 "Wrong indices for ray (start={}, end={}) in path 2 ".format(i, j)

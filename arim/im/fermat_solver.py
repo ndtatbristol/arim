@@ -403,6 +403,31 @@ class Rays:
             else:
                 yield ray_geometry.conventional_out_angle(i)
 
+    def reverse(self, order='f'):
+        """
+        Returns a new Rays object which corresponds to the reversed path.
+
+        Parameters
+        ----------
+        order : str
+            Order of the arrays 'times' and 'indices'. Default: 'f'
+
+        Returns
+        -------
+        reversed_rays : Rays
+
+        """
+        reversed_times = np.asarray(self.times.T, order=order)
+
+        # Input x of shape (d, n, m)
+        # Output y of shape(d, m, n) such as ``x[k, i, j] == y[d - k, j, i]``
+        reversed_indices = np.swapaxes(self.interior_indices, 1, 2)
+        reversed_indices = reversed_indices[::-1, ...]
+        reversed_indices = np.asarray(reversed_indices, order=order)
+
+        reversed_path = self.fermat_path.reverse()
+        return self.__class__(reversed_times, reversed_indices, reversed_path)
+
 
 class FermatPath(tuple):
     """
