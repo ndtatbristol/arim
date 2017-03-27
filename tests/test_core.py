@@ -231,7 +231,7 @@ def examination_object():
 @pytest.fixture(scope="module")
 def water():
     return c.Material(1400., density=1000., state_of_matter='liquid',
-                              metadata={'long_name': 'Water'})
+                      metadata={'long_name': 'Water'})
 
 
 @pytest.fixture(scope="module")
@@ -240,7 +240,7 @@ def aluminium():
     v_transverse = 3130.
 
     return c.Material(v_longi, v_transverse, density=2700., state_of_matter='solid',
-                              metadata={'long_name': 'Aluminium'})
+                      metadata={'long_name': 'Aluminium'})
 
 
 @pytest.fixture(scope='module')
@@ -316,7 +316,7 @@ class TestProbe:
 
         # I love my new API:
         probe = c.Probe(locations, frequency, dimensions, orientations, shapes,
-                                dead_elements, bandwidth, pcs=pcs)
+                        dead_elements, bandwidth, pcs=pcs)
 
         self.test_probe(probe)
         self.assert_probe_equal_in_gcs(probe, probe_bak)
@@ -337,10 +337,10 @@ class TestProbe:
         dead_elements = False
 
         probe = c.Probe.make_matrix_probe(pitch_x=1e-3, numx=10, pitch_y=np.nan, numy=1,
-                                                  frequency=1e6, shapes=shapes,
-                                                  orientations=orientations,
-                                                  dimensions=dimensions, bandwidth=0.5e6,
-                                                  dead_elements=dead_elements)
+                                          frequency=1e6, shapes=shapes,
+                                          orientations=orientations,
+                                          dimensions=dimensions, bandwidth=0.5e6,
+                                          dead_elements=dead_elements)
         self.test_probe(probe)
         self.assert_probe_equal_in_gcs(probe, probe_bak)
 
@@ -356,11 +356,11 @@ class TestProbe:
         shapes = np.array(numelements * [c.ElementShape.rectangular], dtype='O')
         dead_elements = np.zeros((numelements,), dtype=np.bool)
         probe = c.Probe.make_matrix_probe(pitch_x=1e-3, numx=numelements, pitch_y=np.nan,
-                                                  numy=1,
-                                                  frequency=1e6, shapes=shapes,
-                                                  orientations=orientations,
-                                                  dimensions=dimensions, bandwidth=0.5e6,
-                                                  dead_elements=dead_elements)
+                                          numy=1,
+                                          frequency=1e6, shapes=shapes,
+                                          orientations=orientations,
+                                          dimensions=dimensions, bandwidth=0.5e6,
+                                          dead_elements=dead_elements)
         return probe
 
     def test_move_probe(self):
@@ -487,10 +487,10 @@ def test_material():
     assert mat.metadata['short_name'] == 'test_material'
 
     mat = c.Material(1, 2, state_of_matter=c.StateMatter.liquid,
-                             metadata={'short_name': 'test_material'})
+                     metadata={'short_name': 'test_material'})
     assert mat.state_of_matter is c.StateMatter.liquid
     mat = c.Material(1, 2, state_of_matter='liquid',
-                             metadata={'short_name': 'test_material'})
+                     metadata={'short_name': 'test_material'})
     assert mat.state_of_matter is c.StateMatter.liquid
 
     # test method 'velocity':
@@ -503,6 +503,8 @@ def test_material():
 def test_mode():
     assert c.Mode.L is c.Mode.longitudinal
     assert c.Mode.T is c.Mode.transverse
+    assert c.Mode.L.reverse() is c.Mode.T
+    assert c.Mode.T.reverse() is c.Mode.L
 
 
 class TestInterface:
@@ -512,7 +514,7 @@ class TestInterface:
         orientations = g.Points(np.eye(3), 'coordinate system')
 
         interface = c.Interface(points, orientations, are_normals_on_inc_rays_side=None,
-                                        are_normals_on_out_rays_side=True)
+                                are_normals_on_out_rays_side=True)
 
         assert interface.points is points
         assert np.allclose(interface.orientations[np.newaxis, ...],
@@ -526,12 +528,12 @@ class TestInterface:
         orientations = g.Points(np.eye(3), 'coordinate system')
 
         interface = c.Interface(points, orientations, are_normals_on_inc_rays_side=True,
-                                        are_normals_on_out_rays_side=None)
+                                are_normals_on_out_rays_side=None)
 
         with pytest.raises(ValueError):
             c.Interface(points, orientations, are_normals_on_inc_rays_side=True,
-                                are_normals_on_out_rays_side=None,
-                                reflection_against=water)
+                        are_normals_on_out_rays_side=None,
+                        reflection_against=water)
 
         assert interface.points is points
         assert np.allclose(interface.orientations[np.newaxis, ...],
@@ -546,17 +548,17 @@ class TestInterface:
         orientations = g.Points(np.eye(3), 'coordinate system')
 
         interface = c.Interface(points, orientations,
-                                        transmission_reflection='transmission',
-                                        kind='fluid_solid',
-                                        are_normals_on_inc_rays_side=True,
-                                        are_normals_on_out_rays_side=None)
+                                transmission_reflection='transmission',
+                                kind='fluid_solid',
+                                are_normals_on_inc_rays_side=True,
+                                are_normals_on_out_rays_side=None)
 
         with pytest.raises(ValueError):
             c.Interface(points, orientations, transmission_reflection='transmission',
-                                kind='fluid_solid',
-                                are_normals_on_inc_rays_side=True,
-                                are_normals_on_out_rays_side=None,
-                                reflection_against=water)
+                        kind='fluid_solid',
+                        are_normals_on_inc_rays_side=True,
+                        are_normals_on_out_rays_side=None,
+                        reflection_against=water)
 
         assert interface.points is points
         assert np.allclose(interface.orientations[np.newaxis, ...],
@@ -571,17 +573,17 @@ class TestInterface:
         orientations = g.Points(np.eye(3), 'coordinate system')
 
         interface = c.Interface(points, orientations,
-                                        transmission_reflection='reflection', kind='fluid_solid',
-                                        are_normals_on_inc_rays_side=True,
-                                        are_normals_on_out_rays_side=None,
-                                        reflection_against=water)
+                                transmission_reflection='reflection', kind='fluid_solid',
+                                are_normals_on_inc_rays_side=True,
+                                are_normals_on_out_rays_side=None,
+                                reflection_against=water)
 
         with pytest.raises(ValueError):
             c.Interface(points, orientations, transmission_reflection='reflection',
-                                kind='fluid_solid',
-                                are_normals_on_inc_rays_side=True,
-                                are_normals_on_out_rays_side=None,
-                                reflection_against=None)
+                        kind='fluid_solid',
+                        are_normals_on_inc_rays_side=True,
+                        are_normals_on_out_rays_side=None,
+                        reflection_against=None)
 
         assert interface.points is points
         assert np.allclose(interface.orientations[np.newaxis, ...],
@@ -607,3 +609,8 @@ class TestPath:
 
         assert path.velocities == (
             water.longitudinal_vel, aluminium.longitudinal_vel, aluminium.transverse_vel)
+
+
+def test_interface_kind():
+    a = c.InterfaceKind.fluid_solid
+    assert a.reverse() is c.InterfaceKind.solid_fluid

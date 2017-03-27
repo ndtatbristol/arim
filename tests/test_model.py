@@ -342,6 +342,13 @@ def test_beamspread_2d_reverse():
     """:type : arim.Material"""
     ray_geometry_dict = context['ray_geometry_dict']
     """:type : dict[str, arim.path.RayGeometry]"""
+    paths = context['paths']
+    """:type : dict[str, arim.Path]"""
+
+    rev_paths = OrderedDict([(key, path.reverse()) for (key, path) in
+                             paths.items()])
+    rev_ray_geometry_dict = OrderedDict((k, arim.model.RayGeometry.from_path(v))
+                                    for (k, v) in rev_paths.items())
 
     # hardcoded results
     expected_beamspread = {
@@ -359,6 +366,14 @@ def test_beamspread_2d_reverse():
         # Uncomment the following line to generate hardcoded-values:
         # (use -s flag in pytest to show output)
         # print("'{}': {},".format(pathname, repr(beamspread[pathname])))
+
+    # Direct beamspread of reversed paths should give the same results as reversed
+    # beamspread of direct paths.
+    for pathname, ray_geometry in rev_ray_geometry_dict.items():
+        rev_beamspread = arim.model.beamspread_2d_for_path(ray_geometry).T
+        # this is a fairly tolerant comparison but it works.
+        np.testing.assert_allclose(rev_beamspread, expected_beamspread[pathname],
+                                   rtol=1e-2)
 
     # Reversed path L - scat 0:
     first_leg = 20e-3

@@ -549,12 +549,35 @@ class Mode(enum.Enum):
     L = 0
     T = 1
 
+    def reverse(self):
+        if self is self.longitudinal:
+            return self.transverse
+        elif self is self.transverse:
+            return self.longitudinal
+        else:
+            raise RuntimeError
+
 
 @enum.unique
 class InterfaceKind(enum.Enum):
     """Enumerated constants for the interface kinds."""
     fluid_solid = 0
     solid_fluid = 1
+
+    def reverse(self):
+        """
+
+        Returns
+        -------
+        InterfaceKind
+
+        """
+        if self is self.fluid_solid:
+            return self.solid_fluid
+        elif self is self.solid_fluid:
+            return self.fluid_solid
+        else:
+            raise RuntimeError('invalid case')
 
 
 class Interface:
@@ -676,6 +699,30 @@ class Interface:
             str(self.points),
             hex(id(self)))
 
+    def reverse(self):
+        """
+        Returns a new Interface object where the incoming and outgoing ways are reversed.
+
+        Returns
+        -------
+
+        """
+        cls = self.__class__
+        # , kind = None, transmission_reflection = None,
+        # reflection_against = None,
+        # are_normals_on_inc_rays_side = None, are_normals_on_out_rays_side = None
+        if self.kind is None:
+            rev_kind = None
+        else:
+            rev_kind = self.kind.reverse()
+
+        return cls(self.points, self.orientations, kind=rev_kind,
+                   transmission_reflection=self.transmission_reflection,
+                   reflection_against=self.reflection_against,
+                   are_normals_on_inc_rays_side=self.are_normals_on_out_rays_side,
+                   are_normals_on_out_rays_side=self.are_normals_on_inc_rays_side,
+                   )
+
 
 class Path:
     """
@@ -766,6 +813,23 @@ class Path:
         # avoid circular import
         from .im.fermat_solver import FermatPath
         return FermatPath.from_path(self)
+
+    def reverse(self):
+        """
+        Path in the way round.
+
+        Returns
+        -------
+
+        """
+        cls = self.__class__
+        rev_interfaces = tuple(reversed([i.reverse() for i in self.interfaces]))
+        rev_materials = tuple(reversed(self.materials))
+        rev_modes = tuple(reversed(self.modes))
+        rev_path = cls(rev_interfaces, rev_materials, rev_modes, name=self.name)
+        if self.rays is not None:
+            rev_path.rays = self.rays.reverse()
+        return rev_path
 
 
 class Material(namedtuple('Material',
