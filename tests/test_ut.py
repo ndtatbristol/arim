@@ -169,18 +169,16 @@ def test_directivity_2d_rectangular_in_fluid():
 def test_radiation_in_fluid():
     # water:
     v = 1480.
-    impedance = v * 1000.
 
     freq = 2e6
     wavelength = freq / v
 
     source_radius = 0.2e-3
-    rad = ut.radiation_2d_cylinder_in_fluid(source_radius, wavelength, impedance)
+    rad = ut.radiation_2d_cylinder_in_fluid(source_radius, wavelength)
     assert isinstance(rad, complex)
 
     theta = np.linspace(-np.pi, np.pi, 50)
-    rad = ut.radiation_2d_rectangular_in_fluid(theta, source_radius * 2, wavelength,
-                                               impedance)
+    rad = ut.radiation_2d_rectangular_in_fluid(theta, source_radius * 2, wavelength)
     assert rad.shape == theta.shape
     assert rad.dtype.kind == 'c', 'datatype is not complex'
 

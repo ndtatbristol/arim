@@ -416,23 +416,23 @@ def test_radiation_2d_rectangular_in_fluid():
     ray_geometry_dict = context['ray_geometry_dict']
     """:type : dict[str, arim.path.RayGeometry]"""
 
-    impedance = couplant.longitudinal_vel * couplant.density
-    wavelength = context['freq'] / couplant.longitudinal_vel
+    wavelength = couplant.longitudinal_vel / context['freq']
 
     # hardcoded results
     expected_radiation = {
-        'L': array([[14.23418421 + 14.23418421j, 14.23418421 + 14.23418421j]]),
-        'T': array([[14.23418421 + 14.23418421j, 14.23418421 + 14.23418421j]]),
-        'LL': array([[14.23418421 + 14.23418421j, 14.23418421 + 14.23418421j]]),
-        'LT': array([[14.23418421 + 14.23418421j, 14.23418421 + 14.23418421j]]),
-        'TL': array([[14.23418421 + 14.23418421j, 14.23418421 + 14.23418421j]]),
-        'TT': array([[14.23418421 + 14.23418421j, 14.23418421 + 14.23418421j]]),
+        'L': array([[0.47777476 + 0.47777476j, 0.46128071 + 0.46128071j]]),
+        'T': array([[0.47777476 + 0.47777476j, 0.41368391 + 0.41368391j]]),
+        'LL': array([[0.47777476 + 0.47777476j, 0.46621085 + 0.46621085j]]),
+        'LT': array([[0.47777476 + 0.47777476j, 0.46465044 + 0.46465044j]]),
+        'TL': array([[0.47777476 + 0.47777476j, 0.46020818 + 0.46020818j]]),
+        'TT': array([[0.47777476 + 0.47777476j, 0.43310535 + 0.43310535j]]),
     }
     radiation = dict()
+    print()
     for pathname, path in paths.items():
         ray_geometry = ray_geometry_dict[pathname]
         radiation[pathname] = arim.model.radiation_2d_rectangular_in_fluid_for_path(
-            ray_geometry, context['element_width'], wavelength, impedance)
+            ray_geometry, context['element_width'], wavelength)
         np.testing.assert_allclose(radiation[pathname], expected_radiation[pathname],
                                    rtol=0., atol=1e-6)
         # Uncomment the following line to generate hardcoded-values:

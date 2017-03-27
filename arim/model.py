@@ -25,8 +25,7 @@ from .path import RayGeometry
 logger = logging.getLogger(__name__)
 
 
-def radiation_2d_rectangular_in_fluid_for_path(ray_geometry, element_width, wavelength,
-                                               impedance):
+def radiation_2d_rectangular_in_fluid_for_path(ray_geometry, element_width, wavelength):
     """
     Wrapper for :func:`radiation_2d_rectangular_in_fluid` that uses
     a :class:`RayGeometry` object.
@@ -37,14 +36,13 @@ def radiation_2d_rectangular_in_fluid_for_path(ray_geometry, element_width, wave
     ray_geometry : RayGeometry
     element_width
     wavelength
-    impedance
 
     Returns
     -------
 
     """
     return ut.radiation_2d_rectangular_in_fluid(ray_geometry.conventional_out_angle(0),
-                                                element_width, wavelength, impedance)
+                                                element_width, wavelength)
 
 
 def directivity_finite_width_2d_for_path(ray_geometry, element_width, wavelength):
@@ -449,9 +447,7 @@ def beamspread_2d_for_reversed_path(ray_geometry):
 
 def beamspread_for_path(ray_geometry):
     """
-    Deprecation warning
-    -------------------
-    Use :func:`beamspread_2d_for_path` instead.
+    Deprecation warning: use :func:`beamspread_2d_for_path` instead.
     """
     warnings.warn(DeprecationWarning('beamspread_for_path is deprecated and will be '
                                      'removed. Use beamspread_2d_for_path instead.'))

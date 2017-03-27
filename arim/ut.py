@@ -259,7 +259,7 @@ def directivity_2d_rectangular_in_fluid(theta, element_width, wavelength):
         raise ValueError('Negative wavelength')
 
     # /!\ numpy.sinc defines sinc(x) := sin(pi * x)/(pi * x)
-    x = element_width * np.sin(theta) / wavelength
+    x = (element_width / wavelength) * np.sin(theta)
     return np.sinc(x)
 
 
@@ -267,26 +267,28 @@ def directivity_2d_rectangular_in_fluid(theta, element_width, wavelength):
 directivity_finite_width_2d = directivity_2d_rectangular_in_fluid
 
 
-def radiation_2d_rectangular_in_fluid(theta, element_width, wavelength, impedance):
+def radiation_2d_rectangular_in_fluid(theta, element_width, wavelength):
     """
     Piston model.
 
     Field is::
 
-        p(r, theta, t) = V0(omega) * P(theta) * exp(i omega t - k r) / sqrt(r)
+        p(r, theta, t) = V0(omega) * Z * R(theta) * exp(i omega t - k r) * sqrt(wavelength / r)
 
     where:
         - V0 is the (uniform) velocity on the piston
         - P(theta) is the output of the current function,
+        - Z = rho c is the acoustic impedance
 
     Reference: Schmerr, Fundamentals of ultrasonic phased array, eq (2.38)
+
+    R is dimensionless.
 
     Parameters
     ----------
     theta : ndarray
     element_width
     wavelength
-    impedance
 
     Returns
     -------
@@ -296,43 +298,40 @@ def radiation_2d_rectangular_in_fluid(theta, element_width, wavelength, impedanc
     """
     directivity = directivity_2d_rectangular_in_fluid(theta, element_width, wavelength)
 
-    # wavenumber:
-    k = 2 * np.pi / wavelength
-
-    r = np.sqrt(2j / (np.pi * k)) * k * (element_width / 2.) * directivity * impedance
+    r = np.sqrt(1j) * (element_width / wavelength) * directivity
     return r
 
 
-def radiation_2d_cylinder_in_fluid(source_radius, wavelength, impedance):
+def radiation_2d_cylinder_in_fluid(source_radius, wavelength):
     """
     Radiation term in far field for a cylinder radiating uniform in a fluid.
 
     The field generated is::
 
-        p(r, t) = V0(omega) * P * exp(i omega t - k r) / sqrt(r)
+        p(r, t) = V0(omega) * Z * R * exp(i omega t - k r) * sqrt(wavelength / r)
 
     where:
         - V0 is the (uniform) velocity on the piston
-        - P is the output of the current function
+        - R is the output of the current function
+        - Z = rho c is the acoustic impedance
 
     Reference: Theoretical Acoustics, Philip M. Morse & K. Uno Ingard, equation 7.3.3
+
+    R is dimensionless.
+
 
     Parameters
     ----------
     source_radius : float
     wavelength : float
-    impedance : float
 
     Returns
     -------
     transmission_term : complex
 
     """
-    # wavenumber:
-    k = 2 * np.pi / wavelength
-
-    r = np.sqrt(2j / (np.pi * k)) * k * source_radius * impedance
-    return r
+    rad = 2. * np.sqrt(1j) * (source_radius / wavelength)
+    return rad
 
 
 def snell_angles(incidents_angles, c_incident, c_refracted):
@@ -688,8 +687,6 @@ def elastic_scattering_2d_cylinder(theta, radius, longitudinal_wavelength,
 
     # in angle
     phi = theta + pi
-
-    # import pytest;pytest.set_trace()
 
     # n_phi[i1, ..., id, j] := phi[i1, ..., id] * n[j]
     n_phi = np.einsum('...,j->...j', phi, n)
