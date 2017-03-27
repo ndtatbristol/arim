@@ -137,6 +137,33 @@ def transmission_at_interface(interface_kind, material_inc, material_out, mode_i
             return trans_t
         else:
             raise ValueError("invalid mode")
+    elif interface_kind is c.InterfaceKind.solid_fluid:
+        # Fluid-solid interface in transmission
+        #   "in" is in the solid
+        #   "out" is in the fluid
+        assert mode_out is c.Mode.L, "you've broken the physics"
+
+        solid = material_inc
+        fluid = material_out
+        assert solid.state_of_matter == c.StateMatter.solid
+        assert fluid.state_of_matter.name != c.StateMatter.solid
+
+        params = dict(
+            rho_fluid=fluid.density,
+            rho_solid=solid.density,
+            c_fluid=fluid.longitudinal_vel,
+            c_l=solid.longitudinal_vel,
+            c_t=solid.transverse_vel)
+
+        if mode_inc is c.Mode.L:
+            alpha_l = angles_inc
+            refl_l, refl_t, transmission = solid_l_fluid(alpha_l=alpha_l, **params)
+        elif mode_inc is c.Mode.T:
+            alpha_t = angles_inc
+            refl_l, refl_t, transmission = solid_t_fluid(alpha_t=alpha_t, **params)
+        else:
+            raise RuntimeError
+        return transmission
     else:
         raise NotImplementedError
 
