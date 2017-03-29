@@ -578,6 +578,8 @@ def solid_t_fluid(alpha_t, rho_fluid, rho_solid, c_fluid, c_l, c_t, alpha_fluid=
     transmission = 2 * rho_fluid * c_fluid * cos(alpha_l) * sin(2 * alpha_t) / (
         N * rho_solid * c_l * cos(alpha_fluid))
 
+    # TODO: Rose in "Ultrasonic guided waves in solid media" gives the oppositeof these
+    # coefficients. Fix this?
     return reflection_l, reflection_t, transmission
 
 

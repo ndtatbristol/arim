@@ -460,24 +460,33 @@ def test_stokes_relation():
                                                              rho_solid, c_fluid, c_l,
                                                              c_t,
                                                              alpha_l, alpha_t)
-    _, _, transmission_t_sf = ut.solid_t_fluid(alpha_t, rho_fluid, rho_solid,
-                                               c_fluid, c_l, c_t, alpha_fluid,
-                                               alpha_l)
-    _, _, transmission_l_sf = ut.solid_l_fluid(alpha_l, rho_fluid, rho_solid,
-                                               c_fluid, c_l, c_t, alpha_fluid,
-                                               alpha_t)
+    refl_tl, refl_tt, transmission_t_sf = ut.solid_t_fluid(alpha_t, rho_fluid, rho_solid,
+                                                           c_fluid, c_l, c_t, alpha_fluid,
+                                                           alpha_l)
+    refl_ll, refl_lt, transmission_l_sf = ut.solid_l_fluid(alpha_l, rho_fluid, rho_solid,
+                                                           c_fluid, c_l, c_t, alpha_fluid,
+                                                           alpha_t)
 
-    transmission_t_sf *= -1  # HACK. WHY?
+    # TODO: there is a magic coefficient here. Rose vs Krautkrämer discrepancy?
+    magic_coefficient = -1.
+    transmission_t_sf *= magic_coefficient
 
-    transmission_l_sf_stokes = rho_fluid * c_fluid * np.cos(
-        alpha_l) * transmission_l_fs / (
-                                   rho_solid * c_l * np.cos(alpha_fluid))
-    transmission_t_sf_stokes = rho_fluid * c_fluid * np.cos(
-        alpha_t) * transmission_t_fs / (
-                                   rho_solid * c_t * np.cos(alpha_fluid))
+    transmission_l_sf_stokes = (rho_fluid * c_fluid * np.cos(alpha_l) * transmission_l_fs
+                                / (rho_solid * c_l * np.cos(alpha_fluid)))
+    transmission_t_sf_stokes = (rho_fluid * c_fluid * np.cos(alpha_t) * transmission_t_fs
+                                / (rho_solid * c_t * np.cos(alpha_fluid)))
 
     np.testing.assert_allclose(transmission_l_sf_stokes, transmission_l_sf)
     np.testing.assert_allclose(transmission_t_sf_stokes, transmission_t_sf)
+
+    # Extend Stokes relation given by Schmerr to the reflection in solid against fluid.
+    # Compare TL and LT
+    corr = (c_t / c_l) * (np.cos(alpha_l) / np.cos(alpha_t))
+    refl_lt2 = refl_tl * corr * magic_coefficient
+    np.testing.assert_allclose(refl_lt2, refl_lt)
+
+    refl_tl2 = refl_lt / corr * magic_coefficient
+    np.testing.assert_allclose(refl_tl2, refl_tl)
 
 
 def test_elastic_scattering_2d_cylinder():
