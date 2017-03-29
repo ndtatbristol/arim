@@ -545,12 +545,12 @@ def test_elastic_scattering_2d_cylinder():
 
     result = ut.elastic_scattering_2d_cylinder(theta, hole_radius, lambda_l, lambda_t)
 
-    # Matlab NDT library uses a different scaling than in Lopez-Sanchez et al. paper
+    # There is an unexplained -1 multiplicative factor.
     correction = dict()
-    correction['LL'] = np.sqrt(lambda_l)
-    correction['LT'] = - np.sqrt(lambda_t)
-    correction['TL'] = np.sqrt(lambda_l)
-    correction['TT'] = np.sqrt(lambda_t)
+    correction['LL'] = 1.
+    correction['LT'] = -1.
+    correction['TL'] = 1.
+    correction['TT'] = 1.
 
     assert len(result) == 4
     assert result['LL'].shape == theta.shape

@@ -592,8 +592,9 @@ def elastic_scattering_2d_cylinder(theta, radius, longitudinal_wavelength,
 
     The scattered field is given by::
 
-        u_scat(r, theta) = u0 * 1/sqrt(r) * exp(-i k r + i omega i t) *
-                           (A(theta) e_r + B(theta) e_theta)
+        u_scat(r, theta) = u0 * sqrt(1 / r) * exp(-i k r + i omega i t) *
+                           (sqrt(lambda_L) A(theta) e_r +
+                            sqrt(lambda_T) B(theta) e_theta)
 
     where A(theta) and B(theta) are the scattering coefficients for respectively L and
     T scattered waves and where e_r and e_theta are the two vectors of the cylindrical
@@ -644,6 +645,12 @@ def elastic_scattering_2d_cylinder(theta, radius, longitudinal_wavelength,
     [Brind] Brind, R. J., J. D. Achenbach, and J. E. Gubernatis. 1984. ‘High-Frequency
     Scattering of Elastic Waves from Cylindrical Cavities’. Wave Motion 6 (1):
     41–60. doi:10.1016/0165-2125(84)90022-2.
+
+    [Zhang] Zhang, Jie, B.W. Drinkwater, and P.D. Wilcox. 2008. ‘Defect Characterization
+    Using an Ultrasonic Array to Measure the Scattering Coefficient Matrix’. IEEE
+    Transactions on Ultrasonics, Ferroelectrics, and Frequency Control 55 (10): 2254–65.
+    doi:10.1109/TUFFC.924.
+
 
     """
     valid_keys = {'LL', 'LT', 'TL', 'TT'}
@@ -698,6 +705,8 @@ def elastic_scattering_2d_cylinder(theta, radius, longitudinal_wavelength,
 
     result = dict()
 
+    # NB: sqrt(2j/(pi * k)) = sqrt(i) / pi
+
     if 'LL' in to_compute:
         # Lopez-Sanchez eq (29)
         A_n = 1j / (2 * alpha) * (
@@ -707,7 +716,7 @@ def elastic_scattering_2d_cylinder(theta, radius, longitudinal_wavelength,
         # Brind (2.9) without:
         #   - u0, the amplitude of the incident wave,
         #   - 'exp(i k r)'  which in Bristol LTI model is in the propagation term,
-        #   - '1/sqrt(r)' which in Bristol LTI model is the 2D beamspread term,
+        #   - 'lambda/sqrt(r)' which in Bristol LTI model is the 2D beamspread term,
         #
         # This is consistent with Lopez-Sanchez eq (33).
         #
@@ -717,8 +726,9 @@ def elastic_scattering_2d_cylinder(theta, radius, longitudinal_wavelength,
         #   out = np.einsum('...j,j->...', n_phi, coeff)
         # gives the result:
         #   out[i1, ..., id] = sum_j (n_phi[i1, ..., id, j] * coeff[j])
-        r = (np.sqrt(2j / (pi * kl)) * alpha) * \
+        r = (np.sqrt(1j) / pi * alpha) * \
             np.einsum('...j,j->...', cos_n_phi, epsilon * A_n)
+
         result['LL'] = r.conjugate()
 
     if 'LT' in to_compute:
@@ -729,7 +739,7 @@ def elastic_scattering_2d_cylinder(theta, radius, longitudinal_wavelength,
         # Lopez-Sanchez (34)
         # Warning: there is a minus sign in Brind (2.10). We trust LS here.
         # See also comments for result['LL']
-        r = (np.sqrt(2j / (pi * kt)) * beta) * \
+        r = (np.sqrt(1j) / pi * beta) * \
             np.einsum('...j,j->...', sin_n_phi, epsilon * B_n)
         result['LT'] = r.conjugate()
 
@@ -740,7 +750,7 @@ def elastic_scattering_2d_cylinder(theta, radius, longitudinal_wavelength,
 
         # Lopez-Sanchez eq (39)
         # See also comments for result['LL']
-        r = (np.sqrt(2j / (pi * kl)) * alpha) * \
+        r = (np.sqrt(1j) / pi * alpha) * \
             np.einsum('...j,j->...', sin_n_phi, epsilon * A_n)
         result['TL'] = r.conjugate()
 
@@ -751,15 +761,11 @@ def elastic_scattering_2d_cylinder(theta, radius, longitudinal_wavelength,
 
         # Lopez-Sanchez eq (40)
         # See also comments for result['LL']
-        r = (np.sqrt(2j / (pi * kt)) * beta) * \
+        r = (np.sqrt(1j) / pi * beta) * \
             np.einsum('...j,j->...', cos_n_phi, epsilon * B_n)
         result['TT'] = r.conjugate()
 
     return result
-
-
-# S_LL = 1 / pi * exp(i * pi / 4) * sum(ones(size(theta)) * (epsilon * alpha * A_n) * cos((theta + phi) * n), 2);
-# S_LS = -1 / pi * exp(i * pi / 4) * sum(ones(size(theta)) * (epsilon * beta * B_n) * sin((theta + phi) * n), 2);
 
 
 def make_timevect(num, step, start=0., dtype=None):
