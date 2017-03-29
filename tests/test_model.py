@@ -4,6 +4,7 @@ Hard-code results and hope they do not evolve over time.
 """
 import pytest
 import arim
+from arim import ut
 from collections import OrderedDict
 import numpy as np
 from numpy import array
@@ -84,13 +85,21 @@ def make_context():
     ray_geometry_dict = OrderedDict((k, arim.model.RayGeometry.from_path(v))
                                     for (k, v) in paths.items())
 
+    # Reverse paths
+    rev_paths = OrderedDict([(key, path.reverse()) for (key, path) in
+                             paths.items()])
+    rev_ray_geometry_dict = OrderedDict((k, arim.model.RayGeometry.from_path(v))
+                                        for (k, v) in rev_paths.items())
+
     context = dict()
     context['block'] = block
     context['couplant'] = couplant
     context['interfaces'] = interfaces
     context['paths'] = paths
+    context['rev_paths'] = rev_paths
     context['views'] = views
     context['ray_geometry_dict'] = ray_geometry_dict
+    context['rev_ray_geometry_dict'] = rev_ray_geometry_dict
     context['probe_points'] = probe_points
     context['probe_orientations'] = probe_orientations
     context['frontwall_points'] = frontwall_points
@@ -110,6 +119,8 @@ def make_context():
     """:type : arim.Material"""
     interfaces = context['interfaces']
     """:type : list[arim.Interface]"""
+    rev_paths = context['rev_paths']
+    """:type : dict[str, arim.Path]"""
     paths = context['paths']
     """:type : dict[str, arim.Path]"""
     views = context['views']
@@ -170,9 +181,13 @@ def test_ray_tracing():
     """:type : list[arim.Interface]"""
     paths = context['paths']
     """:type : dict[str, arim.Path]"""
+    rev_paths = context['rev_paths']
+    """:type : dict[str, arim.Path]"""
     views = context['views']
     """:type : dict[str, arim.View]"""
     ray_geometry_dict = context['ray_geometry_dict']
+    """:type : dict[str, arim.path.RayGeometry]"""
+    rev_ray_geometry_dict = context['rev_ray_geometry_dict']
     """:type : dict[str, arim.path.RayGeometry]"""
 
     expected_rays = OrderedDict()
@@ -267,12 +282,40 @@ def test_ray_tracing():
         incident_angles = ray_geometry.conventional_inc_angle(idx)
         refracted_angles = ray_geometry.conventional_out_angle(idx)
 
+        assert np.isclose(incident_angles[0][0], 0., atol=1e-2, rtol=0.)
+        assert np.isclose(refracted_angles[0][0], 0., atol=1e-2, rtol=0.)
+
         c_incident = path.velocities[idx - 1]
         c_refracted = path.velocities[idx]
         expected_refracted_angles = arim.ut.snell_angles(incident_angles, c_incident,
                                                          c_refracted)
         np.testing.assert_allclose(refracted_angles, expected_refracted_angles, rtol=0.,
                                    atol=1e-2)
+
+    # check incident angles for scatterer
+    for pathname, ray_geometry in ray_geometry_dict.items():
+        path = paths[pathname]
+        if len(paths[pathname].interfaces) <= 3:
+            # direct paths
+            incident_angles = ray_geometry.conventional_inc_angle(2)
+            assert np.isclose(incident_angles[0][0], np.pi, atol=1e-3, rtol=0.)
+        else:
+            # half-skip paths
+            incident_angles = ray_geometry.conventional_inc_angle(3)
+            assert np.isclose(incident_angles[0][0], 0., atol=1e-2, rtol=0.)
+
+    # check conventional angles are in the right quadrant
+    for pathname, ray_geometry in ray_geometry_dict.items():
+        path = paths[pathname]
+        for i in range(path.numinterfaces):
+            if i != 0:
+                inc_angles = ray_geometry.conventional_inc_angle(i)
+                assert np.all(inc_angles >= 0)
+                assert np.all(inc_angles <= np.pi)
+            if i != (path.numinterfaces - 1):
+                out_angles = ray_geometry.conventional_out_angle(i)
+                assert np.all(out_angles >= 0)
+                assert np.all(out_angles <= np.pi)
 
     # check the leg sizes
     for pathname, ray_geometry in ray_geometry_dict.items():
@@ -285,6 +328,34 @@ def test_ray_tracing():
             third_leg_size = ray_geometry.inc_leg_size(3)
             np.testing.assert_allclose(second_leg_size[0][0], 30e-3, rtol=1e-5)
             np.testing.assert_allclose(third_leg_size[0][0], 10e-3, rtol=1e-5)
+
+    # Check consistency with reverse paths
+    for pathname, ray_geometry in ray_geometry_dict.items():
+        rev_ray_geometry = rev_ray_geometry_dict[pathname]
+        numinterfaces = paths[pathname].numinterfaces
+
+        for i in range(numinterfaces):
+            j = numinterfaces - 1 - i
+
+            inc_angles_1 = ray_geometry.conventional_inc_angle(i)
+            inc_angles_2 = rev_ray_geometry.conventional_out_angle(j)
+            if i == 0:
+                assert inc_angles_1 is None
+                assert inc_angles_2 is None
+            else:
+                assert inc_angles_1 is not None
+                assert inc_angles_2 is not None
+                np.testing.assert_allclose(inc_angles_1, inc_angles_2.T)
+
+            out_angles_1 = ray_geometry.conventional_out_angle(i)
+            out_angles_2 = rev_ray_geometry.conventional_inc_angle(j)
+            if j == 0:
+                assert out_angles_1 is None
+                assert out_angles_2 is None
+            else:
+                assert out_angles_1 is not None
+                assert out_angles_2 is not None
+                np.testing.assert_allclose(out_angles_1, out_angles_2.T)
 
 
 def test_beamspread_2d_direct():
@@ -348,7 +419,7 @@ def test_beamspread_2d_reverse():
     rev_paths = OrderedDict([(key, path.reverse()) for (key, path) in
                              paths.items()])
     rev_ray_geometry_dict = OrderedDict((k, arim.model.RayGeometry.from_path(v))
-                                    for (k, v) in rev_paths.items())
+                                        for (k, v) in rev_paths.items())
 
     # hardcoded results
     expected_beamspread = {
@@ -361,7 +432,7 @@ def test_beamspread_2d_reverse():
     }
     beamspread = dict()
     for pathname, ray_geometry in ray_geometry_dict.items():
-        beamspread[pathname] = arim.model.beamspread_2d_for_reversed_path(ray_geometry)
+        beamspread[pathname] = arim.model.reverse_beamspread_2d_for_path(ray_geometry)
         np.testing.assert_allclose(beamspread[pathname], expected_beamspread[pathname])
         # Uncomment the following line to generate hardcoded-values:
         # (use -s flag in pytest to show output)
@@ -422,8 +493,225 @@ def test_transmission_reflection_direct():
         # print("'{}': {},".format(pathname, repr(transrefl[pathname])))
 
 
+def test_transmission_reflection_direct():
+    context = make_context()
+    block = context['block']
+    """:type : arim.Material"""
+    couplant = context['couplant']
+    """:type : arim.Material"""
+    paths = context['paths']
+    """:type : dict[str, arim.Path]"""
+    ray_geometry_dict = context['ray_geometry_dict']
+    """:type : dict[str, arim.path.RayGeometry]"""
+
+    # hardcoded results
+    expected_transrefl = {
+        'L': array([[1.84037966 + 0.j, 2.24977557 + 0.j]]),
+        'T': array([[-1.92953093e-03 + 0.j, -2.06170606e+00 + 0.76785004j]]),
+        'LL': array([[-1.54661755 + 0.j, -0.73952250 + 0.j]]),
+        'LT': array([[2.77193223e-04 + 0.j, 9.17687259e-01 + 0.j]]),
+        'TL': array([[1.18487466e-06 - 0.j, 1.29264072e+00 - 0.j]]),
+        'TT': array([[0.00192953 - 0.j, -1.39294465 + 0.09773593j]]),
+    }
+    transrefl = dict()
+    for pathname, path in paths.items():
+        ray_geometry = ray_geometry_dict[pathname]
+        transrefl[pathname] = arim.model.transmission_reflection_for_path(path,
+                                                                          ray_geometry)
+        np.testing.assert_allclose(transrefl[pathname], expected_transrefl[pathname],
+                                   rtol=0., atol=1e-6)
+        # print("'{}': {},".format(pathname, repr(transrefl[pathname])))
+
+    # For the first scatterer (angle of incidence 0):
+    params = (complex(0.), couplant.density, block.density,
+              couplant.longitudinal_vel, block.longitudinal_vel, block.transverse_vel,
+              complex(0.), complex(0.))
+    tol = dict(rtol=0, atol=1e-2)
+    _, transrefl_L, transrefl_T = ut.fluid_solid(*params)
+    refl_LL, refl_LT, _ = ut.solid_l_fluid(*params)
+    refl_TL, refl_TT, _ = ut.solid_t_fluid(*params)
+    np.testing.assert_allclose(transrefl['L'][0][0], transrefl_L)
+    np.testing.assert_allclose(transrefl['T'][0][0], transrefl_T, **tol)
+    np.testing.assert_allclose(transrefl['LL'][0][0], transrefl_L * refl_LL)
+    np.testing.assert_allclose(transrefl['LT'][0][0], transrefl_L * refl_LT, **tol)
+    np.testing.assert_allclose(transrefl['TL'][0][0], transrefl_T * refl_LL, **tol)
+    np.testing.assert_allclose(transrefl['TT'][0][0], transrefl_T * refl_LT, **tol)
+
+
+def test_transmission_reflection_reverse_hardcode():
+    context = make_context()
+    block = context['block']
+    """:type : arim.Material"""
+    couplant = context['couplant']
+    """:type : arim.Material"""
+    paths = context['paths']
+    """:type : dict[str, arim.Path]"""
+    rev_paths = context['rev_paths']
+    """:type : dict[str, arim.Path]"""
+    ray_geometry_dict = context['ray_geometry_dict']
+    """:type : dict[str, arim.path.RayGeometry]"""
+    rev_ray_geometry_dict = context['rev_ray_geometry_dict']
+    """:type : dict[str, arim.path.RayGeometry]"""
+
+    # ====================================================================================
+    # Check hardcoded results
+    # There is no guarantee that they are good, this test will just catch any change.
+
+    # hardcoded results
+    expected_rev_transrefl = {
+        'L': array([[0.15962002 + 0.j, 0.07813451 + 0.j]]),
+        'T': array([[0.00033791 + 0.j, 0.16346328 - 0.06087933j]]),
+        'LL': array([[-0.13414141 + 0.j, -0.04164956 + 0.j]]),
+        'LT': array([[-4.85439698e-05 + 0.j, -1.50885505e-01 + 0.j]]),
+        'TL': array([[1.02766857e-07 + 0.j, 3.48642287e-02 + 0.j]]),
+        'TT': array([[-0.00033791 + 0.j, 0.17068649 - 0.01197621j]]),
+    }
+    rev_transrefl = dict()
+    for pathname, path in paths.items():
+        ray_geometry = ray_geometry_dict[pathname]
+        rev_transrefl[pathname] = arim.model.reverse_transmission_reflection_for_path(
+            path,
+            ray_geometry)
+        np.testing.assert_allclose(rev_transrefl[pathname],
+                                   expected_rev_transrefl[pathname],
+                                   rtol=0., atol=1e-6)
+        # print("'{}': {},".format(pathname, repr(rev_transrefl[pathname])))
+
+    # ====================================================================================
+    # Check limit case: angle of incidence 0° (first scatterer)
+    params = (complex(0.), couplant.density, block.density,
+              couplant.longitudinal_vel, block.longitudinal_vel, block.transverse_vel,
+              complex(0.), complex(0.))
+    tol = dict(rtol=0, atol=1e-3)
+    refl_LL, refl_LT, trans_L = ut.solid_l_fluid(*params)
+    refl_TL, refl_TT, trans_T = ut.solid_t_fluid(*params)
+    np.testing.assert_allclose(rev_transrefl['L'][0][0], trans_L, **tol)
+    np.testing.assert_allclose(rev_transrefl['T'][0][0], trans_T, **tol)
+    np.testing.assert_allclose(rev_transrefl['LL'][0][0], trans_L * refl_LL, **tol)
+    np.testing.assert_allclose(rev_transrefl['LT'][0][0], trans_L * refl_TL, **tol)
+    np.testing.assert_allclose(rev_transrefl['TL'][0][0], trans_T * refl_LT, **tol)
+    np.testing.assert_allclose(rev_transrefl['TT'][0][0], trans_T * refl_TT, **tol)
+
+    # ====================================================================================
+    # Check that the direct transmission-reflection coefficients for the reversed path are
+    # consistent with the reversed coefficients for the direct path.
+    # Unfortunately this is not exact because of angles approximation.
+
+    rev_transrefl2 = dict()
+    for pathname, rev_ray_geometry in rev_ray_geometry_dict.items():
+        rev_transrefl2[pathname] = arim.model.transmission_reflection_for_path(
+            rev_paths[pathname], rev_ray_geometry).T
+        np.testing.assert_allclose(rev_transrefl2[pathname],
+                                   expected_rev_transrefl[pathname],
+                                   rtol=1e-1, atol=1e-3, err_msg=pathname)
+        # TODO: very poor comparison
+
+
+def test_transmission_reflection_reverse_stokes():
+    """
+    Compare function reverse_transmission_reflection_for_path() with the function
+    transmission_reflection_for_path() using Stokes relations.
+
+    """
+    context = make_context()
+    block = context['block']
+    """:type : arim.Material"""
+    couplant = context['couplant']
+    """:type : arim.Material"""
+    paths = context['paths']
+    """:type : dict[str, arim.Path]"""
+    rev_paths = context['rev_paths']
+    """:type : dict[str, arim.Path]"""
+    ray_geometry_dict = context['ray_geometry_dict']
+    """:type : dict[str, arim.path.RayGeometry]"""
+    rev_ray_geometry_dict = context['rev_ray_geometry_dict']
+    """:type : dict[str, arim.path.RayGeometry]"""
+
+    rho_fluid = couplant.density
+    rho_solid = block.density
+    c_fluid = couplant.longitudinal_vel
+    c_l = block.longitudinal_vel
+    c_t = block.transverse_vel
+
+    z_l = block.longitudinal_vel * rho_solid
+    z_t = block.transverse_vel * rho_solid
+    z_fluid = couplant.longitudinal_vel * rho_fluid
+
+    magic_coefficient = -1.
+
+    # ====================================================================================
+    pathname = 'LT'
+
+    # Frontwall in direct sense: fluid inc, solid L out
+    alpha_fluid = np.asarray(ray_geometry_dict[pathname].conventional_inc_angle(1),
+                             complex)
+    alpha_l = arim.ut.snell_angles(alpha_fluid, c_fluid, c_l)
+    correction_frontwall = (z_fluid / z_l) * (np.cos(alpha_l) / np.cos(alpha_fluid))
+    del alpha_fluid, alpha_l
+
+    # Backwall in direct sense: solid L inc, solid T out
+    alpha_l = np.asarray(ray_geometry_dict[pathname].conventional_inc_angle(2), complex)
+    alpha_t = arim.ut.snell_angles(alpha_l, c_l, c_t)
+    correction_backwall = (z_l / z_t) * (np.cos(alpha_t) / np.cos(alpha_l))
+    del alpha_l, alpha_t
+    transrefl_stokes = arim.model.transmission_reflection_for_path(
+        paths[pathname],
+        ray_geometry_dict[pathname]) * correction_backwall * correction_frontwall
+    transrefl_rev = arim.model.reverse_transmission_reflection_for_path(
+        paths[pathname], ray_geometry_dict[pathname])
+
+    np.testing.assert_allclose(transrefl_stokes,
+                               magic_coefficient * transrefl_rev, err_msg=pathname)
+
+    # ====================================================================================
+    pathname = 'TL'
+
+    # Frontwall in direct sense: fluid inc, solid T out
+    alpha_fluid = np.asarray(ray_geometry_dict[pathname].conventional_inc_angle(1),
+                             complex)
+    alpha_t = arim.ut.snell_angles(alpha_fluid, c_fluid, c_t)
+    correction_frontwall = (z_fluid / z_t) * (np.cos(alpha_t) / np.cos(alpha_fluid))
+    del alpha_fluid, alpha_t
+
+    # Backwall in direct sense: solid T inc, solid L out
+    alpha_t = np.asarray(ray_geometry_dict[pathname].conventional_inc_angle(2), complex)
+    alpha_l = arim.ut.snell_angles(alpha_t, c_t, c_l)
+    correction_backwall = (z_t / z_l) * (np.cos(alpha_l) / np.cos(alpha_t))
+    del alpha_l, alpha_t
+    transrefl_stokes = arim.model.transmission_reflection_for_path(
+        paths[pathname],
+        ray_geometry_dict[pathname]) * correction_backwall * correction_frontwall
+    transrefl_rev = arim.model.reverse_transmission_reflection_for_path(
+        paths[pathname], ray_geometry_dict[pathname])
+
+    np.testing.assert_allclose(transrefl_stokes, transrefl_rev, err_msg=pathname)
+
+    # ====================================================================================
+    pathname = 'TT'
+
+    # Frontwall in direct sense: fluid inc, solid T out
+    alpha_fluid = np.asarray(ray_geometry_dict[pathname].conventional_inc_angle(1),
+                             complex)
+    alpha_l = arim.ut.snell_angles(alpha_fluid, c_fluid, c_l)
+    alpha_t = arim.ut.snell_angles(alpha_fluid, c_fluid, c_t)
+    correction_frontwall = (z_fluid / z_t) * (np.cos(alpha_t) / np.cos(alpha_fluid))
+
+    # Backwall in direct sense: solid L inc, solid L out
+    correction_backwall = 1.
+    transrefl_stokes = arim.model.transmission_reflection_for_path(
+        paths[pathname],
+        ray_geometry_dict[pathname]) * correction_backwall * correction_frontwall
+    transrefl_rev = arim.model.reverse_transmission_reflection_for_path(
+        paths[pathname], ray_geometry_dict[pathname])
+
+    np.testing.assert_allclose(transrefl_stokes, magic_coefficient * transrefl_rev,
+                               err_msg=pathname)
+
+
 def test_radiation_2d_rectangular_in_fluid():
-    # arim.model.radiation_2d_rectangular_in_fluid_for_path()
+    """
+    test arim.model.radiation_2d_rectangular_in_fluid_for_path()"
+    """
     context = make_context()
     couplant = context['couplant']
     paths = context['paths']

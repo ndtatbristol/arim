@@ -714,7 +714,14 @@ class Interface:
         if self.kind is None:
             rev_kind = None
         else:
-            rev_kind = self.kind.reverse()
+            if self.transmission_reflection is None:
+                raise ValueError("reverse path is ambiguous")
+            elif self.transmission_reflection is TransmissionReflection.transmission:
+                rev_kind = self.kind.reverse()
+            elif self.transmission_reflection is TransmissionReflection.reflection:
+                rev_kind = self.kind
+            else:
+                raise RuntimeError
 
         return cls(self.points, self.orientations, kind=rev_kind,
                    transmission_reflection=self.transmission_reflection,

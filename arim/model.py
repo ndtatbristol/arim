@@ -250,68 +250,6 @@ def reflection_at_interface(interface_kind, material_inc, material_against, mode
         raise NotImplementedError
 
 
-def transmission_reflection_per_interface_for_path(path, angles_inc_list,
-                                                   force_complex=True):
-    """
-    Yield the transmission-reflection coefficients interface per interface for a given path.
-
-    For non-relevant interfaces  (attribute ``transmission_reflection`` set to None), yield None.
-
-    Requires to have computed the angles of incidence at each interface
-    (cf. :meth:`RayGeometry.conventional_inc_angle`).
-    Use internally :func:`transmission_at_interface`` and :func:``reflection_at_interface``.
-
-    The angles of transmission or reflection are obtained using Snell-Descartes laws
-    (:func:`snell_angles`).
-
-    Warning: do not check whether the angles of incidence are physical.
-
-    TODO: write test.
-
-    Parameters
-    ----------
-    path : Path
-    angles_inc_list : list of ndarray
-    force_complex : bool
-        If True, return complex coefficients. If not, return coefficients with the same datatype as ``angles_inc``.
-        Default: True.
-
-    Yields
-    ------
-    amps : ndarray or None
-        Amplitudes of transmission-reflection coefficients. None if not relevant.
-
-    """
-    for i, interface in enumerate(path.interfaces):
-        if interface.transmission_reflection is None:
-            yield None
-            continue
-
-        assert i > 0, "cannot compute transmission/reflection at the first interface. Set 'transmission_reflection' to None in Interface."
-
-        params = dict(
-            interface_kind=interface.kind,
-            material_inc=path.materials[i - 1],
-            mode_inc=path.modes[i - 1],
-            mode_out=path.modes[i],
-            angles_inc=angles_inc_list[i],
-            force_complex=force_complex,
-        )
-
-        logger.debug("compute {} coefficients at interface {}".format(
-            interface.transmission_reflection.name,
-            interface.points))
-
-        if interface.transmission_reflection is c.TransmissionReflection.transmission:
-            params['material_out'] = path.materials[i]
-            yield transmission_at_interface(**params)
-        elif interface.transmission_reflection is c.TransmissionReflection.reflection:
-            params['material_against'] = interface.reflection_against
-            yield reflection_at_interface(**params)
-        else:
-            raise ValueError('invalid constant for transmission/reflection')
-
-
 def transmission_reflection_for_path(path, ray_geometry, force_complex=True):
     """
     Return the transmission-reflection coefficients for a given path.
@@ -326,8 +264,6 @@ def transmission_reflection_for_path(path, ray_geometry, force_complex=True):
 
     Warning: do not check whether the angles of incidence are physical.
 
-    TODO: write test.
-
     Parameters
     ----------
     path : Path
@@ -341,21 +277,125 @@ def transmission_reflection_for_path(path, ray_geometry, force_complex=True):
     amps : ndarray or None
         Amplitudes of transmission-reflection coefficients. None if not defined for all interface.
     """
-    amps = None
-
     inc_angles_list = [ray_geometry.conventional_inc_angle(k) for k in
                        range(ray_geometry.numinterfaces)]
 
-    for amps_per_interface in transmission_reflection_per_interface_for_path(path,
-                                                                             inc_angles_list,
-                                                                             force_complex=force_complex):
-        if amps_per_interface is None:
+    transrefl = None
+
+    for i, interface in enumerate(path.interfaces):
+        if interface.transmission_reflection is None:
             continue
-        if amps is None:
-            amps = amps_per_interface
+
+        assert i > 0, "cannot compute transmission/reflection at the first interface. Set 'transmission_reflection' to None in Interface."
+
+        params = dict(
+            interface_kind=interface.kind,
+            material_inc=path.materials[i - 1],
+            mode_inc=path.modes[i - 1],
+            mode_out=path.modes[i],
+            angles_inc=inc_angles_list[i],
+            force_complex=force_complex,
+        )
+
+        logger.debug("compute {} coefficients at interface {}".format(
+            interface.transmission_reflection.name,
+            interface.points))
+
+        if interface.transmission_reflection is c.TransmissionReflection.transmission:
+            params['material_out'] = path.materials[i]
+            tmp = transmission_at_interface(**params)
+        elif interface.transmission_reflection is c.TransmissionReflection.reflection:
+            params['material_against'] = interface.reflection_against
+            tmp = reflection_at_interface(**params)
         else:
-            amps *= amps_per_interface
-    return amps
+            raise RuntimeError
+
+        if transrefl is None:
+            transrefl = tmp
+        else:
+            transrefl *= tmp
+        del tmp
+
+    return transrefl
+
+
+def reverse_transmission_reflection_for_path(path, ray_geometry, force_complex=True):
+    """
+    Return the transmission-reflection coefficients of the reverse path.
+
+    This function uses the same angles as :func:`transmission_reflection_for_path`.
+    These angles are the incident angles in the direct path (but the reflected/transmitted
+    angles in the reverse path).
+
+    Parameters
+    ----------
+    path : Path
+    ray_geometry : RayGeometry
+    force_complex : bool
+        Use complex angles. Default : True
+
+    Returns
+    -------
+    rev_transrefl : ndarray
+        Shape: (path.interfaces[0].numpoints, path.interfaces[-1].numpoints)
+
+    """
+    transrefl = None
+
+    for i, interface in enumerate(path.interfaces):
+        if interface.transmission_reflection is None:
+            continue
+
+        assert i > 0, "cannot compute transmission/reflection at the first interface. Set 'transmission_reflection' to None in Interface."
+
+        mode_inc = path.modes[i]
+        material_inc = path.materials[i]
+        mode_out = path.modes[i - 1]
+
+        params = dict(
+            material_inc=material_inc,
+            mode_inc=mode_inc,
+            mode_out=mode_out,
+            force_complex=force_complex,
+        )
+
+        # In the reverse path, transmitted or reflected angles coming out the i-th
+        # interface
+        trans_or_refl_angles = ray_geometry.conventional_inc_angle(i)
+
+        if interface.transmission_reflection is c.TransmissionReflection.transmission:
+            material_out = path.materials[i - 1]
+            params['material_out'] = material_out
+            params['interface_kind'] = interface.kind.reverse()
+
+
+            # Compute the incident angles in the reverse path from the incident angles in the
+            # direct path using Snell laws.
+            if force_complex:
+                trans_or_refl_angles = np.asarray(trans_or_refl_angles, complex)
+            params['angles_inc'] = snell_angles(trans_or_refl_angles,
+                                                material_out.velocity(mode_out),
+                                                material_inc.velocity(mode_inc))
+            tmp = transmission_at_interface(**params)
+
+        elif interface.transmission_reflection is c.TransmissionReflection.reflection:
+            params['material_against'] = interface.reflection_against
+            params['interface_kind'] = interface.kind
+            params['angles_inc'] = snell_angles(trans_or_refl_angles,
+                                                material_inc.velocity(mode_out),
+                                                material_inc.velocity(mode_inc))
+            tmp = reflection_at_interface(**params)
+
+        else:
+            raise RuntimeError
+
+        if transrefl is None:
+            transrefl = tmp
+        else:
+            transrefl *= tmp
+        del tmp
+
+    return transrefl
 
 
 def beamspread_2d_for_path(ray_geometry):
@@ -432,7 +472,26 @@ def beamspread_2d_for_path(ray_geometry):
     return beamspread
 
 
-def beamspread_2d_for_reversed_path(ray_geometry):
+def reverse_beamspread_2d_for_path(ray_geometry):
+    """
+    Reverse beamspread for a path.
+    Uses the same angles as in beamspread_2d_for_path for consistency.
+
+    For a ray (i, ..., j), the reverse beamspread is obtained by considering the point
+    j is the source and i is the endpoint. The direct beamspread considers this is the
+    opposite.
+
+    Parameters
+    ----------
+    ray_geometry : RayGeometry
+
+    Returns
+    -------
+    rev_beamspread : ndarray
+        Shape: (ray_geometry.interfaces[0].numpoints,
+        ray_geometry.interfaces[-1].numpoints)
+
+    """
     inc_angles_list = [None] + [ray_geometry.conventional_inc_angle(i) for i in
                                 reversed(range(1, ray_geometry.numinterfaces))]
     inc_leg_sizes_list = [None] + [ray_geometry.inc_leg_size(i) for i in

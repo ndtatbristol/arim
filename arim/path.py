@@ -150,8 +150,8 @@ def interfaces_for_block_in_immersion(couplant_material,
     backwall_interface = Interface(backwall_points, backwall_orientations,
                                    'solid_fluid', 'reflection',
                                    reflection_against=couplant_material,
-                                   are_normals_on_inc_rays_side=True,
-                                   are_normals_on_out_rays_side=False)
+                                   are_normals_on_inc_rays_side=False,
+                                   are_normals_on_out_rays_side=False)  # sic
     grid_interface = Interface(grid_points, grid_orientations,
                                are_normals_on_inc_rays_side=True)
 
