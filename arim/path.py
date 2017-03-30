@@ -262,65 +262,6 @@ def views_for_block_in_immersion(paths_dict):
     return views
 
 
-class LegsCoordinates:
-    """
-    Stor
-    """
-
-    def __init__(self, legs_points, are_normals_on_legs_side=None):
-        self.legs_points = g.aspoints(legs_points)
-        self.clear_cache()
-        self.are_normals_on_legs_side = are_normals_on_legs_side
-
-    def clear_cache(self):
-        self._polar = None
-        self._polar2 = None
-        self._azimuth = None
-        self._radius = None
-
-    @property
-    def x(self):
-        return self.legs_points.x
-
-    @property
-    def y(self):
-        return self.legs_points.y
-
-    @property
-    def z(self):
-        return self.legs_points.z
-
-    @property
-    def radius(self):
-        if self._radius is None:
-            self._radius = g.spherical_coordinates_r(self.x, self.y, self.z)
-        return self._radius
-
-    @property
-    def polar(self):
-        if self._polar is None:
-            self._polar = g.spherical_coordinates_theta(self.z, self.radius)
-        return self._polar
-
-    @property
-    def azimuth(self):
-        if self._azimuth is None:
-            self._azimuth = g.spherical_coordinates_phi(self.x, self.y)
-        return self._azimuth
-
-    @property
-    def polar2(self):
-        if self._polar2 is None:
-            if self.are_normals_on_legs_side is None:
-                raise AttributeError(
-                    "attribute are_normals_on_legs_side must be defined to use polar2")
-            elif self.are_normals_on_legs_side:
-                self._polar2 = self.polar
-            else:
-                self._polar2 = np.pi / 2 - self.polar2
-        return self._polar2
-
-
 @numba.vectorize(['float64(float64, float64)', 'float32(float32, float32)'],
                  nopython=True, target='parallel')
 def _signed_leg_angle(polar, azimuth):
