@@ -557,6 +557,22 @@ class Mode(enum.Enum):
         else:
             raise RuntimeError
 
+    def key(self):
+        """
+        Returns a one-letter key string: 'L' for longitudinal, 'T' for transverse.
+
+        Returns
+        -------
+        str
+
+        """
+        if self is self.longitudinal:
+            return 'L'
+        elif self is self.transverse:
+            return 'T'
+        else:
+            raise RuntimeError
+
 
 @enum.unique
 class InterfaceKind(enum.Enum):

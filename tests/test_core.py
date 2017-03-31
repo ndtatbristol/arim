@@ -506,6 +506,9 @@ def test_mode():
     assert c.Mode.L.reverse() is c.Mode.T
     assert c.Mode.T.reverse() is c.Mode.L
 
+    assert c.Mode.L.key() == 'L'
+    assert c.Mode.T.key() == 'T'
+
 
 class TestInterface:
     def test_interface_probe(self):

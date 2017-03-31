@@ -135,7 +135,8 @@ def test_make_views():
     v_longi = 2.0
     v_shear = 3.0
 
-    views = arim.im.SingleViewTFM.make_views(probe, frontwall, backwall, grid, v_couplant, v_longi, v_shear)
+    views = arim.im.SingleViewTFM.make_views(probe, frontwall, backwall, grid,
+                                             v_couplant, v_longi, v_shear)
 
     assert len(views) == 21
     assert len(set(views.keys())) == 21
@@ -146,6 +147,8 @@ def test_make_views():
     assert view.tx_path.to_fermat_path() == view.rx_path.to_fermat_path()
 
     view = views['LT-LT']
-    assert view.tx_path.to_fermat_path() == (probe, v_couplant, frontwall, v_longi, backwall, v_shear, grid)
-    assert view.rx_path.to_fermat_path() == (probe, v_couplant, frontwall, v_shear, backwall, v_longi, grid)
+    assert view.tx_path.to_fermat_path() == (probe, v_couplant, frontwall, v_longi,
+                                             backwall, v_shear, grid)
+    assert view.rx_path.to_fermat_path() == (probe, v_couplant, frontwall, v_shear,
+                                             backwall, v_longi, grid)
 

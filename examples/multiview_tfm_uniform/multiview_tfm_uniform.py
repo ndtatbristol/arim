@@ -134,10 +134,10 @@ interfaces = arim.path.interfaces_for_block_in_immersion(couplant, probe_points,
                                                          backwall_orientations,
                                                          grid_points, grid_orientation)
 
-paths = arim.path.paths_for_block_in_immersion(block, couplant, *interfaces)
+paths = arim.path.paths_for_block_in_immersion(block, couplant, interfaces)
 
 if conf.pop('plot.interfaces'):
-    aplt.plot_interfaces(interfaces, show_orientations=True, show_grid=True)
+    aplt.plot_interfaces(interfaces.values(), show_orientations=True, show_grid=True)
 
 for p in interfaces:
     logger.debug(p)

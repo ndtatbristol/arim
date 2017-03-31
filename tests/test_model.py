@@ -54,7 +54,7 @@ def make_context():
                                                              scatterer_points,
                                                              scatterer_orientations)
 
-    paths = arim.path.paths_for_block_in_immersion(block, couplant, *interfaces)
+    paths = arim.path.paths_for_block_in_immersion(block, couplant, interfaces)
     views = arim.path.views_for_block_in_immersion(paths)
 
     # Do the ray tracing manually
@@ -155,15 +155,6 @@ def test_context():
     scatterer_points = context['scatterer_points']
     scatterer_orientations = context['scatterer_orientations']
 
-    assert interfaces[0].points is probe_points
-    assert interfaces[0].orientations is probe_orientations
-    assert interfaces[1].points is frontwall_points
-    assert interfaces[1].orientations is frontwall_orientations
-    assert interfaces[2].points is backwall_points
-    assert interfaces[2].orientations is backwall_orientations
-    assert interfaces[3].points is scatterer_points
-    assert interfaces[3].orientations is scatterer_orientations
-
     assert paths.keys() == {'L', 'LL', 'LT', 'TL', 'TT', 'T'}
     for path in paths.values():
         assert path.rays is not None
@@ -178,7 +169,7 @@ def test_context():
 def test_ray_tracing():
     context = make_context()
     interfaces = context['interfaces']
-    """:type : list[arim.Interface]"""
+    """:type : dict[str, arim.Interface]"""
     paths = context['paths']
     """:type : dict[str, arim.Path]"""
     rev_paths = context['rev_paths']
@@ -228,7 +219,7 @@ def test_ray_tracing():
 
     for pathname, path in paths.items():
         idx = 1
-        coords = interfaces[idx].points.coords.take(path.rays.indices[idx], axis=0)
+        coords = interfaces['frontwall_trans'].points.coords.take(path.rays.indices[idx], axis=0)
         # print("'{}': {},".format(pathname, repr(coords)))
         np.testing.assert_allclose(coords, expected_frontwall_points[pathname], **tol)
 
@@ -248,7 +239,7 @@ def test_ray_tracing():
     for pathname, path in paths.items():
         if expected_backwall_points[pathname] is not None:
             idx = 2
-            coords = interfaces[idx].points.coords.take(path.rays.indices[idx], axis=0)
+            coords = interfaces['backwall_refl'].points.coords.take(path.rays.indices[idx], axis=0)
             # print("'{}': {},".format(pathname, repr(coords)))
             np.testing.assert_allclose(coords, expected_backwall_points[pathname], **tol)
 

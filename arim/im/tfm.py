@@ -12,6 +12,7 @@ from . import amplitudes
 from .. import settings as s
 from .. import core as c
 from ..path import IMAGING_MODES  # import for backward compatibility
+from ..path import default_orientations
 from ..exceptions import ArimWarning
 from ..helpers import parse_enum_constant
 
@@ -125,7 +126,6 @@ class BaseTFM:
 
     def get_amplitudes_tx(self):
         return self.amplitudes_tx()
-
 
     def get_amplitudes_rx(self):
         return self.amplitudes_rx()
@@ -392,23 +392,22 @@ class SingleViewTFM(BaseTFM):
         grid = g.aspoints(grid)
 
         # Create dummy interfaces:
-        probe_interface = c.Interface(probe,
-                                      np.resize(np.eye(3), (*probe.shape, 3, 3)))
-        frontwall_interface = c.Interface(frontwall, np.resize(np.eye(3), (
+        interfaces_dict = dict()
+        interfaces_dict['probe'] = c.Interface(probe, np.resize(np.eye(3),
+                                                                (*probe.shape, 3, 3)))
+        interfaces_dict['frontwall_trans'] = c.Interface(frontwall, np.resize(np.eye(3), (
             *frontwall.shape, 3, 3)))
-        backwall_interface = c.Interface(backwall,
-                                         np.resize(np.eye(3),
-                                                   (*backwall.shape, 3, 3)))
-        grid_interface = c.Interface(grid,
-                                     np.resize(np.eye(3), (*grid.shape, 3, 3)))
+        interfaces_dict['backwall_refl'] = c.Interface(backwall,
+                                                       np.resize(np.eye(3),
+                                                                 (*backwall.shape, 3, 3)))
+        interfaces_dict['grid'] = c.Interface(grid,
+                                              np.resize(np.eye(3), (*grid.shape, 3, 3)))
 
         # Create Dummy material:
         block = c.Material(v_longi, v_shear, state_of_matter='solid')
         couplant = c.Material(v_couplant, state_of_matter='liquid')
 
-        paths_dict = paths_for_block_in_immersion(block, couplant, probe_interface,
-                                                  frontwall_interface,
-                                                  backwall_interface, grid_interface)
+        paths_dict = paths_for_block_in_immersion(block, couplant, interfaces_dict)
         views = views_for_block_in_immersion(paths_dict)
 
         return views

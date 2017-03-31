@@ -502,7 +502,7 @@ def draw_rays_on_click(grid, ray, element_index, ax=None, linestyle='m--', ):
 def plot_interfaces(interfaces_list, ax=None, show_probe=True, show_grid=False,
                     show_orientations=False,
                     n_arrows=10, title='Interfaces', savefig=None, markers=None,
-                    show_legend=True, quiver_kwargs=None):
+                    show_legend=True, quiver_kwargs=None, unique_points_only=True):
     """
     Plot interfaces on the Oxz plane.
 
@@ -510,7 +510,7 @@ def plot_interfaces(interfaces_list, ax=None, show_probe=True, show_grid=False,
 
     Parameters
     ----------
-    interfaces_list : List[Interface]
+    interfaces_list : list[Interface]
     ax : matplotlib.axis.Axis
     show_probe : boolean
         Default True
@@ -530,6 +530,10 @@ def plot_interfaces(interfaces_list, ax=None, show_probe=True, show_grid=False,
         Default True
     quiver_kwargs : dict
         Arguments for displaying the arrows (cf. matplotlib function 'quiver')
+    unique_points_only : bool
+        If a set of points appears several times, plot it only once if True. This can
+        happen for example when the frontwall appears twice (first time for transmission,
+        second time for reflection). Default: True.
 
     Returns
     -------
@@ -546,6 +550,15 @@ def plot_interfaces(interfaces_list, ax=None, show_probe=True, show_grid=False,
 
     if quiver_kwargs is None:
         quiver_kwargs = dict(width=0.0003)
+
+    if unique_points_only:
+        seen_points = set()
+        all_interfaces_lict = interfaces_list
+        interfaces_list = []
+        for interface in all_interfaces_lict:
+            if interface.points not in seen_points:
+                seen_points.add(interface.points)
+                interfaces_list.append(interface)
 
     numinterfaces = len(interfaces_list)
 
