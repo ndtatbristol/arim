@@ -1,7 +1,7 @@
 """
 Compute and plot the transmission and reflection coefficients.
 
-Case: an incident longitudinal in the fluid hits the wall of an aluminium part.
+Case: an incident longitudinal in the fluid hits the wall of an solid part.
 """
 
 import numpy as np
@@ -167,7 +167,7 @@ ax.plot(alpha_fluid_deg, ratio_t, label='transmission T')
 ax.plot(alpha_fluid_deg, ratio_refl + ratio_l + ratio_t, '--', label='total')
 ax.axvline(x=np.rad2deg(critical_l), color='k', linestyle='--', label='critical angle L')
 ax.axvline(x=np.rad2deg(critical_t), color='k', linestyle='-', label='critical angle T')
-ax.set_title('Repartition of energy of the bulk waves: liquid to aluminum interface')
+ax.set_title('Repartition of energy of the bulk waves: liquid to solid interface')
 ax.set_xlabel('angle of the incident wave in liquid (deg)')
 ax.set_ylabel('normalised energy (1)')
 # ylim([0, 1.05])
