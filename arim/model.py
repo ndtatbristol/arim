@@ -368,7 +368,6 @@ def reverse_transmission_reflection_for_path(path, ray_geometry, force_complex=T
             params['material_out'] = material_out
             params['interface_kind'] = interface.kind.reverse()
 
-
             # Compute the incident angles in the reverse path from the incident angles in the
             # direct path using Snell laws.
             if force_complex:
@@ -414,7 +413,7 @@ def beamspread_2d_for_path(ray_geometry):
 
     Through one interface::
 
-        beamspread := 1/(sqrt(r1) * (1 + r2 / (beta * r1))
+        beamspread := 1/sqrt(r1 + r2/beta)
 
     where::
 
@@ -446,15 +445,14 @@ def beamspread_2d_for_path(ray_geometry):
     refractive_indices.append(None)
 
     numinterfaces = len(inc_angles_list)
-    beamspread = None
+    virtual_distance = None
     for i in range(0, numinterfaces - 1):
         if i == 0:
             # Between the probe and the first interface, beamspread of an unbounded medium.
-            # res := 1/sqrt(leg_size)
-            _tmp = np.sqrt(inc_leg_sizes_list[1])
-            beamspread = np.reciprocal(_tmp, _tmp)
+            virtual_distance = inc_leg_sizes_list[1]
         else:
-            r1 = inc_leg_sizes_list[i]
+            # r1 is the closest to the source
+            # r1 = inc_leg_sizes_list[i]
             r2 = inc_leg_sizes_list[i + 1]
 
             theta_inc = inc_angles_list[i]
@@ -463,13 +461,13 @@ def beamspread_2d_for_path(ray_geometry):
 
             sin_theta = np.sin(theta_inc)
             cos_theta = np.cos(theta_inc)
+            # beta_12:
             beta = ((alpha * alpha - sin_theta * sin_theta)
                     / (alpha * cos_theta * cos_theta))
 
-            # res = 1/sqrt(1 + leg_after / (beta * leg_before))
-            beamspread *= np.reciprocal(np.sqrt(1. + r2 / (r1 * beta)))
+            virtual_distance += r2 / beta
 
-    return beamspread
+    return np.reciprocal(np.sqrt(virtual_distance))
 
 
 def reverse_beamspread_2d_for_path(ray_geometry):
@@ -504,16 +502,15 @@ def reverse_beamspread_2d_for_path(ray_geometry):
         refractive_indices.append(velocities[i] / velocities[i - 1])
     refractive_indices.append(None)
 
-    beamspread = None
-    for i in range(0, numinterfaces - 1):
+    virtual_distance = None
+    for i in range(numinterfaces - 1):
+        # Because of the definition of inc_angles_list and inc_leg_sizes_list,
+        # i = 0 corresponds to the closest leg to the source (point j)
         if i == 0:
-            # Between the scatterer and the first interface, beamspread of an
-            # unbounded medium.
-            # res := 1/sqrt(leg_size)
-            _tmp = np.sqrt(inc_leg_sizes_list[1])
-            beamspread = np.reciprocal(_tmp, _tmp)
+            virtual_distance = inc_leg_sizes_list[1]
         else:
-            r1 = inc_leg_sizes_list[i]
+            # r1 is the closest from the source
+            # r1 = inc_leg_sizes_list[i]
             r2 = inc_leg_sizes_list[i + 1]
 
             theta_out = inc_angles_list[i + 1]
@@ -522,13 +519,13 @@ def reverse_beamspread_2d_for_path(ray_geometry):
 
             sin_theta = np.sin(theta_out)
             cos_theta = np.cos(theta_out)
+            # beta_12 expressed with theta_out instead of theta_in
             beta = ((alpha * cos_theta * cos_theta)
                     / (1 - alpha * alpha * sin_theta * sin_theta))
 
-            # res = 1/sqrt(1 + leg_after / (beta * leg_before))
-            beamspread *= np.reciprocal(np.sqrt(1. + r2 / (r1 * beta)))
+            virtual_distance += r2 / beta
 
-    return beamspread
+    return np.reciprocal(np.sqrt(virtual_distance))
 
 
 def beamspread_for_path(ray_geometry):

@@ -362,10 +362,10 @@ def test_beamspread_2d_direct():
     expected_beamspread = {
         'L': array([[3.2375215, 0.84817938]]),
         'T': array([[4.37280604, 1.38511721]]),
-        'LL': array([[2.33034458, 1.24259583]]),
-        'LT': array([[2.49293429, 1.19394661]]),
-        'TL': array([[2.85272935, 0.75913334]]),
-        'TT': array([[3.19555665, 1.8960812]]),
+        'LL': array([[2.59842245, 1.41240375]]),
+        'LT': array([[2.64386375, 1.21543201]]),
+        'TL': array([[3.26794404, 1.22543632]]),
+        'TT': array([[3.46176208, 2.11367257]]),
     }
     beamspread = dict()
     for pathname, ray_geometry in ray_geometry_dict.items():
@@ -391,8 +391,7 @@ def test_beamspread_2d_direct():
     c1 = couplant.longitudinal_vel
     c2 = block.longitudinal_vel
     beta = c1 / c2
-    beamspread_LL = 1. / np.sqrt(((first_leg + second_leg / beta) *
-                                  (1. + third_leg / second_leg)))
+    beamspread_LL = 1. / np.sqrt(first_leg + second_leg / beta + third_leg / 1.)
     np.testing.assert_allclose(beamspread['LL'][0][0], beamspread_LL, rtol=1e-5)
 
 
@@ -416,10 +415,10 @@ def test_beamspread_2d_reverse():
     expected_beamspread = {
         'L': array([[6.69023357, 4.37716144]]),
         'T': array([[6.35918872, 4.44926218]]),
-        'LL': array([[4.81558177, 3.95438967]]),
-        'LT': array([[3.62537617, 1.84938364]]),
-        'TL': array([[5.89506311, 5.04457277]]),
-        'TT': array([[4.64716424, 3.94081983]]),
+        'LL': array([[4.85976767, 3.96478629]]),
+        'LT': array([[3.70327576, 1.86088711]]),
+        'TL': array([[5.81375404, 5.05328326]]),
+        'TT': array([[4.72833395, 3.96638874]]),
     }
     beamspread = dict()
     for pathname, ray_geometry in ray_geometry_dict.items():
@@ -453,8 +452,7 @@ def test_beamspread_2d_reverse():
     c1 = block.longitudinal_vel
     c2 = couplant.longitudinal_vel
     beta = c1 / c2
-    beamspread_LL = 1. / np.sqrt(((first_leg + second_leg) *
-                                  (1. + third_leg / (beta * second_leg))))
+    beamspread_LL = 1. / np.sqrt(first_leg + second_leg / 1. + third_leg / beta)
     np.testing.assert_allclose(beamspread['LL'][0][0], beamspread_LL, rtol=1e-5)
 
 
