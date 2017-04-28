@@ -449,7 +449,9 @@ def beamspread_2d_for_path(ray_geometry):
     for i in range(0, numinterfaces - 1):
         if i == 0:
             # Between the probe and the first interface, beamspread of an unbounded medium.
-            virtual_distance = inc_leg_sizes_list[1]
+            # Use a copy because the original may be a cached value and we don't want
+            # to change it by accident.
+            virtual_distance = inc_leg_sizes_list[1].copy()
         else:
             # r1 is the closest to the source
             # r1 = inc_leg_sizes_list[i]
@@ -507,7 +509,8 @@ def reverse_beamspread_2d_for_path(ray_geometry):
         # Because of the definition of inc_angles_list and inc_leg_sizes_list,
         # i = 0 corresponds to the closest leg to the source (point j)
         if i == 0:
-            virtual_distance = inc_leg_sizes_list[1]
+            # Use copy because of cache
+            virtual_distance = inc_leg_sizes_list[1].copy()
         else:
             # r1 is the closest from the source
             # r1 = inc_leg_sizes_list[i]

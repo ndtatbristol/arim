@@ -393,9 +393,30 @@ def _signed_leg_angle(polar, azimuth):
         return -polar
 
 
+def _to_readonly(x):
+    if isinstance(x, np.ndarray):
+        x.flags.writeable = False
+        return
+    elif isinstance(x, g.Points):
+        x.coords.flags.writeable = False
+        return
+    elif x is None:
+        return
+    else:
+        try:
+            xlist = list(x)
+        except TypeError:
+            raise TypeError("unhandled type: {}".format(type(x)))
+        else:
+            for x in xlist:
+                _to_readonly(x)
+
+
 def _cache_ray_geometry(user_func):
     """
     Cache decorator companion for RayGeometry.
+
+    Numpy arrays are set to read-only to avoid mistakes.
 
     Parameters
     ----------
@@ -436,6 +457,7 @@ def _cache_ray_geometry(user_func):
         res = user_func(self, interface_idx=interface_idx)
 
         # Save in cache:
+        _to_readonly(res)
         self._cache[key] = res
         if is_final:
             self._final_keys.add(key)
