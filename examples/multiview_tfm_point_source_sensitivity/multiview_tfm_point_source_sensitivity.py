@@ -257,7 +257,7 @@ for pathname, path in paths.items():
                     # End of debug plots
 
     del ray_geometry, debug_data
-raise Exception('stop')
+
 # %% Plot sensitivity
 if conf['plot.sensitivity_view']:
     view_sensitivity_dict = OrderedDict()
@@ -300,10 +300,6 @@ for viewname, view in views.items():
 with arim.helpers.timeit('Delay-and-sum', logger=logger):
     for tfm in tfms:
         tfm.run(fillvalue=conf['tfm.fillvalue'])
-        # Memory clean-up:
-        tfm.amplitudes_tx = None
-        tfm.amplitudes_rx = None
-gc.collect()
 
 # %% Plot all TFM
 
