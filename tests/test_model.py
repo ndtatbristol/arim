@@ -82,8 +82,9 @@ def make_context():
         path.rays = rays
 
     # Ray geometry
-    ray_geometry_dict = OrderedDict((k, arim.model.RayGeometry.from_path(v))
-                                    for (k, v) in paths.items())
+    ray_geometry_dict = OrderedDict(
+        (k, arim.model.RayGeometry.from_path(v, use_cache=True))
+        for (k, v) in paths.items())
 
     # Reverse paths
     rev_paths = OrderedDict([(key, path.reverse()) for (key, path) in
@@ -110,6 +111,7 @@ def make_context():
     context['scatterer_orientations'] = scatterer_orientations
     context['freq'] = 2e6
     context['element_width'] = 0.5e-3
+    context['wavelength_in_couplant'] = couplant.longitudinal_vel / context['freq']
 
     '''==================== copy/paste me ====================
     context = make_context()
@@ -219,7 +221,8 @@ def test_ray_tracing():
 
     for pathname, path in paths.items():
         idx = 1
-        coords = interfaces['frontwall_trans'].points.coords.take(path.rays.indices[idx], axis=0)
+        coords = interfaces['frontwall_trans'].points.coords.take(path.rays.indices[idx],
+                                                                  axis=0)
         # print("'{}': {},".format(pathname, repr(coords)))
         np.testing.assert_allclose(coords, expected_frontwall_points[pathname], **tol)
 
@@ -239,7 +242,8 @@ def test_ray_tracing():
     for pathname, path in paths.items():
         if expected_backwall_points[pathname] is not None:
             idx = 2
-            coords = interfaces['backwall_refl'].points.coords.take(path.rays.indices[idx], axis=0)
+            coords = interfaces['backwall_refl'].points.coords.take(
+                path.rays.indices[idx], axis=0)
             # print("'{}': {},".format(pathname, repr(coords)))
             np.testing.assert_allclose(coords, expected_backwall_points[pathname], **tol)
 
@@ -347,6 +351,64 @@ def test_ray_tracing():
                 assert out_angles_1 is not None
                 assert out_angles_2 is not None
                 np.testing.assert_allclose(out_angles_1, out_angles_2.T)
+
+
+def test_caching():
+    context = make_context()
+    ray_geometry_dict = context['ray_geometry_dict']
+    """:type : dict[str, arim.path.RayGeometry]"""
+    paths = context['paths']
+    element_width = context['element_width']
+    wavelength = context['wavelength_in_couplant']
+
+    new_ray_geometry = lambda pathname: make_context()['ray_geometry_dict'][pathname]
+    new_path = lambda pathname: make_context()['paths'][pathname]
+
+    # realistic dry run so that all caching mechanisms are called
+    for pathname, ray_geometry in ray_geometry_dict.items():
+        path = paths[pathname]
+        _ = arim.model.beamspread_2d_for_path(ray_geometry)
+        _ = arim.model.reverse_beamspread_2d_for_path(ray_geometry)
+        _ = arim.model.transmission_reflection_for_path(path, ray_geometry)
+        _ = arim.model.reverse_transmission_reflection_for_path(path, ray_geometry)
+        _ = arim.model.radiation_2d_rectangular_in_fluid_for_path(
+            ray_geometry, element_width, wavelength)
+        _ = arim.model.directivity_2d_rectangular_in_fluid_for_path(
+            ray_geometry, element_width, wavelength)
+
+    # Compare partially cached results to fresh ones
+    for pathname, ray_geometry in ray_geometry_dict.items():
+        path = paths[pathname]
+
+        r1 = arim.model.beamspread_2d_for_path(ray_geometry)
+        r2 = arim.model.beamspread_2d_for_path(new_ray_geometry(pathname))
+        np.testing.assert_allclose(r1, r2, err_msg=pathname)
+
+        r1 = arim.model.reverse_beamspread_2d_for_path(ray_geometry)
+        r2 = arim.model.reverse_beamspread_2d_for_path(new_ray_geometry(pathname))
+        np.testing.assert_allclose(r1, r2, err_msg=pathname)
+
+        r1 = arim.model.transmission_reflection_for_path(path, ray_geometry)
+        r2 = arim.model.transmission_reflection_for_path(new_path(pathname),
+                                                         new_ray_geometry(pathname))
+        np.testing.assert_allclose(r1, r2, err_msg=pathname)
+
+        r1 = arim.model.reverse_transmission_reflection_for_path(path, ray_geometry)
+        r2 = arim.model.reverse_transmission_reflection_for_path(
+            new_path(pathname), new_ray_geometry(pathname))
+        np.testing.assert_allclose(r1, r2, err_msg=pathname)
+
+        r1 = arim.model.radiation_2d_rectangular_in_fluid_for_path(
+            ray_geometry, element_width, wavelength)
+        r2 = arim.model.radiation_2d_rectangular_in_fluid_for_path(
+            new_ray_geometry(pathname), element_width, wavelength)
+        np.testing.assert_allclose(r1, r2, err_msg=pathname)
+
+        r1 = arim.model.directivity_2d_rectangular_in_fluid_for_path(
+            ray_geometry, element_width, wavelength)
+        r2 = arim.model.directivity_2d_rectangular_in_fluid_for_path(
+            new_ray_geometry(pathname), element_width, wavelength)
+        np.testing.assert_allclose(r1, r2, err_msg=pathname)
 
 
 def test_beamspread_2d_direct():

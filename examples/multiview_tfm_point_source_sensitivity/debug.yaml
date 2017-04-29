@@ -6,6 +6,12 @@
 # and dryrun.yaml (second) if the latter is also in used.
 
 debug: true
+debug.angles: true
+debug.transrefl: true
+debug.beamspread: true
+debug.directivity: true
+debug.sensitivity: true
+debug.paths_to_show: [L, LL]
 
 plot.bscan: true
 plot.interfaces: true

@@ -45,7 +45,7 @@ def radiation_2d_rectangular_in_fluid_for_path(ray_geometry, element_width, wave
                                                 element_width, wavelength)
 
 
-def directivity_finite_width_2d_for_path(ray_geometry, element_width, wavelength):
+def directivity_2d_rectangular_in_fluid_for_path(ray_geometry, element_width, wavelength):
     """
     Wrapper for :func:`directivity_2d_rectangular_in_fluid` that uses a
     :class:`RayGeometry` object.
@@ -63,6 +63,10 @@ def directivity_finite_width_2d_for_path(ray_geometry, element_width, wavelength
     """
     return directivity_2d_rectangular_in_fluid(ray_geometry.conventional_out_angle(0),
                                                element_width, wavelength)
+
+
+# alias for backward compatibility:
+directivity_finite_width_2d_for_path = directivity_2d_rectangular_in_fluid_for_path
 
 
 def transmission_at_interface(interface_kind, material_inc, material_out, mode_inc,
@@ -277,23 +281,20 @@ def transmission_reflection_for_path(path, ray_geometry, force_complex=True):
     amps : ndarray or None
         Amplitudes of transmission-reflection coefficients. None if not defined for all interface.
     """
-    inc_angles_list = [ray_geometry.conventional_inc_angle(k) for k in
-                       range(ray_geometry.numinterfaces)]
-
+    # Requires the incoming angles for all interfaces except the probe and the scatterers
+    # (first and last).
     transrefl = None
 
-    for i, interface in enumerate(path.interfaces):
-        if interface.transmission_reflection is None:
-            continue
-
-        assert i > 0, "cannot compute transmission/reflection at the first interface. Set 'transmission_reflection' to None in Interface."
+    # For all interfaces but the first and last:
+    for i, interface in enumerate(path.interfaces[1:-1], start=1):
+        assert interface.transmission_reflection is not None
 
         params = dict(
             interface_kind=interface.kind,
             material_inc=path.materials[i - 1],
             mode_inc=path.modes[i - 1],
             mode_out=path.modes[i],
-            angles_inc=inc_angles_list[i],
+            angles_inc=ray_geometry.conventional_inc_angle(i),
             force_complex=force_complex,
         )
 
@@ -342,11 +343,9 @@ def reverse_transmission_reflection_for_path(path, ray_geometry, force_complex=T
     """
     transrefl = None
 
-    for i, interface in enumerate(path.interfaces):
-        if interface.transmission_reflection is None:
-            continue
-
-        assert i > 0, "cannot compute transmission/reflection at the first interface. Set 'transmission_reflection' to None in Interface."
+    # For all interfaces but the first and last:
+    for i, interface in enumerate(path.interfaces[1:-1], start=1):
+        assert interface.transmission_reflection is not None
 
         mode_inc = path.modes[i]
         material_inc = path.materials[i]
@@ -433,31 +432,25 @@ def beamspread_2d_for_path(ray_geometry):
     Schmerr, Fundamentals of ultrasonic phased arrays (Springer), §2.5
 
     """
-    inc_angles_list = [ray_geometry.conventional_inc_angle(i) for i in
-                       range(ray_geometry.numinterfaces)]
-    inc_leg_sizes_list = [ray_geometry.inc_leg_size(i) for i in
-                          range(ray_geometry.numinterfaces)]
-
     refractive_indices = [None]
     velocities = ray_geometry.rays.fermat_path.velocities
     for inc_velocity, out_velocity in zip(velocities[:-1], velocities[1:]):
         refractive_indices.append(inc_velocity / out_velocity)
     refractive_indices.append(None)
 
-    numinterfaces = len(inc_angles_list)
     virtual_distance = None
-    for i in range(0, numinterfaces - 1):
+    for i in range(0, ray_geometry.numinterfaces - 1):
         if i == 0:
             # Between the probe and the first interface, beamspread of an unbounded medium.
             # Use a copy because the original may be a cached value and we don't want
             # to change it by accident.
-            virtual_distance = inc_leg_sizes_list[1].copy()
+            virtual_distance = ray_geometry.inc_leg_size(1).copy()
         else:
             # r1 is the closest to the source
             # r1 = inc_leg_sizes_list[i]
-            r2 = inc_leg_sizes_list[i + 1]
+            r2 = ray_geometry.inc_leg_size(i + 1)
 
-            theta_inc = inc_angles_list[i]
+            theta_inc = ray_geometry.conventional_inc_angle(i)
 
             alpha = refractive_indices[i]
 
@@ -492,11 +485,7 @@ def reverse_beamspread_2d_for_path(ray_geometry):
         ray_geometry.interfaces[-1].numpoints)
 
     """
-    inc_angles_list = [None] + [ray_geometry.conventional_inc_angle(i) for i in
-                                reversed(range(1, ray_geometry.numinterfaces))]
-    inc_leg_sizes_list = [None] + [ray_geometry.inc_leg_size(i) for i in
-                                   reversed(range(1, ray_geometry.numinterfaces))]
-    numinterfaces = len(inc_angles_list)
+    numinterfaces = ray_geometry.numinterfaces
 
     refractive_indices = [None]
     velocities = ray_geometry.rays.fermat_path.velocities
@@ -505,18 +494,17 @@ def reverse_beamspread_2d_for_path(ray_geometry):
     refractive_indices.append(None)
 
     virtual_distance = None
-    for i in range(numinterfaces - 1):
-        # Because of the definition of inc_angles_list and inc_leg_sizes_list,
-        # i = 0 corresponds to the closest leg to the source (point j)
+    # i = 0 corresponds to the closest leg to the source (point j)
+    for i in range(ray_geometry.numinterfaces - 1):
         if i == 0:
             # Use copy because of cache
-            virtual_distance = inc_leg_sizes_list[1].copy()
+            virtual_distance = ray_geometry.inc_leg_size(numinterfaces - 1).copy()
         else:
             # r1 is the closest from the source
             # r1 = inc_leg_sizes_list[i]
-            r2 = inc_leg_sizes_list[i + 1]
+            r2 = ray_geometry.inc_leg_size(numinterfaces - i - 1)
 
-            theta_out = inc_angles_list[i + 1]
+            theta_out = ray_geometry.conventional_inc_angle(numinterfaces - i - 1)
 
             alpha = refractive_indices[i]
 

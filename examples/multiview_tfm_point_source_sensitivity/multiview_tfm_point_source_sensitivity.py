@@ -16,6 +16,7 @@ import yaml
 import hashlib
 import pandas
 from collections import OrderedDict
+import gc
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -26,6 +27,7 @@ import arim.helpers
 import arim.path
 import arim.plot as aplt
 from arim.registration import registration_by_flat_frontwall_detection
+import arim.models.block_in_immersion as bim
 
 # %% Load configuration
 
@@ -156,98 +158,121 @@ views = arim.path.views_for_block_in_immersion(paths)
 
 arim.im.ray_tracing(views.values())
 
-# %% Precompute ray geometry
+# %% Compute forward model
+# Remark: results are cached in model.tx_ray_weights and model.rx_ray_weights
 
-# Precomputing is not mandatory but is helpful for performance monitoring.
-with arim.helpers.timeit('Computation of ray geometry', logger=logger):
-    ray_geometry_dict = OrderedDict()
-    for path in paths.values():
-        ray_geometry = arim.path.RayGeometry.from_path(path)
-        with ray_geometry.precompute():
-            # For directivity:
-            ray_geometry.conventional_out_angle(0)
-            
-            # For beamspread and transmission-reflection:
-            for i in range(path.numinterfaces - 1):
-                ray_geometry.conventional_inc_angle(i)
+tx_ray_weights_dict = OrderedDict()
+rx_ray_weights_dict = OrderedDict()
+tx_sensitivity_dict = OrderedDict()
+rx_sensitivity_dict = OrderedDict()
 
-        ray_geometry_dict[path.name] = ray_geometry
+all_tx_paths = {view.tx_path for view in views.values()}
+all_rx_paths = {view.rx_path for view in views.values()}
 
-# %% Debug angle
+model_options = dict(frequency=frame.probe.frequency,
+                     probe_element_width=frame.probe.dimensions.x[0],
+                     use_beamspread=conf['model.use_beamspread'],
+                     use_directivity=conf['model.use_directivity'],
+                     use_transrefl=conf['model.use_transrefl'])
 
-if conf.get('debug', None):
-    for pathname, path in paths.items():
-        if pathname not in ['L', 'LT']:
+for pathname, path in paths.items():
+    if path not in all_tx_paths and path not in all_rx_paths:
+        continue
+    ray_geometry = arim.path.RayGeometry.from_path(path)
+
+    debug_data = OrderedDict()
+
+    with arim.helpers.timeit('Ray weights for {}'.format(pathname), logger=logger):
+        if path in all_tx_paths:
+            ray_weights, ray_weights_debug = bim.tx_ray_weights(path, ray_geometry,
+                                                                **model_options)
+
+            sensitivity = arim.model.sensitivity_conjugate_for_path(ray_weights)
+            assert path not in tx_ray_weights_dict
+            assert path not in tx_sensitivity_dict
+            tx_ray_weights_dict[path] = ray_weights
+            tx_sensitivity_dict[path] = sensitivity
+            debug_data['direct'] = dict(ray_weights=ray_weights_debug,
+                                        sensitivity=sensitivity)
+        if path in all_rx_paths:
+            ray_weights, ray_weights_debug = bim.rx_ray_weights(path, ray_geometry,
+                                                                **model_options)
+
+            sensitivity = arim.model.sensitivity_conjugate_for_path(ray_weights)
+            assert path not in rx_ray_weights_dict
+            assert path not in rx_sensitivity_dict
+            rx_ray_weights_dict[path] = ray_weights
+            rx_sensitivity_dict[path] = sensitivity
+            debug_data['reverse'] = dict(ray_weights=ray_weights_debug,
+                                         sensitivity=sensitivity)
+
+    if conf.get('debug', False):
+        if pathname not in conf['debug.paths_to_show']:
             continue
-        ray_geometry = ray_geometry_dict[pathname]
-        for i in range(ray_geometry.numinterfaces):
-            data = ray_geometry.conventional_inc_angle(i)
-            if data is None:
-                continue
-            aplt.plot_oxz(np.rad2deg(data[0]), grid,
-                          title='{pathname} conv. angle inc {i}'.format(**globals()),
-                          savefig=False)
-        # For scattering:
-        data = ray_geometry.signed_inc_angle(i)
-        aplt.plot_oxz(np.rad2deg(data[0]), grid,
-                      title='{pathname} signed angle inc {i}'.format(**globals()),
-                      savefig=False)
-        
+        if conf.get('debug.angles', False):
+            for tx_or_rx, d in debug_data.items():
+                for i in range(1, ray_geometry.numinterfaces - 1):
+                    data = ray_geometry.conventional_inc_angle(i)
+                    interface_name = ray_geometry.interfaces[i].points.name
+                    aplt.plot_oxz(
+                        np.rad2deg(data[0]), grid,
+                        title='{tx_or_rx} {pathname} conv. angle inc {i} ({interface_name})'.format(
+                            **globals()),
+                        savefig=False)
 
-        # For directivity:
-        i = 0
-        data = ray_geometry.conventional_out_angle(i)
-        
-        if data is None:
-            continue
-        aplt.plot_oxz(np.rad2deg(data[0]), grid,
-                      title='{pathname} conv. angle out {i}'.format(**globals()),
-                      savefig=False)
+                # For directivity:
+                i = 0
+                data = ray_geometry.conventional_out_angle(i)
+                aplt.plot_oxz(
+                    np.rad2deg(data[0]), grid,
+                    title='{tx_or_rx} {pathname} conv. angle out {i}'.format(**globals()),
+                    savefig=False)
 
+                if conf.get('debug.transrefl', False):
+                    i = 0
+                    aplt.plot_oxz(
+                        np.abs(d['ray_weights']['transrefl'][i]), grid,
+                        title='{tx_or_rx} {pathname} transrefl (abs) (elt {i})'.format(
+                            **globals()),
+                        savefig=False)
+                if conf.get('debug.directivity', False):
+                    i = 0
+                    aplt.plot_oxz(
+                        np.abs(d['ray_weights']['directivity'][i]), grid,
+                        title='{tx_or_rx} {pathname} directivity (elt {i})'.format(
+                            **globals()),
+                        savefig=False)
+                if conf.get('debug.beamspread', False):
+                    i = 0
+                    aplt.plot_oxz(
+                        d['ray_weights']['beamspread'][i], grid,
+                        title='{tx_or_rx} {pathname} beamspread (elt {i})'.format(
+                            **globals()),
+                        savefig=False)
+                if conf.get('debug.sensitivity', False):
+                    aplt.plot_oxz(
+                        d['sensitivity'], grid,
+                        title='{tx_or_rx} {pathname} sensitivity'.format(**globals()),
+                        savefig=False)
+                    # End of debug plots
 
-# %% Computation ray weights
-
-ray_weights_dict = OrderedDict()
-with arim.helpers.timeit('Computation of ray weights'):
-    for pathname, path in paths.items():
-        ray_geometry = ray_geometry_dict[pathname]
-        shape = (frame.probe.numelements, grid.numpoints)
-        if conf['model.use_directivity']:
-            directivity = arim.model.directivity_finite_width_2d_for_path(
-                ray_geometry, frame.probe.dimensions.x[0], wavelength_in_couplant)
-        else:
-            directivity = 1.
-        if conf['model.use_transrefl']:
-            transrefl = arim.model.transmission_reflection_for_path(path, ray_geometry,
-                                                                    force_complex=True)
-        else:
-            transrefl = 1.
-        if conf['model.use_beamspread']:
-            beamspread = arim.model.beamspread_for_path(ray_geometry)
-        else:
-            beamspread = 1.
-        # use resize for the case where directivity, transrefl and beamspread are all 1.
-        ray_weights_dict[pathname] = np.resize(directivity * transrefl * beamspread,
-                                               shape)
-
-with arim.helpers.timeit('Computation of sensitivity'):
-    sensitivity_path_dict = OrderedDict((k, arim.model.sensitivity_conjugate_for_path(v))
-                                        for k, v in ray_weights_dict.items())
-    sensitivity_view_dict = OrderedDict()
+    del ray_geometry, debug_data
+raise Exception('stop')
+# %% Plot sensitivity
+if conf['plot.sensitivity_view']:
+    view_sensitivity_dict = OrderedDict()
     for viewname, view in views.items():
-        sensitivity_view_dict[viewname] = arim.model.sensitivity_conjugate_for_view(
-            sensitivity_path_dict[view.tx_path.name],
-            sensitivity_path_dict[view.rx_path.name],
+        view_sensitivity_dict[viewname] = arim.model.sensitivity_conjugate_for_view(
+            tx_sensitivity_dict[view.tx_path],
+            rx_sensitivity_dict[view.rx_path]
         )
 
-# %% Plot sensitivity
-
-if conf['plot.sensitivity_view']:
-    ref_db = max(np.nanmax(np.abs(v)) for v in sensitivity_view_dict.values())
-    aplt.plot_oxz_many(sensitivity_view_dict.values(), grid, 7, 3,
-                       title_list=sensitivity_view_dict.keys(),
+    ref_db = max(np.nanmax(np.abs(v)) for v in view_sensitivity_dict.values())
+    aplt.plot_oxz_many(view_sensitivity_dict.values(), grid, 7, 3,
+                       title_list=view_sensitivity_dict.keys(),
                        suptitle='Sensitivity', scale='db', ref_db=ref_db,
                        filename='sensitivity', clim=[-60, 0])
+    del view_sensitivity_dict
 
 # %% Setups TFM
 frame.apply_filter(
@@ -256,18 +281,18 @@ frame.apply_filter(
 tfms = []
 for viewname, view in views.items():
     amps_tx = arim.im.SensitivityConjugateAmplitudes(
-        frame, grid, ray_weights_dict[view.tx_path.name],
-        sensitivity_path_dict[view.tx_path.name],
+        frame, grid, tx_ray_weights_dict[view.tx_path],
+        tx_sensitivity_dict[view.tx_path],
         divide_by_sensitivity=conf['tfm.divide_by_sensitivity']
     )
     amps_rx = arim.im.SensitivityConjugateAmplitudes(
-        frame, grid, ray_weights_dict[view.rx_path.name],
-        sensitivity_path_dict[view.rx_path.name],
+        frame, grid, tx_ray_weights_dict[view.tx_path],
+        rx_sensitivity_dict[view.rx_path],
         divide_by_sensitivity=conf['tfm.divide_by_sensitivity']
     )
 
-    tfm = arim.im.SingleViewTFM(frame, grid, view,
-                                amplitudes_tx=amps_tx, amplitudes_rx=amps_rx)
+    tfm = arim.im.SingleViewTFM(frame, grid, view, amplitudes_tx=amps_tx,
+                                amplitudes_rx=amps_rx)
     tfms.append(tfm)
 
 # %% Run all TFM
@@ -275,6 +300,10 @@ for viewname, view in views.items():
 with arim.helpers.timeit('Delay-and-sum', logger=logger):
     for tfm in tfms:
         tfm.run(fillvalue=conf['tfm.fillvalue'])
+        # Memory clean-up:
+        tfm.amplitudes_tx = None
+        tfm.amplitudes_rx = None
+gc.collect()
 
 # %% Plot all TFM
 
