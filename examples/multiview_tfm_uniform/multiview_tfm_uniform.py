@@ -11,6 +11,7 @@ import logging
 import yaml
 import hashlib
 import pandas
+import itertools
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -55,7 +56,7 @@ def load_configuration(debug=False, dryrun=False):
         except FileNotFoundError:
             logger.warning('Debug configuration not found')
     try:
-        module_conf = conf.pop('arim.plot')
+        module_conf = conf['arim.plot']
     except KeyError:
         pass
     else:
@@ -72,9 +73,9 @@ mpl.rcParams['savefig.dpi'] = 300
 
 # %% Load frame
 
-expdata_filename = conf.pop('frame.datafile')
+expdata_filename = conf['frame.datafile']
 frame = arim.io.load_expdata(expdata_filename)
-frame.probe = arim.Probe.make_matrix_probe(**conf.pop('probe'))
+frame.probe = arim.Probe.make_matrix_probe(**conf['probe'])
 
 # Set probe reference point to first element
 # put the first element in O(0,0,0), then it will be in (0,0,z) later.
@@ -83,8 +84,8 @@ frame.probe.translate_to_point_O()
 
 # %% Set-up materials
 
-couplant = arim.Material(**conf.pop('material.couplant'))
-block = arim.Material(**conf.pop('material.block'))
+couplant = arim.Material(**conf['material.couplant'])
+block = arim.Material(**conf['material.block'])
 
 wavelength_in_couplant = couplant.longitudinal_vel / frame.probe.frequency
 
@@ -99,7 +100,7 @@ if conf['plot.bscan']:
 
 # Detect frontwall:
 _, _, time_to_surface = \
-    registration_by_flat_frontwall_detection(frame, couplant, **conf.pop('registration'))
+    registration_by_flat_frontwall_detection(frame, couplant, **conf['registration'])
 
 if conf['plot.registration']:
     plt.figure()
@@ -117,14 +118,14 @@ if conf['plot.registration']:
 probe_points, probe_orientations = arim.path.points_from_probe(frame.probe)
 
 frontwall_points, frontwall_orientations \
-    = arim.path.points_1d_wall_z(**conf.pop('interfaces.frontwall'), name='Frontwall')
+    = arim.path.points_1d_wall_z(**conf['interfaces.frontwall'], name='Frontwall')
 backwall_points, backwall_orientations = \
-    arim.path.points_1d_wall_z(**conf.pop('interfaces.backwall'), name='Backwall')
+    arim.path.points_1d_wall_z(**conf['interfaces.backwall'], name='Backwall')
 
-grid = arim.geometry.Grid(**conf.pop('interfaces.grid'), ymin=0., ymax=0.)
+grid = arim.geometry.Grid(**conf['interfaces.grid'], ymin=0., ymax=0.)
 grid_points, grid_orientation = arim.path.points_from_grid(grid)
-area_of_interest = grid.points_in_rectbox(**conf.pop('area_of_interest'))
-reference_area = grid.points_in_rectbox(**conf.pop('reference_area'))
+area_of_interest = grid.points_in_rectbox(**conf['area_of_interest'])
+reference_area = grid.points_in_rectbox(**conf['reference_area'])
 
 interfaces = arim.path.interfaces_for_block_in_immersion(couplant, probe_points,
                                                          probe_orientations,
@@ -136,7 +137,7 @@ interfaces = arim.path.interfaces_for_block_in_immersion(couplant, probe_points,
 
 paths = arim.path.paths_for_block_in_immersion(block, couplant, interfaces)
 
-if conf.pop('plot.interfaces'):
+if conf['plot.interfaces']:
     aplt.plot_interfaces(interfaces.values(), show_orientations=True, show_grid=True)
 
 for p in interfaces:
@@ -144,6 +145,10 @@ for p in interfaces:
 
 # Make views
 views = arim.path.views_for_block_in_immersion(paths)
+if conf['views_to_use'] != 'all':
+    views = OrderedDict([(viewname, view) for viewname, view in views.items()
+                         if viewname in conf['views_to_use']])
+
 
 # %% Setup Fermat solver and compute rays
 
@@ -172,7 +177,10 @@ with arim.helpers.timeit('Delay-and-sum', logger=logger):
 
 if conf['plot.tfm']:
     # func_res = lambda x: np.imag(x)
-    scale = aplt.common_dynamic_db_scale([tfm.res for tfm in tfms], reference_area)
+    if conf['tfm.use_dynamic_scale']:
+        scale = aplt.common_dynamic_db_scale([tfm.res for tfm in tfms], reference_area)
+    else:
+        scale = itertools.repeat((None, None))
 
     for i, tfm in enumerate(tfms):
         view = tfm.view
@@ -192,6 +200,9 @@ if conf['plot.tfm']:
 
             aplt.draw_rays_on_click(grid, tfm.tx_rays, element_index, ax, linestyle_tx)
             aplt.draw_rays_on_click(grid, tfm.rx_rays, element_index, ax, linestyle_rx)
+
+        if conf['plot.force_close']:
+            plt.close(ax.figure)
 
 # Block script until windows are closed.
 plt.show()

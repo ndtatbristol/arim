@@ -17,6 +17,9 @@ arim.plot:
 
 save_to_csv: false
 
-plot.views_to_show: [L-L, LL-T, LT-L, TL-TT]
-plot.paths_to_show: [L, LT]
+tfm.use_dynamic_scale: true
+
+views_to_use: [L-L, LL-T, LT-L, TL-TT]
+
 plot.force_close: false
+plot.show_rays: true

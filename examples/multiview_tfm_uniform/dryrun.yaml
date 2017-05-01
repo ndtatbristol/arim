@@ -16,3 +16,10 @@ arim.plot:
   savefig: false
 
 save_to_csv: false
+
+tfm.use_dynamic_scale: true
+
+views_to_use: [L-L, LL-T, LT-L, TL-TT]
+
+plot.force_close: false
+plot.show_rays: true
