@@ -6,6 +6,7 @@ import numpy as np
 import warnings
 from collections import namedtuple
 import numba
+from concurrent.futures import ThreadPoolExecutor
 
 from .. import geometry as g
 from .. import model
@@ -506,14 +507,19 @@ def tfm_with_scattering(frame, grid, view, fillvalue, scattering_fn,
     if block_size is None:
         block_size = 1000
 
-    for chunk in chunk_array((grid.numpoints,), block_size, axis=0):
-        _tfm_with_scattering(weighted_scanlines, scanline_weights, frame.tx, frame.rx,
-                             tx_lookup_times[chunk], rx_lookup_times[chunk],
-                             tx_amplitudes[chunk], rx_amplitudes[chunk],
-                             scattering_fn, tx_scattering_angles[..., chunk[0]],
-                             rx_scattering_angles[..., chunk[0]],
-                             frame.time.step, frame.time.start, fillvalue,
-                             sensitivity_result[chunk], tfm_result[chunk])
+    futures = []
+    with ThreadPoolExecutor(max_workers=numthreads) as executor:
+        for chunk in chunk_array((grid.numpoints,), block_size, axis=0):
+            _tfm_with_scattering(weighted_scanlines, scanline_weights, frame.tx, frame.rx,
+                                 tx_lookup_times[chunk], rx_lookup_times[chunk],
+                                 tx_amplitudes[chunk], rx_amplitudes[chunk],
+                                 scattering_fn, tx_scattering_angles[..., chunk[0]],
+                                 rx_scattering_angles[..., chunk[0]],
+                                 frame.time.step, frame.time.start, fillvalue,
+                                 sensitivity_result[chunk], tfm_result[chunk])
+    # Raise exceptions that happened, if any:
+    for future in futures:
+        future.result()
 
     if divide_by_sensitivity:
         tfm_result /= sensitivity_result
