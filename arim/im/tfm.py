@@ -499,6 +499,7 @@ def tfm_with_scattering(frame, grid, view, fillvalue, scattering_fn,
 
     dict(dt=frame.time.step, t0=frame.time.start, fillvalue=fillvalue)
 
+    # TODO: improve selection of datatype
     tfm_result = np.zeros(grid.numpoints, np.complex)
     sensitivity_result = np.zeros(grid.numpoints, np.float)
 
@@ -506,13 +507,13 @@ def tfm_with_scattering(frame, grid, view, fillvalue, scattering_fn,
         block_size = 1000
 
     for chunk in chunk_array((grid.numpoints,), block_size, axis=0):
-        _model_assisted_tfm(weighted_scanlines, scanline_weights, frame.tx, frame.rx,
-                            tx_lookup_times[chunk], rx_lookup_times[chunk],
-                            tx_amplitudes[chunk], rx_amplitudes[chunk],
-                            scattering_fn, tx_scattering_angles[..., chunk[0]],
-                            rx_scattering_angles[..., chunk[0]],
-                            frame.time.step, frame.time.start, fillvalue,
-                            sensitivity_result[chunk], tfm_result[chunk])
+        _tfm_with_scattering(weighted_scanlines, scanline_weights, frame.tx, frame.rx,
+                             tx_lookup_times[chunk], rx_lookup_times[chunk],
+                             tx_amplitudes[chunk], rx_amplitudes[chunk],
+                             scattering_fn, tx_scattering_angles[..., chunk[0]],
+                             rx_scattering_angles[..., chunk[0]],
+                             frame.time.step, frame.time.start, fillvalue,
+                             sensitivity_result[chunk], tfm_result[chunk])
 
     if divide_by_sensitivity:
         tfm_result /= sensitivity_result
@@ -528,7 +529,7 @@ def tfm_with_scattering(frame, grid, view, fillvalue, scattering_fn,
     return tfm_obj, tfm_result, sensitivity_result
 
 
-def _model_assisted_tfm(
+def _tfm_with_scattering(
         weighted_scanlines, scanline_weights, tx, rx, tx_lookup_times, rx_lookup_times,
         tx_amplitudes, rx_amplitudes, scattering_fn,
         tx_scattering_angles, rx_scattering_angles,
@@ -622,7 +623,7 @@ def _model_assisted_tfm(
     tfm_amplitudes = model_amplitudes.conjugate()
     del model_amplitudes
 
-    _das_numba._general_delay_and_sum_linear(weighted_scanlines, tx, rx,
-                                             tx_lookup_times, rx_lookup_times,
-                                             tfm_amplitudes,
-                                             dt, t0, fillvalue, tfm_result)
+    _das_numba._general_delay_and_sum_nearest(weighted_scanlines, tx, rx,
+                                              tx_lookup_times, rx_lookup_times,
+                                              tfm_amplitudes,
+                                              dt, t0, fillvalue, tfm_result)
