@@ -19,6 +19,7 @@ from . import core as c
 from . import ut
 from .ut import snell_angles, fluid_solid, solid_l_fluid, solid_t_fluid, \
     directivity_2d_rectangular_in_fluid
+from .helpers import chunk_array
 
 # for backward compatiblity:
 from .path import RayGeometry
@@ -531,6 +532,7 @@ def beamspread_for_path(ray_geometry):
 
 def sensitivity_conjugate_for_path(ray_weights):
     """
+    Critical bug here: works only for FMC
 
     Parameters
     ----------
@@ -543,6 +545,7 @@ def sensitivity_conjugate_for_path(ray_weights):
         Shape : (numgridpoints, )
 
     """
+    warnings.warn('This function does not work propertly, to be fixed')
     ray_weights = ray_weights
     abs_ray_weights = np.abs(ray_weights)
     return np.mean(abs_ray_weights * abs_ray_weights, axis=0)
@@ -564,7 +567,29 @@ def sensitivity_conjugate_for_view(tx_sensitivity, rx_sensitivity):
         Shape: (numgridpoints, )
 
     """
+    warnings.warn('This function does not work propertly, to be fixed')
     return tx_sensitivity * rx_sensitivity
+
+
+def sensitivity_image_point_source(tx_ray_weights, rx_ray_weights, tx, rx,
+                                   scanline_weights):
+    numelements, numpoints = tx_ray_weights.shape
+    numscanlines = tx.shape[0]
+    
+    tx_amplitudes = np.ascontiguousarray(tx_ray_weights.T)
+    rx_amplitudes = np.ascontiguousarray(rx_ray_weights.T)
+
+    sensitivity = np.zeros(numpoints)
+    block_size = 1000
+
+    for chunk in chunk_array(sensitivity.shape, block_size, axis=0):
+        # Model amplitudes P_ij
+        model_amplitudes = (np.take(tx_amplitudes[chunk], tx, axis=1)
+                            * np.take(rx_amplitudes[chunk], rx, axis=1))
+
+        # Compute sensitivity image (write result on sensitivity_result)
+        sensitivity_image(model_amplitudes, scanline_weights, sensitivity[chunk])
+    return sensitivity
 
 
 # @numba.jit(nopython=True)
