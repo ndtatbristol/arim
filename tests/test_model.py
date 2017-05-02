@@ -809,9 +809,15 @@ def test_sensitivity():
     model_amplitudes = np.zeros((numpoints, numscanlines), complex)
     model_amplitudes[0] = x
 
+    # write on result
     arim.model.sensitivity_image(model_amplitudes, scanline_weights, result)
     np.testing.assert_almost_equal(result[0], numelements * numelements)
     np.testing.assert_allclose(result[1:], 0.)
+
+    # create a new array
+    result2 = arim.model.sensitivity_image(model_amplitudes, scanline_weights)
+    np.testing.assert_almost_equal(result, result2)
+
 
     # FMC case
     tx, rx = arim.ut.hmc(numelements)
@@ -825,3 +831,7 @@ def test_sensitivity():
     arim.model.sensitivity_image(model_amplitudes, scanline_weights, result)
     np.testing.assert_almost_equal(result[0], numelements * numelements)
     np.testing.assert_allclose(result[1:], 0.)
+
+    # create a new array
+    result2 = arim.model.sensitivity_image(model_amplitudes, scanline_weights)
+    np.testing.assert_almost_equal(result, result2)

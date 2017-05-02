@@ -567,7 +567,12 @@ def sensitivity_conjugate_for_view(tx_sensitivity, rx_sensitivity):
     return tx_sensitivity * rx_sensitivity
 
 
-@numba.jit(nopython=True)
+# @numba.jit(nopython=True)
+@numba.guvectorize([(numba.float32[:, :], numba.float32[:], numba.float32[:]),
+                    (numba.float64[:, :], numba.float64[:], numba.float64[:]),
+                    (numba.complex64[:, :], numba.float32[:], numba.float32[:]),
+                    (numba.complex128[:, :], numba.float64[:], numba.float64[:]),
+                    ], '(n, m),(m)->(n)', target='cpu')
 def sensitivity_image(model_amplitudes, scanline_weights, result):
     """
     Compute sensitivity I_0. FMC or HMC agnostic.
