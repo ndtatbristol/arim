@@ -8,13 +8,14 @@ from collections import namedtuple
 import numba
 
 from .. import geometry as g
+from .. import model
 from . import amplitudes
+from .das import _das_numba
 from .. import settings as s
 from .. import core as c
 from ..path import IMAGING_MODES  # import for backward compatibility
-from ..path import default_orientations
 from ..exceptions import ArimWarning
-from ..helpers import parse_enum_constant
+from ..helpers import parse_enum_constant, chunk_array
 
 __all__ = ['BaseTFM', 'ContactTFM', 'SingleViewTFM', 'IMAGING_MODES', 'SimpleTFM']
 
@@ -469,3 +470,159 @@ def _extrema_lookup_times(lookup_times_tx, lookup_times_rx, tx_list, rx_list):
                 tx_elt_for_tmin = tx_list[scanline]
                 rx_elt_for_tmin = rx_list[scanline]
     return tmin, tmax, tx_elt_for_tmin, rx_elt_for_tmin, tx_elt_for_tmax, rx_elt_for_tmax
+
+
+def tfm_with_scattering(frame, grid, view, fillvalue, scattering_fn,
+                        tx_ray_weights, rx_ray_weights,
+                        tx_scattering_angles, rx_scattering_angles,
+                        scanline_weights, divide_by_sensitivity=True,
+                        numthreads=None, block_size=None):
+    numscanlines = frame.numscanlines
+    numpoints = grid.numpoints
+    numelements = frame.probe.numelements
+
+    tx_lookup_times = np.ascontiguousarray(view.tx_path.rays.times.T)
+    rx_lookup_times = np.ascontiguousarray(view.tx_path.rays.times.T)
+    tx_amplitudes = np.ascontiguousarray(tx_ray_weights.T)
+    rx_amplitudes = np.ascontiguousarray(rx_ray_weights.T)
+
+    weighted_scanlines = frame.scanlines * scanline_weights[:, np.newaxis]
+
+    assert weighted_scanlines.shape[0] == numscanlines
+    assert rx_scattering_angles.shape == (numelements, numpoints)
+    assert tx_lookup_times.shape == (numpoints, numelements)
+    assert rx_lookup_times.shape == (numpoints, numelements)
+    assert tx_scattering_angles.shape == (numelements, numpoints)
+    assert rx_scattering_angles.shape == (numelements, numpoints)
+    assert tx_amplitudes.shape == (numpoints, numelements)
+    assert rx_amplitudes.shape == (numpoints, numelements)
+
+    dict(dt=frame.time.step, t0=frame.time.start, fillvalue=fillvalue)
+
+    tfm_result = np.zeros(grid.numpoints, np.complex)
+    sensitivity_result = np.zeros(grid.numpoints, np.float)
+
+    if block_size is None:
+        block_size = 1000
+
+    for chunk in chunk_array((grid.numpoints,), block_size, axis=0):
+        _model_assisted_tfm(weighted_scanlines, scanline_weights, frame.tx, frame.rx,
+                            tx_lookup_times[chunk], rx_lookup_times[chunk],
+                            tx_amplitudes[chunk], rx_amplitudes[chunk],
+                            scattering_fn, tx_scattering_angles[..., chunk[0]],
+                            rx_scattering_angles[..., chunk[0]],
+                            frame.time.step, frame.time.start, fillvalue,
+                            sensitivity_result[chunk], tfm_result[chunk])
+
+    if divide_by_sensitivity:
+        tfm_result /= sensitivity_result
+
+    tfm_result = tfm_result.reshape((grid.numx, grid.numy, grid.numz))
+    sensitivity_result = sensitivity_result.reshape((grid.numx, grid.numy, grid.numz))
+
+    # Dirty hack: return a BaseTFM object.
+    # TODO: create a proper TfmResult object
+    tfm_obj = BaseTFM(frame, grid)
+    tfm_obj.res = tfm_result
+
+    return tfm_obj, tfm_result, sensitivity_result
+
+
+def _model_assisted_tfm(
+        weighted_scanlines, scanline_weights, tx, rx, tx_lookup_times, rx_lookup_times,
+        tx_amplitudes, rx_amplitudes, scattering_fn,
+        tx_scattering_angles, rx_scattering_angles,
+        dt, t0, fillvalue,
+        sensitivity_result,
+        tfm_result):
+    """
+    Forward model::
+
+        F_ij = Q_i Q'_j S_ij exp(-i omega (tau_i + tau'_j))
+
+    Notation::
+
+        P_ij = Q_i Q'_j S_ij
+
+    Sensitivity::
+
+        I_0 = sum_i sum_j |P_ij|^2
+
+    TFM::
+
+        I = sum_i sum_j conjugate(P_ij) / I_0 * F_ij exp(i omega (tau_i + tau'_j))
+
+
+    Parameters
+    ----------
+    weighted_scanlines
+    scanline_weights
+    tx
+    rx
+    tx_lookup_times
+        tau
+    rx_lookup_times
+        tau'
+    tx_amplitudes
+        Q
+    rx_amplitudes
+        Q'
+    scattering_fn
+        Returns S
+    tx_scattering_angles
+    rx_scattering_angles
+    dt : float
+    t0 : float
+    fillvalue : float
+    sensitivity_result
+        I_0
+    tfm_result
+        I
+
+    Returns
+    -------
+    None. Write on sensitivity_result and tfm_result
+
+
+    """
+    numelements, numpoints = tx_scattering_angles.shape
+    numscanlines = tx.shape[0]
+    assert tx.shape == (numscanlines,)
+    assert rx.shape == (numscanlines,)
+    assert weighted_scanlines.shape[0] == numscanlines
+    assert rx_scattering_angles.shape == (numelements, numpoints)
+    assert tx_lookup_times.shape == (numpoints, numelements)
+    assert rx_lookup_times.shape == (numpoints, numelements)
+    assert tx_amplitudes.shape == (numpoints, numelements)
+    assert rx_amplitudes.shape == (numpoints, numelements)
+    assert sensitivity_result.shape == (numpoints,)
+    assert tfm_result.shape == (numpoints,)
+
+    # This can be big, warning:
+    scattering_angles = (
+        np.take(tx_scattering_angles, tx, axis=0)
+        - np.take(rx_scattering_angles, rx, axis=0)
+    )
+    assert scattering_angles.shape == (numscanlines, numpoints)
+    scattering_amplitudes = scattering_fn(scattering_angles)
+    scattering_amplitudes = np.ascontiguousarray(scattering_amplitudes.T)
+    assert scattering_amplitudes.shape == (numpoints, numscanlines)
+    del scattering_angles
+
+    # Model amplitudes P_ij
+    model_amplitudes = (scattering_amplitudes * np.take(tx_amplitudes, tx, axis=1)
+                        * np.take(rx_amplitudes, rx, axis=1))
+    del scattering_amplitudes
+
+    # Compute sensitivity image (write result on sensitivity_result)
+    model.sensitivity_image(model_amplitudes, scanline_weights,
+                            sensitivity_result)
+
+    # Remark: the sensitivity here does not depend on the
+    tfm_amplitudes = model_amplitudes.conjugate()
+    del model_amplitudes
+
+    _das_numba._general_delay_and_sum_linear(weighted_scanlines, tx, rx,
+                                             tx_lookup_times, rx_lookup_times,
+                                             tfm_amplitudes,
+                                             dt, t0, fillvalue, tfm_result)
