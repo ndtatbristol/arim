@@ -13,6 +13,7 @@ import logging
 import warnings
 
 import numpy as np
+import numba
 
 from . import core as c
 from . import ut
@@ -564,3 +565,30 @@ def sensitivity_conjugate_for_view(tx_sensitivity, rx_sensitivity):
 
     """
     return tx_sensitivity * rx_sensitivity
+
+
+@numba.jit(nopython=True)
+def sensitivity_image(model_amplitudes, scanline_weights, result):
+    """
+    Compute sensitivity I_0. FMC or HMC agnostic.
+
+    Parameters
+    ----------
+    model_amplitudes : ndarray
+        (numpoints, numscanlines)
+    scanline_weights : ndarray
+        (numscanlines, )
+    result
+        (numpoints, )
+
+    Returns
+    -------
+    None, write in result.
+
+    """
+    numpoints, numscanlines = model_amplitudes.shape
+    for pidx in range(numpoints):
+        result[pidx] = 0.
+        for scan in range(numscanlines):
+            x = abs(model_amplitudes[pidx, scan])
+            result[pidx] += scanline_weights[scan] * x * x

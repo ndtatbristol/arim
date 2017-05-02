@@ -792,3 +792,36 @@ def test_radiation_2d_rectangular_in_fluid():
         # Uncomment the following line to generate hardcoded-values:
         # (use -s flag in pytest to show output)
         # print("'{}': {},".format(pathname, repr(radiation[pathname])))
+
+
+def test_sensitivity():
+    numpoints = 30
+    numelements = 16
+    result = np.zeros(numpoints)
+
+    x = np.exp(1j * .3)
+
+    # FMC case
+    tx, rx = arim.ut.fmc(numelements)
+    numscanlines = len(tx)
+    scanline_weights = np.ones(numscanlines)
+
+    model_amplitudes = np.zeros((numpoints, numscanlines), complex)
+    model_amplitudes[0] = x
+
+    arim.model.sensitivity_image(model_amplitudes, scanline_weights, result)
+    np.testing.assert_almost_equal(result[0], numelements * numelements)
+    np.testing.assert_allclose(result[1:], 0.)
+
+    # FMC case
+    tx, rx = arim.ut.hmc(numelements)
+    numscanlines = len(tx)
+    scanline_weights = 2. * np.ones(numscanlines)
+    scanline_weights[tx == rx] = 1.
+
+    model_amplitudes = np.zeros((numpoints, numscanlines), complex)
+    model_amplitudes[0] = x
+
+    arim.model.sensitivity_image(model_amplitudes, scanline_weights, result)
+    np.testing.assert_almost_equal(result[0], numelements * numelements)
+    np.testing.assert_allclose(result[1:], 0.)
