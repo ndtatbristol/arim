@@ -11,6 +11,7 @@ from .. import geometry as g
 from .. import model
 from . import amplitudes
 from .das import _das_numba
+from .das import delay_and_sum  # default tfm
 from .. import settings as s
 from .. import core as c
 from ..path import IMAGING_MODES  # import for backward compatibility
@@ -112,7 +113,6 @@ class BaseTFM:
         self.focal_law = focal_law
 
         if delay_and_sum_func is None:
-            from .das import delay_and_sum
             delay_and_sum_func = delay_and_sum
         if delay_and_sum_kwargs is None:
             delay_and_sum_kwargs = {}
