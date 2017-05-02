@@ -482,7 +482,7 @@ def tfm_with_scattering(frame, grid, view, fillvalue, scattering_fn,
     numelements = frame.probe.numelements
 
     tx_lookup_times = np.ascontiguousarray(view.tx_path.rays.times.T)
-    rx_lookup_times = np.ascontiguousarray(view.tx_path.rays.times.T)
+    rx_lookup_times = np.ascontiguousarray(view.rx_path.rays.times.T)
     tx_amplitudes = np.ascontiguousarray(tx_ray_weights.T)
     rx_amplitudes = np.ascontiguousarray(rx_ray_weights.T)
 
@@ -525,6 +525,7 @@ def tfm_with_scattering(frame, grid, view, fillvalue, scattering_fn,
     # TODO: create a proper TfmResult object
     tfm_obj = BaseTFM(frame, grid)
     tfm_obj.res = tfm_result
+    tfm_obj.view = view
 
     return tfm_obj, tfm_result, sensitivity_result
 
