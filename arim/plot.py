@@ -36,6 +36,7 @@ import logging
 from matplotlib import ticker
 import matplotlib.pyplot as plt
 import numpy as np
+import scipy.signal
 
 from . import ut
 from .exceptions import ArimWarning
@@ -80,7 +81,7 @@ def _elements_ticker(i, pos, elements):
 
 def plot_bscan_pulse_echo(frame, use_dB=True, ax=None, title='B-scan', clim=None,
                           interpolation='none', draw_cbar=True,
-                          cmap=None):
+                          cmap=None, savefig=None, filename='bscan'):
     """
     Plot a B-scan. Use the pulse-echo scanlines.
 
@@ -104,6 +105,9 @@ def plot_bscan_pulse_echo(frame, use_dB=True, ax=None, title='B-scan', clim=None
         fig, ax = plt.subplots()
     else:
         fig = ax.figure
+
+    if savefig is None:
+        savefig = conf['savefig']
 
     pulse_echo = frame.tx == frame.rx
     numpulseecho = sum(pulse_echo)
@@ -144,7 +148,173 @@ def plot_bscan_pulse_echo(frame, use_dB=True, ax=None, title='B-scan', clim=None
         ax.set_title(title)
 
     ax.axis('tight')
+
+    if savefig:
+        ax.figure.savefig(filename)
     return ax, im
+
+
+def plot_scanline(frame, idx, to_show='filtered', func_res=np.real, ax=None,
+                  title='Scanline', show_legend=True, savefig=None,
+                  filename='scanline'
+                  ):
+    """
+    Plot a scanline: time versus amplitude.
+
+    Parameters
+    ----------
+    frame : Frame
+    idx : int or slice
+        Index of the scanline to plot.
+    to_show : str
+        Valid values for 'to_show' are: filtered, raw, both
+    func_res : function
+        Function to apply to the scanline. Default: numpy.real
+    ax : matplotlib.axes.Axes or None
+    title : str
+    show_legend : bool
+    savefig : bool or None
+        Default: arim.plot.conf['savefig']
+    filename : str
+
+    Returns
+    -------
+    ax, lines
+
+    """
+    if ax is None:
+        fig, ax = plt.subplots()
+    else:
+        fig = ax.figure
+
+    if savefig is None:
+        savefig = conf['savefig']
+
+    to_show = to_show.lower()
+    if to_show == 'both':
+        show_raw = True
+        show_filtered = True
+    elif to_show == 'raw':
+        show_raw = True
+        show_filtered = False
+    elif to_show == 'filtered':
+        show_raw = False
+        show_filtered = True
+    else:
+        raise ValueError("Valid values for 'to_show' are: filtered, raw, both")
+
+    lines = {}
+    if show_raw:
+        line = ax.plot(frame.time.samples, frame.scanlines_raw[idx],
+                       label='#{idx} raw'.format(idx=idx))
+        lines['raw'] = line
+    if show_filtered:
+        line = ax.plot(frame.time.samples, func_res(frame.scanlines[idx]),
+                       label='#{idx} filtered'.format(idx=idx))
+        lines['filtered'] = line
+    ax.set_xlabel('time (µs)')
+    ax.set_ylabel('amplitude')
+    ax.xaxis.set_major_formatter(us_formatter)
+    ax.xaxis.set_minor_formatter(us_formatter)
+
+    if title is not None:
+        ax.set_title(title)
+
+    if show_legend:
+        ax.legend(loc='best')
+
+    if savefig:
+        fig.savefig(filename)
+
+    return ax, lines
+
+
+def plot_psd(frame, idx='all', to_show='filtered', welch_params=None, ax=None,
+             title='Power spectrum estimation', show_legend=True, savefig=None,
+             filename='psd'):
+    """
+    Plot the estimated power spectrum of a scanline using Welch's method.
+
+    Parameters
+    ----------
+    frame : Frame
+    idx : int or slice or list
+        Index or indices of the scanline to use. If multiple indices are given,
+        the arithmetical mean of all PSDs is plotted. Default: use all
+    to_show
+    welch_params : dict
+        Arguments to pass to ``scipy.signal.welch``.
+    ax : matplotlib.axes.Axes or None
+    title
+    show_legend
+    savefig
+    filename
+
+    Returns
+    -------
+    ax : matplotlib.axes.Axes
+    lines : dict
+
+    """
+    if ax is None:
+        fig, ax = plt.subplots()
+    else:
+        fig = ax.figure
+
+    if welch_params is None:
+        welch_params = {}
+
+    if savefig is None:
+        savefig = conf['savefig']
+
+    if isinstance(idx, str) and idx == 'all':
+        idx = slice(None)
+
+    fs = 1 / frame.time.step
+
+    to_show = to_show.lower()
+    if to_show == 'both':
+        show_raw = True
+        show_filtered = True
+    elif to_show == 'raw':
+        show_raw = True
+        show_filtered = False
+    elif to_show == 'filtered':
+        show_raw = False
+        show_filtered = True
+    else:
+        raise ValueError("Valid values for 'to_show' are: filtered, raw, both")
+
+    lines = {}
+
+    if show_raw:
+        x = frame.scanlines_raw[idx].real
+        freq, pxx = scipy.signal.welch(x, fs, **welch_params)
+        if pxx.ndim == 2:
+            pxx = np.mean(pxx, axis=0)
+        line = ax.plot(freq, pxx, label='raw'.format(idx=idx))
+        lines['raw'] = line
+    if show_filtered:
+        x = frame.scanlines[idx].real
+        freq, pxx = scipy.signal.welch(x, fs, **welch_params)
+        if pxx.ndim == 2:
+            pxx = np.mean(pxx, axis=0)
+        line = ax.plot(freq, pxx, label='filtered'.format(idx=idx))
+        lines['filtered'] = line
+    ax.set_xlabel('time (µs)')
+    ax.set_ylabel('power spectrum estimation')
+    ax.xaxis.set_major_formatter(mega_formatter)
+    ax.xaxis.set_minor_formatter(mega_formatter)
+
+    if title is not None:
+        ax.set_title(title)
+
+    if show_legend:
+        ax.legend(loc='best')
+
+    if savefig:
+        fig.savefig(filename)
+    return ax, lines
 
 
 def plot_oxz(data, grid, ax=None, title=None, clim=None, interpolation='none',
