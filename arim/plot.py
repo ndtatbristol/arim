@@ -501,8 +501,9 @@ def draw_rays_on_click(grid, ray, element_index, ax=None, linestyle='m--', ):
 
 def plot_interfaces(interfaces_list, ax=None, show_probe=True, show_grid=False,
                     show_orientations=False,
-                    n_arrows=10, title='Interfaces', savefig=None, markers=None,
-                    show_legend=True, quiver_kwargs=None, unique_points_only=True):
+                    n_arrows=10, title='Interfaces', savefig=None, filename='interfaces',
+                    markers=None, show_legend=True, quiver_kwargs=None,
+                    unique_points_only=True):
     """
     Plot interfaces on the Oxz plane.
 
@@ -523,9 +524,12 @@ def plot_interfaces(interfaces_list, ax=None, show_probe=True, show_grid=False,
     title : str or None
         Title to display. None for no title.
     savefig : boolean
-        Default: ``conf['savefig']``. Save to file 'interfaces.png' (or other extension depending on your configuration).
+        If True, the plot will be saved. Default: ``conf['savefig']``.
+    filename : str
+        Filename of the plot, used if savefig is True. Default: 'interfaces'
     markers : List[str]
-        Matplotlib markers for each interfaces. Default: '.' for probe, ',k' for the grid, '.' for the rest.
+        Matplotlib markers for each interfaces. Default: '.' for probe, ',k' for the grid,
+        '.' for the rest.
     show_legend : boolean
         Default True
     quiver_kwargs : dict
@@ -610,7 +614,7 @@ def plot_interfaces(interfaces_list, ax=None, show_probe=True, show_grid=False,
     ax.axis('equal')
 
     if savefig:
-        fig.savefig("interfaces")
+        fig.savefig(filename)
     return ax
 
 

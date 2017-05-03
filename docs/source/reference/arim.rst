@@ -8,6 +8,7 @@ Subpackages
 
     arim.im
     arim.io
+    arim.models
 
 Submodules
 ----------
