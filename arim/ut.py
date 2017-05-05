@@ -601,10 +601,15 @@ def interpolate_scattering_matrix(scattering_matrix):
     if scattering_matrix.shape[0] != scattering_matrix.shape[1]:
         raise ValueError('scattering matrix must have a shape (n, n)')
 
+    out_dtype = numba.from_dtype(np.result_type(scattering_matrix, np.float))
+
     # assert scattering_matrix.shape[0] >= 1
 
-    @numba.vectorize(nopython=True, target='cpu')
+    @numba.vectorize([out_dtype(numba.float32, numba.float32),
+                      out_dtype(numba.float64, numba.float64),],
+                     nopython=True, target='cpu')
     def interpolator(inc_theta, out_theta):
+        # TODO: write bug report, kernel restart when use parallel
         numpoints = scattering_matrix.shape[0]
         dtheta = 2 * np.pi / numpoints
 

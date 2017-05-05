@@ -610,15 +610,10 @@ def _tfm_with_scattering(
     assert tfm_result.shape == (numpoints,)
 
     # This can be big, warning:
-    scattering_angles = (
-        np.take(tx_scattering_angles, tx, axis=0)
-        - np.take(rx_scattering_angles, rx, axis=0)
-    )
-    assert scattering_angles.shape == (numscanlines, numpoints)
-    scattering_amplitudes = scattering_fn(scattering_angles)
+    scattering_amplitudes = scattering_fn(np.take(tx_scattering_angles, tx, axis=0),
+                                          np.take(rx_scattering_angles, rx, axis=0))
     scattering_amplitudes = np.ascontiguousarray(scattering_amplitudes.T)
     assert scattering_amplitudes.shape == (numpoints, numscanlines)
-    del scattering_angles
 
     # Model amplitudes P_ij
     model_amplitudes = (scattering_amplitudes * np.take(tx_amplitudes, tx, axis=1)
@@ -662,11 +657,8 @@ def model_amplitudes(frame, scattering_fn,
     assert tx_amplitudes.shape == (numpoints, numelements)
     assert rx_amplitudes.shape == (numpoints, numelements)
 
-    scattering_angles = (
-        np.take(tx_scattering_angles, frame.tx, axis=0)
-        - np.take(rx_scattering_angles, frame.rx, axis=0)
-    )
-    scattering_amplitudes = scattering_fn(scattering_angles)
+    scattering_amplitudes = scattering_fn(np.take(tx_scattering_angles, frame.tx, axis=0),
+                                          np.take(rx_scattering_angles, frame.rx, axis=0))
     scattering_amplitudes = np.ascontiguousarray(scattering_amplitudes.T)
 
     model_amplitudes = (scattering_amplitudes * np.take(tx_amplitudes, tx, axis=1)
