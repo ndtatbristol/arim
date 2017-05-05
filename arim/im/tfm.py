@@ -521,17 +521,20 @@ def tfm_with_scattering(frame, grid, view, fillvalue, scattering_fn,
     for future in futures:
         future.result()
 
-    if divide_by_sensitivity:
-        tfm_result /= sensitivity_result
-
     tfm_result = tfm_result.reshape((grid.numx, grid.numy, grid.numz))
     sensitivity_result = sensitivity_result.reshape((grid.numx, grid.numy, grid.numz))
+    scaled_tfm_result = tfm_result / sensitivity_result
 
     # Dirty hack: return a BaseTFM object.
     # TODO: create a proper TfmResult object
     tfm_obj = BaseTFM(frame, grid)
-    tfm_obj.res = tfm_result
     tfm_obj.view = view
+    tfm_obj.scaled_res = scaled_tfm_result
+    tfm_obj.raw_res = tfm_result
+    if divide_by_sensitivity:
+        tfm_obj.res = tfm_obj.scaled_res
+    else:
+        tfm_obj.res = tfm_obj.raw_res
 
     return tfm_obj, tfm_result, sensitivity_result
 
@@ -634,3 +637,40 @@ def _tfm_with_scattering(
                                               tx_lookup_times, rx_lookup_times,
                                               tfm_amplitudes,
                                               dt, t0, fillvalue, tfm_result)
+
+
+def model_amplitudes(frame, scattering_fn,
+                     tx_ray_weights, rx_ray_weights,
+                     tx_scattering_angles, rx_scattering_angles):
+    """
+    Returns
+    -------
+    model_amplitudes : ndarray
+        Shape: (numpoints, numscanlines)
+    """
+    tx = frame.tx
+    rx = frame.rx
+
+    tx_amplitudes = np.ascontiguousarray(tx_ray_weights.T)
+    rx_amplitudes = np.ascontiguousarray(rx_ray_weights.T)
+
+    numelements, numpoints = tx_scattering_angles.shape
+    numscanlines = tx.shape[0]
+    assert tx.shape == (numscanlines,)
+    assert rx.shape == (numscanlines,)
+    assert rx_scattering_angles.shape == (numelements, numpoints)
+    assert tx_amplitudes.shape == (numpoints, numelements)
+    assert rx_amplitudes.shape == (numpoints, numelements)
+
+    scattering_angles = (
+        np.take(tx_scattering_angles, frame.tx, axis=0)
+        - np.take(rx_scattering_angles, frame.rx, axis=0)
+    )
+    scattering_amplitudes = scattering_fn(scattering_angles)
+    scattering_amplitudes = np.ascontiguousarray(scattering_amplitudes.T)
+
+    model_amplitudes = (scattering_amplitudes * np.take(tx_amplitudes, tx, axis=1)
+                        * np.take(rx_amplitudes, rx, axis=1))
+    return model_amplitudes
+
+
