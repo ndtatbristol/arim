@@ -699,7 +699,6 @@ def distance(request):
     Compute the Euclidean distance using our package. Check that multithreading has no
     effect on the result.
     """
-    global DATASET_1
     kwargs = request.param
     kwargs.update(DATASET_1)
 
@@ -734,7 +733,6 @@ def test_euclidean_distance_advanced():
 
     dtype = np.complex128  # weird though
 
-    global DATASET_1
     distance = g.distance_pairwise(**DATASET_1, dtype=dtype)
     assert distance.dtype == dtype
     assert np.allclose(np.real(distance), mock_distance)
