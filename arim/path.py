@@ -348,7 +348,7 @@ def paths_for_block_in_immersion(block_material, couplant_material, interface_di
     return paths
 
 
-def views_for_block_in_immersion(paths_dict):
+def views_for_block_in_immersion(paths_dict, unique_only=True):
     """
     Returns a list of views for the case of a block in immersion.
 
@@ -369,7 +369,7 @@ def views_for_block_in_immersion(paths_dict):
     views: OrderedDict[Views]
 
     """
-    viewnames = make_viewnames(paths_dict.keys())
+    viewnames = make_viewnames(paths_dict.keys(), unique_only=unique_only)
     views = OrderedDict()
     for view_name_tuple in viewnames:
         tx_name, rx_name = view_name_tuple
