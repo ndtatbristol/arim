@@ -65,7 +65,7 @@ def tx_ray_weights(path, ray_geometry, frequency, probe_element_width=None,
     if use_transrefl:
         # use conjugate because we forget to put it in the model
         weights_dict['transrefl'] = model.transmission_reflection_for_path(
-            path, ray_geometry).conjugate()
+            path, ray_geometry, unit='displacement').conjugate()
     else:
         weights_dict['transrefl'] = one
     if use_beamspread:
@@ -112,7 +112,7 @@ def rx_ray_weights(path, ray_geometry, frequency, probe_element_width=None,
     if use_transrefl:
         # use conjugate because we forget to put it in the model
         weights_dict['transrefl'] = model.reverse_transmission_reflection_for_path(
-            path, ray_geometry).conjugate()
+            path, ray_geometry, unit='displacement').conjugate()
     else:
         weights_dict['transrefl'] = one
     if use_beamspread:

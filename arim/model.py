@@ -73,7 +73,7 @@ directivity_finite_width_2d_for_path = directivity_2d_rectangular_in_fluid_for_p
 
 def transmission_at_interface(interface_kind, material_inc, material_out, mode_inc,
                               mode_out, angles_inc,
-                              force_complex=True):
+                              force_complex=True, unit='stress'):
     """
     Compute the transmission coefficients for an interface.
 
@@ -88,9 +88,9 @@ def transmission_at_interface(interface_kind, material_inc, material_out, mode_i
     Parameters
     ----------
     interface_kind : InterfaceKind
-    material_inc : Material
+    material_inc : arim.Material
         Material of the incident ray legs.
-    material_out : Material
+    material_out : arim.Material
         Material of the transmitted ray legs.
     mode_inc : Mode
         Mode of the incidents ray legs.
@@ -100,6 +100,8 @@ def transmission_at_interface(interface_kind, material_inc, material_out, mode_i
         Angle of incidence of the ray legs.
     force_complex : bool
         If True, return complex coefficients. If not, return coefficients with the same datatype as ``angles_inc``. Default: True.
+    unit : str
+        'stress' or 'displacement'. Default: 'stress'
 
     Returns
     -------
@@ -109,6 +111,12 @@ def transmission_at_interface(interface_kind, material_inc, material_out, mode_i
     """
     if force_complex:
         angles_inc = np.asarray(angles_inc, dtype=complex)
+    if unit.lower() == 'stress':
+        convert_to_displacement = False
+    elif unit.lower() == 'displacement':
+        convert_to_displacement = True
+    else:
+        raise ValueError("Argument 'unit' must be 'stress' or 'displacement'")
 
     if interface_kind is c.InterfaceKind.fluid_solid:
         # Fluid-solid interface in transmission
@@ -137,6 +145,12 @@ def transmission_at_interface(interface_kind, material_inc, material_out, mode_i
             c_t=solid.transverse_vel)
 
         refl, trans_l, trans_t = fluid_solid(**params)
+        if convert_to_displacement:
+            # u2/u1 = z tau2 / tau1 = -z tau2 / p1
+            z = ((material_inc.density * material_inc.velocity(mode_inc)) /
+                 (material_out.density * material_out.velocity(mode_out)))
+            trans_l *= z
+            trans_t *= z
         if mode_out is c.Mode.L:
             return trans_l
         elif mode_out is c.Mode.T:
@@ -169,6 +183,11 @@ def transmission_at_interface(interface_kind, material_inc, material_out, mode_i
             refl_l, refl_t, transmission = solid_t_fluid(alpha_t=alpha_t, **params)
         else:
             raise RuntimeError
+        if convert_to_displacement:
+            # u2/u1 = z tau2 / tau1 = -z tau2 / p1
+            z = ((material_inc.density * material_inc.velocity(mode_inc)) /
+                 (material_out.density * material_out.velocity(mode_out)))
+            transmission *= z
         return transmission
     else:
         raise NotImplementedError
@@ -176,7 +195,7 @@ def transmission_at_interface(interface_kind, material_inc, material_out, mode_i
 
 def reflection_at_interface(interface_kind, material_inc, material_against, mode_inc,
                             mode_out, angles_inc,
-                            force_complex=True):
+                            force_complex=True, unit='stress'):
     """
     Compute the reflection coefficients for an interface.
 
@@ -204,6 +223,8 @@ def reflection_at_interface(interface_kind, material_inc, material_against, mode
     force_complex : bool
         If True, return complex coefficients. If not, return coefficients with the same
         datatype as ``angles_inc``. Default: True.
+    unit : str
+        'stress' or 'displacement'. Default: 'stress'
 
     Returns
     -------
@@ -213,6 +234,12 @@ def reflection_at_interface(interface_kind, material_inc, material_against, mode
     """
     if force_complex:
         angles_inc = np.asarray(angles_inc, dtype=complex)
+    if unit.lower() == 'stress':
+        convert_to_displacement = False
+    elif unit.lower() == 'displacement':
+        convert_to_displacement = True
+    else:
+        raise ValueError("Argument 'unit' must be 'stress' or 'displacement'")
 
     if interface_kind is c.InterfaceKind.solid_fluid:
         # Reflection against a solid-fluid interface
@@ -246,17 +273,25 @@ def reflection_at_interface(interface_kind, material_inc, material_against, mode
         with np.errstate(invalid='ignore'):
             refl_l, refl_t, trans = solid_fluid(**params)
 
+        z = material_inc.velocity(mode_inc) / material_inc.velocity(mode_out)
         if mode_out is c.Mode.L:
-            return refl_l
+            if convert_to_displacement:
+                return refl_l * z
+            else:
+                return refl_l
         elif mode_out is c.Mode.T:
-            return refl_t
+            if convert_to_displacement:
+                return refl_t * z
+            else:
+                return refl_t
         else:
             raise ValueError("invalid mode")
     else:
         raise NotImplementedError
 
 
-def transmission_reflection_for_path(path, ray_geometry, force_complex=True):
+def transmission_reflection_for_path(path, ray_geometry, force_complex=True,
+                                     unit='stress'):
     """
     Return the transmission-reflection coefficients for a given path.
 
@@ -298,6 +333,7 @@ def transmission_reflection_for_path(path, ray_geometry, force_complex=True):
             mode_out=path.modes[i],
             angles_inc=ray_geometry.conventional_inc_angle(i),
             force_complex=force_complex,
+            unit=unit,
         )
 
         logger.debug("compute {} coefficients at interface {}".format(
@@ -322,7 +358,8 @@ def transmission_reflection_for_path(path, ray_geometry, force_complex=True):
     return transrefl
 
 
-def reverse_transmission_reflection_for_path(path, ray_geometry, force_complex=True):
+def reverse_transmission_reflection_for_path(path, ray_geometry, force_complex=True,
+                                             unit='stress'):
     """
     Return the transmission-reflection coefficients of the reverse path.
 
@@ -358,6 +395,7 @@ def reverse_transmission_reflection_for_path(path, ray_geometry, force_complex=T
             mode_inc=mode_inc,
             mode_out=mode_out,
             force_complex=force_complex,
+            unit=unit,
         )
 
         # In the reverse path, transmitted or reflected angles coming out the i-th
@@ -575,7 +613,7 @@ def sensitivity_image_point_source(tx_ray_weights, rx_ray_weights, tx, rx,
                                    scanline_weights):
     numelements, numpoints = tx_ray_weights.shape
     numscanlines = tx.shape[0]
-    
+
     tx_amplitudes = np.ascontiguousarray(tx_ray_weights.T)
     rx_amplitudes = np.ascontiguousarray(rx_ray_weights.T)
 
