@@ -452,9 +452,23 @@ def test_beamspread_2d_direct():
     third_leg = 10.e-3
     c1 = couplant.longitudinal_vel
     c2 = block.longitudinal_vel
+    c3 = block.longitudinal_vel
     beta = c1 / c2
-    beamspread_LL = 1. / np.sqrt(first_leg + second_leg / beta + third_leg / 1.)
+    gamma = c2 / c3
+    beamspread_LL = 1. / np.sqrt(first_leg + second_leg / beta + third_leg / gamma)
     np.testing.assert_allclose(beamspread['LL'][0][0], beamspread_LL, rtol=1e-5)
+
+    # Path LT - scat 0:
+    first_leg = 10e-3
+    second_leg = 30e-3
+    third_leg = 10.e-3
+    c1 = couplant.longitudinal_vel
+    c2 = block.longitudinal_vel
+    c3 = block.transverse_vel
+    beta = c1 / c2
+    gamma = c2 / c3
+    beamspread_LT = 1. / np.sqrt(first_leg + second_leg / beta + third_leg / gamma)
+    np.testing.assert_allclose(beamspread['LT'][0][0], beamspread_LT, rtol=1e-5)
 
 
 def test_beamspread_2d_reverse():
@@ -499,6 +513,7 @@ def test_beamspread_2d_reverse():
                                    rtol=1e-2)
 
     # Reversed path L - scat 0:
+    # first_leg is in the solid
     first_leg = 20e-3
     second_leg = 10e-3
     c1 = block.longitudinal_vel
@@ -512,10 +527,24 @@ def test_beamspread_2d_reverse():
     second_leg = 30e-3
     third_leg = 10.e-3
     c1 = block.longitudinal_vel
-    c2 = couplant.longitudinal_vel
+    c2 = block.longitudinal_vel
+    c3 = couplant.longitudinal_vel
     beta = c1 / c2
-    beamspread_LL = 1. / np.sqrt(first_leg + second_leg / 1. + third_leg / beta)
+    gamma = c2 / c3
+    beamspread_LL = 1. / np.sqrt(first_leg + second_leg / beta + third_leg / gamma)
     np.testing.assert_allclose(beamspread['LL'][0][0], beamspread_LL, rtol=1e-5)
+
+    # Path LT - scat 0:
+    first_leg = 10e-3
+    second_leg = 30e-3
+    third_leg = 10.e-3
+    c1 = block.transverse_vel
+    c2 = block.longitudinal_vel
+    c3 = couplant.longitudinal_vel
+    beta = c1 / c2
+    gamma = c2 / c3
+    beamspread_LT = 1. / np.sqrt(first_leg + second_leg / beta + third_leg / gamma)
+    np.testing.assert_allclose(beamspread['LT'][0][0], beamspread_LT, rtol=1e-5)
 
 
 def test_transmission_reflection_direct():
