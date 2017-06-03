@@ -549,32 +549,6 @@ def test_beamspread_2d_reverse():
 
 def test_transmission_reflection_direct():
     context = make_context()
-    paths = context['paths']
-    """:type : dict[str, arim.Path]"""
-    ray_geometry_dict = context['ray_geometry_dict']
-    """:type : dict[str, arim.path.RayGeometry]"""
-
-    # hardcoded results
-    expected_transrefl = {
-        'L': array([[1.84037966 + 0.j, 2.24977557 + 0.j]]),
-        'T': array([[-1.92953093e-03 + 0.j, -2.06170606e+00 + 0.76785004j]]),
-        'LL': array([[-2.18993849 + 0.j, -5.11477179 + 0.j]]),
-        'LT': array([[-3.29842870e-04 + 0.j, -2.72427011e+00 + 0.j]]),
-        'TL': array([[-1.18487478e-06 + 0.j, -2.69978593e+00 + 0.j]]),
-        'TT': array([[1.92953113e-03 - 0.j, -2.31008884e+00 - 0.05936071j]]),
-    }
-    transrefl = dict()
-    for pathname, path in paths.items():
-        ray_geometry = ray_geometry_dict[pathname]
-        transrefl[pathname] = arim.model.transmission_reflection_for_path(path,
-                                                                          ray_geometry)
-        np.testing.assert_allclose(transrefl[pathname], expected_transrefl[pathname],
-                                   rtol=0., atol=1e-6)
-        # print("'{}': {},".format(pathname, repr(transrefl[pathname])))
-
-
-def test_transmission_reflection_direct():
-    context = make_context()
     block = context['block']
     """:type : arim.Material"""
     couplant = context['couplant']
