@@ -11,6 +11,7 @@ Functions related to the forward model.
 
 import logging
 import warnings
+from functools import reduce
 
 import numpy as np
 import numba
@@ -472,35 +473,39 @@ def beamspread_2d_for_path(ray_geometry):
     Schmerr, Fundamentals of ultrasonic phased arrays (Springer), §2.5
 
     """
-    refractive_indices = [None]
     velocities = ray_geometry.rays.fermat_path.velocities
-    for inc_velocity, out_velocity in zip(velocities[:-1], velocities[1:]):
-        refractive_indices.append(inc_velocity / out_velocity)
-    refractive_indices.append(None)
 
-    virtual_distance = None
-    for i in range(0, ray_geometry.numinterfaces - 1):
-        if i == 0:
-            # Between the probe and the first interface, beamspread of an unbounded medium.
-            # Use a copy because the original may be a cached value and we don't want
-            # to change it by accident.
-            virtual_distance = ray_geometry.inc_leg_size(1).copy()
-        else:
-            # r1 is the closest to the source
-            # r1 = inc_leg_sizes_list[i]
-            r2 = ray_geometry.inc_leg_size(i + 1)
+    # Using notations from forward model, this function computes the beamspread at A_n
+    # where n = ray_geometry.numinterfaces - 1
+    # Case n=0: undefined
+    # Case n=1: beamspread = 1/sqrt(r)
 
-            theta_inc = ray_geometry.conventional_inc_angle(i)
+    # Precompute gamma (coefficient of conversion between actual source
+    # and virtual source)
+    n = ray_geometry.numinterfaces - 1
+    gamma_list = []
+    for k in range(1, n):
+        # k varies in [1, n-1] (included)
+        theta_inc = ray_geometry.conventional_inc_angle(k)
 
-            alpha = refractive_indices[i]
+        nu = velocities[k - 1] / velocities[k]
+        sin_theta = np.sin(theta_inc)
+        cos_theta = np.cos(theta_inc)
+        gamma_list.append((nu * nu - sin_theta * sin_theta)
+                          / (nu * cos_theta * cos_theta))
 
-            sin_theta = np.sin(theta_inc)
-            cos_theta = np.cos(theta_inc)
-            # beta_12:
-            beta = ((alpha * alpha - sin_theta * sin_theta)
-                    / (alpha * cos_theta * cos_theta))
+    # Between the probe and the first interface, beamspread of an unbounded medium.
+    # Use a copy because the original may be a cached value and we don't want
+    # to change it by accident.
+    virtual_distance = ray_geometry.inc_leg_size(1).copy()  # distance A_0 A_1
 
-            virtual_distance += r2 / beta
+    for k in range(1, n):
+        # distance A_k A_{k+1}:
+        r = ray_geometry.inc_leg_size(k + 1)
+        gamma = 1.
+        for i in range(k):
+            gamma *= gamma_list[i]
+        virtual_distance += r / gamma
 
     return np.reciprocal(np.sqrt(virtual_distance))
 
@@ -514,6 +519,10 @@ def reverse_beamspread_2d_for_path(ray_geometry):
     j is the source and i is the endpoint. The direct beamspread considers this is the
     opposite.
 
+    This gives the same result as beamspread_2d_for_path(reversed_ray_geometry)
+    assuming the rays perfectly follow Snell laws. Because of errors in the ray tracing,
+    there is a small difference.
+
     Parameters
     ----------
     ray_geometry : RayGeometry
@@ -525,38 +534,76 @@ def reverse_beamspread_2d_for_path(ray_geometry):
         ray_geometry.interfaces[-1].numpoints)
 
     """
-    numinterfaces = ray_geometry.numinterfaces
-
-    refractive_indices = [None]
     velocities = ray_geometry.rays.fermat_path.velocities
-    for i in range(numinterfaces - 2, 0, -1):
-        refractive_indices.append(velocities[i] / velocities[i - 1])
-    refractive_indices.append(None)
+    # import pdb; pdb.set_trace()
 
-    virtual_distance = None
-    # i = 0 corresponds to the closest leg to the source (point j)
-    for i in range(ray_geometry.numinterfaces - 1):
-        if i == 0:
-            # Use copy because of cache
-            virtual_distance = ray_geometry.inc_leg_size(numinterfaces - 1).copy()
-        else:
-            # r1 is the closest from the source
-            # r1 = inc_leg_sizes_list[i]
-            r2 = ray_geometry.inc_leg_size(numinterfaces - i - 1)
+    # Using notations from forward model, this function computes the beamspread at A_n
+    # where n = ray_geometry.numinterfaces - 1
+    # Case n=0: undefined
+    # Case n=1: beamspread = 1/sqrt(r)
 
-            theta_out = ray_geometry.conventional_inc_angle(numinterfaces - i - 1)
+    # Precompute gamma (coefficient of conversion between actual source
+    # and virtual source)
+    n = ray_geometry.numinterfaces - 1
+    gamma_list = []
+    for k in range(1, n):
+        # k varies in [1, n-1] (included)
+        theta_out = ray_geometry.conventional_inc_angle(n - k)
+        nu = velocities[n - k] / velocities[n - k - 1]
+        sin_theta = np.sin(theta_out)
+        cos_theta = np.cos(theta_out)
+        # gamma expressed with theta_out instead of theta_in
+        gamma_list.append((nu * cos_theta * cos_theta)
+                          / (1 - nu * nu * sin_theta * sin_theta))
 
-            alpha = refractive_indices[i]
+    # Between the probe and the first interface, beamspread of an unbounded medium.
+    # Use a copy because the original may be a cached value and we don't want
+    # to change it by accident.
+    virtual_distance = ray_geometry.inc_leg_size(n).copy()
 
-            sin_theta = np.sin(theta_out)
-            cos_theta = np.cos(theta_out)
-            # beta_12 expressed with theta_out instead of theta_in
-            beta = ((alpha * cos_theta * cos_theta)
-                    / (1 - alpha * alpha * sin_theta * sin_theta))
-
-            virtual_distance += r2 / beta
+    for k in range(1, n):
+        # distance A_k A_{k+1}:
+        r = ray_geometry.inc_leg_size(n - k)
+        gamma = 1.
+        for i in range(k):
+            gamma *= gamma_list[i]
+        virtual_distance += r / gamma
 
     return np.reciprocal(np.sqrt(virtual_distance))
+
+    # # old old old ============================
+    # numinterfaces = ray_geometry.numinterfaces
+    #
+    # refractive_indices = [None]
+    # velocities = ray_geometry.rays.fermat_path.velocities
+    # for i in range(numinterfaces - 2, 0, -1):
+    #     refractive_indices.append(velocities[i] / velocities[i - 1])
+    # refractive_indices.append(None)
+    #
+    # virtual_distance = None
+    # # i = 0 corresponds to the closest leg to the source (point j)
+    # for i in range(ray_geometry.numinterfaces - 1):
+    #     if i == 0:
+    #         # Use copy because of cache
+    #         virtual_distance = ray_geometry.inc_leg_size(numinterfaces - 1).copy()
+    #     else:
+    #         # r1 is the closest from the source
+    #         # r1 = inc_leg_sizes_list[i]
+    #         r2 = ray_geometry.inc_leg_size(numinterfaces - i - 1)
+    #
+    #         theta_out = ray_geometry.conventional_inc_angle(numinterfaces - i - 1)
+    #
+    #         nu = refractive_indices[i]
+    #
+    #         sin_theta = np.sin(theta_out)
+    #         cos_theta = np.cos(theta_out)
+    #         # beta_12 expressed with theta_out instead of theta_in
+    #         beta = ((nu * cos_theta * cos_theta)
+    #                 / (1 - nu * nu * sin_theta * sin_theta))
+    #
+    #         virtual_distance += r2 / beta
+    #
+    # return np.reciprocal(np.sqrt(virtual_distance))
 
 
 def beamspread_for_path(ray_geometry):

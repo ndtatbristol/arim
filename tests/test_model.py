@@ -424,15 +424,16 @@ def test_beamspread_2d_direct():
     expected_beamspread = {
         'L': array([[3.2375215, 0.84817938]]),
         'T': array([[4.37280604, 1.38511721]]),
-        'LL': array([[2.59842245, 1.41240375]]),
-        'LT': array([[2.64386375, 1.21543201]]),
-        'TL': array([[3.26794404, 1.22543632]]),
-        'TT': array([[3.46176208, 2.11367257]]),
+        'LL': array([[2.35172691, 1.24586279]]),
+        'LT': array([[2.50582172, 1.1942895]]),
+        'TL': array([[2.93422015, 0.7995886]]),
+        'TT': array([[3.25137185, 1.90838339]]),
     }
     beamspread = dict()
     for pathname, ray_geometry in ray_geometry_dict.items():
         beamspread[pathname] = arim.model.beamspread_2d_for_path(ray_geometry)
-        np.testing.assert_allclose(beamspread[pathname], expected_beamspread[pathname])
+        np.testing.assert_allclose(beamspread[pathname], expected_beamspread[pathname],
+                                   err_msg=pathname)
         # Uncomment the following line to generate hardcoded-values:
         # (use -s flag in pytest to show output)
         # print("'{}': {},".format(pathname, repr(beamspread[pathname])))
@@ -455,7 +456,7 @@ def test_beamspread_2d_direct():
     c3 = block.longitudinal_vel
     beta = c1 / c2
     gamma = c2 / c3
-    beamspread_LL = 1. / np.sqrt(first_leg + second_leg / beta + third_leg / gamma)
+    beamspread_LL = 1. / np.sqrt(first_leg + second_leg / beta + third_leg / (gamma * beta))
     np.testing.assert_allclose(beamspread['LL'][0][0], beamspread_LL, rtol=1e-5)
 
     # Path LT - scat 0:
@@ -467,7 +468,7 @@ def test_beamspread_2d_direct():
     c3 = block.transverse_vel
     beta = c1 / c2
     gamma = c2 / c3
-    beamspread_LT = 1. / np.sqrt(first_leg + second_leg / beta + third_leg / gamma)
+    beamspread_LT = 1. / np.sqrt(first_leg + second_leg / beta + third_leg / (gamma * beta))
     np.testing.assert_allclose(beamspread['LT'][0][0], beamspread_LT, rtol=1e-5)
 
 
@@ -492,14 +493,15 @@ def test_beamspread_2d_reverse():
         'L': array([[6.69023357, 4.37716144]]),
         'T': array([[6.35918872, 4.44926218]]),
         'LL': array([[4.85976767, 3.96478629]]),
-        'LT': array([[3.70327576, 1.86088711]]),
-        'TL': array([[5.81375404, 5.05328326]]),
+        'LT': array([[3.64411785, 1.84991477]]),
+        'TL': array([[6.06346095, 5.31340498]]),
         'TT': array([[4.72833395, 3.96638874]]),
     }
     beamspread = dict()
     for pathname, ray_geometry in ray_geometry_dict.items():
         beamspread[pathname] = arim.model.reverse_beamspread_2d_for_path(ray_geometry)
-        np.testing.assert_allclose(beamspread[pathname], expected_beamspread[pathname])
+        np.testing.assert_allclose(beamspread[pathname], expected_beamspread[pathname],
+                                   err_msg=pathname)
         # Uncomment the following line to generate hardcoded-values:
         # (use -s flag in pytest to show output)
         # print("'{}': {},".format(pathname, repr(beamspread[pathname])))
@@ -531,7 +533,7 @@ def test_beamspread_2d_reverse():
     c3 = couplant.longitudinal_vel
     beta = c1 / c2
     gamma = c2 / c3
-    beamspread_LL = 1. / np.sqrt(first_leg + second_leg / beta + third_leg / gamma)
+    beamspread_LL = 1. / np.sqrt(first_leg + second_leg / beta + third_leg / (gamma * beta))
     np.testing.assert_allclose(beamspread['LL'][0][0], beamspread_LL, rtol=1e-5)
 
     # Path LT - scat 0:
@@ -543,7 +545,7 @@ def test_beamspread_2d_reverse():
     c3 = couplant.longitudinal_vel
     beta = c1 / c2
     gamma = c2 / c3
-    beamspread_LT = 1. / np.sqrt(first_leg + second_leg / beta + third_leg / gamma)
+    beamspread_LT = 1. / np.sqrt(first_leg + second_leg / beta + third_leg / (gamma * beta))
     np.testing.assert_allclose(beamspread['LT'][0][0], beamspread_LT, rtol=1e-5)
 
 
@@ -820,7 +822,6 @@ def test_sensitivity():
     # create a new array
     result2 = arim.model.sensitivity_image(model_amplitudes, scanline_weights)
     np.testing.assert_almost_equal(result, result2)
-
 
     # FMC case
     tx, rx = arim.ut.hmc(numelements)
