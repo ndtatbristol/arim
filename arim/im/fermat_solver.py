@@ -668,7 +668,7 @@ class FermatSolver:
             dtype=self.dtype,
             dtype_indices=self.dtype_indices)
 
-        assert res_tail.path.num_points_sets == 2
+        assert res_tail.fermat_path.num_points_sets == 2
         indices = Rays.expand_rays(res_head.interior_indices, indices_at_interface)
 
         del indices_at_interface  # no more useful

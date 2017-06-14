@@ -268,7 +268,7 @@ def test_fermat_solver():
     for path in [path_1, path_2]:
         # Check Rays.path attribute:
         assert path in rays_dict
-        assert rays_dict[path].path is path
+        assert rays_dict[path].fermat_path is path
 
         assert rays_dict[path].indices.shape == (path.num_points_sets, n, m)
         assert rays_dict[path].times.shape == (n, m)

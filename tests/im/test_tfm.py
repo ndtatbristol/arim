@@ -135,8 +135,9 @@ def test_make_views():
     v_longi = 2.0
     v_shear = 3.0
 
-    views = arim.im.SingleViewTFM.make_views(probe, frontwall, backwall, grid,
-                                             v_couplant, v_longi, v_shear)
+    with pytest.warns(DeprecationWarning):
+        views = arim.im.SingleViewTFM.make_views(probe, frontwall, backwall, grid,
+                                                 v_couplant, v_longi, v_shear)
 
     assert len(views) == 21
     assert len(set(views.keys())) == 21

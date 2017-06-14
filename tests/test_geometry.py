@@ -210,8 +210,8 @@ def test_grid():
     ymax = 3e-3
     dy = 1e-3
 
-    zmin = 0
-    zmax = -10e-3
+    zmin = -10e-3
+    zmax = 0
     dz = 1e-3
 
     grid = g.Grid(xmin, xmax, ymin, ymax, zmin, zmax, (dx, dy, dz))
@@ -228,7 +228,7 @@ def test_grid():
     assert len(grid.z) == 11
     assert grid.zmin == zmin
     assert grid.zmax == zmax
-    assert grid.dz == -dz
+    assert grid.dz == dz
 
     assert grid.numpoints == 21 * 1 * 11
 
@@ -794,6 +794,8 @@ class TestGeometryHelper:
         assert dist is not dist3
 
         out = geom.points2_to_pcs_pairwise()
-        out = geom.points2_to_pcs_pairwise_spherical()
+        with np.errstate(invalid='ignore'):
+            # for some reason we get a warning here, ignore it
+            out = geom.points2_to_pcs_pairwise_spherical()
 
         str(geom)

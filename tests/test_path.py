@@ -282,7 +282,8 @@ class TestLegacyRayGeometry:
         num_src_points = len(path.interfaces[0].points)
         num_dst_points = len(path.interfaces[1].points)
 
-        all_incoming_angles = ray_geometry.inc_angles_list
+        with pytest.warns(DeprecationWarning):
+            all_incoming_angles = ray_geometry.inc_angles_list
         assert len(all_incoming_angles) == len(path.interfaces)
         assert all_incoming_angles[0] is None
 
@@ -320,7 +321,8 @@ class TestLegacyRayGeometry:
         num_src_points = len(path.interfaces[0].points)
         num_dst_points = len(path.interfaces[1].points)
 
-        all_outgoing_angles = ray_geometry.out_angles_list
+        with pytest.warns(DeprecationWarning):
+            all_outgoing_angles = ray_geometry.out_angles_list
         assert len(all_outgoing_angles) == len(path.interfaces)
         assert all_outgoing_angles[1] is None
 

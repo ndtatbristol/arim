@@ -586,7 +586,7 @@ class Grid:
         else:
             if xmin > xmax:
                 warn("xmin > xmax in grid", ArimWarning, stacklevel=2)
-            x = np.linspace(xmin, xmax, np.abs(np.ceil((xmax - xmin) / dx)) + 1,
+            x = np.linspace(xmin, xmax, int(np.abs(np.ceil((xmax - xmin) / dx)) + 1),
                             dtype=s.FLOAT)
             dx = np.mean(np.diff(x))
 
@@ -596,7 +596,7 @@ class Grid:
         else:
             if ymin > ymax:
                 warn("ymin > ymax in grid", ArimWarning, stacklevel=2)
-            y = np.linspace(ymin, ymax, np.abs(np.ceil((ymax - ymin) / dy)) + 1,
+            y = np.linspace(ymin, ymax, int(np.abs(np.ceil((ymax - ymin) / dy)) + 1),
                             dtype=s.FLOAT)
             dy = np.mean(np.diff(y))
 
@@ -606,7 +606,7 @@ class Grid:
         else:
             if zmin > zmax:
                 warn("zmin > zmax in grid", ArimWarning, stacklevel=2)
-            z = np.linspace(zmin, zmax, np.abs(np.ceil((zmax - zmin) / dz)) + 1,
+            z = np.linspace(zmin, zmax, int(np.abs(np.ceil((zmax - zmin) / dz)) + 1),
                             dtype=s.FLOAT)
             dz = np.mean(np.diff(z))
 
