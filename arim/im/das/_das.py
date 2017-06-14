@@ -5,6 +5,7 @@ import logging
 from ... import settings as s
 from ._das_numba import _delay_and_sum_amplitudes_linear, \
     _delay_and_sum_amplitudes_nearest
+from . import _delay_and_sum_cpu
 from concurrent.futures import ThreadPoolExecutor
 from ...helpers import chunk_array
 
@@ -42,12 +43,20 @@ def _check_shapes(frame, focal_law):
 
 def _infer_datatypes(frame, focal_law, result, dtype_float=None, dtype_amp=None,
                      dtype_data=None):
+    """
+    Returns
+    -------
+    dtype_float: datatype of times only values (time)
+    dtype_amp: datatype of TFM amplitudes
+    dtype_data: datatype that suits both the input scanlines and the results
+
+    """
     if dtype_float is None:
         dtype_float = np.result_type(focal_law.lookup_times_tx, focal_law.lookup_times_rx)
     if dtype_amp is None:
         dtype_amp = np.result_type(focal_law.amplitudes_tx, focal_law.amplitudes_rx)
     if dtype_data is None:
-        data_arrays = [focal_law.scanline_weights, frame.scanlines]
+        data_arrays = [focal_law.scanline_weights, frame.scanlines, dtype_amp]
         if result is not None:
             data_arrays.append(result)
         dtype_data = np.result_type(*data_arrays)
@@ -161,7 +170,6 @@ def delay_and_sum_naive(frame, focal_law, fillvalue=0., result=None, interpolate
 
 def delay_and_sum_cpu(frame, focal_law, fillvalue=0., result=None, block_size=None, numthreads=None,
                       interpolate_position='nearest'):
-    from . import _delay_and_sum_cpu as das_cpu
     numscanlines = frame.numscanlines
     numpoints, numelements = focal_law.lookup_times_tx.shape
     numsamples = len(frame.time)
@@ -182,7 +190,7 @@ def delay_and_sum_cpu(frame, focal_law, fillvalue=0., result=None, block_size=No
     # Example: _delay_and_sum_nearest_float64_complex128_complex128
     sig_types = "{}_{}_{}".format(dtype_float.name, dtype_amp.name, dtype_data.name)
     try:
-        func = getattr(das_cpu, '_delay_and_sum_nearest_{}'.format(sig_types))
+        func = getattr(_delay_and_sum_cpu, '_delay_and_sum_nearest_{}'.format(sig_types))
     except AttributeError:
         raise ValueError("no matching signature")
 

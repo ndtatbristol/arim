@@ -604,6 +604,66 @@ def test_elastic_scattering_2d_cylinder2():
         assert np.allclose(val, result[key])
 
 
+# def _scattering_function(inc_theta, out_theta):
+#     return inc_theta * 10 + out_theta * 100
+def _scattering_function(inc_theta, out_theta):
+    inc_theta = ut.wrap_phase(inc_theta)
+    out_theta = ut.wrap_phase(out_theta)
+    return (inc_theta + np.pi) / np.pi * 10 + (out_theta + np.pi) / np.pi * 100
+
+
+def test_scattering_matrix():
+    numpoints = 5
+    inc_theta, out_theta, scattering_matrix = ut.make_scattering_matrix(
+        _scattering_function, numpoints)
+    assert inc_theta.shape == (numpoints, numpoints)
+    assert out_theta.shape == (numpoints, numpoints)
+    assert scattering_matrix.shape == (numpoints, numpoints)
+    np.testing.assert_allclose(inc_theta[..., 0], out_theta[0, ...])
+
+    idx = (1, 3)
+    np.testing.assert_allclose(scattering_matrix[idx],
+                               _scattering_function(inc_theta[idx], out_theta[idx]))
+
+    np.testing.assert_allclose(_scattering_function(np.pi, np.pi),
+                               _scattering_function(-np.pi, -np.pi))
+
+    x = 0.1
+    np.testing.assert_allclose(_scattering_function(np.pi + x, np.pi),
+                               _scattering_function(-np.pi + x, -np.pi))
+
+
+def test_interpolate_matrix():
+    numpoints = 5
+    dtheta = 2 * np.pi / numpoints
+
+    inc_theta, out_theta, scattering_matrix = ut.make_scattering_matrix(
+        _scattering_function, numpoints)
+    scat_fn = ut.interpolate_scattering_matrix(scattering_matrix)
+    # raise Exception(scattering_matrix)
+
+    np.testing.assert_allclose(scat_fn(inc_theta, out_theta),
+                               _scattering_function(inc_theta, out_theta))
+
+    # add multiple of 2pi
+    np.testing.assert_allclose(scat_fn(inc_theta + 10 * np.pi, out_theta - 6 * np.pi),
+                               _scattering_function(inc_theta, out_theta))
+
+    # remove last line because the effect is not linear
+    x = (inc_theta + dtheta / 4)[:-1]
+    y = out_theta[:-1]
+    np.testing.assert_allclose(scat_fn(x, y), _scattering_function(x, y))
+
+    # remove last column because the effect is not linear
+    x = inc_theta[..., :-1]
+    y = (out_theta + dtheta / 4)[..., :-1]
+    np.testing.assert_allclose(scat_fn(x, y), _scattering_function(x, y))
+
+    x = (inc_theta[:-1, :-1] + dtheta / 3)
+    y = (out_theta + dtheta / 4)[:-1, :-1]
+    np.testing.assert_allclose(scat_fn(x, y), _scattering_function(x, y))
+
+
 def test_make_timevect():
     # loop over different values to check numerical robustness
     num_list = list(range(30, 40)) + list(range(2000, 2020))
@@ -682,7 +742,7 @@ def test_make_toneburst():
     assert toneburst.dtype == np.float
     assert toneburst_complex.dtype == np.complex
     np.testing.assert_allclose(toneburst_complex.real, toneburst)
-    np.testing.assert_allclose(toneburst[0.], 1.0)
+    np.testing.assert_allclose(toneburst[0], 1.0)
     np.testing.assert_allclose(toneburst[:10],
                                toneburst_ref[max_toneburst:10 + max_toneburst])
     np.testing.assert_allclose(toneburst[-10:],

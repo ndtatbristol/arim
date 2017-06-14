@@ -318,7 +318,7 @@ def plot_psd(frame, idx='all', to_show='filtered', welch_params=None, ax=None,
 
 
 def plot_oxz(data, grid, ax=None, title=None, clim=None, interpolation='none',
-             draw_cbar=True, cmap=None, figsize=None, savefig=None,
+             draw_cbar=True, cmap=None, figsize=None, savefig=None, patches=None,
              filename=None, scale='linear', ref_db=None,
              ):
     """
@@ -341,6 +341,8 @@ def plot_oxz(data, grid, ax=None, title=None, clim=None, interpolation='none',
         Default: ``conf['plot_oxz.figsize']``
     savefig : boolean or None
         If True, save the figure. Default: ``conf['savefig']``
+    patches : List[matplotlib.patches.Patch] or None
+        Patches to draw
     filename : str or None
         If True
     scale : str or None
@@ -376,6 +378,8 @@ def plot_oxz(data, grid, ax=None, title=None, clim=None, interpolation='none',
         fig, ax = plt.subplots(figsize=figsize)
     else:
         fig = ax.figure
+    if patches is None:
+        patches = []
 
     valid_shapes = [(grid.numx, 1, grid.numz),
                     (grid.numx, grid.numz),
@@ -416,6 +420,8 @@ def plot_oxz(data, grid, ax=None, title=None, clim=None, interpolation='none',
         image.set_clim(clim)
     if title is not None:
         ax.set_title(title)
+    for p in patches:
+        ax.add_patch(p)
 
     ax.axis('equal')
     ax.axis([grid.xmin, grid.xmax, grid.zmax, grid.zmin])

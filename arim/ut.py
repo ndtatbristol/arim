@@ -583,6 +583,73 @@ def solid_t_fluid(alpha_t, rho_fluid, rho_solid, c_fluid, c_l, c_t, alpha_fluid=
     return reflection_l, reflection_t, transmission
 
 
+def theta_scattering_matrix(numpoints):
+    return np.linspace(-np.pi, np.pi, numpoints, endpoint=False)
+
+
+def make_scattering_matrix(scattering_func, numpoints):
+    theta = theta_scattering_matrix(numpoints)
+    inc_theta, out_theta = np.meshgrid(theta, theta, indexing='ij')
+    scattering_matrix = scattering_func(inc_theta, out_theta)
+    return inc_theta, out_theta, scattering_matrix
+
+
+def interpolate_scattering_matrix(scattering_matrix):
+    scattering_matrix = np.asarray(scattering_matrix)
+    if scattering_matrix.ndim != 2:
+        raise ValueError('scattering matrix must have a shape (n, n)')
+    if scattering_matrix.shape[0] != scattering_matrix.shape[1]:
+        raise ValueError('scattering matrix must have a shape (n, n)')
+
+    out_dtype = numba.from_dtype(np.result_type(scattering_matrix, np.float))
+
+    # assert scattering_matrix.shape[0] >= 1
+
+    @numba.vectorize([out_dtype(numba.float32, numba.float32),
+                      out_dtype(numba.float64, numba.float64),],
+                     nopython=True, target='cpu')
+    def interpolator(inc_theta, out_theta):
+        # TODO: write bug report, kernel restart when use parallel
+        numpoints = scattering_matrix.shape[0]
+        dtheta = 2 * np.pi / numpoints
+
+        # Returns indices in [0, ..., numpoints - 1]
+        # -pi <-> 0
+        # pi - eps <-> numpoints - 1
+        # -pi + 2 k pi <-> 0
+        inc_theta_idx = int((inc_theta + np.pi) // dtheta % numpoints)
+        out_theta_idx = int((out_theta + np.pi) // dtheta % numpoints)
+
+        # Returns the fraction in [0., 1.[ of the distance to the next point to the distance
+        # to the last point.
+        inc_theta_frac = ((inc_theta + np.pi) % dtheta) / dtheta
+        out_theta_frac = ((out_theta + np.pi) % dtheta) / dtheta
+
+        # if we are on the border, wrap around (360° = 0°)
+        if inc_theta_idx != (numpoints - 1):
+            inc_theta_idx_plus1 = inc_theta_idx + 1
+        else:
+            inc_theta_idx_plus1 = 0
+
+        if out_theta_idx != (numpoints - 1):
+            out_theta_idx_plus1 = out_theta_idx + 1
+        else:
+            out_theta_idx_plus1 = 0
+
+        # use cardinal direction: sw for south west, etc
+        sw = scattering_matrix[inc_theta_idx, out_theta_idx]
+        ne = scattering_matrix[inc_theta_idx_plus1, out_theta_idx_plus1]
+        se = scattering_matrix[inc_theta_idx, out_theta_idx_plus1]
+        nw = scattering_matrix[inc_theta_idx_plus1, out_theta_idx]
+
+        # https://en.wikipedia.org/wiki/Bilinear_interpolation
+        f1 = sw + (se - sw) * out_theta_frac
+        f2 = nw + (ne - nw) * out_theta_frac
+        return f1 + (f2 - f1) * inc_theta_frac
+
+    return interpolator
+
+
 def elastic_scattering_2d_cylinder(theta, radius, longitudinal_wavelength,
                                    transverse_wavelength,
                                    min_terms=10, term_factor=4,
@@ -766,6 +833,45 @@ def elastic_scattering_2d_cylinder(theta, radius, longitudinal_wavelength,
         result['TT'] = r.conjugate()
 
     return result
+
+
+def elastic_scattering_2d_cylinder_matrices(numpoints, radius, longitudinal_wavelength,
+                                            transverse_wavelength,
+                                            min_terms=10, term_factor=4,
+                                            to_compute={'LL', 'LT', 'TL', 'TT'}):
+    """
+    Returns scattering matrices of 'elastic_scattering_2d_cylinder'
+
+    Parameters
+    ----------
+    numpoints : int
+    radius
+    longitudinal_wavelength
+    transverse_wavelength
+    min_terms
+    term_factor
+    to_compute
+
+    Returns
+    -------
+    inc_theta, out_theta
+    matrices : dict
+
+
+    """
+    matrices = {}
+    inc_theta = None
+    out_theta = None
+    for key in to_compute:
+        def scat_func(inc, out):
+            return elastic_scattering_2d_cylinder(
+                out - inc, radius, longitudinal_wavelength,
+                transverse_wavelength,
+                min_terms, term_factor,
+                to_compute={key})[key]
+
+        inc_theta, out_theta, matrices[key] = make_scattering_matrix(scat_func, numpoints)
+    return inc_theta, out_theta, matrices
 
 
 def make_timevect(num, step, start=0., dtype=None):

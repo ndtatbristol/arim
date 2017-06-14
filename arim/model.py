@@ -11,13 +11,16 @@ Functions related to the forward model.
 
 import logging
 import warnings
+from functools import reduce
 
 import numpy as np
+import numba
 
 from . import core as c
 from . import ut
 from .ut import snell_angles, fluid_solid, solid_l_fluid, solid_t_fluid, \
     directivity_2d_rectangular_in_fluid
+from .helpers import chunk_array
 
 # for backward compatiblity:
 from .path import RayGeometry
@@ -71,7 +74,7 @@ directivity_finite_width_2d_for_path = directivity_2d_rectangular_in_fluid_for_p
 
 def transmission_at_interface(interface_kind, material_inc, material_out, mode_inc,
                               mode_out, angles_inc,
-                              force_complex=True):
+                              force_complex=True, unit='stress'):
     """
     Compute the transmission coefficients for an interface.
 
@@ -86,9 +89,9 @@ def transmission_at_interface(interface_kind, material_inc, material_out, mode_i
     Parameters
     ----------
     interface_kind : InterfaceKind
-    material_inc : Material
+    material_inc : arim.Material
         Material of the incident ray legs.
-    material_out : Material
+    material_out : arim.Material
         Material of the transmitted ray legs.
     mode_inc : Mode
         Mode of the incidents ray legs.
@@ -98,6 +101,8 @@ def transmission_at_interface(interface_kind, material_inc, material_out, mode_i
         Angle of incidence of the ray legs.
     force_complex : bool
         If True, return complex coefficients. If not, return coefficients with the same datatype as ``angles_inc``. Default: True.
+    unit : str
+        'stress' or 'displacement'. Default: 'stress'
 
     Returns
     -------
@@ -107,6 +112,12 @@ def transmission_at_interface(interface_kind, material_inc, material_out, mode_i
     """
     if force_complex:
         angles_inc = np.asarray(angles_inc, dtype=complex)
+    if unit.lower() == 'stress':
+        convert_to_displacement = False
+    elif unit.lower() == 'displacement':
+        convert_to_displacement = True
+    else:
+        raise ValueError("Argument 'unit' must be 'stress' or 'displacement'")
 
     if interface_kind is c.InterfaceKind.fluid_solid:
         # Fluid-solid interface in transmission
@@ -135,6 +146,12 @@ def transmission_at_interface(interface_kind, material_inc, material_out, mode_i
             c_t=solid.transverse_vel)
 
         refl, trans_l, trans_t = fluid_solid(**params)
+        if convert_to_displacement:
+            # u2/u1 = z tau2 / tau1 = -z tau2 / p1
+            z = ((material_inc.density * material_inc.velocity(mode_inc)) /
+                 (material_out.density * material_out.velocity(mode_out)))
+            trans_l *= z
+            trans_t *= z
         if mode_out is c.Mode.L:
             return trans_l
         elif mode_out is c.Mode.T:
@@ -167,6 +184,11 @@ def transmission_at_interface(interface_kind, material_inc, material_out, mode_i
             refl_l, refl_t, transmission = solid_t_fluid(alpha_t=alpha_t, **params)
         else:
             raise RuntimeError
+        if convert_to_displacement:
+            # u2/u1 = z tau2 / tau1 = -z tau2 / p1
+            z = ((material_inc.density * material_inc.velocity(mode_inc)) /
+                 (material_out.density * material_out.velocity(mode_out)))
+            transmission *= z
         return transmission
     else:
         raise NotImplementedError
@@ -174,7 +196,7 @@ def transmission_at_interface(interface_kind, material_inc, material_out, mode_i
 
 def reflection_at_interface(interface_kind, material_inc, material_against, mode_inc,
                             mode_out, angles_inc,
-                            force_complex=True):
+                            force_complex=True, unit='stress'):
     """
     Compute the reflection coefficients for an interface.
 
@@ -202,6 +224,8 @@ def reflection_at_interface(interface_kind, material_inc, material_against, mode
     force_complex : bool
         If True, return complex coefficients. If not, return coefficients with the same
         datatype as ``angles_inc``. Default: True.
+    unit : str
+        'stress' or 'displacement'. Default: 'stress'
 
     Returns
     -------
@@ -211,6 +235,12 @@ def reflection_at_interface(interface_kind, material_inc, material_against, mode
     """
     if force_complex:
         angles_inc = np.asarray(angles_inc, dtype=complex)
+    if unit.lower() == 'stress':
+        convert_to_displacement = False
+    elif unit.lower() == 'displacement':
+        convert_to_displacement = True
+    else:
+        raise ValueError("Argument 'unit' must be 'stress' or 'displacement'")
 
     if interface_kind is c.InterfaceKind.solid_fluid:
         # Reflection against a solid-fluid interface
@@ -244,17 +274,25 @@ def reflection_at_interface(interface_kind, material_inc, material_against, mode
         with np.errstate(invalid='ignore'):
             refl_l, refl_t, trans = solid_fluid(**params)
 
+        z = material_inc.velocity(mode_inc) / material_inc.velocity(mode_out)
         if mode_out is c.Mode.L:
-            return refl_l
+            if convert_to_displacement:
+                return refl_l * z
+            else:
+                return refl_l
         elif mode_out is c.Mode.T:
-            return refl_t
+            if convert_to_displacement:
+                return refl_t * z
+            else:
+                return refl_t
         else:
             raise ValueError("invalid mode")
     else:
         raise NotImplementedError
 
 
-def transmission_reflection_for_path(path, ray_geometry, force_complex=True):
+def transmission_reflection_for_path(path, ray_geometry, force_complex=True,
+                                     unit='stress'):
     """
     Return the transmission-reflection coefficients for a given path.
 
@@ -296,6 +334,7 @@ def transmission_reflection_for_path(path, ray_geometry, force_complex=True):
             mode_out=path.modes[i],
             angles_inc=ray_geometry.conventional_inc_angle(i),
             force_complex=force_complex,
+            unit=unit,
         )
 
         logger.debug("compute {} coefficients at interface {}".format(
@@ -320,7 +359,8 @@ def transmission_reflection_for_path(path, ray_geometry, force_complex=True):
     return transrefl
 
 
-def reverse_transmission_reflection_for_path(path, ray_geometry, force_complex=True):
+def reverse_transmission_reflection_for_path(path, ray_geometry, force_complex=True,
+                                             unit='stress'):
     """
     Return the transmission-reflection coefficients of the reverse path.
 
@@ -356,6 +396,7 @@ def reverse_transmission_reflection_for_path(path, ray_geometry, force_complex=T
             mode_inc=mode_inc,
             mode_out=mode_out,
             force_complex=force_complex,
+            unit=unit,
         )
 
         # In the reverse path, transmitted or reflected angles coming out the i-th
@@ -432,35 +473,39 @@ def beamspread_2d_for_path(ray_geometry):
     Schmerr, Fundamentals of ultrasonic phased arrays (Springer), §2.5
 
     """
-    refractive_indices = [None]
     velocities = ray_geometry.rays.fermat_path.velocities
-    for inc_velocity, out_velocity in zip(velocities[:-1], velocities[1:]):
-        refractive_indices.append(inc_velocity / out_velocity)
-    refractive_indices.append(None)
 
-    virtual_distance = None
-    for i in range(0, ray_geometry.numinterfaces - 1):
-        if i == 0:
-            # Between the probe and the first interface, beamspread of an unbounded medium.
-            # Use a copy because the original may be a cached value and we don't want
-            # to change it by accident.
-            virtual_distance = ray_geometry.inc_leg_size(1).copy()
-        else:
-            # r1 is the closest to the source
-            # r1 = inc_leg_sizes_list[i]
-            r2 = ray_geometry.inc_leg_size(i + 1)
+    # Using notations from forward model, this function computes the beamspread at A_n
+    # where n = ray_geometry.numinterfaces - 1
+    # Case n=0: undefined
+    # Case n=1: beamspread = 1/sqrt(r)
 
-            theta_inc = ray_geometry.conventional_inc_angle(i)
+    # Precompute gamma (coefficient of conversion between actual source
+    # and virtual source)
+    n = ray_geometry.numinterfaces - 1
+    gamma_list = []
+    for k in range(1, n):
+        # k varies in [1, n-1] (included)
+        theta_inc = ray_geometry.conventional_inc_angle(k)
 
-            alpha = refractive_indices[i]
+        nu = velocities[k - 1] / velocities[k]
+        sin_theta = np.sin(theta_inc)
+        cos_theta = np.cos(theta_inc)
+        gamma_list.append((nu * nu - sin_theta * sin_theta)
+                          / (nu * cos_theta * cos_theta))
 
-            sin_theta = np.sin(theta_inc)
-            cos_theta = np.cos(theta_inc)
-            # beta_12:
-            beta = ((alpha * alpha - sin_theta * sin_theta)
-                    / (alpha * cos_theta * cos_theta))
+    # Between the probe and the first interface, beamspread of an unbounded medium.
+    # Use a copy because the original may be a cached value and we don't want
+    # to change it by accident.
+    virtual_distance = ray_geometry.inc_leg_size(1).copy()  # distance A_0 A_1
 
-            virtual_distance += r2 / beta
+    for k in range(1, n):
+        # distance A_k A_{k+1}:
+        r = ray_geometry.inc_leg_size(k + 1)
+        gamma = 1.
+        for i in range(k):
+            gamma *= gamma_list[i]
+        virtual_distance += r / gamma
 
     return np.reciprocal(np.sqrt(virtual_distance))
 
@@ -474,6 +519,10 @@ def reverse_beamspread_2d_for_path(ray_geometry):
     j is the source and i is the endpoint. The direct beamspread considers this is the
     opposite.
 
+    This gives the same result as beamspread_2d_for_path(reversed_ray_geometry)
+    assuming the rays perfectly follow Snell laws. Because of errors in the ray tracing,
+    there is a small difference.
+
     Parameters
     ----------
     ray_geometry : RayGeometry
@@ -485,38 +534,76 @@ def reverse_beamspread_2d_for_path(ray_geometry):
         ray_geometry.interfaces[-1].numpoints)
 
     """
-    numinterfaces = ray_geometry.numinterfaces
-
-    refractive_indices = [None]
     velocities = ray_geometry.rays.fermat_path.velocities
-    for i in range(numinterfaces - 2, 0, -1):
-        refractive_indices.append(velocities[i] / velocities[i - 1])
-    refractive_indices.append(None)
+    # import pdb; pdb.set_trace()
 
-    virtual_distance = None
-    # i = 0 corresponds to the closest leg to the source (point j)
-    for i in range(ray_geometry.numinterfaces - 1):
-        if i == 0:
-            # Use copy because of cache
-            virtual_distance = ray_geometry.inc_leg_size(numinterfaces - 1).copy()
-        else:
-            # r1 is the closest from the source
-            # r1 = inc_leg_sizes_list[i]
-            r2 = ray_geometry.inc_leg_size(numinterfaces - i - 1)
+    # Using notations from forward model, this function computes the beamspread at A_n
+    # where n = ray_geometry.numinterfaces - 1
+    # Case n=0: undefined
+    # Case n=1: beamspread = 1/sqrt(r)
 
-            theta_out = ray_geometry.conventional_inc_angle(numinterfaces - i - 1)
+    # Precompute gamma (coefficient of conversion between actual source
+    # and virtual source)
+    n = ray_geometry.numinterfaces - 1
+    gamma_list = []
+    for k in range(1, n):
+        # k varies in [1, n-1] (included)
+        theta_out = ray_geometry.conventional_inc_angle(n - k)
+        nu = velocities[n - k] / velocities[n - k - 1]
+        sin_theta = np.sin(theta_out)
+        cos_theta = np.cos(theta_out)
+        # gamma expressed with theta_out instead of theta_in
+        gamma_list.append((nu * cos_theta * cos_theta)
+                          / (1 - nu * nu * sin_theta * sin_theta))
 
-            alpha = refractive_indices[i]
+    # Between the probe and the first interface, beamspread of an unbounded medium.
+    # Use a copy because the original may be a cached value and we don't want
+    # to change it by accident.
+    virtual_distance = ray_geometry.inc_leg_size(n).copy()
 
-            sin_theta = np.sin(theta_out)
-            cos_theta = np.cos(theta_out)
-            # beta_12 expressed with theta_out instead of theta_in
-            beta = ((alpha * cos_theta * cos_theta)
-                    / (1 - alpha * alpha * sin_theta * sin_theta))
-
-            virtual_distance += r2 / beta
+    for k in range(1, n):
+        # distance A_k A_{k+1}:
+        r = ray_geometry.inc_leg_size(n - k)
+        gamma = 1.
+        for i in range(k):
+            gamma *= gamma_list[i]
+        virtual_distance += r / gamma
 
     return np.reciprocal(np.sqrt(virtual_distance))
+
+    # # old old old ============================
+    # numinterfaces = ray_geometry.numinterfaces
+    #
+    # refractive_indices = [None]
+    # velocities = ray_geometry.rays.fermat_path.velocities
+    # for i in range(numinterfaces - 2, 0, -1):
+    #     refractive_indices.append(velocities[i] / velocities[i - 1])
+    # refractive_indices.append(None)
+    #
+    # virtual_distance = None
+    # # i = 0 corresponds to the closest leg to the source (point j)
+    # for i in range(ray_geometry.numinterfaces - 1):
+    #     if i == 0:
+    #         # Use copy because of cache
+    #         virtual_distance = ray_geometry.inc_leg_size(numinterfaces - 1).copy()
+    #     else:
+    #         # r1 is the closest from the source
+    #         # r1 = inc_leg_sizes_list[i]
+    #         r2 = ray_geometry.inc_leg_size(numinterfaces - i - 1)
+    #
+    #         theta_out = ray_geometry.conventional_inc_angle(numinterfaces - i - 1)
+    #
+    #         nu = refractive_indices[i]
+    #
+    #         sin_theta = np.sin(theta_out)
+    #         cos_theta = np.cos(theta_out)
+    #         # beta_12 expressed with theta_out instead of theta_in
+    #         beta = ((nu * cos_theta * cos_theta)
+    #                 / (1 - nu * nu * sin_theta * sin_theta))
+    #
+    #         virtual_distance += r2 / beta
+    #
+    # return np.reciprocal(np.sqrt(virtual_distance))
 
 
 def beamspread_for_path(ray_geometry):
@@ -530,6 +617,7 @@ def beamspread_for_path(ray_geometry):
 
 def sensitivity_conjugate_for_path(ray_weights):
     """
+    Critical bug here: works only for FMC
 
     Parameters
     ----------
@@ -542,6 +630,7 @@ def sensitivity_conjugate_for_path(ray_weights):
         Shape : (numgridpoints, )
 
     """
+    warnings.warn('This function does not work propertly, to be fixed')
     ray_weights = ray_weights
     abs_ray_weights = np.abs(ray_weights)
     return np.mean(abs_ray_weights * abs_ray_weights, axis=0)
@@ -563,4 +652,58 @@ def sensitivity_conjugate_for_view(tx_sensitivity, rx_sensitivity):
         Shape: (numgridpoints, )
 
     """
+    warnings.warn('This function does not work propertly, to be fixed')
     return tx_sensitivity * rx_sensitivity
+
+
+def sensitivity_image_point_source(tx_ray_weights, rx_ray_weights, tx, rx,
+                                   scanline_weights):
+    numelements, numpoints = tx_ray_weights.shape
+    numscanlines = tx.shape[0]
+
+    tx_amplitudes = np.ascontiguousarray(tx_ray_weights.T)
+    rx_amplitudes = np.ascontiguousarray(rx_ray_weights.T)
+
+    sensitivity = np.zeros(numpoints)
+    block_size = 1000
+
+    for chunk in chunk_array(sensitivity.shape, block_size, axis=0):
+        # Model amplitudes P_ij
+        model_amplitudes = (np.take(tx_amplitudes[chunk], tx, axis=1)
+                            * np.take(rx_amplitudes[chunk], rx, axis=1))
+
+        # Compute sensitivity image (write result on sensitivity_result)
+        sensitivity_image(model_amplitudes, scanline_weights, sensitivity[chunk])
+    return sensitivity
+
+
+# @numba.jit(nopython=True)
+@numba.guvectorize([(numba.float32[:, :], numba.float32[:], numba.float32[:]),
+                    (numba.float64[:, :], numba.float64[:], numba.float64[:]),
+                    (numba.complex64[:, :], numba.float32[:], numba.float32[:]),
+                    (numba.complex128[:, :], numba.float64[:], numba.float64[:]),
+                    ], '(n, m),(m)->(n)', target='cpu')
+def sensitivity_image(model_amplitudes, scanline_weights, result):
+    """
+    Compute sensitivity I_0. FMC or HMC agnostic.
+
+    Parameters
+    ----------
+    model_amplitudes : ndarray
+        (numpoints, numscanlines)
+    scanline_weights : ndarray
+        (numscanlines, )
+    result
+        (numpoints, )
+
+    Returns
+    -------
+    None, write in result.
+
+    """
+    numpoints, numscanlines = model_amplitudes.shape
+    for pidx in range(numpoints):
+        result[pidx] = 0.
+        for scan in range(numscanlines):
+            x = abs(model_amplitudes[pidx, scan])
+            result[pidx] += scanline_weights[scan] * x * x
