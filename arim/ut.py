@@ -199,7 +199,8 @@ def instantaneous_phase_shift(analytic_sig, time_vect, carrier_frequency):
     dtype = analytic_sig.dtype
     if dtype.kind != 'c':
         warnings.warn('Expected an analytic (complex) signal, got {}. Use a Hilbert '
-                      'transform to get the analytic signal.'.format(dtype), UtWarning)
+                      'transform to get the analytic signal.'.format(dtype), UtWarning,
+                      stacklevel=2)
     phase_correction = 2 * np.pi * carrier_frequency * time_vect
     phase = wrap_phase(np.angle(analytic_sig) - phase_correction)
     return phase

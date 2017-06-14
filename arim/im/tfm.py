@@ -322,7 +322,7 @@ class SingleViewTFM(BaseTFM):
             msg = "Rays will be converted to fortran order. If multiple TFM are performed, "
             msg += "converting the rays before passing them to this object is more computationally "
             msg += "efficient."
-            warnings.warn(msg, ArimWarning)
+            warnings.warn(msg, ArimWarning, stacklevel=2)
 
         assert tx_rays.path[0] is frame.probe.locations
         assert rx_rays.path[0] is frame.probe.locations
@@ -385,8 +385,9 @@ class SingleViewTFM(BaseTFM):
         """
         from ..path import paths_for_block_in_immersion, views_for_block_in_immersion
 
-        warnings.warn(DeprecationWarning(
-            "Using arim.make_view_for_block_in_immersion is recommended. This method will be removed in future versions."))
+        warnings.warn("Using arim.make_view_for_block_in_immersion is recommended. "
+            "This method will be removed in future versions.", DeprecationWarning,
+            stacklevel=2)
 
         probe = g.aspoints(probe)
         frontwall = g.aspoints(frontwall)
@@ -430,10 +431,10 @@ class SimpleTFM(BaseTFM):
         assert lookup_times_rx.shape == (grid.numpoints, frame.probe.numelements)
 
         if not lookup_times_tx.flags.contiguous:
-            warnings.warn("Lookup times are converted to contiguous array.", ArimWarning)
+            warnings.warn("Lookup times are converted to contiguous array.", ArimWarning, stacklevel=2)
             lookup_times_rx = np.ascontiguousarray(lookup_times_tx)
         if not lookup_times_tx.flags.contiguous:
-            warnings.warn("Lookup times are converted to contiguous array.", ArimWarning)
+            warnings.warn("Lookup times are converted to contiguous array.", ArimWarning, stacklevel=2)
             lookup_times_rx = np.ascontiguousarray(lookup_times_rx)
 
         self._lookup_times_tx = lookup_times_tx

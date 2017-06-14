@@ -145,7 +145,7 @@ class Cache(dict):
     def __setitem__(self, key, value):
         if key in self:
             msg = "Reassigning a cached value: key={}".format(key)
-            warn(msg, ArimWarning)
+            warn(msg, ArimWarning, stacklevel=2)
         super().__setitem__(key, value)
 
     def stat(self):

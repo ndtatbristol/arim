@@ -169,9 +169,10 @@ class MultiAmplitudes(Amplitudes):
         self.amplitudes_list = amplitudes_list
         if len(set(amp.frame for amp in amplitudes_list)) > 1:
             warn('Different Frame objects are used in amplitudes. Use first.',
-                 ArimWarning)
+                 ArimWarning, stacklevel=2)
         if len(set(amp.grid for amp in amplitudes_list)) > 1:
-            warn('Different Grid objects are used in amplitudes. Use first.', ArimWarning)
+            warn('Different Grid objects are used in amplitudes. Use first.',
+                ArimWarning, stacklevel=2)
         super().__init__(frame=amplitudes_list[0].frame, grid=amplitudes_list[0].grid)
 
     def _compute_amplitudes(self):
@@ -217,9 +218,9 @@ class DirectivityFiniteWidth2D(Amplitudes):
             raise ValueError('Dimensions of the elements must be specified.')
 
         if probe.orientations is None:
-            warn(
-                'The orientations of elements are not provided. Assume they are all [0., 0., 1.] in the PCS',
-                ArimWarning)
+            warn('The orientations of elements are not provided. '
+                'Assume they are all [0., 0., 1.] in the PCS',
+                ArimWarning, stacklevel=2)
         else:
             expected_orientations = np.tile([0, 0., 1.], numelements).reshape(numelements,
                                                                               3)
@@ -227,7 +228,8 @@ class DirectivityFiniteWidth2D(Amplitudes):
                 'This function works only if element orientations in the PCS are all [0., 0., 1.].'
 
         if probe.shapes is None:
-            warn('Elements shapes are not provided. Assume rectangular.', ArimWarning)
+            warn('Elements shapes are not provided. Assume rectangular.',
+                ArimWarning, stacklevel=2)
         else:
             assert np.all(probe.shapes == ElementShape.rectangular), \
                 'Elements shapes must be rectangular.'

@@ -548,7 +548,7 @@ class RayGeometry:
         """
         if not self._use_cache:
             warnings.warn("Caching is not enabled therefore precompute() will not work.",
-                          ArimWarning)
+                          ArimWarning, stacklevel=2)
         yield
         self.clear_intermediate_results()
 
@@ -617,7 +617,7 @@ class RayGeometry:
         Legacy interface
         """
         warnings.warn('inc_angles_list is deprecated, use conventional_inc_angle() '
-                      'instead', DeprecationWarning)
+                      'instead', DeprecationWarning, stacklevel=2)
         return [self.conventional_inc_angle(i) for i in range(self.numinterfaces)]
 
     @property
@@ -626,7 +626,7 @@ class RayGeometry:
         Legacy interface
         """
         warnings.warn('out_angles_list is deprecated, use conventional_out_angle() '
-                      'instead', DeprecationWarning)
+                      'instead', DeprecationWarning, stacklevel=2)
         return [self.conventional_out_angle(i) for i in range(self.numinterfaces)]
 
     @_cache_ray_geometry

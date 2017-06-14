@@ -21,6 +21,7 @@ from . import ut
 from .ut import snell_angles, fluid_solid, solid_l_fluid, solid_t_fluid, \
     directivity_2d_rectangular_in_fluid
 from .helpers import chunk_array
+from .exceptions import ArimWarning
 
 # for backward compatiblity:
 from .path import RayGeometry
@@ -610,8 +611,9 @@ def beamspread_for_path(ray_geometry):
     """
     Deprecation warning: use :func:`beamspread_2d_for_path` instead.
     """
-    warnings.warn(DeprecationWarning('beamspread_for_path is deprecated and will be '
-                                     'removed. Use beamspread_2d_for_path instead.'))
+    warnings.warn('beamspread_for_path is deprecated and will be '
+                  'removed. Use beamspread_2d_for_path instead.',
+                  DeprecationWarning, stacklevel=2)
     return beamspread_2d_for_path(ray_geometry)
 
 
@@ -630,7 +632,8 @@ def sensitivity_conjugate_for_path(ray_weights):
         Shape : (numgridpoints, )
 
     """
-    warnings.warn('This function does not work propertly, to be fixed')
+    warnings.warn('This function does not work propertly, to be fixed',
+        ArimWarning, stacklevel=2)
     ray_weights = ray_weights
     abs_ray_weights = np.abs(ray_weights)
     return np.mean(abs_ray_weights * abs_ray_weights, axis=0)
@@ -652,7 +655,8 @@ def sensitivity_conjugate_for_view(tx_sensitivity, rx_sensitivity):
         Shape: (numgridpoints, )
 
     """
-    warnings.warn('This function does not work propertly, to be fixed')
+    warnings.warn('This function does not work propertly, to be fixed',
+        ArimWarning, stacklevel=2)
     return tx_sensitivity * rx_sensitivity
 
 

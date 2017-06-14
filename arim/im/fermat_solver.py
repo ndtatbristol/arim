@@ -136,7 +136,8 @@ class Rays:
 
     @property
     def path(self):
-        warnings.warn("use Rays.fermat_path instead Rays.path", DeprecationWarning)
+        warnings.warn("use Rays.fermat_path instead Rays.path", DeprecationWarning,
+            stacklevel=2)
         return self._fermat_path
 
     @property
@@ -352,7 +353,7 @@ class Rays:
 
         """
         warnings.warn('Use RayGeometry.conventional_inc_angles() instead.',
-                      DeprecationWarning)
+                      DeprecationWarning, stacklevel=2)
 
         ray_geometry = RayGeometry(interfaces, self)
         for i in range(len(interfaces)):
@@ -393,7 +394,7 @@ class Rays:
 
         """
         warnings.warn('Use RayGeometry.conventional_out_angles() instead.',
-                      DeprecationWarning)
+                      DeprecationWarning, stacklevel=2)
 
         ray_geometry = RayGeometry(interfaces, self)
         for i in range(len(interfaces)):

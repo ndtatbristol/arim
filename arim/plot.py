@@ -370,7 +370,8 @@ def plot_oxz(data, grid, ax=None, title=None, clim=None, interpolation='none',
         figsize = conf['plot_oxz.figsize']
     else:
         if ax is not None:
-            warn('figsize is ignored because an axis is provided', ArimWarning)
+            warn('figsize is ignored because an axis is provided', ArimWarning,
+                stacklevel=2)
     if savefig is None:
         savefig = conf['savefig']
 
@@ -396,7 +397,7 @@ def plot_oxz(data, grid, ax=None, title=None, clim=None, interpolation='none',
     scale = scale.lower()
     if scale == 'linear':
         if ref_db is not None:
-            warn("ref_db is ignored for linear plot", ArimWarning)
+            warn("ref_db is ignored for linear plot", ArimWarning, stacklevel=2)
     elif scale == 'db':
         data = ut.decibel(data, ref_db)
     else:
