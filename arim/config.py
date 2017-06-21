@@ -55,7 +55,6 @@ class Config(dict):
             the parent RcParams dictionary.
 
         """
-        import re
         pattern_re = re.compile(pattern)
         return self.__class__((key, value)
                               for key, value in self.items()
@@ -74,8 +73,8 @@ class Config(dict):
 
         Parameters
         ----------
-        conf : dict
-            Dictionary or Config object
+        conf : dict or None
+            Dictionary or Config object. If None, do nothing.
 
         Returns
         -------
@@ -85,6 +84,8 @@ class Config(dict):
         -----
         Adapted from `configobj <https://github.com/DiffSK/configobj/>`_, license BSD 3-clause
         """
+        if conf is None:
+            return self
         return recursive_dict_merge(self, conf)
 
 
