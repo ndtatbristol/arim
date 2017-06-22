@@ -1,5 +1,5 @@
-arim.io package
-===============
+arim\.io package
+================
 
 Submodules
 ----------

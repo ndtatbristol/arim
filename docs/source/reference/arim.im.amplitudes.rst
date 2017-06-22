@@ -1,5 +1,5 @@
-arim.im.amplitudes module
-=========================
+arim\.im\.amplitudes module
+===========================
 
 .. automodule:: arim.im.amplitudes
     :members:

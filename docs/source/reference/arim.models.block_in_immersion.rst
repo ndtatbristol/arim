@@ -1,5 +1,5 @@
-arim.models.block_in_immersion module
-=====================================
+arim\.models\.block\_in\_immersion module
+=========================================
 
 .. automodule:: arim.models.block_in_immersion
     :members:

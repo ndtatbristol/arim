@@ -1,5 +1,5 @@
-arim.ut module
-==============
+arim\.ut module
+===============
 
 .. automodule:: arim.ut
     :members:

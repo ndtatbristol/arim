@@ -1,5 +1,5 @@
-arim.path module
-================
+arim\.path module
+=================
 
 .. automodule:: arim.path
     :members:

@@ -1,5 +1,5 @@
-arim.im.base module
-===================
+arim\.im\.base module
+=====================
 
 .. automodule:: arim.im.base
     :members:

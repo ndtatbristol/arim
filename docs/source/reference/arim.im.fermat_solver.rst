@@ -1,5 +1,5 @@
-arim.im.fermat_solver module
-============================
+arim\.im\.fermat\_solver module
+===============================
 
 .. automodule:: arim.im.fermat_solver
     :members:

@@ -1,5 +1,5 @@
-arim.config module
-==================
+arim\.config module
+===================
 
 .. automodule:: arim.config
     :members:

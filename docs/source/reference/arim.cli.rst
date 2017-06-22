@@ -1,5 +1,5 @@
-arim.cli module
-===============
+arim\.cli module
+================
 
 .. automodule:: arim.cli
     :members:

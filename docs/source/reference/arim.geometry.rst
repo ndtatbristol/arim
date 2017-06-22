@@ -1,5 +1,5 @@
-arim.geometry module
-====================
+arim\.geometry module
+=====================
 
 .. automodule:: arim.geometry
     :members:

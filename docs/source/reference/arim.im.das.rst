@@ -1,5 +1,5 @@
-arim.im.das package
-===================
+arim\.im\.das package
+=====================
 
 Submodules
 ----------
