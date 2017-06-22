@@ -125,6 +125,38 @@ def test_infer_capture_method():
     assert ut.infer_capture_method(tx, rx) == 'unsupported'
 
 
+def test_default_scanline_weights():
+    # FMC
+    tx = [0, 0, 0, 1, 1, 1, 2, 2, 2]
+    rx = [0, 1, 2, 0, 1, 2, 0, 1, 2]
+    expected = [1., 1., 1., 1., 1., 1., 1., 1., 1.]
+    np.testing.assert_almost_equal(ut.default_scanline_weights(tx, rx), expected)
+
+    # FMC with dead-element 1
+    tx = [0, 0, 2, 2]
+    rx = [0, 2, 0, 2]
+    expected = [1., 1., 1., 1.]
+    np.testing.assert_almost_equal(ut.default_scanline_weights(tx, rx), expected)
+
+    # HMC
+    tx = [0, 0, 0, 1, 1, 2]
+    rx = [0, 1, 2, 1, 2, 2]
+    expected = [1., 2., 2., 1., 2., 1.]
+    np.testing.assert_almost_equal(ut.default_scanline_weights(tx, rx), expected)
+
+    # HMC with dead-element 1
+    tx = [0, 0, 2]
+    rx = [0, 2, 2]
+    expected = [1., 2., 1., ]
+    np.testing.assert_almost_equal(ut.default_scanline_weights(tx, rx), expected)
+
+    # HMC again
+    tx, rx = ut.hmc(30)
+    expected = np.ones(len(tx))
+    expected[tx != rx] = 2.
+    np.testing.assert_almost_equal(ut.default_scanline_weights(tx, rx), expected)
+
+
 def test_instantaneous_phase_shift():
     t = np.arange(300)
     f0 = 20
