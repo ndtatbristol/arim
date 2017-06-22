@@ -1,5 +1,5 @@
-arim.exceptions module
-======================
+arim\.exceptions module
+=======================
 
 .. automodule:: arim.exceptions
     :members:

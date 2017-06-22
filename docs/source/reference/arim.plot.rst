@@ -1,5 +1,5 @@
-arim.plot module
-================
+arim\.plot module
+=================
 
 .. automodule:: arim.plot
     :members:

@@ -1,5 +1,5 @@
-arim.model module
-=================
+arim\.model module
+==================
 
 .. automodule:: arim.model
     :members:

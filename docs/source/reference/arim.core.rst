@@ -1,5 +1,5 @@
-arim.core module
-================
+arim\.core module
+=================
 
 .. automodule:: arim.core
     :members:

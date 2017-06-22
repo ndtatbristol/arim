@@ -1,5 +1,5 @@
-arim.im.tfm module
-==================
+arim\.im\.tfm module
+====================
 
 .. automodule:: arim.im.tfm
     :members:

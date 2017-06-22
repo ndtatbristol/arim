@@ -1,5 +1,5 @@
-arim.im package
-===============
+arim\.im package
+================
 
 Subpackages
 -----------

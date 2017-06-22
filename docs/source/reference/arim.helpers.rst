@@ -1,5 +1,5 @@
-arim.helpers module
-===================
+arim\.helpers module
+====================
 
 .. automodule:: arim.helpers
     :members:

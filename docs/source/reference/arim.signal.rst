@@ -1,5 +1,5 @@
-arim.signal module
-==================
+arim\.signal module
+===================
 
 .. automodule:: arim.signal
     :members:

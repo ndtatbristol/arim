@@ -1,5 +1,5 @@
-arim.registration module
-========================
+arim\.registration module
+=========================
 
 .. automodule:: arim.registration
     :members:
