@@ -1,5 +1,5 @@
 import logging
-from collections import namedtuple, OrderedDict
+from collections import namedtuple
 
 import numpy as np
 
@@ -8,62 +8,6 @@ from .. import core as c
 from ..path import RayGeometry
 
 logger = logging.getLogger(__name__)
-
-
-def _nested_dict_to_flat_list(dictlike):
-    if dictlike is None:
-        return []
-    else:
-        try:
-            values = dictlike.values()
-        except AttributeError:
-            # dictlike is a leaf:
-            return [dictlike]
-        # dictlike is not a leaf:
-        all_values = []
-        for value in values:
-            # union of sets:
-            all_values = _nested_dict_to_flat_list(value)
-        return all_values
-
-
-class RayWeights(namedtuple('RayWeights', [
-    'tx_ray_weights_dict', 'rx_ray_weights_dict',
-    'tx_ray_weights_debug_dict', 'rx_ray_weights_debug_dict', 'scattering_angles'])):
-    """
-    Data container for ray weights.
-
-    Attributes
-    ----------
-    tx_ray_weights_dict : dict[arim.Path, ndarray]
-        Each value has a shape of (numelements, numgridpoints)
-    rx_ray_weights_dict : dict[arim.Path, ndarray]
-        Each value has a shape of (numelements, numgridpoints)
-    tx_ray_weights_debug_dict : dict
-        See function tx_ray_weights
-    rx_ray_weights_debug_dict : dict
-        See function rx_ray_weights
-    scattering_angles : dict[arim.Path, ndarray]
-        Each value has a shape of (numelements, numgridpoints)
-    """
-
-    @property
-    def nbytes(self):
-        all_arrays = []
-        all_arrays += _nested_dict_to_flat_list(self.tx_ray_weights_dict)
-        all_arrays += _nested_dict_to_flat_list(self.rx_ray_weights_dict)
-        all_arrays += _nested_dict_to_flat_list(self.tx_ray_weights_debug_dict)
-        all_arrays += _nested_dict_to_flat_list(self.rx_ray_weights_debug_dict)
-        all_arrays += _nested_dict_to_flat_list(self.scattering_angles)
-        # an array is not hashable so we cheat a bit to get unique arrays
-        unique_ids = set(id(x) for x in all_arrays)
-        nbytes = 0
-        for arr in all_arrays:
-            if id(arr) in unique_ids:
-                nbytes += arr.nbytes
-                unique_ids.remove(id(arr))
-        return nbytes
-
 
 _RayWeightsCommon = namedtuple('_RayWeightsCommon',
                                ['couplant', 'numgridpoints', 'wavelength_in_couplant',
@@ -118,7 +62,7 @@ def tx_ray_weights(path, ray_geometry, frequency, probe_element_width=None,
     d = _init_ray_weights(path, frequency, probe_element_width, use_directivity)
 
     weights_dict = dict()
-    one = np.ones((len(path.interfaces[0].points), d.numgridpoints))
+    one = np.ones((len(path.interfaces[0].points), d.numgridpoints), order='F')
 
     if use_directivity:
         weights_dict['directivity'] = model.radiation_2d_rectangular_in_fluid_for_path(
@@ -198,9 +142,9 @@ def rx_ray_weights(path, ray_geometry, frequency, probe_element_width=None,
     return weights, weights_dict
 
 
-def compute_ray_weights(views, frequency, probe_element_width=None,
-                        use_directivity=True, use_beamspread=True,
-                        use_transrefl=True, save_debug=False):
+def ray_weights_for_views(views, frequency, probe_element_width=None,
+                          use_directivity=True, use_beamspread=True,
+                          use_transrefl=True, save_debug=False):
     """
     Compute coefficients Q_i(r, omega) and Q'_j(r, omega) from the forward model for
     all views.
@@ -221,7 +165,6 @@ def compute_ray_weights(views, frequency, probe_element_width=None,
     Returns
     -------
     RayWeights
-
     """
     tx_ray_weights_dict = {}
     rx_ray_weights_dict = {}
@@ -247,12 +190,13 @@ def compute_ray_weights(views, frequency, probe_element_width=None,
     # tx and rx path.
     for path in all_paths:
         ray_geometry = RayGeometry.from_path(path)
-        scat_angle_dict[path] = ray_geometry.signed_inc_angle(-1)
+        scat_angle_dict[path] = np.asfortranarray(ray_geometry.signed_inc_angle(-1))
         scat_angle_dict[path].flags.writeable = False
 
         if path in all_tx_paths:
             ray_weights, ray_weights_debug = tx_ray_weights(path, ray_geometry,
                                                             **model_options)
+            ray_weights = np.asfortranarray(ray_weights)
             ray_weights.flags.writeable = False
             tx_ray_weights_dict[path] = ray_weights
             if save_debug:
@@ -261,12 +205,13 @@ def compute_ray_weights(views, frequency, probe_element_width=None,
         if path in all_rx_paths:
             ray_weights, ray_weights_debug = rx_ray_weights(path, ray_geometry,
                                                             **model_options)
+            ray_weights = np.asfortranarray(ray_weights)
             ray_weights.flags.writeable = False
             rx_ray_weights_dict[path] = ray_weights
             if save_debug:
                 rx_ray_weights_debug_dict[path] = ray_weights_debug
             del ray_weights, ray_weights_debug
 
-    return RayWeights(tx_ray_weights_dict, rx_ray_weights_dict,
-                      tx_ray_weights_debug_dict, rx_ray_weights_debug_dict,
-                      scat_angle_dict)
+    return model.RayWeights(tx_ray_weights_dict, rx_ray_weights_dict,
+                            tx_ray_weights_debug_dict, rx_ray_weights_debug_dict,
+                            scat_angle_dict)
