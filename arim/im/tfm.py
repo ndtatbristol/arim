@@ -628,6 +628,19 @@ def model_amplitudes(frame, scattering_fn,
                      tx_ray_weights, rx_ray_weights,
                      tx_scattering_angles, rx_scattering_angles):
     """
+    Returns the coefficients P_ij (for all points and for all scanlines),
+    where the forward model is F_ij = P_ij exp(-i omega tau_ij).
+
+    Parameters
+    ----------
+    frame
+        Only frame.tx and frame.rx are used
+    scattering_fn
+    tx_ray_weights
+    rx_ray_weights
+    tx_scattering_angles
+    rx_scattering_angles
+
     Returns
     -------
     model_amplitudes : ndarray

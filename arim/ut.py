@@ -888,6 +888,7 @@ def elastic_scattering_2d_cylinder_matrices(numpoints, radius, longitudinal_wave
     Parameters
     ----------
     numpoints : int
+        Number of interpolation points for the angles. Values in between  values. The
     radius
     longitudinal_wavelength
     transverse_wavelength

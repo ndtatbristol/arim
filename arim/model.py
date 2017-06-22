@@ -572,40 +572,6 @@ def reverse_beamspread_2d_for_path(ray_geometry):
 
     return np.reciprocal(np.sqrt(virtual_distance))
 
-    # # old old old ============================
-    # numinterfaces = ray_geometry.numinterfaces
-    #
-    # refractive_indices = [None]
-    # velocities = ray_geometry.rays.fermat_path.velocities
-    # for i in range(numinterfaces - 2, 0, -1):
-    #     refractive_indices.append(velocities[i] / velocities[i - 1])
-    # refractive_indices.append(None)
-    #
-    # virtual_distance = None
-    # # i = 0 corresponds to the closest leg to the source (point j)
-    # for i in range(ray_geometry.numinterfaces - 1):
-    #     if i == 0:
-    #         # Use copy because of cache
-    #         virtual_distance = ray_geometry.inc_leg_size(numinterfaces - 1).copy()
-    #     else:
-    #         # r1 is the closest from the source
-    #         # r1 = inc_leg_sizes_list[i]
-    #         r2 = ray_geometry.inc_leg_size(numinterfaces - i - 1)
-    #
-    #         theta_out = ray_geometry.conventional_inc_angle(numinterfaces - i - 1)
-    #
-    #         nu = refractive_indices[i]
-    #
-    #         sin_theta = np.sin(theta_out)
-    #         cos_theta = np.cos(theta_out)
-    #         # beta_12 expressed with theta_out instead of theta_in
-    #         beta = ((nu * cos_theta * cos_theta)
-    #                 / (1 - nu * nu * sin_theta * sin_theta))
-    #
-    #         virtual_distance += r2 / beta
-    #
-    # return np.reciprocal(np.sqrt(virtual_distance))
-
 
 def beamspread_for_path(ray_geometry):
     """
@@ -633,7 +599,7 @@ def sensitivity_conjugate_for_path(ray_weights):
 
     """
     warnings.warn('This function does not work propertly, to be fixed',
-        ArimWarning, stacklevel=2)
+                  ArimWarning, stacklevel=2)
     ray_weights = ray_weights
     abs_ray_weights = np.abs(ray_weights)
     return np.mean(abs_ray_weights * abs_ray_weights, axis=0)
@@ -656,7 +622,7 @@ def sensitivity_conjugate_for_view(tx_sensitivity, rx_sensitivity):
 
     """
     warnings.warn('This function does not work propertly, to be fixed',
-        ArimWarning, stacklevel=2)
+                  ArimWarning, stacklevel=2)
     return tx_sensitivity * rx_sensitivity
 
 
@@ -714,3 +680,4 @@ def sensitivity_image(model_amplitudes, scanline_weights, result):
         for scan in range(numscanlines):
             x = abs(model_amplitudes[pidx, scan])
             result[pidx] += scanline_weights[scan] * x * x
+
