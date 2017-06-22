@@ -665,7 +665,7 @@ def test_scattering_matrix():
                                _scattering_function(-np.pi + x, -np.pi))
 
 
-def test_interpolate_matrix():
+def test_scattering_interpolate_matrix():
     numpoints = 5
     dtheta = 2 * np.pi / numpoints
 

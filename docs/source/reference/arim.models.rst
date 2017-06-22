@@ -7,7 +7,6 @@ Submodules
 .. toctree::
 
    arim.models.block_in_immersion
-   arim.models.block_in_immersion_hack
 
 Module contents
 ---------------

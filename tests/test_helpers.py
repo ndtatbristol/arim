@@ -223,3 +223,10 @@ def test_smallest_uint_that_fits():
     assert arim.helpers.smallest_uint_that_fits(2 ** 8 - 1) is np.uint8
     assert arim.helpers.smallest_uint_that_fits(2 ** 8) is np.uint16
     assert arim.helpers.smallest_uint_that_fits(2 ** 64 - 1) is np.uint64
+
+
+def test_sizeof_fmt():
+    assert arim.helpers.sizeof_fmt(1) == '1.0 B'
+    assert arim.helpers.sizeof_fmt(1024) == '1.0 KiB'
+    assert arim.helpers.sizeof_fmt(2 * 1024) == '2.0 KiB'
+    assert arim.helpers.sizeof_fmt(5 * 1024**2) == '5.0 MiB'

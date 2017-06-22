@@ -281,3 +281,16 @@ def smallest_uint_that_fits(max_value):
             return dtype
     return TypeError("Cannot stored '{}' with numpy (max: '{}')"
                      .format(max_value, allowed_max_value))
+
+
+def sizeof_fmt(num, suffix='B'):
+    """
+    Human-readable memory size.
+
+    Adapted from https://stackoverflow.com/a/1094933/2996578
+    """
+    for unit in ['', 'Ki', 'Mi', 'Gi', 'Ti', 'Pi', 'Ei', 'Zi']:
+        if abs(num) < 1024.0:
+            return "%3.1f %s%s" % (num, unit, suffix)
+        num /= 1024.0
+    return "%.1f %s%s" % (num, 'Yi', suffix)
