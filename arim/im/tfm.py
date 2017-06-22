@@ -9,7 +9,7 @@ import numba
 from concurrent.futures import ThreadPoolExecutor
 
 from .. import geometry as g
-from .. import model
+from .. import model, ut
 from . import amplitudes
 from .das import _das_numba
 from .das import delay_and_sum  # default tfm
@@ -140,33 +140,16 @@ class BaseTFM:
 
     def get_scanline_weights(self):
         """
-        Standard scanline weights. Handle FMC and HMC.
+        Scanline weights (most common case: multiply by 2. the non-pulse-echo scanlines
+        in HMC).
 
-        For FMC: weights 1.0 for all scanlines.
-        For HMC: weights 2.0 for scanlines where TX and RX elements are different, 1.0 otherwise.
-
+        If scanline_weights were to given at the object contruction, return them.
+        Otherwise, use arim.ut.default_scanline_weights
         """
         if self._scanline_weights is not None:
             return self._scanline_weights
         else:
-            capture_method = self.frame.metadata.get('capture_method', None)
-            if capture_method is None:
-                pass
-            else:
-                capture_method = parse_enum_constant(capture_method, c.CaptureMethod)
-            if capture_method is None:
-                raise NotImplementedError
-            elif capture_method is c.CaptureMethod.fmc:
-                weights = np.ones(self.frame.numscanlines, dtype=self.dtype)
-                return weights
-            elif capture_method is c.CaptureMethod.hmc:
-                weights = np.full(self.frame.numscanlines, 2.0, dtype=self.dtype)
-                same_tx_rx = self.frame.tx == self.frame.rx
-                weights[same_tx_rx] = 1.0
-                return weights
-            else:
-                raise ValueError("Cannot infer the scanline weights from the frame. "
-                                 "Scanline weights must be provided manually.")
+            return ut.default_scanline_weights(self.frame.tx, self.frame.rx)
 
     def hook_start_run(self):
         """Implement this method in child class if necessary."""
@@ -386,8 +369,9 @@ class SingleViewTFM(BaseTFM):
         from ..path import paths_for_block_in_immersion, views_for_block_in_immersion
 
         warnings.warn("Using arim.make_view_for_block_in_immersion is recommended. "
-            "This method will be removed in future versions.", DeprecationWarning,
-            stacklevel=2)
+                      "This method will be removed in future versions.",
+                      DeprecationWarning,
+                      stacklevel=2)
 
         probe = g.aspoints(probe)
         frontwall = g.aspoints(frontwall)
@@ -431,10 +415,12 @@ class SimpleTFM(BaseTFM):
         assert lookup_times_rx.shape == (grid.numpoints, frame.probe.numelements)
 
         if not lookup_times_tx.flags.contiguous:
-            warnings.warn("Lookup times are converted to contiguous array.", ArimWarning, stacklevel=2)
+            warnings.warn("Lookup times are converted to contiguous array.", ArimWarning,
+                          stacklevel=2)
             lookup_times_rx = np.ascontiguousarray(lookup_times_tx)
         if not lookup_times_tx.flags.contiguous:
-            warnings.warn("Lookup times are converted to contiguous array.", ArimWarning, stacklevel=2)
+            warnings.warn("Lookup times are converted to contiguous array.", ArimWarning,
+                          stacklevel=2)
             lookup_times_rx = np.ascontiguousarray(lookup_times_rx)
 
         self._lookup_times_tx = lookup_times_tx
@@ -477,7 +463,7 @@ def _extrema_lookup_times(lookup_times_tx, lookup_times_rx, tx_list, rx_list):
 def tfm_with_scattering(frame, grid, view, fillvalue, scattering_fn,
                         tx_ray_weights, rx_ray_weights,
                         tx_scattering_angles, rx_scattering_angles,
-                        scanline_weights, divide_by_sensitivity=True,
+                        scanline_weights=None, divide_by_sensitivity=True,
                         numthreads=None, block_size=None):
     numscanlines = frame.numscanlines
     numpoints = grid.numpoints
@@ -487,6 +473,9 @@ def tfm_with_scattering(frame, grid, view, fillvalue, scattering_fn,
     rx_lookup_times = np.ascontiguousarray(view.rx_path.rays.times.T)
     tx_amplitudes = np.ascontiguousarray(tx_ray_weights.T)
     rx_amplitudes = np.ascontiguousarray(rx_ray_weights.T)
+
+    if scanline_weights is None:
+        scanline_weights = ut.default_scanline_weights(tx, rx)
 
     weighted_scanlines = frame.scanlines * scanline_weights[:, np.newaxis]
 
@@ -665,5 +654,3 @@ def model_amplitudes(frame, scattering_fn,
     model_amplitudes = (scattering_amplitudes * np.take(tx_amplitudes, tx, axis=1)
                         * np.take(rx_amplitudes, rx, axis=1))
     return model_amplitudes
-
-

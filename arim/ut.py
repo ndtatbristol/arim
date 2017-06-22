@@ -114,6 +114,48 @@ def infer_capture_method(tx, rx):
     return 'unsupported'
 
 
+def default_scanline_weights(tx, rx):
+    """
+    Scanline weights for TFM.
+
+    Consider a scanline obtained by the transmitter i and the receiver j; this
+    scanline is denoted (i,j). If the response matrix contains both (i, j) and (j, i),
+    the corresponding scanline weight is 1. Otherwise, the scanline weight is 2.
+
+    Example: for a FMC, all scanline weights are 1.
+    Example: for a HMC, scanline weights for the pulse-echo scanlines are 1,
+    scanline weights for the non-pulse-echo scanlines are 2.
+
+    Remark: the function does not check if there are duplicated signals.
+
+    Parameters
+    ----------
+    tx : list[int] or ndarray
+        tx[i] is the index of the transmitter (between 0 and numelements-1) for
+        the i-th scanline.
+    rx : list[int] or ndarray
+        rx[i] is the index of the receiver (between 0 and numelements-1) for
+        the i-th scanline.
+
+    Returns
+    -------
+    scanline_weights : ndarray
+
+    """
+    if len(tx) != len(rx):
+        raise ValueError('tx and rx must have the same lengths (numscanlines)')
+    numscanlines = len(tx)
+
+    # elements_pairs contains (tx[0], rx[0]), (tx[1], rx[1]), etc.
+    elements_pairs = {*zip(tx, rx)}
+    scanline_weights = np.ones(numscanlines)
+    for this_tx, this_rx, scanline_weight in \
+            zip(tx, rx, np.nditer(scanline_weights, op_flags=['readwrite'])):
+        if (this_rx, this_tx) not in elements_pairs:
+            scanline_weight[...] = 2.
+    return scanline_weights
+
+
 def decibel(arr, reference=None, neginf_value=-1000., return_reference=False):
     """
     Return 20*log10(abs(arr) / reference)
@@ -607,7 +649,7 @@ def interpolate_scattering_matrix(scattering_matrix):
     # assert scattering_matrix.shape[0] >= 1
 
     @numba.vectorize([out_dtype(numba.float32, numba.float32),
-                      out_dtype(numba.float64, numba.float64),],
+                      out_dtype(numba.float64, numba.float64), ],
                      nopython=True, target='cpu')
     def interpolator(inc_theta, out_theta):
         # TODO: write bug report, kernel restart when use parallel

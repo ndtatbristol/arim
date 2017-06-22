@@ -661,7 +661,7 @@ def sensitivity_conjugate_for_view(tx_sensitivity, rx_sensitivity):
 
 
 def sensitivity_image_point_source(tx_ray_weights, rx_ray_weights, tx, rx,
-                                   scanline_weights):
+                                   scanline_weights=None):
     numelements, numpoints = tx_ray_weights.shape
     numscanlines = tx.shape[0]
 
@@ -670,6 +670,9 @@ def sensitivity_image_point_source(tx_ray_weights, rx_ray_weights, tx, rx,
 
     sensitivity = np.zeros(numpoints)
     block_size = 1000
+
+    if scanline_weights is None:
+        scanline_weights = ut.default_scanline_weights(tx, rx)
 
     for chunk in chunk_array(sensitivity.shape, block_size, axis=0):
         # Model amplitudes P_ij
