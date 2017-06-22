@@ -8,6 +8,7 @@ from arim import ut
 from collections import OrderedDict
 import numpy as np
 from numpy import array
+from arim import model
 
 
 def make_context():
@@ -83,13 +84,13 @@ def make_context():
 
     # Ray geometry
     ray_geometry_dict = OrderedDict(
-        (k, arim.model.RayGeometry.from_path(v, use_cache=True))
+        (k, model.RayGeometry.from_path(v, use_cache=True))
         for (k, v) in paths.items())
 
     # Reverse paths
     rev_paths = OrderedDict([(key, path.reverse()) for (key, path) in
                              paths.items()])
-    rev_ray_geometry_dict = OrderedDict((k, arim.model.RayGeometry.from_path(v))
+    rev_ray_geometry_dict = OrderedDict((k, model.RayGeometry.from_path(v))
                                         for (k, v) in rev_paths.items())
 
     context = dict()
@@ -112,6 +113,8 @@ def make_context():
     context['freq'] = 2e6
     context['element_width'] = 0.5e-3
     context['wavelength_in_couplant'] = couplant.longitudinal_vel / context['freq']
+    context['numelements'] = len(probe_points)
+    context['numpoints'] = len(scatterer_points)
 
     '''==================== copy/paste me ====================
     context = make_context()
@@ -367,46 +370,46 @@ def test_caching():
     # realistic dry run so that all caching mechanisms are called
     for pathname, ray_geometry in ray_geometry_dict.items():
         path = paths[pathname]
-        _ = arim.model.beamspread_2d_for_path(ray_geometry)
-        _ = arim.model.reverse_beamspread_2d_for_path(ray_geometry)
-        _ = arim.model.transmission_reflection_for_path(path, ray_geometry)
-        _ = arim.model.reverse_transmission_reflection_for_path(path, ray_geometry)
-        _ = arim.model.radiation_2d_rectangular_in_fluid_for_path(
+        _ = model.beamspread_2d_for_path(ray_geometry)
+        _ = model.reverse_beamspread_2d_for_path(ray_geometry)
+        _ = model.transmission_reflection_for_path(path, ray_geometry)
+        _ = model.reverse_transmission_reflection_for_path(path, ray_geometry)
+        _ = model.radiation_2d_rectangular_in_fluid_for_path(
             ray_geometry, element_width, wavelength)
-        _ = arim.model.directivity_2d_rectangular_in_fluid_for_path(
+        _ = model.directivity_2d_rectangular_in_fluid_for_path(
             ray_geometry, element_width, wavelength)
 
     # Compare partially cached results to fresh ones
     for pathname, ray_geometry in ray_geometry_dict.items():
         path = paths[pathname]
 
-        r1 = arim.model.beamspread_2d_for_path(ray_geometry)
-        r2 = arim.model.beamspread_2d_for_path(new_ray_geometry(pathname))
+        r1 = model.beamspread_2d_for_path(ray_geometry)
+        r2 = model.beamspread_2d_for_path(new_ray_geometry(pathname))
         np.testing.assert_allclose(r1, r2, err_msg=pathname)
 
-        r1 = arim.model.reverse_beamspread_2d_for_path(ray_geometry)
-        r2 = arim.model.reverse_beamspread_2d_for_path(new_ray_geometry(pathname))
+        r1 = model.reverse_beamspread_2d_for_path(ray_geometry)
+        r2 = model.reverse_beamspread_2d_for_path(new_ray_geometry(pathname))
         np.testing.assert_allclose(r1, r2, err_msg=pathname)
 
-        r1 = arim.model.transmission_reflection_for_path(path, ray_geometry)
-        r2 = arim.model.transmission_reflection_for_path(new_path(pathname),
-                                                         new_ray_geometry(pathname))
+        r1 = model.transmission_reflection_for_path(path, ray_geometry)
+        r2 = model.transmission_reflection_for_path(new_path(pathname),
+                                                    new_ray_geometry(pathname))
         np.testing.assert_allclose(r1, r2, err_msg=pathname)
 
-        r1 = arim.model.reverse_transmission_reflection_for_path(path, ray_geometry)
-        r2 = arim.model.reverse_transmission_reflection_for_path(
+        r1 = model.reverse_transmission_reflection_for_path(path, ray_geometry)
+        r2 = model.reverse_transmission_reflection_for_path(
             new_path(pathname), new_ray_geometry(pathname))
         np.testing.assert_allclose(r1, r2, err_msg=pathname)
 
-        r1 = arim.model.radiation_2d_rectangular_in_fluid_for_path(
+        r1 = model.radiation_2d_rectangular_in_fluid_for_path(
             ray_geometry, element_width, wavelength)
-        r2 = arim.model.radiation_2d_rectangular_in_fluid_for_path(
+        r2 = model.radiation_2d_rectangular_in_fluid_for_path(
             new_ray_geometry(pathname), element_width, wavelength)
         np.testing.assert_allclose(r1, r2, err_msg=pathname)
 
-        r1 = arim.model.directivity_2d_rectangular_in_fluid_for_path(
+        r1 = model.directivity_2d_rectangular_in_fluid_for_path(
             ray_geometry, element_width, wavelength)
-        r2 = arim.model.directivity_2d_rectangular_in_fluid_for_path(
+        r2 = model.directivity_2d_rectangular_in_fluid_for_path(
             new_ray_geometry(pathname), element_width, wavelength)
         np.testing.assert_allclose(r1, r2, err_msg=pathname)
 
@@ -431,7 +434,7 @@ def test_beamspread_2d_direct():
     }
     beamspread = dict()
     for pathname, ray_geometry in ray_geometry_dict.items():
-        beamspread[pathname] = arim.model.beamspread_2d_for_path(ray_geometry)
+        beamspread[pathname] = model.beamspread_2d_for_path(ray_geometry)
         np.testing.assert_allclose(beamspread[pathname], expected_beamspread[pathname],
                                    err_msg=pathname)
         # Uncomment the following line to generate hardcoded-values:
@@ -456,7 +459,8 @@ def test_beamspread_2d_direct():
     c3 = block.longitudinal_vel
     beta = c1 / c2
     gamma = c2 / c3
-    beamspread_LL = 1. / np.sqrt(first_leg + second_leg / beta + third_leg / (gamma * beta))
+    beamspread_LL = 1. / np.sqrt(
+        first_leg + second_leg / beta + third_leg / (gamma * beta))
     np.testing.assert_allclose(beamspread['LL'][0][0], beamspread_LL, rtol=1e-5)
 
     # Path LT - scat 0:
@@ -468,7 +472,8 @@ def test_beamspread_2d_direct():
     c3 = block.transverse_vel
     beta = c1 / c2
     gamma = c2 / c3
-    beamspread_LT = 1. / np.sqrt(first_leg + second_leg / beta + third_leg / (gamma * beta))
+    beamspread_LT = 1. / np.sqrt(
+        first_leg + second_leg / beta + third_leg / (gamma * beta))
     np.testing.assert_allclose(beamspread['LT'][0][0], beamspread_LT, rtol=1e-5)
 
 
@@ -485,7 +490,7 @@ def test_beamspread_2d_reverse():
 
     rev_paths = OrderedDict([(key, path.reverse()) for (key, path) in
                              paths.items()])
-    rev_ray_geometry_dict = OrderedDict((k, arim.model.RayGeometry.from_path(v))
+    rev_ray_geometry_dict = OrderedDict((k, model.RayGeometry.from_path(v))
                                         for (k, v) in rev_paths.items())
 
     # hardcoded results
@@ -499,7 +504,7 @@ def test_beamspread_2d_reverse():
     }
     beamspread = dict()
     for pathname, ray_geometry in ray_geometry_dict.items():
-        beamspread[pathname] = arim.model.reverse_beamspread_2d_for_path(ray_geometry)
+        beamspread[pathname] = model.reverse_beamspread_2d_for_path(ray_geometry)
         np.testing.assert_allclose(beamspread[pathname], expected_beamspread[pathname],
                                    err_msg=pathname)
         # Uncomment the following line to generate hardcoded-values:
@@ -509,7 +514,7 @@ def test_beamspread_2d_reverse():
     # Direct beamspread of reversed paths should give the same results as reversed
     # beamspread of direct paths.
     for pathname, ray_geometry in rev_ray_geometry_dict.items():
-        rev_beamspread = arim.model.beamspread_2d_for_path(ray_geometry).T
+        rev_beamspread = model.beamspread_2d_for_path(ray_geometry).T
         # this is a fairly tolerant comparison but it works.
         np.testing.assert_allclose(rev_beamspread, expected_beamspread[pathname],
                                    rtol=1e-2)
@@ -533,7 +538,8 @@ def test_beamspread_2d_reverse():
     c3 = couplant.longitudinal_vel
     beta = c1 / c2
     gamma = c2 / c3
-    beamspread_LL = 1. / np.sqrt(first_leg + second_leg / beta + third_leg / (gamma * beta))
+    beamspread_LL = 1. / np.sqrt(
+        first_leg + second_leg / beta + third_leg / (gamma * beta))
     np.testing.assert_allclose(beamspread['LL'][0][0], beamspread_LL, rtol=1e-5)
 
     # Path LT - scat 0:
@@ -545,7 +551,8 @@ def test_beamspread_2d_reverse():
     c3 = couplant.longitudinal_vel
     beta = c1 / c2
     gamma = c2 / c3
-    beamspread_LT = 1. / np.sqrt(first_leg + second_leg / beta + third_leg / (gamma * beta))
+    beamspread_LT = 1. / np.sqrt(
+        first_leg + second_leg / beta + third_leg / (gamma * beta))
     np.testing.assert_allclose(beamspread['LT'][0][0], beamspread_LT, rtol=1e-5)
 
 
@@ -572,8 +579,8 @@ def test_transmission_reflection_direct():
     transrefl = dict()
     for pathname, path in paths.items():
         ray_geometry = ray_geometry_dict[pathname]
-        transrefl[pathname] = arim.model.transmission_reflection_for_path(path,
-                                                                          ray_geometry)
+        transrefl[pathname] = model.transmission_reflection_for_path(path,
+                                                                     ray_geometry)
         np.testing.assert_allclose(transrefl[pathname], expected_transrefl[pathname],
                                    rtol=0., atol=1e-6)
         # print("'{}': {},".format(pathname, repr(transrefl[pathname])))
@@ -625,7 +632,7 @@ def test_transmission_reflection_reverse_hardcode():
     rev_transrefl = dict()
     for pathname, path in paths.items():
         ray_geometry = ray_geometry_dict[pathname]
-        rev_transrefl[pathname] = arim.model.reverse_transmission_reflection_for_path(
+        rev_transrefl[pathname] = model.reverse_transmission_reflection_for_path(
             path,
             ray_geometry)
         np.testing.assert_allclose(rev_transrefl[pathname],
@@ -655,7 +662,7 @@ def test_transmission_reflection_reverse_hardcode():
 
     rev_transrefl2 = dict()
     for pathname, rev_ray_geometry in rev_ray_geometry_dict.items():
-        rev_transrefl2[pathname] = arim.model.transmission_reflection_for_path(
+        rev_transrefl2[pathname] = model.transmission_reflection_for_path(
             rev_paths[pathname], rev_ray_geometry).T
         np.testing.assert_allclose(rev_transrefl2[pathname],
                                    expected_rev_transrefl[pathname],
@@ -710,10 +717,10 @@ def test_transmission_reflection_reverse_stokes():
     alpha_t = arim.ut.snell_angles(alpha_l, c_l, c_t)
     correction_backwall = (z_l / z_t) * (np.cos(alpha_t) / np.cos(alpha_l))
     del alpha_l, alpha_t
-    transrefl_stokes = arim.model.transmission_reflection_for_path(
+    transrefl_stokes = model.transmission_reflection_for_path(
         paths[pathname],
         ray_geometry_dict[pathname]) * correction_backwall * correction_frontwall
-    transrefl_rev = arim.model.reverse_transmission_reflection_for_path(
+    transrefl_rev = model.reverse_transmission_reflection_for_path(
         paths[pathname], ray_geometry_dict[pathname])
 
     np.testing.assert_allclose(transrefl_stokes,
@@ -734,10 +741,10 @@ def test_transmission_reflection_reverse_stokes():
     alpha_l = arim.ut.snell_angles(alpha_t, c_t, c_l)
     correction_backwall = (z_t / z_l) * (np.cos(alpha_l) / np.cos(alpha_t))
     del alpha_l, alpha_t
-    transrefl_stokes = arim.model.transmission_reflection_for_path(
+    transrefl_stokes = model.transmission_reflection_for_path(
         paths[pathname],
         ray_geometry_dict[pathname]) * correction_backwall * correction_frontwall
-    transrefl_rev = arim.model.reverse_transmission_reflection_for_path(
+    transrefl_rev = model.reverse_transmission_reflection_for_path(
         paths[pathname], ray_geometry_dict[pathname])
 
     np.testing.assert_allclose(transrefl_stokes, transrefl_rev, err_msg=pathname)
@@ -754,10 +761,10 @@ def test_transmission_reflection_reverse_stokes():
 
     # Backwall in direct sense: solid L inc, solid L out
     correction_backwall = 1.
-    transrefl_stokes = arim.model.transmission_reflection_for_path(
+    transrefl_stokes = model.transmission_reflection_for_path(
         paths[pathname],
         ray_geometry_dict[pathname]) * correction_backwall * correction_frontwall
-    transrefl_rev = arim.model.reverse_transmission_reflection_for_path(
+    transrefl_rev = model.reverse_transmission_reflection_for_path(
         paths[pathname], ray_geometry_dict[pathname])
 
     np.testing.assert_allclose(transrefl_stokes, magic_coefficient * transrefl_rev,
@@ -766,7 +773,7 @@ def test_transmission_reflection_reverse_stokes():
 
 def test_radiation_2d_rectangular_in_fluid():
     """
-    test arim.model.radiation_2d_rectangular_in_fluid_for_path()"
+    test model.radiation_2d_rectangular_in_fluid_for_path()"
     """
     context = make_context()
     couplant = context['couplant']
@@ -790,7 +797,7 @@ def test_radiation_2d_rectangular_in_fluid():
     print()
     for pathname, path in paths.items():
         ray_geometry = ray_geometry_dict[pathname]
-        radiation[pathname] = arim.model.radiation_2d_rectangular_in_fluid_for_path(
+        radiation[pathname] = model.radiation_2d_rectangular_in_fluid_for_path(
             ray_geometry, context['element_width'], wavelength)
         np.testing.assert_allclose(radiation[pathname], expected_radiation[pathname],
                                    rtol=0., atol=1e-6)
@@ -815,12 +822,12 @@ def test_sensitivity():
     model_amplitudes[0] = x
 
     # write on result
-    arim.model.sensitivity_image(model_amplitudes, scanline_weights, result)
+    model.sensitivity_image(model_amplitudes, scanline_weights, result)
     np.testing.assert_almost_equal(result[0], numelements * numelements)
     np.testing.assert_allclose(result[1:], 0.)
 
     # create a new array
-    result2 = arim.model.sensitivity_image(model_amplitudes, scanline_weights)
+    result2 = model.sensitivity_image(model_amplitudes, scanline_weights)
     np.testing.assert_almost_equal(result, result2)
 
     # FMC case
@@ -832,10 +839,126 @@ def test_sensitivity():
     model_amplitudes = np.zeros((numpoints, numscanlines), complex)
     model_amplitudes[0] = x
 
-    arim.model.sensitivity_image(model_amplitudes, scanline_weights, result)
+    model.sensitivity_image(model_amplitudes, scanline_weights, result)
     np.testing.assert_almost_equal(result[0], numelements * numelements)
     np.testing.assert_allclose(result[1:], 0.)
 
     # create a new array
-    result2 = arim.model.sensitivity_image(model_amplitudes, scanline_weights)
+    result2 = model.sensitivity_image(model_amplitudes, scanline_weights)
     np.testing.assert_almost_equal(result, result2)
+
+
+def random_uniform_complex(low=0., high=1., size=None):
+    return np.random.uniform(low, high, size) + 1j * np.random.uniform(low, high, size)
+
+
+def make_point_source_scattering_func(context):
+    block = context['block']
+    vl = block.longitudinal_vel
+    vt = block.transverse_vel
+
+    return {
+        'LL': lambda inc, out: np.full_like(inc, 1.),
+        'LT': lambda inc, out: np.full_like(inc, vl / vt),
+        'TL': lambda inc, out: np.full_like(inc, vt / vl),
+        'TT': lambda inc, out: np.full_like(inc, 1.),
+    }
+
+
+def make_random_ray_weights(context):
+    interfaces = context['interfaces']
+    """:type : list[arim.Interface]"""
+    paths = context['paths']
+    """:type : dict[str, arim.Path]"""
+    ray_geometry_dict = context['ray_geometry_dict']
+    """:type : dict[str, arim.path.RayGeometry]"""
+
+    numelements = context['numelements']
+    numpoints = context['numpoints']
+
+    tx_ray_weights_dict = {}
+    rx_ray_weights_dict = {}
+    tx_ray_weights_debug_dict = None
+    rx_ray_weights_debug_dict = None
+    scattering_angles_dict = {}
+    for pathname, path in paths.items():
+        tx_ray_weights_dict[path] = np.asfortranarray(
+            random_uniform_complex(size=(numelements, numpoints)))
+        rx_ray_weights_dict[path] = np.asfortranarray(
+            random_uniform_complex(size=(numelements, numpoints)))
+        ray_geometry = ray_geometry_dict[pathname]
+        scattering_angles_dict[path] = np.asfortranarray(
+            ray_geometry.signed_inc_angle(-1))
+
+    return model.RayWeights(tx_ray_weights_dict, rx_ray_weights_dict,
+                            tx_ray_weights_debug_dict, rx_ray_weights_debug_dict,
+                            scattering_angles_dict)
+
+
+def test_model_amplitudes_factory():
+    context = make_context()
+    views = context['views']
+
+    ray_weights = make_random_ray_weights(context)
+    scattering_dict = make_point_source_scattering_func(context)
+
+    # tx, rx = arim.ut.hmc(context['numelements'])
+    tx = np.array([0, 0, 0])
+    rx = np.array([0, 0, 0])
+    numscanlines = len(tx)
+    numpoints = context['numpoints']
+
+    for viewname, view in views.items():
+        amps = model.model_amplitudes_factory(tx, rx, view, ray_weights,
+                                              scattering_dict)
+        a1 = amps[...]
+        a2 = amps[...]
+        np.testing.assert_array_equal(a1, a2)
+
+        assert amps.shape == (numpoints, numscanlines)
+        assert amps[...].shape == (numpoints, numscanlines)
+        assert amps[0].shape == (numscanlines,)
+        assert amps[:1].shape == (1, numscanlines)
+        assert amps[:1, ...].shape == (1, numscanlines)
+        assert amps[slice(0, 1), ...].shape == (1, numscanlines)
+
+        with pytest.raises(IndexError):
+            amps[0, 0]
+
+        for k, i in np.ndindex(numpoints, numscanlines):
+            assert amps[k][i] == a1[k, i]
+
+        np.testing.assert_array_equal(amps[[0, 0, 0]], a1[[0, 0, 0]])
+
+        with pytest.raises(TypeError):
+            amps[0] = 1.
+
+
+def test_sensitivity_uniform_tfm():
+    context = make_context()
+    views = context['views']
+
+    ray_weights = make_random_ray_weights(context)
+    scattering_dict = make_point_source_scattering_func(context)
+
+    # we have only one element, duplicate scanline to check the sum is actually performed
+    tx = np.array([0, 0])
+    rx = np.array([0, 0])
+    numscanlines = len(tx)
+    numpoints = context['numpoints']
+
+    scanline_weights = np.array([3., 7.])
+
+    for viewname, view in views.items():
+        amps = model.model_amplitudes_factory(tx, rx, view, ray_weights,
+                                              scattering_dict)
+        sensitivity = model.sensitivity_uniform_tfm(amps, scanline_weights)
+        assert sensitivity.shape == (numpoints,)
+        sensitivity2 = model.sensitivity_uniform_tfm(amps, scanline_weights, block_size=1)
+        np.testing.assert_array_equal(sensitivity, sensitivity2)
+
+        for k in range(numpoints):
+            expected = 0.
+            for i in range(numscanlines):
+                expected += amps[k][i] * scanline_weights[i]
+            assert np.isclose(sensitivity[k], expected)

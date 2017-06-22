@@ -9,9 +9,11 @@ Functions related to the forward model.
 # be put here.
 # Functions that rely on simpler logic should be put in arim.ut and imported here.
 
+import abc
 import logging
 import warnings
-from functools import reduce
+from functools import partial
+from collections import namedtuple
 
 import numpy as np
 import numba
@@ -628,6 +630,7 @@ def sensitivity_conjugate_for_view(tx_sensitivity, rx_sensitivity):
 
 def sensitivity_image_point_source(tx_ray_weights, rx_ray_weights, tx, rx,
                                    scanline_weights=None):
+    warnings.warn(PendingDeprecationWarning)
     numelements, numpoints = tx_ray_weights.shape
     numscanlines = tx.shape[0]
 
@@ -681,3 +684,239 @@ def sensitivity_image(model_amplitudes, scanline_weights, result):
             x = abs(model_amplitudes[pidx, scan])
             result[pidx] += scanline_weights[scan] * x * x
 
+
+def _nested_dict_to_flat_list(dictlike):
+    if dictlike is None:
+        return []
+    else:
+        try:
+            values = dictlike.values()
+        except AttributeError:
+            # dictlike is a leaf:
+            return [dictlike]
+        # dictlike is not a leaf:
+        all_values = []
+        for value in values:
+            # union of sets:
+            all_values = _nested_dict_to_flat_list(value)
+        return all_values
+
+
+class RayWeights(namedtuple('RayWeights', [
+    'tx_ray_weights_dict', 'rx_ray_weights_dict',
+    'tx_ray_weights_debug_dict', 'rx_ray_weights_debug_dict', 'scattering_angles_dict'])):
+    """
+    Data container for ray weights.
+
+    Attributes
+    ----------
+    tx_ray_weights_dict : dict[arim.Path, ndarray]
+        Each value has a shape of (numelements, numgridpoints)
+    rx_ray_weights_dict : dict[arim.Path, ndarray]
+        Each value has a shape of (numelements, numgridpoints)
+    tx_ray_weights_debug_dict : dict
+        See function tx_ray_weights
+    rx_ray_weights_debug_dict : dict
+        See function rx_ray_weights
+    scattering_angles_dict : dict[arim.Path, ndarray]
+        Each value has a shape of (numelements, numgridpoints)
+    """
+
+    @property
+    def nbytes(self):
+        all_arrays = []
+        all_arrays += _nested_dict_to_flat_list(self.tx_ray_weights_dict)
+        all_arrays += _nested_dict_to_flat_list(self.rx_ray_weights_dict)
+        all_arrays += _nested_dict_to_flat_list(self.tx_ray_weights_debug_dict)
+        all_arrays += _nested_dict_to_flat_list(self.rx_ray_weights_debug_dict)
+        all_arrays += _nested_dict_to_flat_list(self.scattering_angles_dict)
+        # an array is not hashable so we cheat a bit to get unique arrays
+        unique_ids = set(id(x) for x in all_arrays)
+        nbytes = 0
+        for arr in all_arrays:
+            if id(arr) in unique_ids:
+                nbytes += arr.nbytes
+                unique_ids.remove(id(arr))
+        return nbytes
+
+
+class ModelAmplitudes(abc.ABC):
+    """
+    Pseudo-array of coefficients P_ij = Q_i Q'_j S_ij. Shape: (numpoints, numscanlines)
+
+    This object can be indexed almost like a regular Numpy array.
+    When indexed, the values are computed on the fly.
+    Otherwise an array of this size would be too large.
+
+    .. warning::
+        Only the first dimension must be indexed. See examples below.
+
+    Examples
+    --------
+    >>> model_amplitudes = model_amplitudes_factory(tx, rx, view, ray_weights, scattering_dict)
+
+    This object is not an array:
+    >>> type(model_amplitudes)
+    __main__.ModelAmplitudes
+
+    But when indexed, it returns an array:
+    >>> type(model_amplitudes[0])
+    numpy.ndarray
+
+    Get the P_ij for the first grid point (returns an array of size (numscanlines,)):
+    >>> model_amplitudes[0]
+
+    Get the P_ij for the first ten grid points (returns an array of size
+    (10, numscanlines,)):
+    >>> model_amplitudes[:10]
+
+    Get all P_ij (may run out of memory):
+    >>> model_amplitudes[...]
+
+    To get the first Get all P_ij (may run out of memory):
+    >>> model_amplitudes[...]
+
+    Indexing the second dimension will fail. For example to model amplitude of
+    the fourth point and the eigth scanline, use:
+    >>> model_amplitudes[3][7]  # valid usage
+    >>> model_amplitudes[3, 7]  # invalid usage, raise an IndexError
+    """
+
+    @abc.abstractmethod
+    def __getitem__(self, grid_slice):
+        ...
+
+    @property
+    def shape(self):
+        return (self.numpoints, self.numscanlines)
+
+
+class _ModelAmplitudesWithScatFunction(ModelAmplitudes):
+    def __init__(self, tx, rx, scattering_fn,
+                 tx_ray_weights, rx_ray_weights,
+                 tx_scattering_angles, rx_scattering_angles):
+        self.tx = tx
+        self.rx = rx
+        self.scattering_fn = scattering_fn
+        self.tx_ray_weights = tx_ray_weights
+        self.rx_ray_weights = rx_ray_weights
+        self.tx_scattering_angles = tx_scattering_angles
+        self.rx_scattering_angles = rx_scattering_angles
+        self.numpoints, self.numelements = tx_ray_weights.shape
+        self.numscanlines = self.tx.shape[0]
+
+    def __getitem__(self, grid_slice):
+        # Nota bene: arrays' shape is (numpoints, numscanline), i.e. the transpose
+        # of RayWeights. They are contiguous.
+        if np.empty(self.numscanlines)[grid_slice].ndim > 1:
+            raise IndexError('Only the first dimension of the object is indexable.')
+
+        scattering_amplitudes = self.scattering_fn(
+            np.take(self.tx_scattering_angles[grid_slice], self.tx, axis=-1),
+            np.take(self.rx_scattering_angles[grid_slice], self.rx, axis=-1))
+
+        model_amplitudes = (scattering_amplitudes
+                            * np.take(self.tx_ray_weights[grid_slice], self.tx, axis=-1)
+                            * np.take(self.rx_ray_weights[grid_slice], self.rx, axis=-1))
+        return model_amplitudes
+
+
+def model_amplitudes_factory(tx, rx, view, ray_weights, scattering_dict):
+    """
+    Yield P_ij = Q_i Q'_j S_ij
+
+    Works block per block to avoid running out of memory.
+
+    Parameters
+    ----------
+    tx
+    rx
+    view
+    scattering_dict
+    ray_weights : RayWeights
+    grid_slice : slice or None
+
+    Returns
+    ------
+    model_amplitudes : ModelAmplitudes
+        Object that is indexable with a grid point index or a slice of grid points. The
+         values are computed on the fly.
+
+        can be indexe as an array but that computes the
+        Function that returns the model amplitudes and takes as argument a slice.
+        ndarray
+        Shape: (blocksize, numscanlines)
+        Yield until all grid points are processed.
+
+    Examples
+    --------
+    >>> model_amplitudes = model_amplitudes_factory(tx, rx, view, ray_weights, scattering_dict)
+    >>> model_amplitudes[0]
+    # returns the 'numscanlines' amplitudes at the grid point 0
+    >>> model_amplitudes[:10] # returns the amplitudes for the first 10 grid points
+    array([ 0.27764253,  0.78863332,  0.83998295,  0.96811351,  0.57929045, 0.00935137,  0.8905348 ,  0.46976061,  0.08101099,  0.57615469])
+    >>> model_amplitudes[...] # returns the amplitudes for all points. Warning: you may
+    ... # run out of memory!
+    array([...])
+
+    """
+    # Pick the right scattering matrix/function.
+    # scat_key is LL, LT, TL or TT
+    scat_key = view.tx_path.modes[-1].key() + view.rx_path.modes[-1].key()
+    scattering_fn = scattering_dict[scat_key]
+
+    tx_ray_weights = ray_weights.tx_ray_weights_dict[view.tx_path]
+    rx_ray_weights = ray_weights.rx_ray_weights_dict[view.rx_path]
+    tx_scattering_angles = ray_weights.scattering_angles_dict[view.tx_path]
+    rx_scattering_angles = ray_weights.scattering_angles_dict[view.rx_path]
+    assert tx_ray_weights.flags.f_contiguous
+    assert rx_ray_weights.flags.f_contiguous
+    assert tx_scattering_angles.flags.f_contiguous
+    assert rx_scattering_angles.flags.f_contiguous
+
+    assert (tx_ray_weights.shape == rx_ray_weights.shape ==
+            tx_scattering_angles.shape == rx_scattering_angles.shape)
+
+    # the great transposition
+    tx_ray_weights = tx_ray_weights.T
+    rx_ray_weights = rx_ray_weights.T
+    tx_scattering_angles = tx_scattering_angles.T
+    rx_scattering_angles = rx_scattering_angles.T
+
+    return _ModelAmplitudesWithScatFunction(tx, rx, scattering_fn,
+                                            tx_ray_weights, rx_ray_weights,
+                                            tx_scattering_angles, rx_scattering_angles)
+
+
+def sensitivity_uniform_tfm(model_amplitudes, scanline_weights, block_size=1000):
+    """
+    Return the sensitivity for uniform TFM.
+
+    The sensitivity at a point is defined the predicted TFM amplitude that a sole
+    scatterer centered on that point would have.
+
+    Parameters
+    ----------
+    model_amplitudes : ndarray or ModelAmplitudes
+        Coefficients P_ij. Shape: (numpoints, numscanlines)
+    scanline_weights : ndarray
+        Shape: (numscanlines, )
+
+    Returns
+    -------
+    predicted_intensities
+        Shape: (numpoints, )
+    """
+    numpoints, numscanlines = model_amplitudes.shape
+    assert scanline_weights.ndim == 1
+    assert model_amplitudes.shape[1] == scanline_weights.shape[0]
+
+    sensitivity = None
+
+    # chunk the array in case we have an array too big (ModelAmplitudes)
+    for chunk in chunk_array((numpoints, numscanlines), block_size):
+        tmp = (scanline_weights[np.newaxis] * model_amplitudes[chunk]).sum(axis=1)
+        if sensitivity is None:
+            sensitivity = np.zeros((numpoints,), dtype=tmp.dtype)
+        sensitivity[chunk] = tmp
+    return sensitivity
