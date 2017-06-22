@@ -631,6 +631,21 @@ def theta_scattering_matrix(numpoints):
 
 
 def make_scattering_matrix(scattering_func, numpoints):
+    """
+
+    Parameters
+    ----------
+    scattering_func :
+        Function that returns the amplitudes of the scattered wave.
+         Its first argument must be the angle of the incident wave, its second
+         argument must be the angle of the scattered wave.
+    numpoints : int
+        Number of points to use.
+
+    Returns
+    -------
+
+    """
     theta = theta_scattering_matrix(numpoints)
     inc_theta, out_theta = np.meshgrid(theta, theta, indexing='ij')
     scattering_matrix = scattering_func(inc_theta, out_theta)
@@ -691,6 +706,23 @@ def interpolate_scattering_matrix(scattering_matrix):
         return f1 + (f2 - f1) * inc_theta_frac
 
     return interpolator
+
+
+def scattering_matrices_to_interp_funcs(scattering_matrices):
+    """
+    Convert a dictionary containing scattering matrices to a dictionary containing
+    functions that interpolate the values of the scattering matrices.
+
+    Parameters
+    ----------
+    scattering_matrices : dict[str, ndarray]
+
+    Returns
+    -------
+    dict[str, function]
+    """
+    return {key: interpolate_scattering_matrix(mat) for key, mat
+            in scattering_matrices.items()}
 
 
 def elastic_scattering_2d_cylinder(theta, radius, longitudinal_wavelength,
@@ -888,7 +920,7 @@ def elastic_scattering_2d_cylinder_matrices(numpoints, radius, longitudinal_wave
     Parameters
     ----------
     numpoints : int
-        Number of interpolation points for the angles. Values in between  values. The
+        Number of points of the matrix.
     radius
     longitudinal_wavelength
     transverse_wavelength
