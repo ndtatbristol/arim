@@ -806,7 +806,7 @@ def test_radiation_2d_rectangular_in_fluid():
         # print("'{}': {},".format(pathname, repr(radiation[pathname])))
 
 
-def test_sensitivity():
+def bak_test_sensitivity():
     numpoints = 30
     numelements = 16
     result = np.zeros(numpoints)
@@ -865,6 +865,19 @@ def make_point_source_scattering_func(context):
     }
 
 
+def make_point_source_scattering_matrix(context):
+    block = context['block']
+    vl = block.longitudinal_vel
+    vt = block.transverse_vel
+
+    return {
+        'LL': np.ones((2, 2)),
+        'LT': np.full((2, 2), vl / vt),
+        'TL': np.full((2, 2), vt / vl),
+        'TT': np.ones((2, 2)),
+    }
+
+
 def make_random_ray_weights(context):
     interfaces = context['interfaces']
     """:type : list[arim.Interface]"""
@@ -900,7 +913,8 @@ def test_model_amplitudes_factory():
     views = context['views']
 
     ray_weights = make_random_ray_weights(context)
-    scattering_dict = make_point_source_scattering_func(context)
+    scattering_funcs = make_point_source_scattering_func(context)
+    scattering_matrices = make_point_source_scattering_matrix(context)
 
     # tx, rx = arim.ut.hmc(context['numelements'])
     tx = np.array([0, 0, 0])
@@ -909,11 +923,11 @@ def test_model_amplitudes_factory():
     numpoints = context['numpoints']
 
     for viewname, view in views.items():
+        # With scattering functions -----------
         amps = model.model_amplitudes_factory(tx, rx, view, ray_weights,
-                                              scattering_dict)
-        a1 = amps[...]
-        a2 = amps[...]
-        np.testing.assert_array_equal(a1, a2)
+                                              scattering_funcs)
+        a_ref = amps[...].copy()
+        np.testing.assert_array_equal(a_ref, amps[...])
 
         assert amps.shape == (numpoints, numscanlines)
         assert amps[...].shape == (numpoints, numscanlines)
@@ -926,10 +940,35 @@ def test_model_amplitudes_factory():
             amps[0, 0]
 
         for k, i in np.ndindex(numpoints, numscanlines):
-            assert amps[k][i] == a1[k, i]
-            assert amps[k, ...][i] == a1[k, i]
+            assert amps[k][i] == a_ref[k, i]
+            assert amps[k, ...][i] == a_ref[k, i]
 
-        np.testing.assert_array_equal(amps[[0, 0, 0]], a1[[0, 0, 0]])
+        np.testing.assert_array_equal(amps[[0, 0, 0]], a_ref[[0, 0, 0]])
+        np.testing.assert_array_equal(amps[:1, ...], amps[:1])
+
+        with pytest.raises(TypeError):
+            amps[0] = 1.
+
+        # With scattering matrices -----------
+        amps = model.model_amplitudes_factory(tx, rx, view, ray_weights,
+                                              scattering_matrices)
+        np.testing.assert_array_equal(a_ref, amps[...])
+
+        assert amps.shape == (numpoints, numscanlines)
+        assert amps[...].shape == (numpoints, numscanlines)
+        assert amps[0].shape == (numscanlines,)
+        assert amps[:1].shape == (1, numscanlines)
+        assert amps[:1, ...].shape == (1, numscanlines)
+        assert amps[slice(0, 1), ...].shape == (1, numscanlines)
+
+        with pytest.raises(IndexError):
+            amps[0, 0]
+
+        for k, i in np.ndindex(numpoints, numscanlines):
+            assert amps[k][i] == a_ref[k, i]
+            assert amps[k, ...][i] == a_ref[k, i]
+
+        np.testing.assert_array_equal(amps[[0, 0, 0]], a_ref[[0, 0, 0]])
         np.testing.assert_array_equal(amps[:1, ...], amps[:1])
 
         with pytest.raises(TypeError):

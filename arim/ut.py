@@ -653,6 +653,20 @@ def make_scattering_matrix(scattering_func, numpoints):
 
 
 def interpolate_scattering_matrix(scattering_matrix):
+    """
+    Returns a function that takes as input the incident angles and the scattering angles.
+    This returned function returns the scattering amplitudes, obtained by bilinear
+    interpolation of the scattering matrix.
+
+    Parameters
+    ----------
+    scattering_matrix
+
+    Returns
+    -------
+    func
+
+    """
     scattering_matrix = np.asarray(scattering_matrix)
     if scattering_matrix.ndim != 2:
         raise ValueError('scattering matrix must have a shape (n, n)')
