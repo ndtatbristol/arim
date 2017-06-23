@@ -920,3 +920,39 @@ def sensitivity_uniform_tfm(model_amplitudes, scanline_weights, block_size=1000)
             sensitivity = np.zeros((numpoints,), dtype=tmp.dtype)
         sensitivity[chunk] = tmp
     return sensitivity
+
+
+def sensitivity_model_assisted_tfm(model_amplitudes, scanline_weights, block_size=1000):
+    """
+    Return the sensitivity for model assisted TFM (multiply TFM scanlines by conjugate
+    of scatterer contribution).
+
+    The sensitivity at a point is defined the predicted TFM amplitude that a sole
+    scatterer centered on that point would have.
+
+    Parameters
+    ----------
+    model_amplitudes : ndarray or ModelAmplitudes
+        Coefficients P_ij. Shape: (numpoints, numscanlines)
+    scanline_weights : ndarray
+        Shape: (numscanlines, )
+
+    Returns
+    -------
+    predicted_intensities
+        Shape: (numpoints, ).
+    """
+    numpoints, numscanlines = model_amplitudes.shape
+    assert scanline_weights.ndim == 1
+    assert model_amplitudes.shape[1] == scanline_weights.shape[0]
+
+    sensitivity = None
+
+    # chunk the array in case we have an array too big (ModelAmplitudes)
+    for chunk in chunk_array((numpoints, numscanlines), block_size):
+        absval = np.abs(model_amplitudes[chunk])
+        tmp = (absval * absval * scanline_weights[np.newaxis]).sum(axis=1)
+        if sensitivity is None:
+            sensitivity = np.zeros((numpoints,), dtype=tmp.dtype)
+        sensitivity[chunk] = tmp
+    return sensitivity

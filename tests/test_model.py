@@ -927,14 +927,16 @@ def test_model_amplitudes_factory():
 
         for k, i in np.ndindex(numpoints, numscanlines):
             assert amps[k][i] == a1[k, i]
+            assert amps[k, ...][i] == a1[k, i]
 
         np.testing.assert_array_equal(amps[[0, 0, 0]], a1[[0, 0, 0]])
+        np.testing.assert_array_equal(amps[:1, ...], amps[:1])
 
         with pytest.raises(TypeError):
             amps[0] = 1.
 
 
-def test_sensitivity_uniform_tfm():
+def test_sensitivity_tfm():
     context = make_context()
     views = context['views']
 
@@ -952,6 +954,8 @@ def test_sensitivity_uniform_tfm():
     for viewname, view in views.items():
         amps = model.model_amplitudes_factory(tx, rx, view, ray_weights,
                                               scattering_dict)
+
+        # Sensitivity for uniform TFM
         sensitivity = model.sensitivity_uniform_tfm(amps, scanline_weights)
         assert sensitivity.shape == (numpoints,)
         sensitivity2 = model.sensitivity_uniform_tfm(amps, scanline_weights, block_size=1)
@@ -961,4 +965,17 @@ def test_sensitivity_uniform_tfm():
             expected = 0.
             for i in range(numscanlines):
                 expected += amps[k][i] * scanline_weights[i]
+            assert np.isclose(sensitivity[k], expected)
+
+        # Sensitivity for model-assited TFM
+        sensitivity = model.sensitivity_model_assisted_tfm(amps, scanline_weights)
+        assert sensitivity.shape == (numpoints,)
+        sensitivity2 = model.sensitivity_model_assisted_tfm(amps, scanline_weights,
+                                                            block_size=1)
+        np.testing.assert_array_equal(sensitivity, sensitivity2)
+
+        for k in range(numpoints):
+            expected = 0.
+            for i in range(numscanlines):
+                expected += np.abs(amps[k][i] * amps[k][i]) * scanline_weights[i]
             assert np.isclose(sensitivity[k], expected)
