@@ -770,63 +770,63 @@ class _ModelAmplitudesWithScatFunction(ModelAmplitudes):
         return model_amplitudes
 
 
-@numba.jit(nopython=True)
+@numba.guvectorize(
+    'void(int32[:], int32[:], complex128[:,:], complex128[:], complex128[:], float64[:], float64[:], complex128[:])',
+    '(n),(n),(s,s),(e),(e),(e),(e)->(n)', nopython=True, target='parallel')
 def _model_amplitudes_with_scat_matrix(tx, rx, scattering_matrix, tx_ray_weights,
                                        rx_ray_weights, tx_scattering_angles,
                                        rx_scattering_angles, res):
-    numpoints = res.shape[0]
+    # This is a kernel on a grid point.
     numscanlines = tx.shape[0]
-    assert res.shape[0] == tx_ray_weights.shape[0]
-    assert tx_ray_weights.shape == rx_ray_weights.shape == tx_scattering_angles.shape == rx_scattering_angles.shape
-    for pidx in range(numpoints):
-        for scan in range(numscanlines):
-            inc_theta = tx_scattering_angles[pidx, tx[scan]]
-            out_theta = rx_scattering_angles[pidx, rx[scan]]
+    # assert res.shape[0] == tx_ray_weights.shape[0]
+    # assert tx_ray_weights.shape == rx_ray_weights.shape == tx_scattering_angles.shape == rx_scattering_angles.shape
+    for scan in range(numscanlines):
+        inc_theta = tx_scattering_angles[tx[scan]]
+        out_theta = rx_scattering_angles[rx[scan]]
 
-            # ----------- Begin paste section arim.ut.interpolate_scattering_matrix
-            # This is not ideal but numba can't accept as argument our interpolator.
-            numscatpoints = scattering_matrix.shape[0]
-            dtheta = 2 * np.pi / numscatpoints
+        # ----------- Begin paste section arim.ut.interpolate_scattering_matrix
+        # This is not ideal but numba can't accept as argument our interpolator.
+        numscatpoints = scattering_matrix.shape[0]
+        dtheta = 2 * np.pi / numscatpoints
 
-            # Returns indices in [0, ..., numscatpoints - 1]
-            # -pi <-> 0
-            # pi - eps <-> numscatpoints - 1
-            # -pi + 2 k pi <-> 0
-            inc_theta_idx = int((inc_theta + np.pi) // dtheta % numscatpoints)
-            out_theta_idx = int((out_theta + np.pi) // dtheta % numscatpoints)
+        # Returns indices in [0, ..., numscatpoints - 1]
+        # -pi <-> 0
+        # pi - eps <-> numscatpoints - 1
+        # -pi + 2 k pi <-> 0
+        inc_theta_idx = int((inc_theta + np.pi) // dtheta % numscatpoints)
+        out_theta_idx = int((out_theta + np.pi) // dtheta % numscatpoints)
 
-            # Returns the fraction in [0., 1.[ of the distance to the next point to the distance
-            # to the last point.
-            inc_theta_frac = ((inc_theta + np.pi) % dtheta) / dtheta
-            out_theta_frac = ((out_theta + np.pi) % dtheta) / dtheta
+        # Returns the fraction in [0., 1.[ of the distance to the next point to the distance
+        # to the last point.
+        inc_theta_frac = ((inc_theta + np.pi) % dtheta) / dtheta
+        out_theta_frac = ((out_theta + np.pi) % dtheta) / dtheta
 
-            # if we are on the border, wrap around (360° = 0°)
-            if inc_theta_idx != (numscatpoints - 1):
-                inc_theta_idx_plus1 = inc_theta_idx + 1
-            else:
-                inc_theta_idx_plus1 = 0
+        # if we are on the border, wrap around (360° = 0°)
+        if inc_theta_idx != (numscatpoints - 1):
+            inc_theta_idx_plus1 = inc_theta_idx + 1
+        else:
+            inc_theta_idx_plus1 = 0
 
-            if out_theta_idx != (numscatpoints - 1):
-                out_theta_idx_plus1 = out_theta_idx + 1
-            else:
-                out_theta_idx_plus1 = 0
+        if out_theta_idx != (numscatpoints - 1):
+            out_theta_idx_plus1 = out_theta_idx + 1
+        else:
+            out_theta_idx_plus1 = 0
 
-            # use cardinal direction: sw for south west, etc
-            sw = scattering_matrix[inc_theta_idx, out_theta_idx]
-            ne = scattering_matrix[inc_theta_idx_plus1, out_theta_idx_plus1]
-            se = scattering_matrix[inc_theta_idx, out_theta_idx_plus1]
-            nw = scattering_matrix[inc_theta_idx_plus1, out_theta_idx]
+        # use cardinal direction: sw for south west, etc
+        sw = scattering_matrix[inc_theta_idx, out_theta_idx]
+        ne = scattering_matrix[inc_theta_idx_plus1, out_theta_idx_plus1]
+        se = scattering_matrix[inc_theta_idx, out_theta_idx_plus1]
+        nw = scattering_matrix[inc_theta_idx_plus1, out_theta_idx]
 
-            # https://en.wikipedia.org/wiki/Bilinear_interpolation
-            f1 = sw + (se - sw) * out_theta_frac
-            f2 = nw + (ne - nw) * out_theta_frac
-            scattering_amp = f1 + (f2 - f1) * inc_theta_frac
-            # ----------- End paste section
+        # https://en.wikipedia.org/wiki/Bilinear_interpolation
+        f1 = sw + (se - sw) * out_theta_frac
+        f2 = nw + (ne - nw) * out_theta_frac
+        scattering_amp = f1 + (f2 - f1) * inc_theta_frac
+        # ----------- End paste section
 
-            res[pidx, scan] = (scattering_amp
-                               * tx_ray_weights[pidx, tx[scan]]
-                               * rx_ray_weights[pidx, rx[scan]])
-    return res
+        res[scan] = (scattering_amp
+                     * tx_ray_weights[tx[scan]]
+                     * rx_ray_weights[rx[scan]])
 
 
 class _ModelAmplitudesWithScatMatrix(ModelAmplitudes):
@@ -848,30 +848,36 @@ class _ModelAmplitudesWithScatMatrix(ModelAmplitudes):
         # of RayWeights. They are contiguous.
         res_dtype = np.result_type(self.scattering_mat, self.tx_ray_weights,
                                    self.rx_ray_weights)
-
-        grid_chunk = np.empty(self.numpoints)[grid_slice]
-        if grid_chunk.ndim == 0:
-            # grid_slice is an int. We are working on one point, add a dimension
-            # to please _model_amplitudes_with_scat_matrix
-            res = np.zeros((1, self.numscanlines), res_dtype)
-        elif grid_chunk.ndim == 1:
-            # grid_slice is a slice
-            res = np.zeros((grid_chunk.shape[0], self.numscanlines), res_dtype)
-        else:
-            raise IndexError('Only the first dimension of the object is indexable.')
-
-        res = _model_amplitudes_with_scat_matrix(
+        return _model_amplitudes_with_scat_matrix(
             self.tx, self.rx, self.scattering_mat,
-            np.atleast_2d(self.tx_ray_weights[grid_slice]),
-            np.atleast_2d(self.rx_ray_weights[grid_slice]),
-            np.atleast_2d(self.tx_scattering_angles[grid_slice]),
-            np.atleast_2d(self.rx_scattering_angles[grid_slice]),
-            res)
-        if grid_chunk.ndim == 0:
-            # remove the extra dimension added to please _model_amplitudes_with_scat_matrix
-            return res[0]
-        else:
-            return res
+            self.tx_ray_weights[grid_slice],
+            self.rx_ray_weights[grid_slice],
+            self.tx_scattering_angles[grid_slice],
+            self.rx_scattering_angles[grid_slice])
+
+        # grid_chunk = np.empty(self.numpoints)[grid_slice]
+        # if grid_chunk.ndim == 0:
+        #     # grid_slice is an int. We are working on one point, add a dimension
+        #     # to please _model_amplitudes_with_scat_matrix
+        #     res = np.zeros((1, self.numscanlines), res_dtype)
+        # elif grid_chunk.ndim == 1:
+        #     # grid_slice is a slice
+        #     res = np.zeros((grid_chunk.shape[0], self.numscanlines), res_dtype)
+        # else:
+        #     raise IndexError('Only the first dimension of the object is indexable.')
+        #
+        # res = _model_amplitudes_with_scat_matrix(
+        #     self.tx, self.rx, self.scattering_mat,
+        #     np.atleast_2d(self.tx_ray_weights[grid_slice]),
+        #     np.atleast_2d(self.rx_ray_weights[grid_slice]),
+        #     np.atleast_2d(self.tx_scattering_angles[grid_slice]),
+        #     np.atleast_2d(self.rx_scattering_angles[grid_slice]),
+        #     res)
+        # if grid_chunk.ndim == 0:
+        #     # remove the extra dimension added to please _model_amplitudes_with_scat_matrix
+        #     return res[0]
+        # else:
+        #     return res
 
 
 def model_amplitudes_factory(tx, rx, view, ray_weights, scattering):
@@ -955,7 +961,7 @@ def model_amplitudes_factory(tx, rx, view, ray_weights, scattering):
                                               rx_scattering_angles)
 
 
-def sensitivity_uniform_tfm(model_amplitudes, scanline_weights, block_size=1000):
+def sensitivity_uniform_tfm(model_amplitudes, scanline_weights, block_size=4000):
     """
     Return the sensitivity for uniform TFM.
 
@@ -989,7 +995,7 @@ def sensitivity_uniform_tfm(model_amplitudes, scanline_weights, block_size=1000)
     return sensitivity
 
 
-def sensitivity_model_assisted_tfm(model_amplitudes, scanline_weights, block_size=1000):
+def sensitivity_model_assisted_tfm(model_amplitudes, scanline_weights, block_size=4000):
     """
     Return the sensitivity for model assisted TFM (multiply TFM scanlines by conjugate
     of scatterer contribution).

@@ -961,7 +961,7 @@ def test_model_amplitudes_factory():
         assert amps[:1, ...].shape == (1, numscanlines)
         assert amps[slice(0, 1), ...].shape == (1, numscanlines)
 
-        with pytest.raises(IndexError):
+        with pytest.raises(ValueError):
             amps[0, 0]
 
         for k, i in np.ndindex(numpoints, numscanlines):
