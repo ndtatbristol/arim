@@ -950,6 +950,29 @@ def elastic_scattering_2d_cylinder_matrices(numpoints, radius, longitudinal_wave
     return inc_theta, out_theta, matrices
 
 
+def elastic_scattering_point_source_funcs(longitudinal_velocity, transverse_velocity):
+    """
+    (Unphysical) scattering functions of a point source. For debug only.
+
+    Parameters
+    ----------
+    longitudinal_velocity : float
+    transverse_velocity : float
+
+    Returns
+    -------
+    dict
+    """
+    vl = longitudinal_velocity
+    vt = transverse_velocity
+    return {
+        'LL': lambda inc, out: np.full_like(inc, 1.),
+        'LT': lambda inc, out: np.full_like(inc, vl / vt),
+        'TL': lambda inc, out: np.full_like(inc, vt / vl),
+        'TT': lambda inc, out: np.full_like(inc, 1.),
+    }
+
+
 def make_timevect(num, step, start=0., dtype=None):
     """
     Return a linearly spaced time vector.
