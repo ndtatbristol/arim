@@ -731,6 +731,14 @@ class ModelAmplitudes(abc.ABC):
     def shape(self):
         return (self.numpoints, self.numscanlines)
 
+    def sensitivity_uniform_tfm(self, scanline_weights, **kwargs):
+        # wrapper in general case, inherit and write a faster implementation if possible
+        return sensitivity_uniform_tfm(self, scanline_weights, **kwargs)
+
+    def sensitivity_model_assisted_tfm(self, scanline_weights, **kwargs):
+        # wrapper in general case, inherit and write a faster implementation if possible
+        return sensitivity_model_assisted_tfm(self, scanline_weights, **kwargs)
+
 
 class _ModelAmplitudesWithScatFunction(ModelAmplitudes):
     def __init__(self, tx, rx, scattering_fn,
@@ -762,7 +770,7 @@ class _ModelAmplitudesWithScatFunction(ModelAmplitudes):
         return model_amplitudes
 
 
-def model_amplitudes_factory(tx, rx, view, ray_weights, scattering_dict):
+def model_amplitudes_factory(tx, rx, view, ray_weights, scattering):
     """
     Yield P_ij = Q_i Q'_j S_ij
 
@@ -770,12 +778,12 @@ def model_amplitudes_factory(tx, rx, view, ray_weights, scattering_dict):
 
     Parameters
     ----------
-    tx
-    rx
-    view
-    scattering_dict
+    tx : ndarray
+    rx : ndarray
+    view : View
     ray_weights : RayWeights
-    grid_slice : slice or None
+    scattering : dict
+
 
     Returns
     ------
@@ -791,7 +799,7 @@ def model_amplitudes_factory(tx, rx, view, ray_weights, scattering_dict):
 
     Examples
     --------
-    >>> model_amplitudes = model_amplitudes_factory(tx, rx, view, ray_weights, scattering_dict)
+    >>> model_amplitudes = model_amplitudes_factory(tx, rx, view, ray_weights, scattering)
     >>> model_amplitudes[0]
     # returns the 'numscanlines' amplitudes at the grid point 0
     >>> model_amplitudes[:10] # returns the amplitudes for the first 10 grid points
@@ -804,7 +812,14 @@ def model_amplitudes_factory(tx, rx, view, ray_weights, scattering_dict):
     # Pick the right scattering matrix/function.
     # scat_key is LL, LT, TL or TT
     scat_key = view.tx_path.modes[-1].key() + view.rx_path.modes[-1].key()
-    scattering_fn = scattering_dict[scat_key]
+    scattering_obj = scattering[scat_key]
+
+    try:
+        scattering_obj.shape
+    except AttributeError:
+        is_scattering_func = True
+    else:
+        is_scattering_func = False
 
     tx_ray_weights = ray_weights.tx_ray_weights_dict[view.tx_path]
     rx_ray_weights = ray_weights.rx_ray_weights_dict[view.rx_path]
@@ -824,9 +839,13 @@ def model_amplitudes_factory(tx, rx, view, ray_weights, scattering_dict):
     tx_scattering_angles = tx_scattering_angles.T
     rx_scattering_angles = rx_scattering_angles.T
 
-    return _ModelAmplitudesWithScatFunction(tx, rx, scattering_fn,
-                                            tx_ray_weights, rx_ray_weights,
-                                            tx_scattering_angles, rx_scattering_angles)
+    if is_scattering_func:
+        return _ModelAmplitudesWithScatFunction(tx, rx, scattering_obj,
+                                                tx_ray_weights, rx_ray_weights,
+                                                tx_scattering_angles,
+                                                rx_scattering_angles)
+    else:
+        raise NotImplementedError('will do soon (tm)')
 
 
 def sensitivity_uniform_tfm(model_amplitudes, scanline_weights, block_size=1000):
