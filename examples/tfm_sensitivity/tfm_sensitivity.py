@@ -1,13 +1,17 @@
 #!/usr/bin/env python3
 # encoding: utf-8
 """
-TFM sensitivity using a single-frequency LTI model.
+TFM sensitivity in immersion inspection using a single-frequency LTI model.
 
-Immersion inspection.
+The sensitivity on a point is defined as the TFM intensity that a defect centered
+on this point would have.
 
 Input: configuration files (conf.yaml, dryrun.yaml, debug.yaml).
 Output: figures.
-    
+
+To see usage: call this script with '--help'
+(in Spyder: Run > Configure > Command line options)
+        
 """
 import logging
 import yaml
@@ -43,19 +47,19 @@ parser.add_argument('-s', '--save', action='store_true', default=False,
                     help='save results')
 args = parser.parse_args()
 
-def load_configuration(debug=False, dryrun=False):
-    with open('tfm_sensitivity.yaml', 'rb') as f:
+def load_configuration(debug=False, dryrun=False, **kwargs):
+    with open('conf.yaml', 'rb') as f:
         conf = arim.config.Config(yaml.load(f))
 
     if dryrun:
         try:
-            with open('tfm_sensitivity.dryrun.yaml', 'rb') as f:
+            with open('dryrun.yaml', 'rb') as f:
                 conf.merge(yaml.load(f))
         except FileNotFoundError:
             logger.warning('Dry-run configuration not found')
     if debug:
         try:
-            with open('tfm_sensitivity.debug.yaml', 'rb') as f:
+            with open('debug.yaml', 'rb') as f:
                 conf.merge(yaml.load(f))
         except FileNotFoundError:
             logger.warning('Debug configuration not found')
@@ -120,7 +124,8 @@ interfaces = arim.path.interfaces_for_block_in_immersion(couplant, probe_points,
                                                          backwall_orientations,
                                                          grid_points, grid_orientation)
 
-paths = arim.path.paths_for_block_in_immersion(block, couplant, interfaces)
+paths = arim.path.paths_for_block_in_immersion(block, couplant, interfaces,
+                                               max_number_of_reflection=2)
 
 if conf['plot.interfaces']:
     aplt.plot_interfaces(interfaces.values(), show_orientations=True, show_grid=True)
@@ -171,9 +176,8 @@ with arim.helpers.timeit('Computation of scattering matrices'):
             radius=conf['scatterer']['radius'],
             longitudinal_wavelength=wavelength_l,
             transverse_wavelength=wavelength_t)
-        scat_funcs = arim.ut.scattering_matrices_to_interp_funcs(scat_matrices)
     else:
-        scat_funcs = arim.ut.elastic_scattering_point_source_funcs(wavelength_l, wavelength_t)
+        scat_matrices = arim.ut.elastic_scattering_point_source_matrices(wavelength_l, wavelength_t)
 
 #%%
 model_amplitudes_dict = OrderedDict()
@@ -184,8 +188,9 @@ for viewname, view in views.items():
         # Step 3: prepare model amplitudes P_ij = Q_i Q'_j S_ij
         # These amplitudes are not actually computed here, otherwise we could run out
         # of memory.
+        # model_amps[p][k] is the model amplitude of point p and scanline k.
         model_amps = arim.model.model_amplitudes_factory(
-            tx, rx, view, ray_weights, scat_funcs)
+            tx, rx, view, ray_weights, scat_matrices)
         model_amplitudes_dict[viewname] = model_amps
     
         # Step 4: compute sensitivitiy
@@ -196,7 +201,7 @@ ref_db = max(np.nanmax(np.abs(v)) for v in sensitivity_dict.values())
 # %% Plot sensitivity
 if conf['plot.sensitivity.all_in_one']:
     ref_db = max(np.nanmax(np.abs(v)) for v in sensitivity_dict.values())
-    aplt.plot_oxz_many(sensitivity_dict.values(), grid, 7, 3,
+    aplt.plot_oxz_many(sensitivity_dict.values(), grid, 7, 4,
                        title_list=sensitivity_dict.keys(),
                        suptitle='Sensitivity of TFM for a SDH (dB)',
                        scale='db', ref_db=ref_db,
@@ -223,7 +228,7 @@ out['sensitivity_db'] = arim.ut.decibel(out['sensitivity'])
 
 if conf['save_to_csv']:
     out.to_csv('sensitivity.csv')
-
+print(out)
 #%%
 
 viewnames = [view.name for view in views.values()]

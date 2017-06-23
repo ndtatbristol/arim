@@ -67,7 +67,7 @@ scatterer:
 scattering.interpolation: 360
 
 point_of_interest:
-  x: 40.e-3
+  x: 50.e-3
   z: 20.e-3
 
 model.use_directivity: true
@@ -77,16 +77,16 @@ model.use_scattering: true
 
 # either a list (example: [L-L, L-T]) or 'all'
 views_to_use: [L-L, L-T, T-T, LL-L, LL-T, LT-L, LT-T, TL-L, TL-T, TT-L, TT-T,
-  LL-LL, LL-LT, LL-TL, LL-TT, LT-LT, LT-TL, LT-TT, TL-LT, TL-TT, TT-TT]
+  LL-LL, LL-LT, LL-TL, LL-TT, LT-LT, LT-TL, LT-TT, TL-LT, TL-TT, TT-TT, LLL-L, LLL-T]
 
 
 # Figures to show
-plot.interfaces: false
+plot.interfaces: true
 plot.sensitivity.all_in_one: true
-plot.sensitivity: true
+plot.sensitivity: false
 plot.force_close: true
 
 arim.plot:
   plot_oxz.figsize: [12, 3]
-  plot_oxz_many.figsize: [16, 10]
+  plot_oxz_many.figsize: [20, 10]
 
