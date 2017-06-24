@@ -12,7 +12,6 @@ Functions related to the forward model.
 import abc
 import logging
 import warnings
-from functools import partial
 from collections import namedtuple
 
 import numpy as np
@@ -23,7 +22,6 @@ from . import ut
 from .ut import snell_angles, fluid_solid, solid_l_fluid, solid_t_fluid, \
     directivity_2d_rectangular_in_fluid
 from .helpers import chunk_array
-from .exceptions import ArimWarning
 
 # for backward compatiblity:
 from .path import RayGeometry
@@ -784,46 +782,8 @@ def _model_amplitudes_with_scat_matrix(tx, rx, scattering_matrix, tx_ray_weights
         inc_theta = tx_scattering_angles[tx[scan]]
         out_theta = rx_scattering_angles[rx[scan]]
 
-        # ----------- Begin paste section arim.ut.interpolate_scattering_matrix
-        # This is not ideal but numba can't accept as argument our interpolator.
-        numscatpoints = scattering_matrix.shape[0]
-        dtheta = 2 * np.pi / numscatpoints
-
-        # Returns indices in [0, ..., numscatpoints - 1]
-        # -pi <-> 0
-        # pi - eps <-> numscatpoints - 1
-        # -pi + 2 k pi <-> 0
-        inc_theta_idx = int((inc_theta + np.pi) // dtheta % numscatpoints)
-        out_theta_idx = int((out_theta + np.pi) // dtheta % numscatpoints)
-
-        # Returns the fraction in [0., 1.[ of the distance to the next point to the distance
-        # to the last point.
-        inc_theta_frac = ((inc_theta + np.pi) % dtheta) / dtheta
-        out_theta_frac = ((out_theta + np.pi) % dtheta) / dtheta
-
-        # if we are on the border, wrap around (360° = 0°)
-        if inc_theta_idx != (numscatpoints - 1):
-            inc_theta_idx_plus1 = inc_theta_idx + 1
-        else:
-            inc_theta_idx_plus1 = 0
-
-        if out_theta_idx != (numscatpoints - 1):
-            out_theta_idx_plus1 = out_theta_idx + 1
-        else:
-            out_theta_idx_plus1 = 0
-
-        # use cardinal direction: sw for south west, etc
-        sw = scattering_matrix[inc_theta_idx, out_theta_idx]
-        ne = scattering_matrix[inc_theta_idx_plus1, out_theta_idx_plus1]
-        se = scattering_matrix[inc_theta_idx, out_theta_idx_plus1]
-        nw = scattering_matrix[inc_theta_idx_plus1, out_theta_idx]
-
-        # https://en.wikipedia.org/wiki/Bilinear_interpolation
-        f1 = sw + (se - sw) * out_theta_frac
-        f2 = nw + (ne - nw) * out_theta_frac
-        scattering_amp = f1 + (f2 - f1) * inc_theta_frac
-        # ----------- End paste section
-
+        scattering_amp = ut._interpolate_scattering_matrix_kernel(scattering_matrix,
+                                                                  inc_theta, out_theta)
         res[scan] = (scattering_amp
                      * tx_ray_weights[tx[scan]]
                      * rx_ray_weights[rx[scan]])
