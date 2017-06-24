@@ -1,9 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-To evaluate the scattering matrix on a point, consider using
-arim.ut.interpolate_scattering_matrix.
-
-"""
 import matplotlib.pyplot as plt
 import arim
 import numpy as np
@@ -17,18 +12,30 @@ params = dict(longitudinal_wavelength=vl/freq,
               transverse_wavelength=vt/freq,
               radius=radius)
 
-inc_theta, out_theta, matrices = \
-    arim.ut.elastic_scattering_2d_cylinder_matrices(100, **params)
+# %% Scattering as matrices
 
-
+n = 100  # number of points for discretising the inverval [-pi, pi[
+scat_matrices = arim.ut.scattering_2d_cylinder_matrices(n, **params)
 for key in ['LL', 'LT', 'TL', 'TT']:
-    
     extent = (-180, 180, -180, 180)
     
     fig, ax = plt.subplots()
-    im = ax.imshow(np.abs(matrices[key]), extent=extent, origin='lower')
+    im = ax.imshow(np.abs(scat_matrices[key]), extent=extent, origin='lower')
     ax.set_xlabel('incident angle (degree)')
     ax.set_ylabel('outgoing angle (degree)')
     ax.set_title('Scattering matrix of a SDH - {}'.format(key))
     fig.colorbar(im, ax=ax)
+
+
+# %% Scattering as functions of incident and scattered angles
+scat_funcs = arim.ut.scattering_2d_cylinder_funcs(**params)
+fig, ax = plt.subplots()
+theta = arim.ut.theta_scattering_matrix(n)
+for key in ['LL', 'LT', 'TL', 'TT']:
+    scat_func = scat_funcs[key]
+    ax.plot(theta, np.abs(scat_func(0., theta)), label=key)
+ax.legend()
+ax.set_xlabel('scattering angle (degree)')
+ax.set_ylabel('scattering amplitude (abs val.)')
+ax.set_title('Scattering amplitudes for a SDH (incident angle: 0°)')
 

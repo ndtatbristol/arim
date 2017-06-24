@@ -171,7 +171,7 @@ if conf['scatterer']['type'] != 'circle':
 
 with arim.helpers.timeit('Computation of scattering matrices'):
     if conf['model.use_scattering']:
-        _, _, scat_matrices = arim.ut.elastic_scattering_2d_cylinder_matrices(
+        scat_matrices = arim.ut.scattering_2d_cylinder_matrices(
             conf['scattering.interpolation'],
             radius=conf['scatterer']['radius'],
             longitudinal_wavelength=wavelength_l,

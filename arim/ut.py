@@ -10,6 +10,7 @@ import warnings
 import numba
 import math
 from scipy.special import hankel1, hankel2
+from functools import partial
 
 from numpy.core.umath import sin, cos, pi, exp
 
@@ -632,6 +633,8 @@ def theta_scattering_matrix(numpoints):
 
 def make_scattering_matrix(scattering_func, numpoints):
     """
+    Call the function 'scattering_func' for all incident and scattered angles.
+    Returns the result as a matrix.
 
     Parameters
     ----------
@@ -644,7 +647,12 @@ def make_scattering_matrix(scattering_func, numpoints):
 
     Returns
     -------
-
+    inc_theta : ndarray
+        Shape (numpoints, numpoints)
+    out_theta : ndarray
+        Shape (numpoints, numpoints)
+    scattering_matrix : ndarray
+        Shape (numpoints, numpoints)
     """
     theta = theta_scattering_matrix(numpoints)
     inc_theta, out_theta = np.meshgrid(theta, theta, indexing='ij')
@@ -739,10 +747,10 @@ def scattering_matrices_to_interp_funcs(scattering_matrices):
             in scattering_matrices.items()}
 
 
-def elastic_scattering_2d_cylinder(theta, radius, longitudinal_wavelength,
-                                   transverse_wavelength,
-                                   min_terms=10, term_factor=4,
-                                   to_compute={'LL', 'LT', 'TL', 'TT'}):
+def scattering_2d_cylinder(inc_theta, out_theta, radius, longitudinal_wavelength,
+                           transverse_wavelength,
+                           min_terms=10, term_factor=4,
+                           to_compute={'LL', 'LT', 'TL', 'TT'}):
     """
     Scattering coefficients for a 2D circle (or infinitely-long cylinder in 3D).
 
@@ -776,8 +784,10 @@ def elastic_scattering_2d_cylinder(theta, radius, longitudinal_wavelength,
 
     Parameters
     ----------
-    theta : ndarray
-        Angle in radians. theta=0 corresponds to pulse-echo. Arbitrary shape.
+    inc_theta : ndarray
+        Angle in radians. Pulse echo case corresponds to inc_theta = out_theta
+    out_theta : ndarray
+        Angle in radians.
     radius : float
     longitudinal_wavelength : float
     transverse_wavelength : float
@@ -810,6 +820,8 @@ def elastic_scattering_2d_cylinder(theta, radius, longitudinal_wavelength,
 
     """
     valid_keys = {'LL', 'LT', 'TL', 'TT'}
+
+    theta = out_theta - inc_theta
 
     if not valid_keys.issuperset(to_compute):
         raise ValueError("Valid 'to_compute' arguments are {} (got {})".format(valid_keys,
@@ -924,17 +936,53 @@ def elastic_scattering_2d_cylinder(theta, radius, longitudinal_wavelength,
     return result
 
 
-def elastic_scattering_2d_cylinder_matrices(numpoints, radius, longitudinal_wavelength,
-                                            transverse_wavelength,
-                                            min_terms=10, term_factor=4,
-                                            to_compute={'LL', 'LT', 'TL', 'TT'}):
+def _scattering_2d_cylinder(inc_theta, out_theta, scat_key, **scat_params):
+    return scattering_2d_cylinder(inc_theta, out_theta, to_compute={scat_key},
+                                  **scat_params)[scat_key]
+
+
+def scattering_2d_cylinder_funcs(radius, longitudinal_wavelength,
+                                 transverse_wavelength, **kwargs):
     """
-    Returns scattering matrices of 'elastic_scattering_2d_cylinder'
+    Cf. :func:`scattering_2d_cylinder`
+
+    Parameters
+    ----------
+    radius
+    longitudinal_wavelength
+    transverse_wavelength
+    kwargs
+
+    Returns
+    -------
+    scat_funcs: dict of func
+        Usage: scat_funcs['LT'](inc_theta, out_theta)
+
+    """
+    scat_funcs = {}
+    scat_params = dict(
+        radius=radius,
+        longitudinal_wavelength=longitudinal_wavelength,
+        transverse_wavelength=transverse_wavelength,
+        **kwargs
+    )
+
+    for scat_key in ['LL', 'LT', 'TL', 'TT']:
+        scat_funcs[scat_key] = partial(_scattering_2d_cylinder, scat_key=scat_key,
+                                       **scat_params)
+    return scat_funcs
+
+
+def scattering_2d_cylinder_matrices(numpoints, radius, longitudinal_wavelength,
+                                    transverse_wavelength,
+                                    to_compute={'LL', 'LT', 'TL', 'TT'}, **kwargs):
+    """
+    Cf. :func:`scattering_2d_cylinder`.
 
     Parameters
     ----------
     numpoints : int
-        Number of points of the matrix.
+        Number of points for discretising [-pi, pi[.
     radius
     longitudinal_wavelength
     transverse_wavelength
@@ -944,27 +992,17 @@ def elastic_scattering_2d_cylinder_matrices(numpoints, radius, longitudinal_wave
 
     Returns
     -------
-    inc_theta, out_theta
     matrices : dict
-
-
     """
     matrices = {}
-    inc_theta = None
-    out_theta = None
-    for key in to_compute:
-        def scat_func(inc, out):
-            return elastic_scattering_2d_cylinder(
-                out - inc, radius, longitudinal_wavelength,
-                transverse_wavelength,
-                min_terms, term_factor,
-                to_compute={key})[key]
-
-        inc_theta, out_theta, matrices[key] = make_scattering_matrix(scat_func, numpoints)
-    return inc_theta, out_theta, matrices
+    scat_funcs = scattering_2d_cylinder_funcs(radius, longitudinal_wavelength,
+                                              transverse_wavelength, **kwargs)
+    for scat_key in to_compute:
+        _, _, matrices[scat_key] = make_scattering_matrix(scat_funcs[scat_key], numpoints)
+    return matrices
 
 
-def elastic_scattering_point_source_funcs(longitudinal_velocity, transverse_velocity):
+def scattering_point_source_funcs(longitudinal_velocity, transverse_velocity):
     """
     (Unphysical) scattering functions of a point source. For debug only.
 

@@ -521,12 +521,13 @@ def test_stokes_relation():
     np.testing.assert_allclose(refl_tl2, refl_tl)
 
 
-def test_elastic_scattering_2d_cylinder():
-    theta = np.array(
+def test_scattering_2d_cylinder():
+    out_theta = np.array(
         [-3.141592653589793, -2.722713633111154, -2.303834612632515, -1.884955592153876,
          -1.466076571675237, -1.047197551196598, -0.628318530717959, -0.209439510239319,
          0.209439510239319, 0.628318530717959, 1.047197551196597, 1.466076571675236,
          1.884955592153876, 2.303834612632516, 2.722713633111154, ])
+    inc_theta = 0.
     matlab_res = dict()
     matlab_res['LL'] = np.array([
         -0.206384032591909 + 0.336645038756022j, -0.194171819277630 + 0.313226502544485j,
@@ -575,7 +576,8 @@ def test_elastic_scattering_2d_cylinder():
     lambda_l = v_l / freq
     lambda_t = v_t / freq
 
-    result = ut.elastic_scattering_2d_cylinder(theta, hole_radius, lambda_l, lambda_t)
+    result = ut.scattering_2d_cylinder(inc_theta, out_theta, hole_radius, lambda_l,
+                                       lambda_t)
 
     # There is an unexplained -1 multiplicative factor.
     correction = dict()
@@ -585,10 +587,10 @@ def test_elastic_scattering_2d_cylinder():
     correction['TT'] = 1.
 
     assert len(result) == 4
-    assert result['LL'].shape == theta.shape
-    assert result['LT'].shape == theta.shape
-    assert result['TL'].shape == theta.shape
-    assert result['TT'].shape == theta.shape
+    assert result['LL'].shape == out_theta.shape
+    assert result['LT'].shape == out_theta.shape
+    assert result['TL'].shape == out_theta.shape
+    assert result['TT'].shape == out_theta.shape
 
     corr_matlab_res = {key: (correction[key] * val).conjugate()
                        for key, val in matlab_res.items()}
@@ -610,9 +612,10 @@ def test_elastic_scattering_2d_cylinder():
     np.testing.assert_allclose(result['TT'], corr_matlab_res['TT'], **args)
 
 
-def test_elastic_scattering_2d_cylinder2():
+def test_scattering_2d_cylinder2():
     shape = (4, 5, 7)
-    theta = np.random.uniform(low=-np.pi, high=np.pi, size=shape)
+    out_theta = np.random.uniform(low=-np.pi, high=np.pi, size=shape)
+    inc_theta = 0.
 
     freq = 2.e6
     v_l = 6000
@@ -620,16 +623,22 @@ def test_elastic_scattering_2d_cylinder2():
     hole_radius = 5e-4
     lambda_l = v_l / freq
     lambda_t = v_t / freq
+    scat_params = dict(radius=hole_radius, longitudinal_wavelength=lambda_l,
+                       transverse_wavelength=lambda_t)
 
-    result = ut.elastic_scattering_2d_cylinder(theta, hole_radius, lambda_l, lambda_t)
+    result = ut.scattering_2d_cylinder(inc_theta, out_theta, **scat_params)
+
+    scat_funcs = ut.scattering_2d_cylinder_funcs(**scat_params)
+    for key, scat_func in scat_funcs.items():
+        np.testing.assert_allclose(scat_func(inc_theta, out_theta), result[key], err_msg=key)
 
     assert set(result.keys()) == {'LL', 'LT', 'TL', 'TT'}
     for key, val in result.items():
         assert val.shape == shape
 
     to_compute = {'LL', 'TL'}
-    result2 = ut.elastic_scattering_2d_cylinder(theta, hole_radius, lambda_l, lambda_t,
-                                                to_compute=to_compute)
+    result2 = ut.scattering_2d_cylinder(inc_theta, out_theta, to_compute=to_compute,
+                                        **scat_params)
     assert set(result2.keys()) == to_compute
     for key, val in result2.items():
         assert val.shape == shape
