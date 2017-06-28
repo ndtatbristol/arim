@@ -301,7 +301,7 @@ def plot_psd(frame, idx='all', to_show='filtered', welch_params=None, ax=None,
             pxx = np.mean(pxx, axis=0)
         line = ax.plot(freq, pxx, label='filtered'.format(idx=idx))
         lines['filtered'] = line
-    ax.set_xlabel('time (µs)')
+    ax.set_xlabel('frequency (MHz)')
     ax.set_ylabel('power spectrum estimation')
     ax.xaxis.set_major_formatter(mega_formatter)
     ax.xaxis.set_minor_formatter(mega_formatter)
