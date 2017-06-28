@@ -742,8 +742,8 @@ def test_make_toneburst():
 
     # Test 1: unwrapped, 5 cycles
     num_cycles = 5
-    toneburst = ut.make_toneburst(num_cycles, num_samples, dt, f0)
-    toneburst_complex = ut.make_toneburst(num_cycles, num_samples, dt, f0,
+    toneburst = ut.make_toneburst(num_cycles, f0, dt, num_samples)
+    toneburst_complex = ut.make_toneburst(num_cycles, f0, dt, num_samples,
                                           analytical=True)
     # ensure we don't accidently change the tested function by hardcoding a result
     toneburst_ref = [-0.0, -0.003189670321154915, -0.004854168560396212,
@@ -775,8 +775,8 @@ def test_make_toneburst():
 
     # Test 2: wrapped, 5 cycles
     num_cycles = 5
-    toneburst = ut.make_toneburst(num_cycles, num_samples, dt, f0, wrap=True)
-    toneburst_complex = ut.make_toneburst(num_cycles, num_samples, dt, f0,
+    toneburst = ut.make_toneburst(num_cycles, f0, dt, num_samples, wrap=True)
+    toneburst_complex = ut.make_toneburst(num_cycles, f0, dt, num_samples,
                                           analytical=True, wrap=True)
 
     assert len(toneburst) == num_samples
@@ -788,3 +788,14 @@ def test_make_toneburst():
                                toneburst_ref[max_toneburst:10 + max_toneburst])
     np.testing.assert_allclose(toneburst[-10:],
                                toneburst_ref[-10 + max_toneburst:max_toneburst])
+
+
+    # num_samples = None
+    toneburst = ut.make_toneburst(num_cycles, f0, dt, num_samples)
+    toneburst_complex = ut.make_toneburst(num_cycles, f0, dt, num_samples,
+                                          analytical=True)
+    toneburst2 = ut.make_toneburst(num_cycles, f0, dt)
+    toneburst_complex2 = ut.make_toneburst(num_cycles, f0, dt, analytical=True)
+    len_pulse = len(toneburst2)
+    np.testing.assert_allclose(toneburst2, toneburst[:len_pulse])
+    np.testing.assert_allclose(toneburst_complex2, toneburst_complex[:len_pulse])

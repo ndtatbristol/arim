@@ -1101,7 +1101,7 @@ def _rotate_array(arr, n):
     return np.concatenate([arr[n:], arr[:n]])
 
 
-def make_toneburst(num_cycles, num_samples, dt, centre_freq, wrap=False,
+def make_toneburst(num_cycles, centre_freq, dt, num_samples=None, wrap=False,
                    analytical=False):
     """
     Returns a toneburst defined by centre frequency and a number of cycles.
@@ -1113,12 +1113,13 @@ def make_toneburst(num_cycles, num_samples, dt, centre_freq, wrap=False,
     ----------
     num_cycles : int
         Number of cycles of the toneburst.
-    num_samples : int
-        Number of the vector.
-    dt : float
-        Time step
     centre_freq : float
         Centre frequency
+    dt : float
+        Time step
+    num_samples : int or None
+        Number of time points. If None, returns a time vector that contains
+        exactlythe the toneburst. If larger, pads with zeros..
     wrap : bool, optional
         If False, the signal starts at n=0. If True, the signal is wrapped around such
          as its maximum is at n=0. The beginning of the signal is at the end of the vector.
@@ -1138,15 +1139,17 @@ def make_toneburst(num_cycles, num_samples, dt, centre_freq, wrap=False,
         raise ValueError('negative centre frequency')
     if num_cycles <= 0:
         raise ValueError('negative number of cycles')
-    if num_samples <= 0:
+    if num_samples is not None and num_samples <= 0:
         raise ValueError('negative number of time samples')
 
-    len_pulse = int(round(num_cycles / centre_freq / dt))
+    len_pulse = int(np.ceil(num_cycles / centre_freq / dt))
     # force an odd length for pulse symmetry
     if len_pulse % 2 == 0:
         len_pulse += 1
     half_len_window = len_pulse // 2
 
+    if num_samples is None:
+        num_samples = len_pulse
     if len_pulse > num_samples:
         raise ValueError('time vector is too short for this pulse')
 
