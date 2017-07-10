@@ -1,4 +1,4 @@
-"""
+f"""
 Functions related to the forward model.
 
 .. seealso::
@@ -288,6 +288,34 @@ def reflection_at_interface(interface_kind, material_inc, material_against, mode
                 return refl_t
         else:
             raise ValueError("invalid mode")
+    elif interface_kind is c.InterfaceKind.fluid_solid:
+        # Reflection against a fluid-solid interface
+        #   "in" is in the liquid
+        #   "out" is also in the liquid
+        solid = material_against
+        fluid = material_inc
+        assert solid.state_of_matter == c.StateMatter.solid
+        assert fluid.state_of_matter != c.StateMatter.solid
+
+        angles_fluid = angles_inc
+
+        params = dict(
+            alpha_fluid=angles_fluid,
+            alpha_l=None,
+            alpha_t=None,
+            rho_fluid=fluid.density,
+            rho_solid=solid.density,
+            c_fluid=fluid.longitudinal_vel,
+            c_l=solid.longitudinal_vel,
+            c_t=solid.transverse_vel)
+        with np.errstate(invalid='ignore'):
+            reflection, transmission_l, transmission_t = fluid_solid(**params)
+
+        z = material_inc.velocity(mode_inc) / material_inc.velocity(mode_out)
+        if convert_to_displacement:
+            return reflection * z
+        else:
+            return reflection
     else:
         raise NotImplementedError
 

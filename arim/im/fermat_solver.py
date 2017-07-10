@@ -27,23 +27,22 @@ __all__ = ['FermatSolver', 'FermatPath', 'Rays', 'ray_tracing']
 logger = logging.getLogger(__name__)
 
 
-def ray_tracing(views_list, convert_to_fortran_order=False):
+def ray_tracing_for_paths(paths_list, convert_to_fortran_order=False):
     """
-    Perform the ray tracing for different views. Save the result in ``Path.rays``.
+    Perform the ray tracing for different paths. Save the result in ``Path.rays``.
 
     Parameters
     ----------
-    views : List[View] or Dict[View]
+    paths_list : List[Path]
+    convert_to_fortran_order
 
     Returns
     -------
     None
 
     """
-    # Ray tracing:
-    paths_set = set(v.tx_path for v in views_list) | set(v.rx_path for v in views_list)
-    paths_tuple = tuple(paths_set)
-    fermat_paths_tuple = tuple(FermatPath.from_path(path) for path in paths_tuple)
+    paths_list = tuple(paths_list)
+    fermat_paths_tuple = tuple(FermatPath.from_path(path) for path in paths_list)
 
     fermat_solver = FermatSolver(fermat_paths_tuple)
     rays_dict = fermat_solver.solve()
@@ -52,8 +51,27 @@ def ray_tracing(views_list, convert_to_fortran_order=False):
         rays_dict = {k: v.to_fortran_order() for k, v in rays_dict.items()}
 
     # Save results in attribute path.rays:
-    for path, fermat_path in zip(paths_tuple, fermat_paths_tuple):
+    for path, fermat_path in zip(paths_list, fermat_paths_tuple):
         path.rays = rays_dict[fermat_path]
+
+
+def ray_tracing(views_list, convert_to_fortran_order=False):
+    """
+    Perform the ray tracing for different views. Save the result in ``Path.rays``.
+
+    Parameters
+    ----------
+    views : List[View]
+
+    Returns
+    -------
+    None
+
+    """
+    # Ray tracing:
+    paths_set = set(v.tx_path for v in views_list) | set(v.rx_path for v in views_list)
+    return ray_tracing_for_paths(list(paths_set),
+                                 convert_to_fortran_order=convert_to_fortran_order)
 
 
 class Rays:
@@ -137,7 +155,7 @@ class Rays:
     @property
     def path(self):
         warnings.warn("use Rays.fermat_path instead Rays.path", DeprecationWarning,
-            stacklevel=2)
+                      stacklevel=2)
         return self._fermat_path
 
     @property
