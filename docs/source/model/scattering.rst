@@ -55,7 +55,7 @@ In the example above, the interval :math:`[-\pi, \pi[` is discretised with 100 p
 
 
 ``scat_matrices['LL']`` is a matrix of shape (100, 100).
-``scat_matrices['LL'][i, j]`` corresponds to the incident angle ``theta[i]`` and the scattered angle ``theta[j]``.
+``scat_matrices['LL'][i, j]`` corresponds to the incident angle ``theta[j]`` and the scattered angle ``theta[i]``.
 
 .. seealso::
 

@@ -527,8 +527,8 @@ def test_scattering_angles_grid():
     inc_theta, out_theta = ut.scattering_angles_grid(n)
     for i in range(n):
         for j in range(n):
-            assert inc_theta[i, j] == theta[i]
-            assert out_theta[i, j] == theta[j]
+            assert inc_theta[i, j] == theta[j]
+            assert out_theta[i, j] == theta[i]
 
 
 def test_scattering_2d_cylinder():
@@ -664,14 +664,21 @@ def _scattering_function(inc_theta, out_theta):
     return (inc_theta + np.pi) / np.pi * 10 + (out_theta + np.pi) / np.pi * 100
 
 
-def test_scattering_matrix():
+def test_make_scattering_matrix():
     numpoints = 5
-    inc_theta, out_theta, scattering_matrix = ut.make_scattering_matrix(
-        _scattering_function, numpoints)
+    inc_theta, out_theta = ut.scattering_angles_grid(numpoints)
+    scattering_matrix = ut.make_scattering_matrix(_scattering_function, numpoints)
+
     assert inc_theta.shape == (numpoints, numpoints)
     assert out_theta.shape == (numpoints, numpoints)
+
+    theta = ut.scattering_angles(numpoints)
+    for i in range(numpoints):
+        for j in range(numpoints):
+            assert np.allclose(scattering_matrix[i, j],
+                               _scattering_function(theta[j], theta[i]))
+
     assert scattering_matrix.shape == (numpoints, numpoints)
-    np.testing.assert_allclose(inc_theta[..., 0], out_theta[0, ...])
 
     idx = (1, 3)
     np.testing.assert_allclose(scattering_matrix[idx],
@@ -689,8 +696,8 @@ def test_scattering_interpolate_matrix():
     numpoints = 5
     dtheta = 2 * np.pi / numpoints
 
-    inc_theta, out_theta, scattering_matrix = ut.make_scattering_matrix(
-        _scattering_function, numpoints)
+    inc_theta, out_theta = ut.scattering_angles_grid(numpoints)
+    scattering_matrix = ut.make_scattering_matrix(_scattering_function, numpoints)
     scat_fn = ut.interpolate_scattering_matrix(scattering_matrix)
     # raise Exception(scattering_matrix)
 
@@ -701,14 +708,14 @@ def test_scattering_interpolate_matrix():
     np.testing.assert_allclose(scat_fn(inc_theta + 10 * np.pi, out_theta - 6 * np.pi),
                                _scattering_function(inc_theta, out_theta))
 
-    # remove last line because the effect is not linear
-    x = (inc_theta + dtheta / 4)[:-1]
-    y = out_theta[:-1]
+    # remove last column because edge effect
+    x = (inc_theta + dtheta / 4)[:, :-1]
+    y = out_theta[:, :-1]
     np.testing.assert_allclose(scat_fn(x, y), _scattering_function(x, y))
 
-    # remove last column because the effect is not linear
-    x = inc_theta[..., :-1]
-    y = (out_theta + dtheta / 4)[..., :-1]
+    # remove last line because edge effect
+    x = inc_theta[:-1]
+    y = (out_theta + dtheta / 4)[:-1]
     np.testing.assert_allclose(scat_fn(x, y), _scattering_function(x, y))
 
     x = (inc_theta[:-1, :-1] + dtheta / 3)

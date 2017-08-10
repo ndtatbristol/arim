@@ -636,7 +636,7 @@ def scattering_angles_grid(numpoints):
     """Return angles for scattering matrices as a grid of incident and outgoing angles.
     """
     theta = scattering_angles(numpoints)
-    inc_theta, out_theta = np.meshgrid(theta, theta, indexing='ij')
+    inc_theta, out_theta = np.meshgrid(theta, theta, indexing='xy')
     return inc_theta, out_theta
 
 
@@ -656,16 +656,14 @@ def make_scattering_matrix(scattering_func, numpoints):
 
     Returns
     -------
-    inc_theta : ndarray
-        Shape (numpoints, numpoints)
-    out_theta : ndarray
-        Shape (numpoints, numpoints)
     scattering_matrix : ndarray
         Shape (numpoints, numpoints)
+        scattering_matrix[i, j] is the coefficient for the incident angle theta[j] and
+        the scattering angle theta[i].
     """
     inc_theta, out_theta = scattering_angles_grid(numpoints)
     scattering_matrix = scattering_func(inc_theta, out_theta)
-    return inc_theta, out_theta, scattering_matrix
+    return scattering_matrix
 
 
 @numba.jit(nopython=True)
@@ -698,15 +696,15 @@ def _interpolate_scattering_matrix_kernel(scattering_matrix, inc_theta, out_thet
         out_theta_idx_plus1 = 0
 
     # use cardinal direction: sw for south west, etc
-    sw = scattering_matrix[inc_theta_idx, out_theta_idx]
-    ne = scattering_matrix[inc_theta_idx_plus1, out_theta_idx_plus1]
-    se = scattering_matrix[inc_theta_idx, out_theta_idx_plus1]
-    nw = scattering_matrix[inc_theta_idx_plus1, out_theta_idx]
+    sw = scattering_matrix[out_theta_idx, inc_theta_idx]
+    ne = scattering_matrix[out_theta_idx_plus1, inc_theta_idx_plus1]
+    se = scattering_matrix[out_theta_idx, inc_theta_idx_plus1]
+    nw = scattering_matrix[out_theta_idx_plus1, inc_theta_idx]
 
     # https://en.wikipedia.org/wiki/Bilinear_interpolation
-    f1 = sw + (se - sw) * out_theta_frac
-    f2 = nw + (ne - nw) * out_theta_frac
-    return f1 + (f2 - f1) * inc_theta_frac
+    f1 = sw + (se - sw) * inc_theta_frac
+    f2 = nw + (ne - nw) * inc_theta_frac
+    return f1 + (f2 - f1) * out_theta_frac
 
 
 @numba.guvectorize(['void(f8[:,:], f8[:], f8[:], f8[:])',
@@ -1010,7 +1008,7 @@ def scattering_2d_cylinder_matrices(numpoints, radius, longitudinal_wavelength,
     scat_funcs = scattering_2d_cylinder_funcs(radius, longitudinal_wavelength,
                                               transverse_wavelength, **kwargs)
     for scat_key in to_compute:
-        _, _, matrices[scat_key] = make_scattering_matrix(scat_funcs[scat_key], numpoints)
+        matrices[scat_key] = make_scattering_matrix(scat_funcs[scat_key], numpoints)
     return matrices
 
 
