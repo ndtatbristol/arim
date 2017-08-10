@@ -47,7 +47,7 @@ Scattering as a matrix
   radius = 0.1e-3
   n = 100
   scat_matrices = arim.ut.scattering_2d_cylinder_matrices(n, vl/freq, vt/freq, radius)
-  theta = arim.ut.theta_scattering_matrix(n)
+  theta = arim.ut.scattering_angles(n)
 
 Because computing the scattering amplitudes can be expensive, it is often useful to precompute
 them all incident and scattered angles and then to interpolate the values.
@@ -59,7 +59,7 @@ In the example above, the interval :math:`[-\pi, \pi[` is discretised with 100 p
 
 .. seealso::
 
-  :func:`arim.ut.scattering_2d_cylinder_matrices`, :func:`arim.ut.theta_scattering_matrix`.
+  :func:`arim.ut.scattering_2d_cylinder_matrices`, :func:`arim.ut.scattering_angles`.
 
 To interpolate a scattering matrix, use :func:`arim.ut.interpolate_scattering_matrix` (one matrix) or :func:`arim.ut.scattering_matrices_to_interp_funcs`.
 They return interpolators that take as arguments the incident and scattered angles.

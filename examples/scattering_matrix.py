@@ -30,7 +30,7 @@ for key in ['LL', 'LT', 'TL', 'TT']:
 # %% Scattering as functions of incident and scattered angles
 scat_funcs = arim.ut.scattering_2d_cylinder_funcs(**params)
 fig, ax = plt.subplots()
-theta = arim.ut.theta_scattering_matrix(n)
+theta = arim.ut.scattering_angles(n)
 for key in ['LL', 'LT', 'TL', 'TT']:
     scat_func = scat_funcs[key]
     ax.plot(theta, np.abs(scat_func(0., theta)), label=key)

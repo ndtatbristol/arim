@@ -521,6 +521,16 @@ def test_stokes_relation():
     np.testing.assert_allclose(refl_tl2, refl_tl)
 
 
+def test_scattering_angles_grid():
+    n = 10
+    theta = ut.scattering_angles(n)
+    inc_theta, out_theta = ut.scattering_angles_grid(n)
+    for i in range(n):
+        for j in range(n):
+            assert inc_theta[i, j] == theta[i]
+            assert out_theta[i, j] == theta[j]
+
+
 def test_scattering_2d_cylinder():
     out_theta = np.array(
         [-3.141592653589793, -2.722713633111154, -2.303834612632515, -1.884955592153876,
@@ -630,7 +640,8 @@ def test_scattering_2d_cylinder2():
 
     scat_funcs = ut.scattering_2d_cylinder_funcs(**scat_params)
     for key, scat_func in scat_funcs.items():
-        np.testing.assert_allclose(scat_func(inc_theta, out_theta), result[key], err_msg=key)
+        np.testing.assert_allclose(scat_func(inc_theta, out_theta), result[key],
+                                   err_msg=key)
 
     assert set(result.keys()) == {'LL', 'LT', 'TL', 'TT'}
     for key, val in result.items():
@@ -788,7 +799,6 @@ def test_make_toneburst():
                                toneburst_ref[max_toneburst:10 + max_toneburst])
     np.testing.assert_allclose(toneburst[-10:],
                                toneburst_ref[-10 + max_toneburst:max_toneburst])
-
 
     # num_samples = None
     toneburst = ut.make_toneburst(num_cycles, f0, dt, num_samples)

@@ -627,8 +627,17 @@ def solid_t_fluid(alpha_t, rho_fluid, rho_solid, c_fluid, c_l, c_t, alpha_fluid=
     return reflection_l, reflection_t, transmission
 
 
-def theta_scattering_matrix(numpoints):
+def scattering_angles(numpoints):
+    """Return angles for scattering matrices. Linearly spaced vector in [-pi, pi[."""
     return np.linspace(-np.pi, np.pi, numpoints, endpoint=False)
+
+
+def scattering_angles_grid(numpoints):
+    """Return angles for scattering matrices as a grid of incident and outgoing angles.
+    """
+    theta = scattering_angles(numpoints)
+    inc_theta, out_theta = np.meshgrid(theta, theta, indexing='ij')
+    return inc_theta, out_theta
 
 
 def make_scattering_matrix(scattering_func, numpoints):
@@ -654,8 +663,7 @@ def make_scattering_matrix(scattering_func, numpoints):
     scattering_matrix : ndarray
         Shape (numpoints, numpoints)
     """
-    theta = theta_scattering_matrix(numpoints)
-    inc_theta, out_theta = np.meshgrid(theta, theta, indexing='ij')
+    inc_theta, out_theta = scattering_angles_grid(numpoints)
     scattering_matrix = scattering_func(inc_theta, out_theta)
     return inc_theta, out_theta, scattering_matrix
 
