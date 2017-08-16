@@ -1096,6 +1096,39 @@ def make_timevect(num, step, start=0., dtype=None):
     return y.astype(dtype, copy=False)
 
 
+def rotate_scattering_matrix(scat_matrix, phi):
+    """
+    Return the scattering matrix S' of the scatterer rotated by an angle phi,
+    knowing the scattering matrix S of the unrotated scatterer.
+
+        S'(theta_1, theta_2) = S(theta_1 - phi, theta_2 - phi)
+
+    Use FFT internally.
+
+    Parameters
+    ----------
+    scat_matrix : ndarray
+        Shape (numangles, numangles)
+    phi : float
+        Defect's rotation angle in radian.
+
+    Returns
+    ------
+    roated_scat_matrix: ndarray
+        Shape : (numangles, numangles)
+
+    """
+    n, _ = scat_matrix.shape
+
+    freq = np.fft.fftfreq(n, 2 * np.pi / n)
+
+    freq_x, freq_y = np.meshgrid(freq, freq, indexing='ij')
+
+    freqshift = np.exp(-2j * np.pi * (freq_x + freq_y) * phi)
+    scat_matrix_f = np.fft.fft2(scat_matrix)
+    return np.fft.ifft2(freqshift * scat_matrix_f)
+
+
 def _rotate_array(arr, n):
     """
         >>> _rotate_array([1, 2, 3, 4, 5, 6, 7], 2)

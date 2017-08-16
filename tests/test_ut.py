@@ -723,6 +723,63 @@ def test_scattering_interpolate_matrix():
     np.testing.assert_allclose(scat_fn(x, y), _scattering_function(x, y))
 
 
+def test_rotate_scattering_matrix():
+    # n = 10
+    # scat_matrix = np.random.uniform(size=(n, n)) + 1j * np.random.uniform(size=(n, n))
+    # scat_func = ut.interpolate_scattering_matrix(scat_matrix)
+    n = 72
+    inc_angles, out_angles = ut.scattering_angles_grid(n)
+    scat_matrix = (
+        np.exp(-(inc_angles - np.pi / 6) ** 2 - (out_angles + np.pi / 4) ** 2)
+        + 1j * np.exp(
+            -(inc_angles + np.pi / 2) ** 2 - (out_angles - np.pi / 10) ** 2))
+    scat_func = ut.interpolate_scattering_matrix(scat_matrix)
+
+    # rotation of 0°
+    rotated_scat_matrix = ut.rotate_scattering_matrix(scat_matrix, 0.)
+    np.testing.assert_allclose(scat_matrix, rotated_scat_matrix)
+
+    # rotation of 360°
+    rotated_scat_matrix = ut.rotate_scattering_matrix(scat_matrix, 2 * np.pi)
+    np.testing.assert_allclose(scat_matrix, rotated_scat_matrix, rtol=1e-5)
+
+    # rotation of pi/ 6
+    # Ensure that S'(theta_1, theta_2) = S(theta_1 - phi, theta_2 - phi)
+    # No interpolation is involded here, this should be perfectly equal
+    phi = np.pi / 6
+    rotated_scat_matrix = ut.rotate_scattering_matrix(scat_matrix, phi)
+    rotated_scat_scat_func = ut.interpolate_scattering_matrix(rotated_scat_matrix)
+    theta_1 = np.linspace(0, 2 * np.pi, n)
+    theta_2 = np.linspace(0, np.pi, n)
+    np.testing.assert_allclose(rotated_scat_scat_func(theta_1, theta_2),
+                               scat_func(theta_1 - phi, theta_2 - phi))
+
+    # rotation of pi/ 5
+    # Ensure that S'(theta_1, theta_2) = S(theta_1 - phi, theta_2 - phi)
+    # Because of interpolation, this is not exactly equal.
+    phi = np.pi / 5
+    rotated_scat_matrix = ut.rotate_scattering_matrix(scat_matrix, phi)
+    rotated_scat_scat_func = ut.interpolate_scattering_matrix(rotated_scat_matrix)
+    theta_1 = np.linspace(0, 2 * np.pi, 15)
+    theta_2 = np.linspace(0, np.pi, 15)
+    # import matplotlib.pyplot as plt
+    # plt.figure()
+    # plt.plot(np.real(rotated_scat_scat_func(theta_1, theta_2)))
+    # plt.plot(np.real(scat_func(theta_1 - phi, theta_2 - phi)))
+    # plt.show()
+    # plt.figure()
+    # plt.plot(np.imag(rotated_scat_scat_func(theta_1, theta_2)))
+    # plt.plot(np.imag(scat_func(theta_1 - phi, theta_2 - phi)))
+    # plt.show()
+
+    np.testing.assert_allclose(rotated_scat_scat_func(theta_1, theta_2),
+                               scat_func(theta_1 - phi, theta_2 - phi), atol=5e-3)
+
+    # unrotate
+    np.testing.assert_allclose(ut.rotate_scattering_matrix(rotated_scat_matrix, -phi),
+                               scat_matrix)
+
+
 def test_make_timevect():
     # loop over different values to check numerical robustness
     num_list = list(range(30, 40)) + list(range(2000, 2020))
