@@ -1030,7 +1030,7 @@ def scattering_point_source_funcs(longitudinal_velocity, transverse_velocity):
     return {
         'LL': lambda inc, out: np.full_like(inc, 1.),
         'LT': lambda inc, out: np.full_like(inc, vl / vt),
-        'TL': lambda inc, out: np.full_like(inc, vt / vl),
+        'TL': lambda inc, out: -np.full_like(inc, vt / vl),
         'TT': lambda inc, out: np.full_like(inc, 1.),
     }
 
