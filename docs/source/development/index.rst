@@ -15,6 +15,5 @@ this top directory; example: ``docs/conf.py``, ``arim/__init__.py``.
    contributing
    documentation
    testing
-   building
    releasing
 

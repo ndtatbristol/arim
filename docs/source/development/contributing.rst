@@ -15,14 +15,10 @@ As a general rule, the code style described in `PEP 8 <pep8>`_  must be followed
 
 .. _pep8: https://www.python.org/dev/peps/pep-0008/
 
-Exceptions:
-
-- the maximum line length is set to 120 instead of 79.
-
 Version control system
 ======================
 
-arim uses the versional control system git.
+arim uses the version control system git.
 
 .. seealso::
 

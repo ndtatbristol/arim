@@ -13,35 +13,66 @@ present.
 Requirements for user installation
 ==================================
 
-Strict dependencies:
+Dependencies for arim itself:
 
-- Python 3.5
+- Python 3
 - `numpy <http://www.numpy.org/>`_
 - `scipy <https://www.scipy.org/>`_
 - `numba <http://numba.pydata.org/>`_: efficient computation
+- `matplotlib <http://matplotlib.org/>`_: plotting library used in :mod:`arim.plot` and in scripts
 
-Optional dependencies:
+Dependencies for the example scripts (not used by arim *per se*):
 
-- `matplotlib <http://matplotlib.org/>`_: plotting library (used in :mod:`arim.plot` and in scripts). Recommended version: 2.0 or above
-- `pyyaml <http://pyyaml.org/>`_: used in scripts for reading configuration files.
-- `h5py <http://www.h5py.org/>`_: for reading MATLAB v7 file (used in :mod:`arim.io`)
+- `pyyaml <http://pyyaml.org/>`_: used for reading configuration files.
+- `pandas <http://pyyaml.org/>`_: data analysis tools
+
+Optional dependency:
+
+- `h5py <http://www.h5py.org/>`_: for reading MATLAB v7 datafile (used in :mod:`arim.io`)
+
+Dependencies for building from source:
 
 
-Installation
-============
 
-This is the **recommended method** to install arim.
+Binary installation
+===================
 
-Get a wheel package of arim (``whl`` file).
+This is the easiest way to install arim. It requires a binary version of arim provided by the developement team (wheel file).
 
-Install conda (`conda installation guide <http://conda.pydata.org/docs/download.html>`_).
+Installation with Anaconda (recommended)
+----------------------------------------
 
-Create a new virtual environment::
+Use case: general usage.
 
-  conda create --name arim python=3.5 numpy scipy matplotlib hdf5 numba pyyaml
+Install `Anaconda distribution <https://www.anaconda.com/download/>`_ (Python 3 version).
+
+Get a wheel package of arim (``whl`` file) from the developpement team.
+
+Start an Anaconda Prompt (in Windows, it should be in the Start menu) and type in::
+
+  pip install <arim-wheel-file>
+
+Example::
+
+  pip install arim-0.3-py3-none-any.whl
+
+
+Installation in a virtual environment
+-------------------------------------
+
+Use cases:
+
+- several versions of arim are needed on the same machine (create one environment per version),
+- and/or the user prefers to keep conda root environment free from arim,
+- and/or space is tight (install conda without the whole Anaconda distribution).
+
+Install `Anaconda distribution <https://www.anaconda.com/download/>`_ (Python 3 version) or conda (`conda installation guide <http://conda.pydata.org/docs/download.html>`_).
+
+In an Anaconda prompt, create a new virtual environment with the desired dependencies::
+
+  conda create --name arim python numpy scipy numba matplotlib numba pyyaml pandas h5py
 
 Activate the virtual environment::
-
 
   # on Windows:
   activate arim 
@@ -57,28 +88,61 @@ Example::
 
   pip install arim-0.3-py3-none-any.whl
 
-**Remark:** if you prefer not to use conda (for example: `WinPython <http://winpython.github.io/>`_ users), ensure all
-dependencies are satisfied then install the wheel using the ``pip`` command above. WinPython users can make use of the
-embedded graphical control panel (menu Packages -> Add packages).
+.. seealso::
+
+  `conda documentation <https://conda.io/docs/>`_
+
+.. _source_install:
+
+Build and install from source
+==============================
+
+Use case:
+
+- no wheel is provided for the platform and/or the Python version that the user uses
+- and/or developer installation
+
+Compiler requirements
+---------------------
+
+A C++ compiler with OpenMP 2.0 or newer is required.
+
+For Windows and Python 3.5 or Python 3.6, the development team recommends using Visual C++ 2015 build tools.
+They can be obtain as a `standalone <http://landinghub.visualstudio.com/visual-cpp-build-tools>`_
+or by installing Visual Studio 2015.
+
+.. seealso::
+
+  `Python documentation: Windows compilers <https://wiki.python.org/moin/WindowsCompilers>`_
 
 
-Upgrade arim
-============
+Additional Python dependency
+----------------------------
 
-In arim virtual environment::
+`Cython <http://cython.org/>`_: static compiler
 
-  pip install <arim-wheel-file> --upgrade
+Installation
+------------
 
+Install all requirements, in a virtual environment if desired. Get arim source code.
 
-Uninstall arim
-==============
+In a prompt, build and install::
 
-  conda env remove -n arim
+  python setup.py install
+
+Alternatively, for an editable inplace installation (useful for development), type::
+
+  python setup.py develop
+
+.. seealso::
+
+   :ref:`developer_installation`
+
 
 Check arim is working
 =====================
 
-Activate the virtual environment was installed (assumed to be named ``arim`` here)::
+If arim was installed in a virtual environment, activate it first::
 
   # on Windows:
   activate arim 
@@ -100,3 +164,23 @@ Start arim::
 Check also that arim executable is working by typing in a terminal::
 
   arim --version
+
+Upgrade arim
+============
+
+In arim virtual environment (if any)::
+
+  pip install <arim-wheel-file> --upgrade
+
+
+Uninstall arim
+==============
+
+In arim virtual environment (if any)::
+
+  pip uninstall arim
+
+Remove the virtual environment (if any) with::
+
+  conda env remove -n arim
+
