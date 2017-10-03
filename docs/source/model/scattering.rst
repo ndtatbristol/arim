@@ -100,7 +100,6 @@ Name                     Datatype               Shape                           
 ``/scattering_LT``       Complex                ``(numfrequencies, numangles, numangles)``    As defined above.
 ``/scattering_TL``       Complex                ``(numfrequencies, numangles, numangles)``    As defined above.
 ``/scattering_TT``       Complex                ``(numfrequencies, numangles, numangles)``    As defined above.
-``/scattering_TT``       Complex                ``(numfrequencies, numangles, numangles)``    As defined above.
 ``/frequencies``         Float                  ``(numfrequencies, )``                        Frequencies at which the scattering matrices are described.
 ======================== ====================== ============================================= ======================
 
