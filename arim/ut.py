@@ -1158,13 +1158,14 @@ def make_toneburst(num_cycles, centre_freq, dt, num_samples=None, wrap=False,
         Time step
     num_samples : int or None
         Number of time points. If None, returns a time vector that contains
-        exactlythe the toneburst. If larger, pads with zeros..
+        exactly the the toneburst. If larger, pads with zeros.
     wrap : bool, optional
         If False, the signal starts at n=0. If True, the signal is wrapped around such
          as its maximum is at n=0. The beginning of the signal is at the end of the vector.
          Default: False.
     analytical : bool, optional
         If True, returns the corresponding analytical signal (cos(...) + i sin(...)).
+        Default: False.
 
     Returns
     -------
@@ -1174,7 +1175,7 @@ def make_toneburst(num_cycles, centre_freq, dt, num_samples=None, wrap=False,
     """
     if dt <= 0.:
         raise ValueError('negative time step')
-    if dt <= 0.:
+    if centre_freq <= 0.:
         raise ValueError('negative centre frequency')
     if num_cycles <= 0:
         raise ValueError('negative number of cycles')
