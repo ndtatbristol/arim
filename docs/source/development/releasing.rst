@@ -6,16 +6,10 @@ Release arim to share it with users.
 
 Remark: it is not necessary to release arim for each commit.
 
-Build the library
-=================
-
-Cf. :doc:`building`
-
 Check all tests pass
 ====================
 
 All tests must pass. Cf. :ref:`run_tests`.
-
 
 Bump version number
 ===================
