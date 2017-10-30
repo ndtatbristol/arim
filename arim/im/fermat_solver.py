@@ -16,7 +16,7 @@ import warnings
 import numpy as np
 
 from ._fermat_solver import _expand_rays
-from .base import find_minimum_times
+from arim.ray import find_minimum_times
 from .. import geometry as g
 from .. import settings as s
 from ..helpers import Cache

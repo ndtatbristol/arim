@@ -24,6 +24,7 @@ Submodules
    arim.model
    arim.path
    arim.plot
+   arim.ray
    arim.registration
    arim.settings
    arim.signal

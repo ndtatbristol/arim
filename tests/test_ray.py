@@ -2,7 +2,7 @@ import math
 
 import numpy as np
 
-from arim import im
+import arim.ray
 
 
 def test_find_minimum_times():
@@ -38,7 +38,7 @@ def test_find_minimum_times():
     time1 = distance1 / speed1
     time2 = distance2 / speed2
 
-    best_times, best_indices = im.find_minimum_times(time1, time2)
+    best_times, best_indices = arim.ray.find_minimum_times(time1, time2)
     expected_indices = np.array([[1], [1]])
 
     assert np.allclose(best_times, np.array([[2.0], [1.0 + rt2]]))
@@ -50,7 +50,7 @@ def test_find_minimum_times():
     speed2 = 50.0
     time1 = distance1 / speed1
     time2 = distance2 / speed2
-    best_times, best_indices = im.find_minimum_times(time1, time2)
+    best_times, best_indices = arim.ray.find_minimum_times(time1, time2)
     expected_indices = np.array([[1], [2]])
 
     assert np.all(best_indices == expected_indices)
@@ -68,7 +68,7 @@ def test_find_minimum_times2():
     time_2 = np.fromfunction(lambda i, j: j * m, (m, p), dtype=np.float)
 
     # Run the tested function:
-    best_times, best_indices = im.find_minimum_times(time_1, time_2)
+    best_times, best_indices = arim.ray.find_minimum_times(time_1, time_2)
 
     # Expected results:
     best_times_expected = np.fromfunction(lambda i, j: m*j, (n, p), dtype=np.float)
