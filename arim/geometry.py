@@ -1279,7 +1279,7 @@ def is_orthonormal_direct(basis):
                                                  basis[2, :])
 
 
-@numba.jit(nopython=True, nogil=True)
+@numba.jit(nopython=True, nogil=True, cache=True)
 def _distance_pairwise(x1, y1, z1, x2, y2, z2, distance):
     """
     Cf. distance_pairwise.

@@ -435,7 +435,7 @@ class SimpleTFM(BaseTFM):
         return self._lookup_times_rx
 
 
-@numba.jit(nopython=True)
+@numba.jit(nopython=True, cache=True)
 def _extrema_lookup_times(lookup_times_tx, lookup_times_rx, tx_list, rx_list):
     numpoints, _ = lookup_times_tx.shape
     numscanlines = tx_list.shape[0]

@@ -98,7 +98,7 @@ def find_minimum_times(time_1, time_2, dtype=None, dtype_indices=None, block_siz
     return out_min_times, out_best_indices
 
 
-@numba.jit(nopython=True, nogil=True)
+@numba.jit(nopython=True, nogil=True, cache=True)
 def _find_minimum_times(time_1, time_2, out_min_times, out_best_indices):
     """
     Parameters

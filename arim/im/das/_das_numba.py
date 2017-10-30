@@ -2,7 +2,7 @@ import numba
 import numpy as np
 
 
-@numba.jit(nopython=True, nogil=True)
+@numba.jit(nopython=True, nogil=True, cache=True)
 def _delay_and_sum_amplitudes_nearest(weighted_scanlines, tx, rx, lookup_times_tx,
                                       lookup_times_rx, amplitudes_tx,
                                       amplitudes_rx, dt, t0, fillvalue, result):
@@ -50,7 +50,7 @@ def _delay_and_sum_amplitudes_nearest(weighted_scanlines, tx, rx, lookup_times_t
                                  * weighted_scanlines[scan, lookup_index]
 
 
-@numba.jit(nopython=True, nogil=True)
+@numba.jit(nopython=True, nogil=True, cache=True)
 def _delay_and_sum_amplitudes_linear(weighted_scanlines, tx, rx, lookup_times_tx,
                                      lookup_times_rx, amplitudes_tx,
                                      amplitudes_rx, dt, t0, fillvalue, result):
@@ -102,7 +102,7 @@ def _delay_and_sum_amplitudes_linear(weighted_scanlines, tx, rx, lookup_times_tx
                                  * amplitudes_rx[point, rx[scan]] * lscanUseVal
 
 
-@numba.jit(nopython=True, nogil=True)
+@numba.jit(nopython=True, nogil=True, cache=True)
 def _general_delay_and_sum_nearest(weighted_scanlines, tx, rx, lookup_times_tx,
                                    lookup_times_rx, amplitudes,
                                    dt, t0, fillvalue, result):
@@ -152,7 +152,7 @@ def _general_delay_and_sum_nearest(weighted_scanlines, tx, rx, lookup_times_tx,
                                   weighted_scanlines[scan, lookup_index])
 
 
-@numba.jit(nopython=True, nogil=True)
+@numba.jit(nopython=True, nogil=True, cache=True)
 def _general_delay_and_sum_linear(weighted_scanlines, tx, rx, lookup_times_tx,
                                   lookup_times_rx, amplitudes,
                                   dt, t0, fillvalue, result):

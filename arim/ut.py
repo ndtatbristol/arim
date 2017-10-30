@@ -666,7 +666,7 @@ def make_scattering_matrix(scattering_func, numpoints):
     return scattering_matrix
 
 
-@numba.jit(nopython=True)
+@numba.jit(nopython=True, cache=True)
 def _interpolate_scattering_matrix_kernel(scattering_matrix, inc_theta, out_theta):
     # This is a kernel which takes one incident angle and one scattered angle.
     numpoints = scattering_matrix.shape[0]
