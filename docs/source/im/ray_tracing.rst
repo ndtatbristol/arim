@@ -2,7 +2,7 @@
 Ray tracing
 ===========
 
-.. py:currentmodule:: arim.im.fermat_solver
+.. py:currentmodule:: arim.ray
 
 Prerequisite: setting up the paths and the views (:ref:`path`).
 
@@ -14,7 +14,7 @@ are stored in :attr:`Path.rays`.
 Example::
 
   # assume views_dict is a dictionary containing the views
-  arim.im.ray_tracing(views.values())
+  arim.ray.ray_tracing(views.values())
 
   # Result of ray tracing:
   views['LT-L'].tx_path.rays

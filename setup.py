@@ -40,8 +40,8 @@ def find_version(*file_paths):
 
 ext_modules = [
     Extension(
-        "arim.im._fermat_solver",
-        sources=["arim/im/fermat_solver_c.cpp", "arim/im/_fermat_solver.pyx"],
+        "arim._discrete_ray_tracing",
+        sources=["arim/discrete_ray_tracing_c.cpp", "arim/_discrete_ray_tracing.pyx"],
         language="c++",
         # extra_compile_args=['/Ox', '/EHsc'],
         extra_compile_args=['/Ox', '/EHsc', '/openmp'],

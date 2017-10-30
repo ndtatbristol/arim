@@ -2,7 +2,7 @@
 
 from cython cimport size_t
 
-cdef extern from "fermat_solver_c.hpp":
+cdef extern from "discrete_ray_tracing_c.hpp":
     void c_expand_rays "expand_rays" (
         unsigned int *interior_indices,
         unsigned int *indices_new_interface,

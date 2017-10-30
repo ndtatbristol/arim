@@ -524,7 +524,7 @@ def beamspread_2d_for_path(ray_geometry):
                           / (nu * cos_theta * cos_theta))
 
     # Between the probe and the first interface, beamspread of an unbounded medium.
-    # Use a copy because the original may be a cached value and we don't want
+    # Use a copy because the original may be a cached value and we don'ray want
     # to change it by accident.
     virtual_distance = ray_geometry.inc_leg_size(1).copy()  # distance A_0 A_1
 
@@ -586,7 +586,7 @@ def reverse_beamspread_2d_for_path(ray_geometry):
                           / (1 - nu * nu * sin_theta * sin_theta))
 
     # Between the probe and the first interface, beamspread of an unbounded medium.
-    # Use a copy because the original may be a cached value and we don't want
+    # Use a copy because the original may be a cached value and we don'ray want
     # to change it by accident.
     virtual_distance = ray_geometry.inc_leg_size(n).copy()
 

@@ -1,6 +1,6 @@
 #include <omp.h>
 
-#include "fermat_solver_c.hpp"
+#include "discrete_ray_tracing_c.hpp"
 
 // indices for 2D/3D contiguous arrays
 #define IDX_2(I1, I2, D1, D2)  ((I1)*(D2) + (I2))

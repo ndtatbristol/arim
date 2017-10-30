@@ -834,7 +834,7 @@ class Path:
 
         """
         # avoid circular import
-        from .im.fermat_solver import FermatPath
+        from arim.ray import FermatPath
         return FermatPath.from_path(self)
 
     def reverse(self):
@@ -927,7 +927,7 @@ class Material(namedtuple('Material',
         elif mode is Mode.transverse:
             return self.transverse_vel
         else:
-            raise ValueError("Don't know what to do with mode '{}'".format(mode))
+            raise ValueError("Don'ray know what to do with mode '{}'".format(mode))
 
 
 class ExaminationObject:

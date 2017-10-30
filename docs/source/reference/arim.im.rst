@@ -14,8 +14,6 @@ Submodules
 .. toctree::
 
    arim.im.amplitudes
-   arim.im.base
-   arim.im.fermat_solver
    arim.im.tfm
 
 Module contents

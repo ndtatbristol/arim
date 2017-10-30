@@ -3,10 +3,9 @@ from collections import namedtuple
 
 import numpy as np
 
-from .. import model
+from .. import model, ray
 from .. import core as c
 from ..path import RayGeometry, Path
-from ..im import fermat_solver
 
 logger = logging.getLogger(__name__)
 
@@ -281,7 +280,7 @@ def ray_weights_for_wall(path, frequency, probe_element_width=None,
     """
     # perform ray tracing if needed
     if path.rays is None:
-        fermat_solver.ray_tracing_for_paths([path])
+        ray.ray_tracing_for_paths([path])
 
     ray_geometry = RayGeometry.from_path(path)
 

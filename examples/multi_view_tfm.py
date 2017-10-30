@@ -16,6 +16,7 @@ import numpy as np
 
 import arim
 import arim.plot as aplt
+import arim.ray
 from arim.registration import registration_by_flat_frontwall_detection
 
 #%% Output and parameters
@@ -154,7 +155,7 @@ print('Views to show: {}'.format(str(views.keys())))
 
 #%% Setup Fermat solver and compute rays
 
-arim.im.ray_tracing(views.values())
+arim.ray.ray_tracing(views.values())
 
 #%% Setups TFM
 frame.apply_filter(arim.signal.Hilbert() + arim.signal.ButterworthBandpass(5, 3e6, 5.5e6, frame.time))

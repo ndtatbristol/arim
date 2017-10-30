@@ -1,7 +1,6 @@
 import numpy as np
-from collections import OrderedDict
 
-from tests.test_model import make_context, make_point_source_scattering_func
+from tests.test_model import make_context
 import arim
 import arim.models.block_in_immersion as bim
 

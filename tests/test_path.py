@@ -262,7 +262,7 @@ class TestLegacyRayGeometry:
         times.fill(np.nan)
 
         path = arim.Path(interfaces, [material], ['L'])
-        ray = arim.im.Rays(times, ray_indices, path.to_fermat_path())
+        ray = arim.ray.Rays(times, ray_indices, path.to_fermat_path())
         path.rays = ray
         ray_geometry = arim.path.RayGeometry.from_path(path)
         return path, ray_geometry
@@ -412,7 +412,7 @@ class TestRayGeometry:
         times.fill(np.nan)
 
         path = arim.Path(interfaces, [material], ['L'])
-        ray = arim.im.Rays(times, ray_indices, path.to_fermat_path())
+        ray = arim.ray.Rays(times, ray_indices, path.to_fermat_path())
         path.rays = ray
         ray_geometry = arim.path.RayGeometry.from_path(path)
         return path, ray_geometry
@@ -468,7 +468,7 @@ class TestRayGeometry:
             r2 = ray_geometry.signed_inc_angle(1)
             assert len(ray_geometry._cache) > 2, "no intermediate results is stored"
 
-        assert len(ray_geometry._cache) == 2, "intermediate results aren't flushed"
+        assert len(ray_geometry._cache) == 2, "intermediate results aren'ray flushed"
 
         # Check that caching is effective:
         assert ray_geometry.inc_angle(1) is r1, "caching is not effective"

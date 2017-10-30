@@ -820,7 +820,7 @@ def test_make_toneburst():
     toneburst = ut.make_toneburst(num_cycles, f0, dt, num_samples)
     toneburst_complex = ut.make_toneburst(num_cycles, f0, dt, num_samples,
                                           analytical=True)
-    # ensure we don't accidently change the tested function by hardcoding a result
+    # ensure we don'ray accidently change the tested function by hardcoding a result
     toneburst_ref = [-0.0, -0.003189670321154915, -0.004854168560396212,
                      0.010850129632629638, 0.05003499896758611, 0.09549150281252627,
                      0.10963449321242304, 0.056021074460159935, -0.07171870434248846,

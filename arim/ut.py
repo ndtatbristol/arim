@@ -225,7 +225,7 @@ def wrap_phase(phases):
 
 def instantaneous_phase_shift(analytic_sig, time_vect, carrier_frequency):
     """
-    For a signal $x(t) = A * exp(i (2 pi f_0 t + phi(t)))$, returns phi(t) in [-pi, pi[.
+    For a signal $x(ray) = A * exp(i (2 pi f_0 ray + phi(ray)))$, returns phi(ray) in [-pi, pi[.
 
     Parameters
     ----------
@@ -317,7 +317,7 @@ def radiation_2d_rectangular_in_fluid(theta, element_width, wavelength):
 
     Field is::
 
-        p(r, theta, t) = V0(omega) * Z * R(theta) * exp(i omega t - k r) * sqrt(wavelength / r)
+        p(r, theta, ray) = V0(omega) * Z * R(theta) * exp(i omega ray - k r) * sqrt(wavelength / r)
 
     where:
         - V0 is the (uniform) velocity on the piston
@@ -352,7 +352,7 @@ def radiation_2d_cylinder_in_fluid(source_radius, wavelength):
 
     The field generated is::
 
-        p(r, t) = V0(omega) * Z * R * exp(i omega t - k r) * sqrt(wavelength / r)
+        p(r, ray) = V0(omega) * Z * R * exp(i omega ray - k r) * sqrt(wavelength / r)
 
     where:
         - V0 is the (uniform) velocity on the piston
@@ -766,7 +766,7 @@ def scattering_2d_cylinder(inc_theta, out_theta, radius, longitudinal_wavelength
 
     The scattered field is given by::
 
-        u_scat(r, theta) = u0 * sqrt(1 / r) * exp(-i k r + i omega i t) *
+        u_scat(r, theta) = u0 * sqrt(1 / r) * exp(-i k r + i omega i ray) *
                            (sqrt(lambda_L) A(theta) e_r +
                             sqrt(lambda_T) B(theta) e_theta)
 
@@ -780,8 +780,8 @@ def scattering_2d_cylinder(inc_theta, out_theta, radius, longitudinal_wavelength
     The coefficient for LL, LT, TL and TT are obtained from Lopez-Sanchez's paper,
     equations 33, 34, 39, 40. See also Brind's paper. Compared to these papers, the
     complex conjugate coefficients are returned because these papers use the
-    convention ``u(t) = u(omega) exp(-i omega t)`` whereas we use the convention
-    ``u(t) = u(omega) exp(+i omega t)``.
+    convention ``u(ray) = u(omega) exp(-i omega ray)`` whereas we use the convention
+    ``u(ray) = u(omega) exp(+i omega ray)``.
 
     Another difference with these papers is the definition of theta. We use the NDT
     convention where pulse-echo corresponds to theta=0. For Brind, Lopez-Sanchez et al.

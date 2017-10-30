@@ -26,6 +26,7 @@ import arim
 import arim.helpers
 import arim.path
 import arim.plot as aplt
+import arim.ray
 from arim.registration import registration_by_flat_frontwall_detection
 import arim.models.block_in_immersion as bim
 
@@ -160,7 +161,7 @@ if conf['views_to_use'] != 'all':
 
 # %% Setup Fermat solver and compute rays
 
-arim.im.ray_tracing(views.values())
+arim.ray.ray_tracing(views.values())
 
 # %% Compute forward model
 # Remark: results are cached in model.tx_ray_weights and model.rx_ray_weights

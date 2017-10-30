@@ -19,6 +19,7 @@ import numpy as np
 
 import arim
 import arim.plot as aplt
+import arim.ray
 from arim.registration import registration_by_flat_frontwall_detection
 
 # %% Load configuration
@@ -152,7 +153,7 @@ if conf['views_to_use'] != 'all':
 
 # %% Setup Fermat solver and compute rays
 
-arim.im.ray_tracing(views.values(), convert_to_fortran_order=True)
+arim.ray.ray_tracing(views.values(), convert_to_fortran_order=True)
 
 # %% Setups TFM
 frame.apply_filter(

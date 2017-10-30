@@ -33,6 +33,7 @@ import arim.models.block_in_immersion as bim
 #warnings.simplefilter("once", DeprecationWarning)
 
 # %% Load configuration
+import arim.ray
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
@@ -142,7 +143,7 @@ if conf['views_to_use'] != 'all':
 
 # %% Setup Fermat solver and compute rays
 
-arim.im.ray_tracing(views.values())
+arim.ray.ray_tracing(views.values())
 
 # %% Compute forward model
 # Remark: results are cached in model.tx_ray_weights and model.rx_ray_weights

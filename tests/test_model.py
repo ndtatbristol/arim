@@ -4,6 +4,7 @@ Hard-code results and hope they do not evolve over time.
 """
 import pytest
 import arim
+import arim.ray
 from arim import ut
 from collections import OrderedDict
 import numpy as np
@@ -77,9 +78,9 @@ def make_context():
         'TT': array([[1.95363121e-05, 2.67521168e-05]]),
     }
     for pathname, path in paths.items():
-        rays = arim.im.Rays(np.asarray(expected_ray_times[pathname]),
-                            np.asarray(expected_ray_indices[pathname], np.uint32),
-                            path.to_fermat_path())
+        rays = arim.ray.Rays(np.asarray(expected_ray_times[pathname]),
+                             np.asarray(expected_ray_indices[pathname], np.uint32),
+                             path.to_fermat_path())
         path.rays = rays
 
     # Ray geometry
@@ -192,7 +193,7 @@ def test_ray_tracing():
     for pathname, path in paths.items():
         expected_rays[path.name] = path.rays
         path.rays = None
-    arim.im.ray_tracing(views.values())
+    arim.ray.ray_tracing(views.values())
 
     # check all intersection points (as indices)
     for pathname, path in paths.items():
