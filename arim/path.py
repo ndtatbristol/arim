@@ -5,17 +5,8 @@ Remark: Interface and Path objects are defined in arim.core
 """
 from collections import OrderedDict
 
-import numpy as np
-
-from . import geometry as g
-from . import settings as s
 from .core import Path, View, Interface, Mode
 from .helpers import parse_enum_constant
-
-__all__ = ['interfaces_for_block_in_immersion', 'default_orientations',
-           'points_1d_wall_z', 'points_from_grid',
-           'points_from_probe', 'paths_for_block_in_immersion',
-           'views_for_block_in_immersion', 'IMAGING_MODES']
 
 # Order by length then by lexicographic order
 # Remark: independent views for one array (i.e. consider that view AB-CD is the
@@ -118,81 +109,6 @@ def make_viewnames(pathnames, unique_only=True, order_func=viewname_order):
         viewnames = filter_unique_views(viewnames)
 
     return viewnames
-
-
-def points_1d_wall_z(xmin, xmax, z, numpoints, y=0., name=None, dtype=None):
-    """
-    Return a wall between 1
-
-    Returns a set of regularly spaced points between (xmin, y, z) and (xmax, y, z).
-
-    Orientation of the point: (0., 0., 1.)
-
-    """
-    if dtype is None:
-        dtype = s.FLOAT
-
-    points = g.Points.from_xyz(
-        x=np.linspace(xmin, xmax, numpoints, dtype=dtype),
-        y=np.full((numpoints,), y, dtype=dtype),
-        z=np.full((numpoints,), z, dtype=dtype),
-        name=name,
-    )
-
-    orientations = default_orientations(points)
-
-    return points, orientations
-
-
-def default_orientations(points):
-    """
-    Assign to each point the following orientation::
-
-        x = (1, 0, 0)
-        y = (0, 0, 0)
-        z = (0, 0, 1)
-
-    Parameters
-    ----------
-    points: arim.geometry.Points
-
-    Returns
-    -------
-    orientations : arim.geometry.Points
-
-    """
-    # No need to create a full array because all values are the same: we cheat
-    # using a broadcast array. This saves memory space and reduces access time.
-    orientations_arr = np.broadcast_to(np.identity(3, dtype=points.dtype),
-                                       (*points.shape, 3, 3))
-    orientations = g.Points(orientations_arr)
-    return orientations
-
-
-def points_from_probe(probe, name='Probe'):
-    """
-    Probe object to Points (centres and orientations).
-    """
-    points = probe.locations
-    if name is not None:
-        points.name = name
-
-    orientations_arr = np.zeros((3, 3), dtype=points.dtype)
-    orientations_arr[0] = probe.pcs.i_hat
-    orientations_arr[1] = probe.pcs.j_hat
-    orientations_arr[2] = probe.pcs.k_hat
-    orientations = g.Points(np.broadcast_to(orientations_arr, (*points.shape, 3, 3)))
-
-    return points, orientations
-
-
-def points_from_grid(grid):
-    """
-    Grid object to Points (centres and orientations).
-    """
-    points = grid.as_points
-    orientations = default_orientations(points)
-    return points, orientations
 
 
 def interfaces_for_block_in_immersion(couplant_material,
@@ -377,5 +293,3 @@ def views_for_block_in_immersion(paths_dict, unique_only=True):
 
         views[view_name] = View(tx_path, rx_path, view_name)
     return views
-
-

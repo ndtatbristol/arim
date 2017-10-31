@@ -4,6 +4,7 @@ import itertools
 import numpy as np
 import pytest
 
+import arim
 import arim.geometry as g
 
 DATASET_1 = dict(
@@ -799,3 +800,16 @@ class TestGeometryHelper:
             out = geom.points2_to_pcs_pairwise_spherical()
 
         str(geom)
+
+
+def test_points_1d_wall_z():
+    args = dict(xmin=10, xmax=20, numpoints=6, y=1, z=2, name='toto')
+    points, orientations = g.points_1d_wall_z(**args)
+    assert points.shape == (6,)
+    assert orientations.shape == (6, 3)
+
+    np.testing.assert_allclose(points.x, [10, 12, 14, 16, 18, 20])
+    np.testing.assert_allclose(points.y, args['y'])
+    np.testing.assert_allclose(points.z, args['z'])
+    for i in range(6):
+        np.testing.assert_allclose(orientations[i], np.eye(3))

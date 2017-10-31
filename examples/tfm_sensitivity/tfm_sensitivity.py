@@ -25,6 +25,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 import arim
+import arim.geometry
 import arim.helpers
 import arim.path
 import arim.plot as aplt
@@ -107,15 +108,15 @@ wavelength_t = block.transverse_vel / probe.frequency
 # -------------------------------------------------------------------------
 # %% Define interfaces
 
-probe_points, probe_orientations = arim.path.points_from_probe(probe)
+probe_points, probe_orientations = arim.geometry.points_from_probe(probe)
 
 frontwall_points, frontwall_orientations \
-    = arim.path.points_1d_wall_z(**conf['interfaces.frontwall'], name='Frontwall')
+    = arim.geometry.points_1d_wall_z(**conf['interfaces.frontwall'], name='Frontwall')
 backwall_points, backwall_orientations = \
-    arim.path.points_1d_wall_z(**conf['interfaces.backwall'], name='Backwall')
+    arim.geometry.points_1d_wall_z(**conf['interfaces.backwall'], name='Backwall')
 
 grid = arim.geometry.Grid(**conf['interfaces.grid'], ymin=0., ymax=0.)
-grid_points, grid_orientation = arim.path.points_from_grid(grid)
+grid_points, grid_orientation = arim.geometry.points_from_grid(grid)
 
 interfaces = arim.path.interfaces_for_block_in_immersion(couplant, probe_points,
                                                          probe_orientations,

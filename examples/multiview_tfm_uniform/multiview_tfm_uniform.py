@@ -18,6 +18,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 import arim
+import arim.geometry
 import arim.plot as aplt
 import arim.ray
 from arim.registration import registration_by_flat_frontwall_detection
@@ -116,15 +117,15 @@ if conf['plot.registration']:
 # -------------------------------------------------------------------------
 # %% Define interfaces
 
-probe_points, probe_orientations = arim.path.points_from_probe(frame.probe)
+probe_points, probe_orientations = arim.geometry.points_from_probe(frame.probe)
 
 frontwall_points, frontwall_orientations \
-    = arim.path.points_1d_wall_z(**conf['interfaces.frontwall'], name='Frontwall')
+    = arim.geometry.points_1d_wall_z(**conf['interfaces.frontwall'], name='Frontwall')
 backwall_points, backwall_orientations = \
-    arim.path.points_1d_wall_z(**conf['interfaces.backwall'], name='Backwall')
+    arim.geometry.points_1d_wall_z(**conf['interfaces.backwall'], name='Backwall')
 
 grid = arim.geometry.Grid(**conf['interfaces.grid'], ymin=0., ymax=0.)
-grid_points, grid_orientation = arim.path.points_from_grid(grid)
+grid_points, grid_orientation = arim.geometry.points_from_grid(grid)
 area_of_interest = grid.points_in_rectbox(**conf['area_of_interest'])
 reference_area = grid.points_in_rectbox(**conf['reference_area'])
 

@@ -1,5 +1,3 @@
-import numpy as np
-
 import arim
 import arim.path as p
 
@@ -52,19 +50,6 @@ def test_make_viewnames():
     assert viewnames == [(L, L), (L, T), (T, T), (LL, L), (LL, T), (LL, LL)]
 
 
-def test_points_1d_wall_z():
-    args = dict(xmin=10, xmax=20, numpoints=6, y=1, z=2, name='toto')
-    points, orientations = p.points_1d_wall_z(**args)
-    assert points.shape == (6,)
-    assert orientations.shape == (6, 3)
-
-    np.testing.assert_allclose(points.x, [10, 12, 14, 16, 18, 20])
-    np.testing.assert_allclose(points.y, args['y'])
-    np.testing.assert_allclose(points.z, args['z'])
-    for i in range(6):
-        np.testing.assert_allclose(orientations[i], np.eye(3))
-
-
 def test_path_in_immersion():
     xmin = -20e-3
     xmax = 100e-3
@@ -74,22 +59,22 @@ def test_path_in_immersion():
     block = arim.Material(longitudinal_vel=6320., transverse_vel=3130., density=2700.,
                           state_of_matter='solid', metadata={'long_name': 'Aluminium'})
 
-    probe_points, probe_orientations = p.points_1d_wall_z(0e-3, 15e-3,
-                                                          z=0., numpoints=16,
-                                                          name='Frontwall')
+    probe_points, probe_orientations = arim.geometry.points_1d_wall_z(0e-3, 15e-3,
+                                                                      z=0., numpoints=16,
+                                                                      name='Frontwall')
 
-    frontwall_points, frontwall_orientations = p.points_1d_wall_z(xmin, xmax,
-                                                                  z=0., numpoints=20,
-                                                                  name='Frontwall')
-    backwall_points, backwall_orientations = p.points_1d_wall_z(xmin, xmax,
-                                                                z=40.18e-3, numpoints=21,
-                                                                name='Backwall')
+    frontwall_points, frontwall_orientations = arim.geometry.points_1d_wall_z(xmin, xmax,
+                                                                              z=0., numpoints=20,
+                                                                              name='Frontwall')
+    backwall_points, backwall_orientations = arim.geometry.points_1d_wall_z(xmin, xmax,
+                                                                            z=40.18e-3, numpoints=21,
+                                                                            name='Backwall')
 
     grid = arim.geometry.Grid(xmin, xmax,
                               ymin=0., ymax=0.,
                               zmin=0., zmax=20e-3,
                               pixel_size=5e-3)
-    grid_points, grid_orientation = p.points_from_grid(grid)
+    grid_points, grid_orientation = arim.geometry.points_from_grid(grid)
 
     interfaces = p.interfaces_for_block_in_immersion(couplant, probe_points,
                                                      probe_orientations,

@@ -45,14 +45,6 @@ from .helpers import Cache, NoCache, chunk_array
 from . import settings as s
 from .exceptions import ArimWarning, InvalidDimension, InvalidShape
 
-__all__ = ['rotation_matrix_x', 'rotation_matrix_y', 'rotation_matrix_z',
-           'rotation_matrix_ypr', 'are_points_aligned', 'norm2', 'norm2_2d',
-           'direct_isometry_2d', 'points_in_rectbox', 'direct_isometry_3d',
-           'CoordinateSystem', 'Grid', 'Points', 'GCS', 'are_points_close',
-           'distance_pairwise', 'aspoints', 'GeometryHelper', 'spherical_coordinates',
-           'spherical_coordinates_phi', 'spherical_coordinates_r',
-           'spherical_coordinates_theta']
-
 
 class SphericalCoordinates(namedtuple('SphericalCoordinates', 'r theta phi')):
     """
@@ -863,18 +855,18 @@ def rotate(coords, rotation_matrix, centre=None):
     Parameters
     ----------
     coords : ndarray
-        Coordinates to rotate. Shape: (*shape_points, 3)
+        Coordinates to rotate. Shape: (\*shape_points, 3)
     rotation_matrix
-        Shape: (3, 3) or (*shape_points, 3, 3). Rotation matrices to apply: either one for all points or one per point.
+        Shape: (3, 3) or (\*shape_points, 3, 3). Rotation matrices to apply: either one for all points or one per point.
     centre : ndarray, optional
         Centre of the rotation. This point is invariant by rotation.
-        Shape: Shape: (3, 3) or (*shape_points, 3).
+        Shape: Shape: (3, 3) or (\*shape_points, 3).
         Default: centre = (0., 0., 0.)
 
     Returns
     -------
     rotated_points : ndarray
-        Shape: (*shape_points, 3
+        Shape: (\*shape_points, 3
     """
     assert rotation_matrix.shape[-2:] == (3, 3)
 
@@ -898,19 +890,19 @@ def to_gcs(coords_cs, bases, origins):
     Parameters
     ----------
     coords_cs : ndarray
-        Shape: (*shape_points, 3)
+        Shape: (\*shape_points, 3)
         Coordinates of the points in the basis.
     bases : ndarray
-        Shape: (*shape_points, 3, 3) or (3, 3)
+        Shape: (\*shape_points, 3, 3) or (3, 3)
         One or several orthogonal bases. For each basis, the coordinates of the basis vectors in the global
         coordinate system must be given row per row: i_hat, j_hat, k_hat.
     origins
-        Shape: (*shape_points, 3) or (3, 3)
+        Shape: (\*shape_points, 3) or (3, 3)
 
     Returns
     -------
     coords_gcs : ndarray
-        Shape: (*shape_points, 3)
+        Shape: (\*shape_points, 3)
     """
     # OM' = Origin + OM_x * i_hat + OM_y * j_hat + OM_z * k_hat
     return np.einsum('...ij,...i->...j', bases, coords_cs) + origins
@@ -926,19 +918,19 @@ def from_gcs(points_gcs, bases, origins):
     Parameters
     ----------
     coords_gcs : ndarray
-        Shape: (*shape_points, 3)
+        Shape: (\*shape_points, 3)
         Coordinates of the points in the GCS.
     bases : ndarray
-        Shape: (*shape_points, 3, 3) or (3, 3)
+        Shape: (\*shape_points, 3, 3) or (3, 3)
         One or several orthogonal bases. For each basis, the coordinates of the basis vectors in the global
         coordinate system must be given row per row: i_hat, j_hat, k_hat.
     origins
-        Shape: (*shape_points, 3) or (3, 3)
+        Shape: (\*shape_points, 3) or (3, 3)
 
     Returns
     -------
     coords_gcs : ndarray
-        Shape: (*shape_points, 3)
+        Shape: (\*shape_points, 3)
     """
     return np.einsum('...ji,...i->...j', bases, points_gcs - origins)
 
@@ -1358,3 +1350,78 @@ def points_in_rectbox(x, y, z, xmin=None, xmax=None, ymin=None, ymax=None, zmin=
 GCS = CoordinateSystem(origin=np.array((0., 0., 0.)),
                        i_hat=np.array((1., 0., 0.)),
                        j_hat=np.array((0., 1., 0.)))
+
+
+def points_1d_wall_z(xmin, xmax, z, numpoints, y=0., name=None, dtype=None):
+    """
+    Return a wall between 1
+
+    Returns a set of regularly spaced points between (xmin, y, z) and (xmax, y, z).
+
+    Orientation of the point: (0., 0., 1.)
+
+    """
+    if dtype is None:
+        dtype = s.FLOAT
+
+    points = Points.from_xyz(
+        x=np.linspace(xmin, xmax, numpoints, dtype=dtype),
+        y=np.full((numpoints,), y, dtype=dtype),
+        z=np.full((numpoints,), z, dtype=dtype),
+        name=name,
+    )
+
+    orientations = default_orientations(points)
+
+    return points, orientations
+
+
+def default_orientations(points):
+    """
+    Assign to each point the following orientation::
+
+        x = (1, 0, 0)
+        y = (0, 1, 0)
+        z = (0, 0, 1)
+
+    Parameters
+    ----------
+    points: arim.geometry.Points
+
+    Returns
+    -------
+    orientations : arim.geometry.Points
+
+    """
+    # No need to create a full array because all values are the same: we cheat
+    # using a broadcast array. This saves memory space and reduces access time.
+    orientations_arr = np.broadcast_to(np.identity(3, dtype=points.dtype),
+                                       (*points.shape, 3, 3))
+    orientations = Points(orientations_arr)
+    return orientations
+
+
+def points_from_probe(probe, name='Probe'):
+    """
+    Probe object to Points (centres and orientations).
+    """
+    points = probe.locations
+    if name is not None:
+        points.name = name
+
+    orientations_arr = np.zeros((3, 3), dtype=points.dtype)
+    orientations_arr[0] = probe.pcs.i_hat
+    orientations_arr[1] = probe.pcs.j_hat
+    orientations_arr[2] = probe.pcs.k_hat
+    orientations = Points(np.broadcast_to(orientations_arr, (*points.shape, 3, 3)))
+
+    return points, orientations
+
+
+def points_from_grid(grid):
+    """
+    Grid object to Points (centres and orientations).
+    """
+    points = grid.as_points
+    orientations = default_orientations(points)
+    return points, orientations

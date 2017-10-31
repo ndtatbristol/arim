@@ -71,7 +71,7 @@ def test_plot_interfaces(show_plots, plot_interfaces_kwargs):
     xmax = 60e-3
     z_backwall = 20e-3
 
-    points, orientations = arim.path.points_1d_wall_z(0, 12e-3, z=0., numpoints=64, name='Probe')
+    points, orientations = arim.geometry.points_1d_wall_z(0, 12e-3, z=0., numpoints=64, name='Probe')
     rot = g.rotation_matrix_y(np.deg2rad((12)))
     points = points.rotate(rot)
     points = points.translate((0, 0, -10e-3))
@@ -80,16 +80,16 @@ def test_plot_interfaces(show_plots, plot_interfaces_kwargs):
     assert probe.orientations[0, 2, 0] > 0
     assert probe.orientations[0, 2, 2] > 0
 
-    points, orientations = arim.path.points_1d_wall_z(xmin, xmax,
-                                                 z=0., numpoints=numinterface,
-                                                 name='Frontwall')
+    points, orientations = arim.geometry.points_1d_wall_z(xmin, xmax,
+                                                          z=0., numpoints=numinterface,
+                                                          name='Frontwall')
     frontwall = arim.Interface(points, orientations)
 
-    points, orientations = arim.path.points_1d_wall_z(xmin, xmax, z=z_backwall, numpoints=numinterface2, name='Backwall')
+    points, orientations = arim.geometry.points_1d_wall_z(xmin, xmax, z=z_backwall, numpoints=numinterface2, name='Backwall')
     backwall = arim.Interface(points, orientations)
 
     grid_obj = arim.Grid(xmin, xmax, 0, 0, 0, z_backwall, 1e-3)
-    grid = arim.Interface(*arim.path.points_from_grid(grid_obj))
+    grid = arim.Interface(*arim.geometry.points_from_grid(grid_obj))
 
     interfaces = [probe, frontwall, backwall, grid]
     # end setup interfaces

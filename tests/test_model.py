@@ -5,6 +5,7 @@ Hard-code results and hope they do not evolve over time.
 import pytest
 import arim
 import arim.ray
+import arim.geometry as g
 from arim import ut
 from collections import OrderedDict
 import numpy as np
@@ -34,18 +35,18 @@ def make_context():
                           state_of_matter='solid')
 
     probe_points = arim.Points([[0., 0., -10e-3]], 'Probe')
-    probe_orientations = arim.path.default_orientations(probe_points)
+    probe_orientations = arim.geometry.default_orientations(probe_points)
 
     frontwall_points, frontwall_orientations \
-        = arim.path.points_1d_wall_z(numpoints=1000, xmin=-5.e-3, xmax=20.e-3,
-                                     z=0., name='Frontwall')
+        = arim.geometry.points_1d_wall_z(numpoints=1000, xmin=-5.e-3, xmax=20.e-3,
+                                         z=0., name='Frontwall')
     backwall_points, backwall_orientations = \
-        arim.path.points_1d_wall_z(numpoints=1000, xmin=-5.e-3, xmax=50.e-3, z=30.e-3,
-                                   name='Backwall')
+        arim.geometry.points_1d_wall_z(numpoints=1000, xmin=-5.e-3, xmax=50.e-3, z=30.e-3,
+                                       name='Backwall')
 
     scatterer_points = arim.Points([[0., 0., 20e-3], [50e-3, 0., 20e-3]],
                                    'Scatterers')
-    scatterer_orientations = arim.path.default_orientations(scatterer_points)
+    scatterer_orientations = arim.geometry.default_orientations(scatterer_points)
 
     interfaces = arim.path.interfaces_for_block_in_immersion(couplant, probe_points,
                                                              probe_orientations,

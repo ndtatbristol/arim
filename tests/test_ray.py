@@ -455,7 +455,7 @@ class TestRayGeometry:
         """
         omega = np.array((3., 0., 5.)) * 1e-2
         src_points = g.Points(omega.reshape([1, 3]), name='source')
-        src_basis = arim.path.default_orientations(src_points)
+        src_basis = g.default_orientations(src_points)
         src_basis = src_basis.rotate(g.rotation_matrix_y(np.pi / 6))
         source_interface = arim.Interface(src_points, src_basis,
                                           are_normals_on_out_rays_side=are_normals_zplus)
@@ -468,7 +468,7 @@ class TestRayGeometry:
         dst_points.x[...] += self.circle_radius * np.sin(self.circle_theta)
         dst_points.z[...] += self.circle_radius * np.cos(self.circle_theta)
 
-        dst_basis = arim.path.default_orientations(dst_points)
+        dst_basis = g.default_orientations(dst_points)
 
         dest_interface = arim.Interface(dst_points, dst_basis,
                                         are_normals_on_inc_rays_side=are_normals_zplus)
