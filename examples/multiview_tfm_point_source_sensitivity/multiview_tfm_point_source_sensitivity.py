@@ -183,7 +183,7 @@ model_options = dict(frequency=frame.probe.frequency,
 for pathname, path in paths.items():
     if path not in all_tx_paths and path not in all_rx_paths:
         continue
-    ray_geometry = arim.path.RayGeometry.from_path(path)
+    ray_geometry = arim.ray.RayGeometry.from_path(path)
 
     debug_data = OrderedDict()
 

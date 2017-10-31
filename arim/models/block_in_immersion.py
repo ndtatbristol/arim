@@ -5,7 +5,8 @@ import numpy as np
 
 from .. import model, ray
 from .. import core as c
-from ..path import RayGeometry, Path
+from ..path import Path
+from ..ray import RayGeometry
 
 logger = logging.getLogger(__name__)
 
@@ -45,7 +46,7 @@ def tx_ray_weights(path, ray_geometry, frequency, probe_element_width=None,
     Parameters
     ----------
     path : Path
-    ray_geometry : RayGeometry
+    ray_geometry : arim.ray.RayGeometry
     frequency : float
     probe_element_width : float or None
         Mandatory if use_directivity is True
@@ -99,7 +100,7 @@ def rx_ray_weights(path, ray_geometry, frequency, probe_element_width=None,
     Parameters
     ----------
     path : Path
-    ray_geometry : RayGeometry
+    ray_geometry : arim.ray.RayGeometry
     frequency : float
     probe_element_width : float or None
         Mandatory if use_directivity is True

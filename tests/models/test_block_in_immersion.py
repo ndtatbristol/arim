@@ -3,7 +3,7 @@ import numpy as np
 from tests.test_model import make_context
 import arim
 import arim.models.block_in_immersion as bim
-
+import arim.ray
 
 def test_ray_weights():
     context = make_context()
@@ -21,7 +21,7 @@ def test_ray_weights():
     for pathname, path in paths.items():
         # Direct
         ray_geometry = ray_geometry_dict[pathname]
-        ray_geometry2 = arim.path.RayGeometry.from_path(path, use_cache=False)
+        ray_geometry2 = arim.ray.RayGeometry.from_path(path, use_cache=False)
         weights, weights_dict = bim.tx_ray_weights(path, ray_geometry, **model_options)
         weights2, _ = bim.tx_ray_weights(path, ray_geometry2, **model_options)
         assert 'beamspread' in weights_dict
@@ -31,7 +31,7 @@ def test_ray_weights():
 
         # Reverse
         ray_geometry = ray_geometry_dict[pathname]
-        ray_geometry2 = arim.path.RayGeometry.from_path(path, use_cache=False)
+        ray_geometry2 = arim.ray.RayGeometry.from_path(path, use_cache=False)
         weights, weights_dict = bim.rx_ray_weights(path, ray_geometry, **model_options)
         weights2, _ = bim.rx_ray_weights(path, ray_geometry2, **model_options)
         assert 'beamspread' in weights_dict

@@ -23,8 +23,6 @@ from .ut import snell_angles, fluid_solid, solid_l_fluid, solid_t_fluid, \
     directivity_2d_rectangular_in_fluid
 from .helpers import chunk_array
 
-# for backward compatiblity:
-from .path import RayGeometry
 
 logger = logging.getLogger(__name__)
 
@@ -37,7 +35,7 @@ def radiation_2d_rectangular_in_fluid_for_path(ray_geometry, element_width, wave
 
     Parameters
     ----------
-    ray_geometry : RayGeometry
+    ray_geometry : arim.ray.RayGeometry
     element_width
     wavelength
 
@@ -56,7 +54,7 @@ def directivity_2d_rectangular_in_fluid_for_path(ray_geometry, element_width, wa
 
     Parameters
     ----------
-    ray_geometry : RayGeometry
+    ray_geometry : arim.ray.RayGeometry
     element_width : float
     wavelength : float
 
@@ -338,7 +336,7 @@ def transmission_reflection_for_path(path, ray_geometry, force_complex=True,
     Parameters
     ----------
     path : Path
-    ray_geometry : RayGeometry
+    ray_geometry : arim.ray.RayGeometry
     force_complex : bool
         If True, return complex coefficients. If not, return coefficients with the same datatype as ``angles_inc``.
         Default: True.
@@ -400,7 +398,7 @@ def reverse_transmission_reflection_for_path(path, ray_geometry, force_complex=T
     Parameters
     ----------
     path : Path
-    ray_geometry : RayGeometry
+    ray_geometry : arim.ray.RayGeometry
     force_complex : bool
         Use complex angles. Default : True
 
@@ -491,7 +489,7 @@ def beamspread_2d_for_path(ray_geometry):
 
     Parameters
     ----------
-    ray_geometry : arim.path.RayGeometry
+    ray_geometry : arim.ray.RayGeometry
 
     Returns
     -------
@@ -554,7 +552,7 @@ def reverse_beamspread_2d_for_path(ray_geometry):
 
     Parameters
     ----------
-    ray_geometry : RayGeometry
+    ray_geometry : arim.ray.RayGeometry
 
     Returns
     -------

@@ -833,8 +833,8 @@ class Path:
         -------
 
         """
-        # avoid circular import
-        from arim.ray import FermatPath
+        # lazy import
+        from .ray import FermatPath
         return FermatPath.from_path(self)
 
     def reverse(self):

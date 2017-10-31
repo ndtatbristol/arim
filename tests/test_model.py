@@ -85,13 +85,13 @@ def make_context():
 
     # Ray geometry
     ray_geometry_dict = OrderedDict(
-        (k, model.RayGeometry.from_path(v, use_cache=True))
+        (k, arim.ray.RayGeometry.from_path(v, use_cache=True))
         for (k, v) in paths.items())
 
     # Reverse paths
     rev_paths = OrderedDict([(key, path.reverse()) for (key, path) in
                              paths.items()])
-    rev_ray_geometry_dict = OrderedDict((k, model.RayGeometry.from_path(v))
+    rev_ray_geometry_dict = OrderedDict((k, arim.ray.RayGeometry.from_path(v))
                                         for (k, v) in rev_paths.items())
 
     context = dict()
@@ -491,7 +491,7 @@ def test_beamspread_2d_reverse():
 
     rev_paths = OrderedDict([(key, path.reverse()) for (key, path) in
                              paths.items()])
-    rev_ray_geometry_dict = OrderedDict((k, model.RayGeometry.from_path(v))
+    rev_ray_geometry_dict = OrderedDict((k, arim.ray.RayGeometry.from_path(v))
                                         for (k, v) in rev_paths.items())
 
     # hardcoded results
