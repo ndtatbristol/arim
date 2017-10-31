@@ -1,3 +1,7 @@
+"""
+Amplitudes for TFM (too cumbersome, will be removed in the future)
+"""
+
 from _warnings import warn
 
 import numpy as np

@@ -1,3 +1,7 @@
+"""
+Script for auto-generating C++ code
+"""
+
 if __name__ == '__main__':
     from collections import OrderedDict
     import numpy as np

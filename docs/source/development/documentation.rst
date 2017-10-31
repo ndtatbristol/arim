@@ -103,6 +103,8 @@ The following commands must be executed in directory ``docs``, where the files `
 Build documentation
 -------------------
 
+Delete ``docs/source/_autosummary``.
+
 :: 
 
   make clean
@@ -127,7 +129,7 @@ Memos
 How to document a function from its docstring
 ---------------------------------------------
 
-Modules are auto-documented in the reference (:doc:`../reference/arim`). If it is relevant to show the documentation in
+Modules are auto-documented in the reference (:doc:`../api`). If it is relevant to show the documentation in
 another page, use the following template:
 
 .. code-block:: ReST

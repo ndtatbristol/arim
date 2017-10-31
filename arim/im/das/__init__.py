@@ -1,7 +1,18 @@
 """
-arim.im.das
+Delay-and-sum functions
 
-Delay and sum module. Contains different implementation of delay-and-sum algorithm.
+Contains different implementation of delay-and-sum algorithm.
+
+.. currentmodule:: arim.im.das
+
+.. autosummary::
+
+    delay_and_sum_numba
+    delay_and_sum_cpu
+    delay_and_sum
+    delay_and_sum_naive
+
+
 """
 
 from ._das import *

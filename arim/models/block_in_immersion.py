@@ -1,3 +1,7 @@
+"""
+Forward model of the inspection of a solid block in immersion
+"""
+
 import logging
 from collections import namedtuple
 

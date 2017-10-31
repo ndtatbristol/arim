@@ -222,11 +222,13 @@ class Points:
         """
         Translate the points along a given direction or several directions.
 
-        If one direction is given (array of shape (3, )), the same direction is applied to all points::
+        If one direction is given (array of shape (3, )), the same direction is
+        applied to all points::
 
             NewCoords[idx] = OldCoords[idx] + Direction, for all idx
 
-        If as many direction as points are given, each point will be translated from the corresponding direction given.
+        If as many direction as points are given, each point will be translated
+        from the corresponding direction given::
 
             NewCoords[idx] = OldCoords[idx] + Direction[idx], for all idx
 

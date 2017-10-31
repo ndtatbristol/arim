@@ -23,6 +23,7 @@ arim reference
 
    model
    models
+   models.block_in_immersion
 
 **Imaging**
 
@@ -30,6 +31,9 @@ arim reference
    :toctree: _autosummary
 
    im
+   im.amplitudes
+   im.tfm
+   im.das
 
 **Utils**
 
@@ -38,6 +42,7 @@ arim reference
    :toctree: _autosummary
 
    io
+   io.brain
    ut
    plot
    signal

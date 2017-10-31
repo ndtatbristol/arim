@@ -1,5 +1,5 @@
-f"""
-Functions related to the forward model.
+"""
+Core functions of the forward model.
 
 .. seealso::
     :mod:`arim.ut`

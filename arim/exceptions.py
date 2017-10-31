@@ -1,3 +1,7 @@
+"""
+Exceptions and warnings
+"""
+
 class ArimWarning(UserWarning):
     pass
 

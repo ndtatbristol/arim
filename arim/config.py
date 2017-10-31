@@ -1,3 +1,7 @@
+"""
+Helper for configuring scripts
+"""
+
 import pprint
 import re
 import copy

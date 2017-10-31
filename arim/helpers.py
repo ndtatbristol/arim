@@ -1,3 +1,7 @@
+"""
+Helper functions
+"""
+
 import logging
 import math
 import os
