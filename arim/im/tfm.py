@@ -11,12 +11,11 @@ from concurrent.futures import ThreadPoolExecutor
 from .. import geometry as g
 from .. import model, ut
 from . import amplitudes
-from .das import _das_numba
-from .das import delay_and_sum  # default tfm
+from . import das
 from .. import settings as s
 from .. import core as c
 from ..exceptions import ArimWarning
-from ..helpers import parse_enum_constant, chunk_array
+from ..helpers import chunk_array
 
 __all__ = ['BaseTFM', 'ContactTFM', 'SingleViewTFM', 'SimpleTFM', 'tfm_with_scattering']
 
@@ -113,7 +112,7 @@ class BaseTFM:
         self.focal_law = focal_law
 
         if delay_and_sum_func is None:
-            delay_and_sum_func = delay_and_sum
+            delay_and_sum_func = das.delay_and_sum
         if delay_and_sum_kwargs is None:
             delay_and_sum_kwargs = {}
 
@@ -420,7 +419,7 @@ def tfm_with_scattering(frame, grid, view, fillvalue, scattering_fn,
     rx_amplitudes = np.ascontiguousarray(rx_ray_weights.T)
 
     if scanline_weights is None:
-        scanline_weights = ut.default_scanline_weights(tx, rx)
+        scanline_weights = ut.default_scanline_weights(frame.tx, frame.rx)
 
     weighted_scanlines = frame.scanlines * scanline_weights[:, np.newaxis]
 
@@ -563,9 +562,9 @@ def _tfm_with_scattering(
     tfm_amplitudes = model_amplitudes.conjugate()
     del model_amplitudes
 
-    _das_numba._general_delay_and_sum_nearest(weighted_scanlines, tx, rx,
-                                              tx_lookup_times, rx_lookup_times,
-                                              tfm_amplitudes,
-                                              dt, t0, fillvalue, tfm_result)
+    das.das._general_delay_and_sum_nearest(weighted_scanlines, tx, rx,
+                                                   tx_lookup_times, rx_lookup_times,
+                                                   tfm_amplitudes,
+                                                   dt, t0, fillvalue, tfm_result)
 
 
