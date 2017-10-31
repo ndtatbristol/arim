@@ -26,11 +26,6 @@ of Python files.
 
 The configuration file for Sphinx is located in ``docs/source/conf.py``.
 
-.. warning::
-
-  Do not write anything in the directory ``docs/source/reference``. The content of the directory
-  is automatically generated. Any changes will be lost during the next generation.
-
 
 Docstring style
 ---------------
@@ -104,17 +99,6 @@ Build the documentation
 =======================
 
 The following commands must be executed in directory ``docs``, where the files ``Makefile`` and ``make.bat`` are.
-
-Refresh API structure
----------------------
-
-::
-
-    make api
-
-
-Remark: do not make any change in the directory ``docs/source/reference``.
-
 
 Build documentation
 -------------------

@@ -13,13 +13,6 @@ if NOT "%PAPER%" == "" (
 	set I18NSPHINXOPTS=-D latex_paper_size=%PAPER% %I18NSPHINXOPTS%
 )
 
-if "%SPHINXAPIDOC%" == "" (
-	set SPHINXAPIDOC=sphinx-apidoc
-)
-if "%APIDIR%" == "" (
-	set APIDIR=source\reference
-)
-
 if "%1" == "" goto help
 
 if "%1" == "help" (
@@ -266,16 +259,6 @@ if "%1" == "pseudoxml" (
 	echo.
 	echo.Build finished. The pseudo-XML files are in %BUILDDIR%/pseudoxml.
 	goto end
-)
-
-if "%1" == "api" (
-	del /q /s %APIDIR%\*.rst
-	%SPHINXAPIDOC% --separate -o %APIDIR% ..\arim
-	del %APIDIR%\modules.rst
-	echo.
-	echo.API refreshed. ReST files are in %APIDIR%.
-
-
 )
 
 :end

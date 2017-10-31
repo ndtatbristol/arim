@@ -1,3 +1,7 @@
+"""
+A Python library for array imaging and modelling in ultrasonic testing
+"""
+
 from . import settings
 from . import exceptions
 from .core import *

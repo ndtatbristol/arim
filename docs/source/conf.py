@@ -25,6 +25,8 @@ import arim
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #sys.path.insert(0, os.path.abspath('.'))
+sys.path.insert(0, os.path.join(os.path.abspath(os.path.dirname(os.path.dirname(__file__))), 'arim'))
+
 
 # -- General configuration ------------------------------------------------
 
@@ -36,11 +38,12 @@ import arim
 # ones.
 extensions = [
     'sphinx.ext.autodoc',
-    'sphinx.ext.napoleon',
+    'sphinx.ext.autosummary',
     'sphinx.ext.todo',
     'sphinx.ext.coverage',
     'sphinx.ext.mathjax',
-    #'sphinx.ext.viewcode', # TODO: enable when bug related to operator '@' is fixed
+    'sphinx.ext.napoleon',
+    'sphinx.ext.viewcode'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -311,6 +314,11 @@ napoleon_use_rtype = True
 
 
 # Autodoc settings
+# http://www.sphinx-doc.org/en/stable/ext/autodoc.html
 autodoc_member_order = 'groupwise'
+autodoc_default_flags = ['members', 'show-inheritance']
 #autodoc_default_flags = 'special-members'
+
+# Autosummary settings
+autosummary_generate = True
 
