@@ -2,10 +2,4 @@
 Examples
 ========
 
-
-.. toctree::
-  :maxdepth: 2
-
-  contact_tfm
-  multiview_tfm
-
+See  https://github.com/nbud/arim/tree/master/examples
