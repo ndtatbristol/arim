@@ -19,6 +19,7 @@ import numpy as np
 
 import arim
 import arim.geometry
+import arim.models.block_in_immersion
 import arim.plot as aplt
 import arim.ray
 from arim.registration import registration_by_flat_frontwall_detection
@@ -129,15 +130,15 @@ grid_points, grid_orientation = arim.geometry.points_from_grid(grid)
 area_of_interest = grid.points_in_rectbox(**conf['area_of_interest'])
 reference_area = grid.points_in_rectbox(**conf['reference_area'])
 
-interfaces = arim.path.interfaces_for_block_in_immersion(couplant, probe_points,
-                                                         probe_orientations,
-                                                         frontwall_points,
-                                                         frontwall_orientations,
-                                                         backwall_points,
-                                                         backwall_orientations,
-                                                         grid_points, grid_orientation)
+interfaces = arim.models.block_in_immersion.make_interfaces(couplant, probe_points,
+                                                            probe_orientations,
+                                                            frontwall_points,
+                                                            frontwall_orientations,
+                                                            backwall_points,
+                                                            backwall_orientations,
+                                                            grid_points, grid_orientation)
 
-paths = arim.path.paths_for_block_in_immersion(block, couplant, interfaces)
+paths = arim.models.block_in_immersion.make_paths(block, couplant, interfaces)
 
 if conf['plot.interfaces']:
     aplt.plot_interfaces(interfaces.values(), show_orientations=True, show_grid=True)
@@ -146,7 +147,7 @@ for p in interfaces:
     logger.debug(p)
 
 # Make views
-views = arim.path.views_for_block_in_immersion(paths)
+views = arim.models.block_in_immersion.make_views(paths)
 if conf['views_to_use'] != 'all':
     views = OrderedDict([(viewname, view) for viewname, view in views.items()
                          if viewname in conf['views_to_use']])

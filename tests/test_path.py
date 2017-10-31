@@ -1,4 +1,5 @@
 import arim
+import arim.models.block_in_immersion
 import arim.path as p
 
 
@@ -76,13 +77,13 @@ def test_path_in_immersion():
                               pixel_size=5e-3)
     grid_points, grid_orientation = arim.geometry.points_from_grid(grid)
 
-    interfaces = p.interfaces_for_block_in_immersion(couplant, probe_points,
-                                                     probe_orientations,
-                                                     frontwall_points,
-                                                     frontwall_orientations,
-                                                     backwall_points,
-                                                     backwall_orientations,
-                                                     grid_points, grid_orientation)
+    interfaces = arim.models.block_in_immersion.make_interfaces(couplant, probe_points,
+                                                                probe_orientations,
+                                                                frontwall_points,
+                                                                frontwall_orientations,
+                                                                backwall_points,
+                                                                backwall_orientations,
+                                                                grid_points, grid_orientation)
     assert interfaces['probe'].points is probe_points
     assert interfaces['probe'].orientations is probe_orientations
     assert interfaces['frontwall_trans'].points is frontwall_points
@@ -97,7 +98,7 @@ def test_path_in_immersion():
     # ------------------------------------------------------------------------------------
     # 6 paths, 21 views
 
-    paths = p.paths_for_block_in_immersion(block, couplant, interfaces)
+    paths = arim.models.block_in_immersion.make_paths(block, couplant, interfaces)
     assert len(paths) == 6
     assert paths['L'].to_fermat_path() == (probe_points, couplant.longitudinal_vel,
                                            frontwall_points, block.longitudinal_vel,
@@ -111,7 +112,7 @@ def test_path_in_immersion():
         assert path_key == path.name
 
     # Make views
-    views = p.views_for_block_in_immersion(paths)
+    views = arim.models.block_in_immersion.make_views(paths)
     assert len(views) == 21
 
     view = views['LT-LT']
@@ -120,8 +121,8 @@ def test_path_in_immersion():
 
     # ------------------------------------------------------------------------------------
     # 14 paths, 105 views
-    paths = p.paths_for_block_in_immersion(block, couplant, interfaces,
-                                           max_number_of_reflection=2)
+    paths = arim.models.block_in_immersion.make_paths(block, couplant, interfaces,
+                                                      max_number_of_reflection=2)
     assert len(paths) == 14
     assert paths['L'].to_fermat_path() == (probe_points, couplant.longitudinal_vel,
                                            frontwall_points, block.longitudinal_vel,
@@ -140,7 +141,7 @@ def test_path_in_immersion():
         assert path_key == path.name
 
     # Make views
-    views = p.views_for_block_in_immersion(paths)
+    views = arim.models.block_in_immersion.make_views(paths)
     assert len(views) == 105
 
     view = views['LT-LT']

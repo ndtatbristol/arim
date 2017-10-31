@@ -4,6 +4,7 @@ Hard-code results and hope they do not evolve over time.
 """
 import pytest
 import arim
+import arim.models.block_in_immersion
 import arim.ray
 import arim.geometry as g
 from arim import ut
@@ -48,17 +49,17 @@ def make_context():
                                    'Scatterers')
     scatterer_orientations = arim.geometry.default_orientations(scatterer_points)
 
-    interfaces = arim.path.interfaces_for_block_in_immersion(couplant, probe_points,
-                                                             probe_orientations,
-                                                             frontwall_points,
-                                                             frontwall_orientations,
-                                                             backwall_points,
-                                                             backwall_orientations,
-                                                             scatterer_points,
-                                                             scatterer_orientations)
+    interfaces = arim.models.block_in_immersion.make_interfaces(couplant, probe_points,
+                                                                probe_orientations,
+                                                                frontwall_points,
+                                                                frontwall_orientations,
+                                                                backwall_points,
+                                                                backwall_orientations,
+                                                                scatterer_points,
+                                                                scatterer_orientations)
 
-    paths = arim.path.paths_for_block_in_immersion(block, couplant, interfaces)
-    views = arim.path.views_for_block_in_immersion(paths)
+    paths = arim.models.block_in_immersion.make_paths(block, couplant, interfaces)
+    views = arim.models.block_in_immersion.make_views(paths)
 
     # Do the ray tracing manually
     # Hardcode the result of ray-tracing in order to write tests with lower coupling

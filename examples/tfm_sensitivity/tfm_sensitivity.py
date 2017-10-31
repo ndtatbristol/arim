@@ -27,6 +27,7 @@ import numpy as np
 import arim
 import arim.geometry
 import arim.helpers
+import arim.models.block_in_immersion
 import arim.path
 import arim.plot as aplt
 import arim.models.block_in_immersion as bim
@@ -118,16 +119,16 @@ backwall_points, backwall_orientations = \
 grid = arim.geometry.Grid(**conf['interfaces.grid'], ymin=0., ymax=0.)
 grid_points, grid_orientation = arim.geometry.points_from_grid(grid)
 
-interfaces = arim.path.interfaces_for_block_in_immersion(couplant, probe_points,
-                                                         probe_orientations,
-                                                         frontwall_points,
-                                                         frontwall_orientations,
-                                                         backwall_points,
-                                                         backwall_orientations,
-                                                         grid_points, grid_orientation)
+interfaces = arim.models.block_in_immersion.make_interfaces(couplant, probe_points,
+                                                            probe_orientations,
+                                                            frontwall_points,
+                                                            frontwall_orientations,
+                                                            backwall_points,
+                                                            backwall_orientations,
+                                                            grid_points, grid_orientation)
 
-paths = arim.path.paths_for_block_in_immersion(block, couplant, interfaces,
-                                               max_number_of_reflection=2)
+paths = arim.models.block_in_immersion.make_paths(block, couplant, interfaces,
+                                                  max_number_of_reflection=2)
 
 if conf['plot.interfaces']:
     aplt.plot_interfaces(interfaces.values(), show_orientations=True, show_grid=True)
@@ -136,7 +137,7 @@ for p in interfaces:
     logger.debug(p)
 
 # Make views
-views = arim.path.views_for_block_in_immersion(paths)
+views = arim.models.block_in_immersion.make_views(paths)
 if conf['views_to_use'] != 'all':
     views = OrderedDict([(viewname, view) for viewname, view in views.items()
                          if viewname in conf['views_to_use']])

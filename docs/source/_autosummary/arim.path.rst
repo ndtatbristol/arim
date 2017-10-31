@@ -10,11 +10,11 @@ arim\.path
    .. autosummary::
    
       filter_unique_views
-      interfaces_for_block_in_immersion
+      make_interfaces
       make_viewnames
-      paths_for_block_in_immersion
+      make_paths
       viewname_order
-      views_for_block_in_immersion
+      make_views
    
    
 

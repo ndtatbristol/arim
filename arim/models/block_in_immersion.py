@@ -1,15 +1,39 @@
 """
 Forward model of the inspection of a solid block in immersion
+
+Boilerplate::
+
+    import arim.models.block_in_immersion as bim
+
+    probe_points, probe_orientations = arim.geometry.points_from_probe(probe)
+    frontwall_points, frontwall_orientations = \
+        arim.geometry.points_1d_wall_z(xmin, xmax, z_frontwall, numpoints)
+    backwall_points, backwall_orientations = \
+        arim.geometry.points_1d_wall_z(xmin, xmax, z_backwall, numpoints)
+
+    grid = arim.geometry.Grid(xmin, xmax, ymin, ymax, zmin, zmax, pixel_size)
+    grid_points, grid_orientation = arim.geometry.points_from_grid(grid)
+
+    interfaces = bim.make_interfaces(couplant, probe_points, probe_orientations,
+                                     frontwall_points, frontwall_orientations,
+                                     backwall_points, backwall_orientations,
+                                     grid_points, grid_orientation)
+    paths = bim.make_paths(block, couplant, interfaces, max_number_of_reflection=1)
+    views = bim.make_views(paths, unique_only=True)
+
 """
 
 import logging
-from collections import namedtuple
+from collections import namedtuple, OrderedDict
 
 import numpy as np
 
+from arim import Interface, Path, Mode, View
+from arim.helpers import parse_enum_constant
+from arim.path import L, T, make_viewnames
+
 from .. import model, ray
 from .. import core as c
-from ..path import Path
 from ..ray import RayGeometry
 
 logger = logging.getLogger(__name__)
@@ -255,7 +279,7 @@ def frontwall_path(couplant_material, block_material, probe_points,
                                      are_normals_on_inc_rays_side=False,
                                      are_normals_on_out_rays_side=False)
 
-    return Path(
+    return c.Path(
         interfaces=(probe_start, frontwall_ext_refl, probe_end),
         materials=(couplant_material, couplant_material),
         modes=(c.Mode.L, c.Mode.L),
@@ -320,3 +344,187 @@ def ray_weights_for_wall(path, frequency, probe_element_width=None,
                weights_dict['transrefl'] *
                weights_dict['beamspread'])
     return weights, weights_dict
+
+
+def make_interfaces(couplant_material,
+                    probe_points, probe_orientations,
+                    frontwall_points, frontwall_orientations,
+                    backwall_points, backwall_orientations,
+                    grid_points, grid_orientations):
+    """
+    Construct Interface objects for the case of a solid block in immersion
+    (couplant is liquid).
+
+    The interfaces are for rays starting from the probe and arriving in the
+    grid. There is at the frontwall interface a liquid-to-solid transmission.
+    There is at the backwall interface a solid-against-liquid reflection.
+
+    Assumes all normals are pointing roughly towards the same direction (example: (0, 0, 1) or so).
+
+    Parameters
+    ----------
+    couplant_material: Material
+    probe_points: Points
+    probe_orientations: Points
+    frontwall_points: Points
+    frontwall_orientations: Points
+    backwall_points: Points
+    backwall_orientations: Points
+    grid_points: Points
+    grid_orientations: Points
+
+    Returns
+    -------
+    interface_dict : dict[Interface]
+        Keys: probe, frontwall_trans, backwall_refl, grid, frontwall_refl
+    """
+    interface_dict = OrderedDict()
+
+    interface_dict['probe'] = Interface(probe_points, probe_orientations,
+                                        are_normals_on_out_rays_side=True)
+    interface_dict['frontwall_trans'] = Interface(frontwall_points,
+                                                  frontwall_orientations,
+                                                  'fluid_solid', 'transmission',
+                                                  are_normals_on_inc_rays_side=False,
+                                                  are_normals_on_out_rays_side=True)
+    interface_dict['backwall_refl'] = Interface(backwall_points, backwall_orientations,
+                                                'solid_fluid', 'reflection',
+                                                reflection_against=couplant_material,
+                                                are_normals_on_inc_rays_side=False,
+                                                are_normals_on_out_rays_side=False)
+    interface_dict['grid'] = Interface(grid_points, grid_orientations,
+                                       are_normals_on_inc_rays_side=True)
+    interface_dict['frontwall_refl'] = Interface(frontwall_points, frontwall_orientations,
+                                                 'solid_fluid', 'reflection',
+                                                 reflection_against=couplant_material,
+                                                 are_normals_on_inc_rays_side=True,
+                                                 are_normals_on_out_rays_side=True)
+
+    return interface_dict
+
+
+def make_paths(block_material, couplant_material, interface_dict,
+               max_number_of_reflection=1):
+    """
+    Creates the paths L, T, LL, LT, TL, TT (in this order).
+
+    Paths are returned in transmit convention: for the path XY, X is the mode
+    before reflection against the backwall and Y is the mode after reflection.
+    The path XY in transmit convention is the path YX in receive convention.
+
+    Parameters
+    ----------
+    block_material : Material
+    couplant_material : Material
+    interface_dict : dict[Interface]
+    max_number_of_reflection : int
+        Default: 1.
+
+
+    Returns
+    -------
+    paths : OrderedDict
+
+    """
+    paths = OrderedDict()
+
+    if max_number_of_reflection > 2:
+        raise NotImplementedError
+    if max_number_of_reflection < 0:
+        raise ValueError
+
+    probe = interface_dict['probe']
+    frontwall = interface_dict['frontwall_trans']
+    grid = interface_dict['grid']
+    if max_number_of_reflection >= 1:
+        backwall = interface_dict['backwall_refl']
+    if max_number_of_reflection >= 2:
+        frontwall_refl = interface_dict['frontwall_refl']
+
+    paths['L'] = c.Path(
+        interfaces=(probe, frontwall, grid),
+        materials=(couplant_material, block_material),
+        modes=(L, L),
+        name='L')
+
+    paths['T'] = c.Path(
+        interfaces=(probe, frontwall, grid),
+        materials=(couplant_material, block_material),
+        modes=(L, T),
+        name='T')
+
+    if max_number_of_reflection >= 1:
+        paths['LL'] = c.Path(
+            interfaces=(probe, frontwall, backwall, grid),
+            materials=(couplant_material, block_material, block_material),
+            modes=(L, L, L),
+            name='LL')
+
+        paths['LT'] = c.Path(
+            interfaces=(probe, frontwall, backwall, grid),
+            materials=(couplant_material, block_material, block_material),
+            modes=(L, L, T),
+            name='LT')
+
+        paths['TL'] = c.Path(
+            interfaces=(probe, frontwall, backwall, grid),
+            materials=(couplant_material, block_material, block_material),
+            modes=(L, T, L),
+            name='TL')
+
+        paths['TT'] = c.Path(
+            interfaces=(probe, frontwall, backwall, grid),
+            materials=(couplant_material, block_material, block_material),
+            modes=(L, T, T),
+            name='TT')
+
+    if max_number_of_reflection >= 2:
+        keys = ['LLL', 'LLT', 'LTL', 'LTT', 'TLL', 'TLT', 'TTL', 'TTT']
+
+        for key in keys:
+            paths[key] = c.Path(
+                interfaces=(probe, frontwall, backwall, frontwall_refl, grid),
+                materials=(couplant_material, block_material, block_material,
+                           block_material),
+                modes=(L,
+                       parse_enum_constant(key[0], Mode),
+                       parse_enum_constant(key[1], Mode),
+                       parse_enum_constant(key[2], Mode)),
+                name=key)
+
+    return paths
+
+
+def make_views(paths_dict, unique_only=True):
+    """
+    Returns 'View' objects for the case of a block in immersion.
+
+    Consut all possible views that can be constructed with the paths given as argument.
+
+    If unique only ``unique_only`` is false,
+
+    Parameters
+    ----------
+    paths_dict : Dict[Path]
+        Key: path names (exemple: 'L', 'LT'). Values: :class:`Path`
+    unique_only : bool
+        Default: True. Returns only the views that give *different* imaging results with
+        TFM (AB-CD and DC-BA give the same imaging result).
+
+    Returns
+    -------
+    views: OrderedDict[Views]
+
+    """
+    viewnames = make_viewnames(paths_dict.keys(), unique_only=unique_only)
+    views = OrderedDict()
+    for view_name_tuple in viewnames:
+        tx_name, rx_name = view_name_tuple
+        view_name = '{}-{}'.format(tx_name, rx_name)
+
+        tx_path = paths_dict[tx_name]
+        # to get the receive path: return the string of the corresponding transmit path
+        rx_path = paths_dict[rx_name[::-1]]
+
+        views[view_name] = View(tx_path, rx_path, view_name)
+    return views
