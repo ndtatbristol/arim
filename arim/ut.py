@@ -307,10 +307,6 @@ def directivity_2d_rectangular_in_fluid(theta, element_width, wavelength):
     return np.sinc(x)
 
 
-# backward compatibility
-directivity_finite_width_2d = directivity_2d_rectangular_in_fluid
-
-
 def radiation_2d_rectangular_in_fluid(theta, element_width, wavelength):
     """
     Piston model.

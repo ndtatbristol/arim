@@ -19,7 +19,7 @@ __all__ = ['interfaces_for_block_in_immersion', 'default_orientations',
 
 # Order by length then by lexicographic order
 # Remark: independent views for one array (i.e. consider that view AB-CD is the
-# same as view DC-BA).
+# same as view DC-BA).t
 IMAGING_MODES = ["L-L", "L-T", "T-T",
                  "LL-L", "LL-T", "LT-L", "LT-T", "TL-L", "TL-T", "TT-L", "TT-T",
                  "LL-LL", "LL-LT", "LL-TL", "LL-TT",

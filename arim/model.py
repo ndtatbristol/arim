@@ -11,7 +11,6 @@ Functions related to the forward model.
 
 import abc
 import logging
-import warnings
 from collections import namedtuple
 
 import numpy as np
@@ -65,10 +64,6 @@ def directivity_2d_rectangular_in_fluid_for_path(ray_geometry, element_width, wa
     """
     return directivity_2d_rectangular_in_fluid(ray_geometry.conventional_out_angle(0),
                                                element_width, wavelength)
-
-
-# alias for backward compatibility:
-directivity_finite_width_2d_for_path = directivity_2d_rectangular_in_fluid_for_path
 
 
 def transmission_at_interface(interface_kind, material_inc, material_out, mode_inc,
@@ -597,57 +592,6 @@ def reverse_beamspread_2d_for_path(ray_geometry):
         virtual_distance += r / gamma
 
     return np.reciprocal(np.sqrt(virtual_distance))
-
-
-def beamspread_for_path(ray_geometry):
-    """
-    Deprecation warning: use :func:`beamspread_2d_for_path` instead.
-    """
-    warnings.warn('beamspread_for_path is deprecated and will be '
-                  'removed. Use beamspread_2d_for_path instead.',
-                  DeprecationWarning, stacklevel=2)
-    return beamspread_2d_for_path(ray_geometry)
-
-
-def sensitivity_conjugate_for_path(ray_weights):
-    """
-    Deprecated function. Use :func:`model_amplitudes_factory`
-    :func:`sensitivity_model_assisted_tfm` instead
-    """
-    warnings.warn(DeprecationWarning)
-    raise Exception('Deprecated function. Use model_amplitudes_factory and '
-                    'sensitivity_model_assisted_tfm instead.')
-
-
-def sensitivity_conjugate_for_view(tx_sensitivity, rx_sensitivity):
-    """
-    Deprecated function. Use :func:`model_amplitudes_factory`
-    :func:`sensitivity_model_assisted_tfm` instead
-    """
-    warnings.warn(DeprecationWarning)
-    raise Exception('Deprecated function. Use model_amplitudes_factory and '
-                    'sensitivity_model_assisted_tfm instead.')
-
-
-def sensitivity_image_point_source(tx_ray_weights, rx_ray_weights, tx, rx,
-                                   scanline_weights=None):
-    """
-    Deprecated function. Use :func:`model_amplitudes_factory`
-    :func:`sensitivity_model_assisted_tfm` instead
-    """
-    warnings.warn(DeprecationWarning)
-    raise Exception('Deprecated function. Use model_amplitudes_factory and '
-                    'sensitivity_model_assisted_tfm instead.')
-
-
-def sensitivity_image(model_amplitudes, scanline_weights, result):
-    """
-    Deprecated function. Use :func:`model_amplitudes_factory`
-    :func:`sensitivity_model_assisted_tfm` instead
-    """
-    warnings.warn(DeprecationWarning)
-    raise Exception('Deprecated function. Use model_amplitudes_factory and '
-                    'sensitivity_model_assisted_tfm instead.')
 
 
 def _nested_dict_to_flat_list(dictlike):

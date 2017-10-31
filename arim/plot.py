@@ -59,10 +59,6 @@ milli_formatter.__doc__ = 'Format an axis to milli (m).\nExample: ``ax.xaxis.set
 mega_formatter = ticker.FuncFormatter(lambda x, pos: '{:.1f}'.format(x * 1e-6))
 mega_formatter.__doc__ = 'Format an axis to mega (M).\nExample: ``ax.xaxis.set_major_formatter(mega_formatter)``'
 
-# Backward compatibility:
-us_formatter = micro_formatter
-mm_formatter = milli_formatter
-
 conf = Config([
     ('savefig', False),  # save the figure?
     ('plot_oxz.figsize', None),
@@ -124,8 +120,8 @@ def plot_bscan_pulse_echo(frame, use_dB=True, ax=None, title='B-scan', clim=None
                    interpolation=interpolation, cmap=cmap, origin='lower')
     ax.set_xlabel('Time (µs)')
     ax.set_ylabel('Element')
-    ax.xaxis.set_major_formatter(us_formatter)
-    ax.xaxis.set_minor_formatter(us_formatter)
+    ax.xaxis.set_major_formatter(micro_formatter)
+    ax.xaxis.set_minor_formatter(micro_formatter)
 
     def elements_ticker_func(i, pos):
         print('call elements_ticker: {}'.format((i, pos)))
@@ -214,8 +210,8 @@ def plot_scanline(frame, idx, to_show='filtered', func_res=np.real, ax=None,
         lines['filtered'] = line
     ax.set_xlabel('time (µs)')
     ax.set_ylabel('amplitude')
-    ax.xaxis.set_major_formatter(us_formatter)
-    ax.xaxis.set_minor_formatter(us_formatter)
+    ax.xaxis.set_major_formatter(micro_formatter)
+    ax.xaxis.set_minor_formatter(micro_formatter)
 
     if title is not None:
         ax.set_title(title)
@@ -773,10 +769,10 @@ def plot_interfaces(interfaces_list, ax=None, show_probe=True, show_grid=False,
     if ax.get_ylabel() == '':
         ax.set_ylabel('z (mm)')
 
-    ax.xaxis.set_major_formatter(mm_formatter)
-    ax.yaxis.set_major_formatter(mm_formatter)
-    ax.xaxis.set_minor_formatter(mm_formatter)
-    ax.yaxis.set_minor_formatter(mm_formatter)
+    ax.xaxis.set_major_formatter(milli_formatter)
+    ax.yaxis.set_major_formatter(milli_formatter)
+    ax.xaxis.set_minor_formatter(milli_formatter)
+    ax.yaxis.set_minor_formatter(milli_formatter)
 
     if title is not None:
         ax.set_title(title)

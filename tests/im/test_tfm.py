@@ -72,8 +72,10 @@ class TestTFM:
         lookup_times_tx[0, 0] = 2.
         lookup_times_rx[0, 0] = 0.1
 
-        with patch.object(im.BaseTFM, 'get_lookup_times_tx', return_value=lookup_times_tx):
-            with patch.object(im.BaseTFM, 'get_lookup_times_rx', return_value=lookup_times_rx):
+        with patch.object(im.BaseTFM, 'get_lookup_times_tx',
+                          return_value=lookup_times_tx):
+            with patch.object(im.BaseTFM, 'get_lookup_times_rx',
+                              return_value=lookup_times_rx):
                 tfm = im.BaseTFM(frame, grid)
                 out = tfm.extrema_lookup_times_in_rectbox()
         assert math.isclose(out.tmin, -3.)
@@ -82,7 +84,6 @@ class TestTFM:
         assert out.rx_elt_for_tmin == 2
         assert out.tx_elt_for_tmax == 0
         assert out.rx_elt_for_tmax == 1
-
 
     def test_simple_tfm(self, grid, frame):
         # Check that SimpleTFM and ContactTFM gives consistent values:
@@ -102,12 +103,6 @@ class TestTFM:
         np.testing.assert_allclose(res, res_contact)
 
 
-
-
-
-
-
-
 class TestAmplitude:
     def test_uniform(self, frame, grid):
         amplitudes = arim.im.amplitudes.UniformAmplitudes(frame, grid)
@@ -123,33 +118,3 @@ class TestAmplitude:
         amp2 = arim.im.amplitudes.UniformAmplitudes(frame, grid)
         multi_amp = arim.im.amplitudes.MultiAmplitudes([amp1, amp2])
         assert np.allclose(multi_amp(), 1.)
-
-
-def test_make_views():
-    probe = g.Points(np.random.uniform(size=(10, 3)), 'Probe')
-    frontwall = g.Points(np.random.uniform(size=(10, 3)), 'Frontwall')
-    backwall = g.Points(np.random.uniform(size=(10, 3)), 'Backwall')
-    grid = g.Points(np.random.uniform(size=(10, 3)), 'Grid')
-
-    v_couplant = 1.0
-    v_longi = 2.0
-    v_shear = 3.0
-
-    with pytest.warns(DeprecationWarning):
-        views = arim.im.SingleViewTFM.make_views(probe, frontwall, backwall, grid,
-                                                 v_couplant, v_longi, v_shear)
-
-    assert len(views) == 21
-    assert len(set(views.keys())) == 21
-    for key, view in views.items():
-        assert key == view.name
-
-    view = views['LT-TL']
-    assert view.tx_path.to_fermat_path() == view.rx_path.to_fermat_path()
-
-    view = views['LT-LT']
-    assert view.tx_path.to_fermat_path() == (probe, v_couplant, frontwall, v_longi,
-                                             backwall, v_shear, grid)
-    assert view.rx_path.to_fermat_path() == (probe, v_couplant, frontwall, v_shear,
-                                             backwall, v_longi, grid)
-

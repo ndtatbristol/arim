@@ -251,7 +251,7 @@ class DirectivityFiniteWidth2D(Amplitudes):
         for (element, (elt_dim, elt_loc)) in enumerate(
                 zip(probe.dimensions, probe.locations)):
             elt_width = elt_dim[0]
-            amplitudes[..., element] = ut.directivity_finite_width_2d(
+            amplitudes[..., element] = ut.directivity_2d_rectangular_in_fluid(
                 spher.theta[..., element], elt_width,
                 wavelength)
         return amplitudes

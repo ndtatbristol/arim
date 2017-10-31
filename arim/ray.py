@@ -263,11 +263,6 @@ class Rays:
         interior_indices = np.zeros((0, n, m), dtype=dtype_indices)
         return cls(times, interior_indices, path)
 
-    @property
-    def path(self):
-        warnings.warn("use Rays.fermat_path instead Rays.path", DeprecationWarning,
-                      stacklevel=2)
-        return self._fermat_path
 
     @property
     def fermat_path(self):
@@ -451,87 +446,6 @@ class Rays:
                                                expanded_indices, n, m, p, d)
             return expanded_indices
 
-    def get_incoming_angles(self, interfaces, return_distances=False):
-        """
-        .. note::
-
-            Deprecated. Use RayGeometry.conventional_inc_angles() instead.
-
-        Yield the conventional incoming angles interface per interface. For the first
-        interface which has no incoming legs, yield None.
-
-        Distances can also be returned by setting ``return_distances`` to True.
-
-        Parameters
-        ----------
-        interfaces : tuple of Interfaces
-        return_distance : bool
-            Default False.
-
-        Yields
-        ------
-        alpha : ndarray or None
-            ``alpha[i, j]`` is the angle between the incoming leg of the ray (i, j)
-            at the current interface and the normal to this interface.
-            One array (or None) is yielded per interface.
-        distance : ndarray or None
-            ``distance[i, j]`` is the size of the leg of the ray (i, j) at the current
-            interface.
-            One array (or None) is yielded per interface.
-            Yielded only if ``return_distances`` is True.
-
-        """
-        warnings.warn('Use RayGeometry.conventional_inc_angles() instead.',
-                      DeprecationWarning, stacklevel=2)
-
-        ray_geometry = RayGeometry(interfaces, self)
-        for i in range(len(interfaces)):
-            if return_distances:
-                yield (ray_geometry.conventional_inc_angle(i),
-                       ray_geometry.inc_leg_size(i))
-            else:
-                yield ray_geometry.conventional_inc_angle(i)
-
-    def get_outgoing_angles(self, interfaces, return_distances=False):
-        """
-        .. note::
-
-            Deprecated. Use RayGeometry.conventional_out_angles() instead.
-
-        Yield the conventional outgoing angles interface per interface. For the last
-        interface which has no outgoing legs, yield None.
-
-        Distances can also be returned by setting ``return_distances`` to True.
-
-        Parameters
-        ----------
-        interfaces : tuple of Interfaces
-        return_distance : bool
-            Default False.
-
-        Yields
-        ------
-        alpha : ndarray or None
-            ``alpha[i, j]`` is the angle between the outgoing leg of the ray (i, j)
-            at the current interface and the normal to this interface.
-            One array (or None) is yielded per interface.
-        distance : ndarray or None
-            ``distance[i, j]`` is the size of the leg of the ray (i, j) at the current
-            interface.
-            One array (or None) is yielded per interface.
-            Yielded only if ``return_distances`` is True.
-
-        """
-        warnings.warn('Use RayGeometry.conventional_out_angles() instead.',
-                      DeprecationWarning, stacklevel=2)
-
-        ray_geometry = RayGeometry(interfaces, self)
-        for i in range(len(interfaces)):
-            if return_distances:
-                yield (ray_geometry.conventional_out_angle(i),
-                       ray_geometry.inc_leg_size(i))
-            else:
-                yield ray_geometry.conventional_out_angle(i)
 
     def reverse(self, order='f'):
         """
@@ -1065,23 +979,6 @@ class RayGeometry:
         self._cache = self._cache.__class__()
         self._final_keys = set()
 
-    @property
-    def inc_angles_list(self):
-        """
-        Legacy interface
-        """
-        warnings.warn('inc_angles_list is deprecated, use conventional_inc_angle() '
-                      'instead', DeprecationWarning, stacklevel=2)
-        return [self.conventional_inc_angle(i) for i in range(self.numinterfaces)]
-
-    @property
-    def out_angles_list(self):
-        """
-        Legacy interface
-        """
-        warnings.warn('out_angles_list is deprecated, use conventional_out_angle() '
-                      'instead', DeprecationWarning, stacklevel=2)
-        return [self.conventional_out_angle(i) for i in range(self.numinterfaces)]
 
     @_cache_ray_geometry
     def inc_leg_size(self, interface_idx):

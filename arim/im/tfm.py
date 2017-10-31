@@ -15,11 +15,10 @@ from .das import _das_numba
 from .das import delay_and_sum  # default tfm
 from .. import settings as s
 from .. import core as c
-from ..path import IMAGING_MODES  # import for backward compatibility
 from ..exceptions import ArimWarning
 from ..helpers import parse_enum_constant, chunk_array
 
-__all__ = ['BaseTFM', 'ContactTFM', 'SingleViewTFM', 'IMAGING_MODES', 'SimpleTFM']
+__all__ = ['BaseTFM', 'ContactTFM', 'SingleViewTFM', 'SimpleTFM', 'tfm_with_scattering']
 
 ExtramaLookupTimes = namedtuple('ExtramaLookupTimes',
                                 'tmin tmax tx_elt_for_tmin rx_elt_for_tmin tx_elt_for_tmax rx_elt_for_tmax')
@@ -344,61 +343,6 @@ class SingleViewTFM(BaseTFM):
             str(self.view),
             hex(id(self)))
 
-    @classmethod
-    def make_views(cls, probe, frontwall, backwall, grid, v_couplant, v_longi, v_shear):
-        """
-        Create direct-direct, skip-direct and skip-skip views for a block an immersion.
-
-        This method is here for backward-compatibility only. It is recommended to use the more generic
-        ``arim.make_view_for_block_in_immersion`` instead.
-
-        Parameters
-        ----------
-        probe : Points
-        frontwall : Points
-        backwall : Points
-        grid : Points
-        v_couplant : float
-        v_longi : float
-        v_shear : float
-
-        Returns
-        -------
-        views : List[View]
-        """
-        from ..path import paths_for_block_in_immersion, views_for_block_in_immersion
-
-        warnings.warn("Using arim.make_view_for_block_in_immersion is recommended. "
-                      "This method will be removed in future versions.",
-                      DeprecationWarning,
-                      stacklevel=2)
-
-        probe = g.aspoints(probe)
-        frontwall = g.aspoints(frontwall)
-        backwall = g.aspoints(backwall)
-        grid = g.aspoints(grid)
-
-        # Create dummy interfaces:
-        interfaces_dict = dict()
-        interfaces_dict['probe'] = c.Interface(probe, np.resize(np.eye(3),
-                                                                (*probe.shape, 3, 3)))
-        interfaces_dict['frontwall_trans'] = c.Interface(frontwall, np.resize(np.eye(3), (
-            *frontwall.shape, 3, 3)))
-        interfaces_dict['backwall_refl'] = c.Interface(backwall,
-                                                       np.resize(np.eye(3),
-                                                                 (*backwall.shape, 3, 3)))
-        interfaces_dict['grid'] = c.Interface(grid,
-                                              np.resize(np.eye(3), (*grid.shape, 3, 3)))
-
-        # Create Dummy material:
-        block = c.Material(v_longi, v_shear, state_of_matter='solid')
-        couplant = c.Material(v_couplant, state_of_matter='liquid')
-
-        paths_dict = paths_for_block_in_immersion(block, couplant, interfaces_dict)
-        views = views_for_block_in_immersion(paths_dict)
-
-        return views
-
 
 class SimpleTFM(BaseTFM):
     """
@@ -465,6 +409,7 @@ def tfm_with_scattering(frame, grid, view, fillvalue, scattering_fn,
                         tx_scattering_angles, rx_scattering_angles,
                         scanline_weights=None, divide_by_sensitivity=True,
                         numthreads=None, block_size=None):
+    # todo: refactor this
     numscanlines = frame.numscanlines
     numpoints = grid.numpoints
     numelements = frame.probe.numelements
@@ -624,46 +569,3 @@ def _tfm_with_scattering(
                                               dt, t0, fillvalue, tfm_result)
 
 
-def model_amplitudes(frame, scattering_fn,
-                     tx_ray_weights, rx_ray_weights,
-                     tx_scattering_angles, rx_scattering_angles):
-    """
-    Returns the coefficients P_ij (for all points and for all scanlines),
-    where the forward model is F_ij = P_ij exp(-i omega tau_ij).
-
-    Parameters
-    ----------
-    frame
-        Only frame.tx and frame.rx are used
-    scattering_fn
-    tx_ray_weights
-    rx_ray_weights
-    tx_scattering_angles
-    rx_scattering_angles
-
-    Returns
-    -------
-    model_amplitudes : ndarray
-        Shape: (numpoints, numscanlines)
-    """
-    tx = frame.tx
-    rx = frame.rx
-
-    tx_amplitudes = np.ascontiguousarray(tx_ray_weights.T)
-    rx_amplitudes = np.ascontiguousarray(rx_ray_weights.T)
-
-    numelements, numpoints = tx_scattering_angles.shape
-    numscanlines = tx.shape[0]
-    assert tx.shape == (numscanlines,)
-    assert rx.shape == (numscanlines,)
-    assert rx_scattering_angles.shape == (numelements, numpoints)
-    assert tx_amplitudes.shape == (numpoints, numelements)
-    assert rx_amplitudes.shape == (numpoints, numelements)
-
-    scattering_amplitudes = scattering_fn(np.take(tx_scattering_angles, frame.tx, axis=0),
-                                          np.take(rx_scattering_angles, frame.rx, axis=0))
-    scattering_amplitudes = np.ascontiguousarray(scattering_amplitudes.T)
-
-    model_amplitudes = (scattering_amplitudes * np.take(tx_amplitudes, tx, axis=1)
-                        * np.take(rx_amplitudes, rx, axis=1))
-    return model_amplitudes
