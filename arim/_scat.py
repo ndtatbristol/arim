@@ -50,7 +50,7 @@ def _interpolate_scattering_matrix_kernel(scattering_matrix, inc_theta, out_thet
 @numba.guvectorize(['void(f8[:,:], f8[:], f8[:], f8[:])',
                     'void(c16[:,:], f8[:], f8[:], c16[:])'],
                    '(s,s),(),()->()',
-                   nopython=True, target='parallel')
+                   nopython=True, target='parallel', cache=True)
 def _interpolate_scattering_matrix_ufunc(scattering_matrix, inc_theta, out_theta, res):
     res[0] = _interpolate_scattering_matrix_kernel(scattering_matrix, inc_theta[0],
                                                    out_theta[0])

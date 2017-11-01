@@ -1,20 +1,20 @@
 import numpy as np
+import pytest
 
-import arim.scat
-from arim import ut
+from arim import ut, scat
 
 
 def test_scattering_angles_grid():
     n = 10
-    theta = arim.scat.make_angles(n)
-    inc_theta, out_theta = arim.scat.make_angles_grid(n)
+    theta = scat.make_angles(n)
+    inc_theta, out_theta = scat.make_angles_grid(n)
     for i in range(n):
         for j in range(n):
             assert inc_theta[i, j] == theta[j]
             assert out_theta[i, j] == theta[i]
 
 
-def test_scattering_2d_cylinder():
+def test_sdh_2d_scat():
     out_theta = np.array(
         [-3.141592653589793, -2.722713633111154, -2.303834612632515, -1.884955592153876,
          -1.466076571675237, -1.047197551196598, -0.628318530717959, -0.209439510239319,
@@ -66,12 +66,8 @@ def test_scattering_2d_cylinder():
     v_l = 6000
     v_t = 3000
     hole_radius = 5e-4
-    lambda_l = v_l / freq
-    lambda_t = v_t / freq
 
-    result = arim.scat.scat_2d_cylinder(inc_theta, out_theta, hole_radius, lambda_l,
-                                        lambda_t)
-
+    result = scat.sdh_2d_scat(inc_theta, out_theta, freq, hole_radius, v_l, v_t)
     # There is an unexplained -1 multiplicative factor.
     correction = dict()
     correction['LL'] = 1.
@@ -105,7 +101,7 @@ def test_scattering_2d_cylinder():
     np.testing.assert_allclose(result['TT'], corr_matlab_res['TT'], **args)
 
 
-def test_scattering_2d_cylinder2():
+def test_sdh_2d_scat2():
     shape = (4, 5, 7)
     out_theta = np.random.uniform(low=-np.pi, high=np.pi, size=shape)
     inc_theta = 0.
@@ -114,14 +110,15 @@ def test_scattering_2d_cylinder2():
     v_l = 6000
     v_t = 3000
     hole_radius = 5e-4
-    lambda_l = v_l / freq
-    lambda_t = v_t / freq
-    scat_params = dict(radius=hole_radius, longitudinal_wavelength=lambda_l,
-                       transverse_wavelength=lambda_t)
+    scat_params = dict(radius=hole_radius, longitudinal_vel=v_l,
+                       transverse_vel=v_t)
+    scat_params2 = dict(frequency=freq, radius=hole_radius, longitudinal_vel=v_l,
+                        transverse_vel=v_t)
+    scat_obj = scat.Sdh2dScat(**scat_params)
 
-    result = arim.scat.scat_2d_cylinder(inc_theta, out_theta, **scat_params)
+    result = scat.sdh_2d_scat(inc_theta, out_theta, **scat_params2)
 
-    scat_funcs = arim.scat.scat_2d_cylinder_funcs(**scat_params)
+    scat_funcs = scat.scat_2d_cylinder_funcs(**scat_params2)
     for key, scat_func in scat_funcs.items():
         np.testing.assert_allclose(scat_func(inc_theta, out_theta), result[key],
                                    err_msg=key)
@@ -131,8 +128,9 @@ def test_scattering_2d_cylinder2():
         assert val.shape == shape
 
     to_compute = {'LL', 'TL'}
-    result2 = arim.scat.scat_2d_cylinder(inc_theta, out_theta, to_compute=to_compute,
-                                         **scat_params)
+    result2 = scat.sdh_2d_scat(inc_theta, out_theta,
+                               to_compute=to_compute,
+                               **scat_params2)
     assert set(result2.keys()) == to_compute
     for key, val in result2.items():
         assert val.shape == shape
@@ -147,13 +145,13 @@ def _scattering_function(inc_theta, out_theta):
 
 def test_make_scattering_matrix():
     numpoints = 5
-    inc_theta, out_theta = arim.scat.make_angles_grid(numpoints)
-    scattering_matrix = arim.scat.func_to_matrix(_scattering_function, numpoints)
+    inc_theta, out_theta = scat.make_angles_grid(numpoints)
+    scattering_matrix = scat.func_to_matrix(_scattering_function, numpoints)
 
     assert inc_theta.shape == (numpoints, numpoints)
     assert out_theta.shape == (numpoints, numpoints)
 
-    theta = arim.scat.make_angles(numpoints)
+    theta = scat.make_angles(numpoints)
     for i in range(numpoints):
         for j in range(numpoints):
             assert np.allclose(scattering_matrix[i, j],
@@ -177,9 +175,9 @@ def test_scattering_interpolate_matrix():
     numpoints = 5
     dtheta = 2 * np.pi / numpoints
 
-    inc_theta, out_theta = arim.scat.make_angles_grid(numpoints)
-    scattering_matrix = arim.scat.func_to_matrix(_scattering_function, numpoints)
-    scat_fn = arim.scat.interpolate_matrix(scattering_matrix)
+    inc_theta, out_theta = scat.make_angles_grid(numpoints)
+    scattering_matrix = scat.func_to_matrix(_scattering_function, numpoints)
+    scat_fn = scat.interpolate_matrix(scattering_matrix)
     # raise Exception(scattering_matrix)
 
     np.testing.assert_allclose(scat_fn(inc_theta, out_theta),
@@ -209,27 +207,27 @@ def test_rotate_scattering_matrix():
     # scat_matrix = np.random.uniform(size=(n, n)) + 1j * np.random.uniform(size=(n, n))
     # scat_func = ut.interpolate_matrix(scat_matrix)
     n = 72
-    inc_angles, out_angles = arim.scat.make_angles_grid(n)
+    inc_angles, out_angles = scat.make_angles_grid(n)
     scat_matrix = (
         np.exp(-(inc_angles - np.pi / 6) ** 2 - (out_angles + np.pi / 4) ** 2)
         + 1j * np.exp(
             -(inc_angles + np.pi / 2) ** 2 - (out_angles - np.pi / 10) ** 2))
-    scat_func = arim.scat.interpolate_matrix(scat_matrix)
+    scat_func = scat.interpolate_matrix(scat_matrix)
 
     # rotation of 0°
-    rotated_scat_matrix = arim.scat.rotate_matrix(scat_matrix, 0.)
+    rotated_scat_matrix = scat.rotate_matrix(scat_matrix, 0.)
     np.testing.assert_allclose(scat_matrix, rotated_scat_matrix)
 
     # rotation of 360°
-    rotated_scat_matrix = arim.scat.rotate_matrix(scat_matrix, 2 * np.pi)
+    rotated_scat_matrix = scat.rotate_matrix(scat_matrix, 2 * np.pi)
     np.testing.assert_allclose(scat_matrix, rotated_scat_matrix, rtol=1e-5)
 
     # rotation of pi/ 6
     # Ensure that S'(theta_1, theta_2) = S(theta_1 - phi, theta_2 - phi)
     # No interpolation is involded here, this should be perfectly equal
     phi = np.pi / 6
-    rotated_scat_matrix = arim.scat.rotate_matrix(scat_matrix, phi)
-    rotated_scat_scat_func = arim.scat.interpolate_matrix(rotated_scat_matrix)
+    rotated_scat_matrix = scat.rotate_matrix(scat_matrix, phi)
+    rotated_scat_scat_func = scat.interpolate_matrix(rotated_scat_matrix)
     theta_1 = np.linspace(0, 2 * np.pi, n)
     theta_2 = np.linspace(0, np.pi, n)
     np.testing.assert_allclose(rotated_scat_scat_func(theta_1, theta_2),
@@ -239,8 +237,8 @@ def test_rotate_scattering_matrix():
     # Ensure that S'(theta_1, theta_2) = S(theta_1 - phi, theta_2 - phi)
     # Because of interpolation, this is not exactly equal.
     phi = np.pi / 5
-    rotated_scat_matrix = arim.scat.rotate_matrix(scat_matrix, phi)
-    rotated_scat_scat_func = arim.scat.interpolate_matrix(rotated_scat_matrix)
+    rotated_scat_matrix = scat.rotate_matrix(scat_matrix, phi)
+    rotated_scat_scat_func = scat.interpolate_matrix(rotated_scat_matrix)
     theta_1 = np.linspace(0, 2 * np.pi, 15)
     theta_2 = np.linspace(0, np.pi, 15)
     # import matplotlib.pyplot as plt
@@ -258,5 +256,115 @@ def test_rotate_scattering_matrix():
 
     # unrotate
     np.testing.assert_allclose(
-        arim.scat.rotate_matrix(rotated_scat_matrix, -phi),
+        scat.rotate_matrix(rotated_scat_matrix, -phi),
         scat_matrix)
+
+
+@pytest.fixture(params=['sdh'])
+def scat_obj(request):
+    if request.param == 'sdh':
+        hole_radius = 5e-4
+        return scat.Sdh2dScat(hole_radius, TestScattering.v_L, TestScattering.v_T)
+
+
+class TestScattering:
+    v_L = 6300.
+    v_T = 3100.
+    density = 2700.
+
+    def test_scattering(self, scat_obj):
+        numangles = 7
+        n, m = 9, 11
+        phi_in = scat.make_angles(n)
+        phi_out = scat.make_angles(m)
+
+        phi_in_array, phi_out_array = np.meshgrid(phi_in, phi_out, indexing='xy')
+        assert phi_in_array.shape == phi_out_array.shape == (m, n)
+
+        scat_keys = ('LL', 'LT', 'TL', 'TT')
+
+        freq = 2e6
+
+        # test Scattering.__call__, Scattering.__str__
+        repr(scat_obj)
+        str(scat_obj)
+
+        # test Scattering.__call__ with 0d array angles
+        val_dict = scat_obj(0.1, 0.2, freq)
+        assert set(val_dict.keys()) == set(scat_keys)
+        for val in val_dict.values():
+            assert np.ndim(val) == 0
+
+        # test Scattering.__call__ with 1d array angles
+        val_dict = scat_obj(phi_in, phi_in, freq)
+        for val in val_dict.values():
+            assert val.shape == phi_in.shape
+
+        # test Scattering.__call__ with 2d array angles
+        reference_dict = scat_obj(phi_in_array, phi_out_array, freq)
+        for val in reference_dict.values():
+            assert val.shape == phi_in_array.shape
+
+        # test broadcasting works well
+        for idx in np.ndindex(*phi_in_array.shape):
+            val_dict = scat_obj(phi_in_array[idx], phi_out_array[idx], freq)
+            for scat_key in scat_keys:
+                assert val_dict[scat_key] == reference_dict[scat_key][idx]
+
+        # computing the values for one scat_key
+        for scat_key in scat_keys:
+            val_dict = scat_obj(phi_in_array, phi_out_array, freq, to_compute=[scat_key])
+            assert scat_key in val_dict
+            np.testing.assert_allclose(val_dict[scat_key], reference_dict[scat_key],
+                                       err_msg='different output for the scat_key')
+
+        # test Scattering.as_single_freq_matrices
+        matrices_singlef = scat_obj.as_single_freq_matrices(freq, numangles)
+        for scat_key in scat_keys:
+            mat = matrices_singlef[scat_key]
+            assert mat.shape == (numangles, numangles)
+            assert mat[0, 0] == reference_dict[scat_key][0, 0], \
+                'different values for phi_in = phi_out = -pi ({})'.format(scat_key)
+
+        # test Scattering.as_multi_freq_matrices (use 2 frequencies)
+        matrices_multif = scat_obj.as_multi_freq_matrices([freq, 2 * freq], numangles)
+        for scat_key in scat_keys:
+            mat = matrices_multif[scat_key]
+            assert mat.shape == (2, numangles, numangles)
+            np.testing.assert_allclose(mat[0], matrices_singlef[scat_key],
+                                       err_msg='different output for the same frequency')
+            assert mat[0, 0, 0] == reference_dict[scat_key][0, 0], \
+                'different values for phi_in = phi_out = -pi ({})'.format(scat_key)
+
+    def test_reciprocity(self, scat_obj, show_plots):
+        numangles = 20
+        freq = 2e6
+        matrices = scat_obj.as_single_freq_matrices(freq, numangles)
+        LT = matrices['LT']
+        TL = matrices['TL']
+
+        lhs_func = lambda x: self.v_T ** 2 * x
+        rhs_func = lambda x: -self.v_L ** 2 * x
+
+        if show_plots:
+            import matplotlib.pyplot as plt
+            plt.figure()
+            idx = 1
+            lhs = lhs_func(LT[idx, :])
+            rhs = rhs_func(TL[:, idx])
+            plt.subplot(211)
+            plt.plot(lhs.real)
+            plt.plot(rhs.real)
+            plt.title(repr(scat_obj))
+            plt.subplot(212)
+            plt.plot(lhs.imag)
+            plt.plot(rhs.imag)
+            plt.show()
+
+        lhs = lhs_func(LT)
+        rhs = rhs_func(TL.T)
+        max_error = np.max(np.abs(lhs - rhs))
+        median_error = np.median(np.abs(lhs - rhs))
+        np.testing.assert_allclose(
+            lhs, rhs, err_msg='no reciprocity - maxerror = {}, median error = {}'.format(
+                max_error, median_error), rtol=1e-7, atol=1e-8)

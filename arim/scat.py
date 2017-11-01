@@ -2,13 +2,19 @@
 Scattering functions
 """
 import math
+import warnings
+import functools
 from functools import partial
+import abc
 
 import numpy as np
 from numpy.core.umath import pi, cos, sin
 from scipy.special._ufuncs import hankel1, hankel2
+from scipy import interpolate
 
-from . import _scat
+from . import _scat, exceptions
+
+SCAT_KEYS = frozenset(('LL', 'LT', 'TL', 'TT'))
 
 
 def make_angles(numpoints):
@@ -91,12 +97,57 @@ def interpolate_matrices(scattering_matrices):
             in scattering_matrices.items()}
 
 
-def scat_2d_cylinder(inc_theta, out_theta, radius, longitudinal_wavelength,
-                     transverse_wavelength,
-                     min_terms=10, term_factor=4,
-                     to_compute={'LL', 'LT', 'TL', 'TT'}):
+def multi_to_single_freq_scat_matrices(multi_freq_scat_matrices, new_freq,
+                                       **interp1d_kwargs):
     """
-    Scattering coefficients for a 2D circle (or infinitely-long cylinder in 3D).
+    Return the single-frequency scattering matrices from multi-frequency scattering
+    matrices by interpolating at the desired frequency.
+
+    Parameters
+    ----------
+    multi_freq_scat_matrices : dict[str]
+        Keys: frequencies (1d array), LL, LT, TL, TT
+    new_freq : float
+        New frequency where to interpolate
+    interp1d_kwargs : kwargs
+        Arguments for `scipy.interpolate.interp1d`
+
+    Returns
+    -------
+    single_freq_scat_matrices
+
+    """
+    frequencies = multi_freq_scat_matrices['frequencies']
+    out = {}
+
+    interpolation_is_needed = len(frequencies) > 1
+    if not interpolation_is_needed:
+        # only one frequency, return the only scattering matrices
+        if new_freq != frequencies[0]:
+            warnings.warn("'new_freq' is unused because no interpolation is needed",
+                          exceptions.ArimWarning)
+        if len(interp1d_kwargs) > 0:
+            warnings.warn("interp1d arguments are unused because no interpolation "
+                          "is needed", exceptions.ArimWarning)
+
+    for key in SCAT_KEYS:
+        try:
+            matrix = multi_freq_scat_matrices[key]
+        except KeyError:
+            continue
+        else:
+            if interpolation_is_needed:
+                out[key] = interpolate.interp1d(frequencies, matrix, axis=0,
+                                                **interp1d_kwargs)(new_freq)
+            else:
+                out[key] = matrix[0]
+    return out
+
+
+def sdh_2d_scat(inc_theta, out_theta, frequency, radius, longitudinal_vel,
+                transverse_vel, min_terms=10, term_factor=4, to_compute=SCAT_KEYS):
+    """
+    Scattering coefficients for a side-drilled hole in 2D
 
     The scattered field is given by::
 
@@ -132,9 +183,10 @@ def scat_2d_cylinder(inc_theta, out_theta, radius, longitudinal_wavelength,
         Angle in radians. Pulse echo case corresponds to inc_theta = out_theta
     out_theta : ndarray
         Angle in radians.
+    frequency : float
     radius : float
-    longitudinal_wavelength : float
-    transverse_wavelength : float
+    longitudinal_vel : float
+    transverse_vel : float
     min_terms : int
     term_factor : int
     to_compute : set
@@ -163,17 +215,16 @@ def scat_2d_cylinder(inc_theta, out_theta, radius, longitudinal_wavelength,
 
 
     """
-    valid_keys = {'LL', 'LT', 'TL', 'TT'}
-
     theta = out_theta - inc_theta
 
-    if not valid_keys.issuperset(to_compute):
-        raise ValueError("Valid 'to_compute' arguments are {} (got {})".format(valid_keys,
+    if not SCAT_KEYS.issuperset(to_compute):
+        raise ValueError("Valid 'to_compute' arguments are {} (got {})".format(SCAT_KEYS,
                                                                                to_compute))
 
     # wavenumber
-    kl = 2 * pi / longitudinal_wavelength
-    kt = 2 * pi / transverse_wavelength
+
+    kl = 2 * pi * frequency / longitudinal_vel
+    kt = 2 * pi * frequency / transverse_vel
 
     # Brind eq 2.8
     alpha = kl * radius
@@ -281,22 +332,22 @@ def scat_2d_cylinder(inc_theta, out_theta, radius, longitudinal_wavelength,
 
 
 def _scat_2d_cylinder(inc_theta, out_theta, scat_key, **scat_params):
-    return scat_2d_cylinder(inc_theta, out_theta, to_compute={scat_key},
-                            **scat_params)[scat_key]
+    return sdh_2d_scat(inc_theta, out_theta, to_compute={scat_key},
+                       **scat_params)[scat_key]
 
 
-def scat_2d_cylinder_funcs(radius, longitudinal_wavelength,
-                           transverse_wavelength, **kwargs):
+def scat_2d_cylinder_funcs(radius, longitudinal_vel,
+                           transverse_vel, **kwargs):
     """
     Returns scattering functions for side-drilled holes.
 
-    Cf. :func:`scat_2d_cylinder`
+    Cf. :func:`sdh_2d_scat`
 
     Parameters
     ----------
     radius
-    longitudinal_wavelength
-    transverse_wavelength
+    longitudinal_vel
+    transverse_vel
     kwargs
 
     Returns
@@ -308,8 +359,8 @@ def scat_2d_cylinder_funcs(radius, longitudinal_wavelength,
     scat_funcs = {}
     scat_params = dict(
         radius=radius,
-        longitudinal_wavelength=longitudinal_wavelength,
-        transverse_wavelength=transverse_wavelength,
+        longitudinal_vel=longitudinal_vel,
+        transverse_vel=transverse_vel,
         **kwargs
     )
 
@@ -319,21 +370,21 @@ def scat_2d_cylinder_funcs(radius, longitudinal_wavelength,
     return scat_funcs
 
 
-def scat_2d_cylinder_matrices(numpoints, radius, longitudinal_wavelength,
-                              transverse_wavelength,
+def scat_2d_cylinder_matrices(numpoints, radius, longitudinal_vel,
+                              transverse_vel,
                               to_compute={'LL', 'LT', 'TL', 'TT'}, **kwargs):
     """
     Returns scattering matrices for side-drilled holes.
 
-    Cf. :func:`scat_2d_cylinder`.
+    Cf. :func:`sdh_2d_scat`.
 
     Parameters
     ----------
     numpoints : int
         Number of points for discretising [-pi, pi[.
     radius
-    longitudinal_wavelength
-    transverse_wavelength
+    longitudinal_vel
+    transverse_vel
     min_terms
     term_factor
     to_compute
@@ -343,8 +394,8 @@ def scat_2d_cylinder_matrices(numpoints, radius, longitudinal_wavelength,
     matrices : dict
     """
     matrices = {}
-    scat_funcs = scat_2d_cylinder_funcs(radius, longitudinal_wavelength,
-                                        transverse_wavelength, **kwargs)
+    scat_funcs = scat_2d_cylinder_funcs(radius, longitudinal_vel,
+                                        transverse_vel, **kwargs)
     for scat_key in to_compute:
         matrices[scat_key] = func_to_matrix(scat_funcs[scat_key], numpoints)
     return matrices
@@ -404,3 +455,158 @@ def rotate_matrix(scat_matrix, phi):
     freqshift = np.exp(-2j * np.pi * (freq_x + freq_y) * phi)
     scat_matrix_f = np.fft.fft2(scat_matrix)
     return np.fft.ifft2(freqshift * scat_matrix_f)
+
+
+def _partial_one_scat_key(scat_func, scat_key, *args, **kwargs):
+    # Remark: do not try to replace this by a lambda function, a proper closure is needed
+    # here.
+    # See https://stackoverflow.com/questions/3252228/python-why-is-functools-partial-necessary
+    to_compute = {scat_key}
+    return functools.partial(scat_func, *args, to_compute=to_compute, **kwargs)[scat_key]
+
+
+def scattering_factory(kind, **kwargs):
+    pass
+
+
+class Scattering(abc.ABC):
+    @abc.abstractmethod
+    def __call__(self, inc_theta, out_theta, frequency, to_compute=SCAT_KEYS):
+        """
+        Returns the scattering values for the given angles and frequency.
+
+        Parameters
+        ----------
+        inc_theta : ndarray
+        out_theta : ndarray
+        frequency : float
+        to_compute : set[str]
+
+        Returns
+        -------
+        scat_values : dict[ndarray]
+            Keys: at least the ones given in `to_compute`.
+
+        """
+
+    def as_multi_freq_funcs(self):
+        """
+        Returns a dict of scattering functions that take as input the incident angle,
+        the outgoing angle and the frequency.
+        """
+        scat_funcs = {}
+
+        for scat_key in SCAT_KEYS:
+            scat_funcs[scat_key] = _partial_one_scat_key(self, scat_key)
+        return scat_funcs
+
+    def as_single_freq_funcs(self, frequency):
+        """
+        Returns a dict of scattering functions that take as input the incident angle
+        and the outgoing angle.
+        """
+        scat_funcs = {}
+
+        for scat_key in SCAT_KEYS:
+            scat_funcs[scat_key] = _partial_one_scat_key(self, scat_key,
+                                                         frequency=frequency)
+        return scat_funcs
+
+    def as_multi_freq_matrices(self, frequencies, numangles, to_compute=SCAT_KEYS):
+        """
+        Returns scattering matrices at different frequencies.
+
+        Parameters
+        ----------
+        frequency : ndarray
+            Shape: (numfreq, )
+        numangles : int
+        to_compute
+
+        Returns
+        -------
+        dict[str, ndarray]
+            Shape of each matrix: ``(numfreq, numpoints, numpoints)``
+
+        """
+        inc_theta, out_theta = make_angles_grid(numangles)
+
+        out = None
+
+        for i, frequency in enumerate(frequencies):
+            matrices = self(inc_theta, out_theta, frequency, to_compute)
+            if out is None:
+                # Late initialisation for getting the datatype of matrices
+                out = {scat_key: np.zeros((len(frequencies), numangles, numangles),
+                                          matrices[scat_key].dtype)
+                       for scat_key in to_compute}
+            for scat_key in to_compute:
+                out[scat_key][i] = matrices[scat_key]
+        return out
+
+    def as_single_freq_matrices(self, frequency, numangles, to_compute=SCAT_KEYS):
+        """
+        Returns scattering matrices at a given frequency.
+
+        Parameters
+        ----------
+        frequency : float
+        numangles : int
+        to_compute : set[str]
+
+
+        Returns
+        -------
+        dict[str, ndarray]
+            Shape of each matrix: ``(numpoints, numpoints)``
+
+        """
+        inc_theta, out_theta = make_angles_grid(numangles)
+        return self(inc_theta, out_theta, frequency, to_compute)
+
+
+class ScatteringFromFunc(Scattering):
+    """
+    Wrapper for scattering functions that take as three first arguments 'inc_theta',
+    'out_theta' and 'frequency', and that accepts an argument 'to_compute'.
+
+    To use:
+    - create a class that inherit this class,
+    - set the wrapped function as the '_scat_func' attribute,
+    - populate the '_scat_kwargs' attribute with the extra arguments to pass to '_scat_func',
+    ie any argument but 'inc_theta', 'out_theta', 'frequency' and 'to_compute'.
+    """
+    _scat_kwargs = None  # placeholder
+
+    @staticmethod
+    @abc.abstractmethod
+    def _scat_func():
+        """Wrapped function."""
+        raise NotImplementedError
+
+    def __call__(self, inc_theta, out_theta, frequency, to_compute=SCAT_KEYS):
+        return self._scat_func(inc_theta, out_theta, frequency,
+                               to_compute=to_compute, **self._scat_kwargs)
+
+    def __repr__(self):
+        # Returns something like 'Scattering(x=1, y=2)'
+        arg_str = ", ".join(['{}={}'.format(key, val)
+                             for key, val in self._scat_kwargs.items()])
+        return self.__class__.__qualname__ + '(' + arg_str + ')'
+
+
+class Sdh2dScat(ScatteringFromFunc):
+    '''
+    Scattering for side-drilled hole
+    '''
+    _scat_func = staticmethod(sdh_2d_scat)
+
+    def __init__(self, radius, longitudinal_vel, transverse_vel, min_terms=10,
+                 term_factor=4):
+        self._scat_kwargs = dict(radius=radius, longitudinal_vel=longitudinal_vel,
+                                 transverse_vel=transverse_vel,
+                                 min_terms=min_terms, term_factor=term_factor)
+
+
+class ScatteringFromMatrices(Scattering):
+    pass
