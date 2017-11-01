@@ -28,11 +28,7 @@ from collections import namedtuple, OrderedDict
 
 import numpy as np
 
-from arim import Interface, Path, Mode, View
-from arim.helpers import parse_enum_constant
-from arim.path import L, T, make_viewnames
-
-from .. import model, ray
+from .. import model, ray, ut, helpers
 from .. import core as c
 from ..ray import RayGeometry
 
@@ -324,7 +320,6 @@ def ray_weights_for_wall(path, frequency, probe_element_width=None,
         directivity_rx = model.directivity_2d_rectangular_in_fluid_for_path(
             ray_geometry, probe_element_width, d.wavelength_in_couplant)
 
-
         weights_dict['directivity'] = directivity_tx * directivity_rx.T
     else:
         weights_dict['directivity'] = one
@@ -380,21 +375,21 @@ def make_interfaces(couplant_material,
     """
     interface_dict = OrderedDict()
 
-    interface_dict['probe'] = Interface(probe_points, probe_orientations,
+    interface_dict['probe'] = c.Interface(probe_points, probe_orientations,
                                         are_normals_on_out_rays_side=True)
-    interface_dict['frontwall_trans'] = Interface(frontwall_points,
+    interface_dict['frontwall_trans'] = c.Interface(frontwall_points,
                                                   frontwall_orientations,
                                                   'fluid_solid', 'transmission',
                                                   are_normals_on_inc_rays_side=False,
                                                   are_normals_on_out_rays_side=True)
-    interface_dict['backwall_refl'] = Interface(backwall_points, backwall_orientations,
+    interface_dict['backwall_refl'] = c.Interface(backwall_points, backwall_orientations,
                                                 'solid_fluid', 'reflection',
                                                 reflection_against=couplant_material,
                                                 are_normals_on_inc_rays_side=False,
                                                 are_normals_on_out_rays_side=False)
-    interface_dict['grid'] = Interface(grid_points, grid_orientations,
+    interface_dict['grid'] = c.Interface(grid_points, grid_orientations,
                                        are_normals_on_inc_rays_side=True)
-    interface_dict['frontwall_refl'] = Interface(frontwall_points, frontwall_orientations,
+    interface_dict['frontwall_refl'] = c.Interface(frontwall_points, frontwall_orientations,
                                                  'solid_fluid', 'reflection',
                                                  reflection_against=couplant_material,
                                                  are_normals_on_inc_rays_side=True,
@@ -444,38 +439,38 @@ def make_paths(block_material, couplant_material, interface_dict,
     paths['L'] = c.Path(
         interfaces=(probe, frontwall, grid),
         materials=(couplant_material, block_material),
-        modes=(L, L),
+        modes=(c.Mode.L, c.Mode.L),
         name='L')
 
     paths['T'] = c.Path(
         interfaces=(probe, frontwall, grid),
         materials=(couplant_material, block_material),
-        modes=(L, T),
+        modes=(c.Mode.L, c.Mode.T),
         name='T')
 
     if max_number_of_reflection >= 1:
         paths['LL'] = c.Path(
             interfaces=(probe, frontwall, backwall, grid),
             materials=(couplant_material, block_material, block_material),
-            modes=(L, L, L),
+            modes=(c.Mode.L, c.Mode.L, c.Mode.L),
             name='LL')
 
         paths['LT'] = c.Path(
             interfaces=(probe, frontwall, backwall, grid),
             materials=(couplant_material, block_material, block_material),
-            modes=(L, L, T),
+            modes=(c.Mode.L, c.Mode.L, c.Mode.T),
             name='LT')
 
         paths['TL'] = c.Path(
             interfaces=(probe, frontwall, backwall, grid),
             materials=(couplant_material, block_material, block_material),
-            modes=(L, T, L),
+            modes=(c.Mode.L, c.Mode.T, c.Mode.L),
             name='TL')
 
         paths['TT'] = c.Path(
             interfaces=(probe, frontwall, backwall, grid),
             materials=(couplant_material, block_material, block_material),
-            modes=(L, T, T),
+            modes=(c.Mode.L, c.Mode.T, c.Mode.T),
             name='TT')
 
     if max_number_of_reflection >= 2:
@@ -486,10 +481,10 @@ def make_paths(block_material, couplant_material, interface_dict,
                 interfaces=(probe, frontwall, backwall, frontwall_refl, grid),
                 materials=(couplant_material, block_material, block_material,
                            block_material),
-                modes=(L,
-                       parse_enum_constant(key[0], Mode),
-                       parse_enum_constant(key[1], Mode),
-                       parse_enum_constant(key[2], Mode)),
+                modes=(c.Mode.L,
+                       helpers.parse_enum_constant(key[0], c.Mode),
+                       helpers.parse_enum_constant(key[1], c.Mode),
+                       helpers.parse_enum_constant(key[2], c.Mode)),
                 name=key)
 
     return paths
@@ -516,7 +511,7 @@ def make_views(paths_dict, unique_only=True):
     views: OrderedDict[Views]
 
     """
-    viewnames = make_viewnames(paths_dict.keys(), unique_only=unique_only)
+    viewnames = ut.make_viewnames(paths_dict.keys(), unique_only=unique_only)
     views = OrderedDict()
     for view_name_tuple in viewnames:
         tx_name, rx_name = view_name_tuple
@@ -526,5 +521,5 @@ def make_views(paths_dict, unique_only=True):
         # to get the receive path: return the string of the corresponding transmit path
         rx_path = paths_dict[rx_name[::-1]]
 
-        views[view_name] = View(tx_path, rx_path, view_name)
+        views[view_name] = c.View(tx_path, rx_path, view_name)
     return views

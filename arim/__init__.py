@@ -9,7 +9,14 @@ from .core import *
 from . import _probes, geometry, registration, config, helpers, ut
 from .geometry import Points, Grid
 
+
+# probe database
 probes = _probes.probes
+
+#
+L = Mode.L
+T = Mode.T
+
 
 __author__ = "Nicolas Budyn"
 __credits__ = []

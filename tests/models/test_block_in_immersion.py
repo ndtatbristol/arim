@@ -108,3 +108,101 @@ def test_model_amplitudes():
     backwall_orientations = context['backwall_orientations']
     scatterer_points = context['scatterer_points']
     scatterer_orientations = context['scatterer_orientations']
+
+
+def test_path_in_immersion():
+    xmin = -20e-3
+    xmax = 100e-3
+
+    couplant = arim.Material(longitudinal_vel=1480, transverse_vel=None, density=1000.,
+                             state_of_matter='liquid', metadata={'long_name': 'Water'})
+    block = arim.Material(longitudinal_vel=6320., transverse_vel=3130., density=2700.,
+                          state_of_matter='solid', metadata={'long_name': 'Aluminium'})
+
+    probe_points, probe_orientations = arim.geometry.points_1d_wall_z(0e-3, 15e-3,
+                                                                      z=0., numpoints=16,
+                                                                      name='Frontwall')
+
+    frontwall_points, frontwall_orientations = arim.geometry.points_1d_wall_z(xmin, xmax,
+                                                                              z=0., numpoints=20,
+                                                                              name='Frontwall')
+    backwall_points, backwall_orientations = arim.geometry.points_1d_wall_z(xmin, xmax,
+                                                                            z=40.18e-3, numpoints=21,
+                                                                            name='Backwall')
+
+    grid = arim.geometry.Grid(xmin, xmax,
+                              ymin=0., ymax=0.,
+                              zmin=0., zmax=20e-3,
+                              pixel_size=5e-3)
+    grid_points, grid_orientation = arim.geometry.points_from_grid(grid)
+
+    interfaces = arim.models.block_in_immersion.make_interfaces(couplant, probe_points,
+                                                                probe_orientations,
+                                                                frontwall_points,
+                                                                frontwall_orientations,
+                                                                backwall_points,
+                                                                backwall_orientations,
+                                                                grid_points, grid_orientation)
+    assert interfaces['probe'].points is probe_points
+    assert interfaces['probe'].orientations is probe_orientations
+    assert interfaces['frontwall_trans'].points is frontwall_points
+    assert interfaces['frontwall_trans'].orientations is frontwall_orientations
+    assert interfaces['frontwall_refl'].points is frontwall_points
+    assert interfaces['frontwall_refl'].orientations is frontwall_orientations
+    assert interfaces['backwall_refl'].points is backwall_points
+    assert interfaces['backwall_refl'].orientations is backwall_orientations
+    assert interfaces['grid'].points is grid_points
+    assert interfaces['grid'].orientations is grid_orientation
+
+    # ------------------------------------------------------------------------------------
+    # 6 paths, 21 views
+
+    paths = arim.models.block_in_immersion.make_paths(block, couplant, interfaces)
+    assert len(paths) == 6
+    assert paths['L'].to_fermat_path() == (probe_points, couplant.longitudinal_vel,
+                                           frontwall_points, block.longitudinal_vel,
+                                           grid_points)
+    assert paths['TL'].to_fermat_path() == (probe_points, couplant.longitudinal_vel,
+                                            frontwall_points, block.transverse_vel,
+                                            backwall_points,
+                                            block.longitudinal_vel, grid_points)
+
+    for path_key, path in paths.items():
+        assert path_key == path.name
+
+    # Make views
+    views = arim.models.block_in_immersion.make_views(paths)
+    assert len(views) == 21
+
+    view = views['LT-LT']
+    assert view.tx_path is paths['LT']
+    assert view.rx_path is paths['TL']
+
+    # ------------------------------------------------------------------------------------
+    # 14 paths, 105 views
+    paths = arim.models.block_in_immersion.make_paths(block, couplant, interfaces,
+                                                      max_number_of_reflection=2)
+    assert len(paths) == 14
+    assert paths['L'].to_fermat_path() == (probe_points, couplant.longitudinal_vel,
+                                           frontwall_points, block.longitudinal_vel,
+                                           grid_points)
+    assert paths['TL'].to_fermat_path() == (probe_points, couplant.longitudinal_vel,
+                                            frontwall_points, block.transverse_vel,
+                                            backwall_points,
+                                            block.longitudinal_vel, grid_points)
+    assert paths['TTL'].to_fermat_path() == (probe_points, couplant.longitudinal_vel,
+                                             frontwall_points, block.transverse_vel,
+                                             backwall_points, block.transverse_vel,
+                                             frontwall_points, block.longitudinal_vel,
+                                             grid_points)
+
+    for path_key, path in paths.items():
+        assert path_key == path.name
+
+    # Make views
+    views = arim.models.block_in_immersion.make_views(paths)
+    assert len(views) == 105
+
+    view = views['LT-LT']
+    assert view.tx_path is paths['LT']
+    assert view.rx_path is paths['TL']
