@@ -6,8 +6,8 @@ from arim import ut
 
 def test_scattering_angles_grid():
     n = 10
-    theta = arim.scat.scattering_angles(n)
-    inc_theta, out_theta = arim.scat.scattering_angles_grid(n)
+    theta = arim.scat.make_angles(n)
+    inc_theta, out_theta = arim.scat.make_angles_grid(n)
     for i in range(n):
         for j in range(n):
             assert inc_theta[i, j] == theta[j]
@@ -69,8 +69,8 @@ def test_scattering_2d_cylinder():
     lambda_l = v_l / freq
     lambda_t = v_t / freq
 
-    result = arim.scat.scattering_2d_cylinder(inc_theta, out_theta, hole_radius, lambda_l,
-                                              lambda_t)
+    result = arim.scat.scat_2d_cylinder(inc_theta, out_theta, hole_radius, lambda_l,
+                                        lambda_t)
 
     # There is an unexplained -1 multiplicative factor.
     correction = dict()
@@ -119,9 +119,9 @@ def test_scattering_2d_cylinder2():
     scat_params = dict(radius=hole_radius, longitudinal_wavelength=lambda_l,
                        transverse_wavelength=lambda_t)
 
-    result = arim.scat.scattering_2d_cylinder(inc_theta, out_theta, **scat_params)
+    result = arim.scat.scat_2d_cylinder(inc_theta, out_theta, **scat_params)
 
-    scat_funcs = arim.scat.scattering_2d_cylinder_funcs(**scat_params)
+    scat_funcs = arim.scat.scat_2d_cylinder_funcs(**scat_params)
     for key, scat_func in scat_funcs.items():
         np.testing.assert_allclose(scat_func(inc_theta, out_theta), result[key],
                                    err_msg=key)
@@ -131,8 +131,8 @@ def test_scattering_2d_cylinder2():
         assert val.shape == shape
 
     to_compute = {'LL', 'TL'}
-    result2 = arim.scat.scattering_2d_cylinder(inc_theta, out_theta, to_compute=to_compute,
-                                               **scat_params)
+    result2 = arim.scat.scat_2d_cylinder(inc_theta, out_theta, to_compute=to_compute,
+                                         **scat_params)
     assert set(result2.keys()) == to_compute
     for key, val in result2.items():
         assert val.shape == shape
@@ -147,13 +147,13 @@ def _scattering_function(inc_theta, out_theta):
 
 def test_make_scattering_matrix():
     numpoints = 5
-    inc_theta, out_theta = arim.scat.scattering_angles_grid(numpoints)
-    scattering_matrix = arim.scat.make_scattering_matrix(_scattering_function, numpoints)
+    inc_theta, out_theta = arim.scat.make_angles_grid(numpoints)
+    scattering_matrix = arim.scat.func_to_matrix(_scattering_function, numpoints)
 
     assert inc_theta.shape == (numpoints, numpoints)
     assert out_theta.shape == (numpoints, numpoints)
 
-    theta = arim.scat.scattering_angles(numpoints)
+    theta = arim.scat.make_angles(numpoints)
     for i in range(numpoints):
         for j in range(numpoints):
             assert np.allclose(scattering_matrix[i, j],
@@ -177,9 +177,9 @@ def test_scattering_interpolate_matrix():
     numpoints = 5
     dtheta = 2 * np.pi / numpoints
 
-    inc_theta, out_theta = arim.scat.scattering_angles_grid(numpoints)
-    scattering_matrix = arim.scat.make_scattering_matrix(_scattering_function, numpoints)
-    scat_fn = arim.scat.interpolate_scattering_matrix(scattering_matrix)
+    inc_theta, out_theta = arim.scat.make_angles_grid(numpoints)
+    scattering_matrix = arim.scat.func_to_matrix(_scattering_function, numpoints)
+    scat_fn = arim.scat.interpolate_matrix(scattering_matrix)
     # raise Exception(scattering_matrix)
 
     np.testing.assert_allclose(scat_fn(inc_theta, out_theta),
@@ -207,29 +207,29 @@ def test_scattering_interpolate_matrix():
 def test_rotate_scattering_matrix():
     # n = 10
     # scat_matrix = np.random.uniform(size=(n, n)) + 1j * np.random.uniform(size=(n, n))
-    # scat_func = ut.interpolate_scattering_matrix(scat_matrix)
+    # scat_func = ut.interpolate_matrix(scat_matrix)
     n = 72
-    inc_angles, out_angles = arim.scat.scattering_angles_grid(n)
+    inc_angles, out_angles = arim.scat.make_angles_grid(n)
     scat_matrix = (
         np.exp(-(inc_angles - np.pi / 6) ** 2 - (out_angles + np.pi / 4) ** 2)
         + 1j * np.exp(
             -(inc_angles + np.pi / 2) ** 2 - (out_angles - np.pi / 10) ** 2))
-    scat_func = arim.scat.interpolate_scattering_matrix(scat_matrix)
+    scat_func = arim.scat.interpolate_matrix(scat_matrix)
 
     # rotation of 0°
-    rotated_scat_matrix = arim.scat.rotate_scattering_matrix(scat_matrix, 0.)
+    rotated_scat_matrix = arim.scat.rotate_matrix(scat_matrix, 0.)
     np.testing.assert_allclose(scat_matrix, rotated_scat_matrix)
 
     # rotation of 360°
-    rotated_scat_matrix = arim.scat.rotate_scattering_matrix(scat_matrix, 2 * np.pi)
+    rotated_scat_matrix = arim.scat.rotate_matrix(scat_matrix, 2 * np.pi)
     np.testing.assert_allclose(scat_matrix, rotated_scat_matrix, rtol=1e-5)
 
     # rotation of pi/ 6
     # Ensure that S'(theta_1, theta_2) = S(theta_1 - phi, theta_2 - phi)
     # No interpolation is involded here, this should be perfectly equal
     phi = np.pi / 6
-    rotated_scat_matrix = arim.scat.rotate_scattering_matrix(scat_matrix, phi)
-    rotated_scat_scat_func = arim.scat.interpolate_scattering_matrix(rotated_scat_matrix)
+    rotated_scat_matrix = arim.scat.rotate_matrix(scat_matrix, phi)
+    rotated_scat_scat_func = arim.scat.interpolate_matrix(rotated_scat_matrix)
     theta_1 = np.linspace(0, 2 * np.pi, n)
     theta_2 = np.linspace(0, np.pi, n)
     np.testing.assert_allclose(rotated_scat_scat_func(theta_1, theta_2),
@@ -239,8 +239,8 @@ def test_rotate_scattering_matrix():
     # Ensure that S'(theta_1, theta_2) = S(theta_1 - phi, theta_2 - phi)
     # Because of interpolation, this is not exactly equal.
     phi = np.pi / 5
-    rotated_scat_matrix = arim.scat.rotate_scattering_matrix(scat_matrix, phi)
-    rotated_scat_scat_func = arim.scat.interpolate_scattering_matrix(rotated_scat_matrix)
+    rotated_scat_matrix = arim.scat.rotate_matrix(scat_matrix, phi)
+    rotated_scat_scat_func = arim.scat.interpolate_matrix(rotated_scat_matrix)
     theta_1 = np.linspace(0, 2 * np.pi, 15)
     theta_2 = np.linspace(0, np.pi, 15)
     # import matplotlib.pyplot as plt
@@ -258,5 +258,5 @@ def test_rotate_scattering_matrix():
 
     # unrotate
     np.testing.assert_allclose(
-        arim.scat.rotate_scattering_matrix(rotated_scat_matrix, -phi),
+        arim.scat.rotate_matrix(rotated_scat_matrix, -phi),
         scat_matrix)

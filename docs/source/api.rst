@@ -11,7 +11,6 @@ arim reference
 
    core
    geometry
-   path
    ray
    registration
    _probes

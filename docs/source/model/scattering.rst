@@ -22,7 +22,7 @@ Scattering as a function
   vt = 3100
   freq = 5e6
   radius = 0.1e-3
-  scat_funcs = arim.ut.scattering_2d_cylinder_funcs(vl/freq, vt/freq, radius)
+  scat_funcs = arim.ut.scat_2d_cylinder_funcs(vl/freq, vt/freq, radius)
 
 ``scat_funcs`` is a dictionary of function. For example, ``scat_funcs['LT']`` is a function.
 Each function takes two arguments: the first is the incident angles, the second is the scattering angles.
@@ -34,7 +34,7 @@ Example::
   scat_funcs['LT'](0., np.pi / 6)
 
 .. seealso::
-  :func:`arim.ut.scattering_2d_cylinder_funcs`, :func:`arim.ut.scattering_point_source_funcs`.
+  :func:`arim.ut.scat_2d_cylinder_funcs`, :func:`arim.ut.scat_point_source_funcs`.
 
 Scattering as a matrix
 ======================
@@ -43,13 +43,13 @@ Because computing the scattering amplitudes can be expensive, it is often useful
 them all incident and scattered angles and then to interpolate the values.
 
 The angles are discretised as a linear spaced vector in the inverval :math:`[-\pi, \pi[`. The number of points
-is denoted ``n``. They can be obtained with :func:`arim.ut.scattering_angles`.
+is denoted ``n``. They can be obtained with :func:`arim.ut.make_angles`.
 ::
 
   theta[k] := -pi + 2 pi k / n for k=0...n-1.
 
 The grids of incident and outgoing (scattered) angles are defined as follows.
-They can be obtained with :func:`arim.ut.scattering_angles_grid`.
+They can be obtained with :func:`arim.ut.make_angles_grid`.
 ::
 
   inc_angles[i, j] := theta[j]
@@ -67,15 +67,15 @@ Example::
   freq = 5e6
   radius = 0.1e-3
   n = 100
-  scat_matrices = arim.ut.scattering_2d_cylinder_matrices(n, vl/freq, vt/freq, radius)
-  theta = arim.ut.scattering_angles(n)
+  scat_matrices = arim.ut.scat_2d_cylinder_matrices(n, vl/freq, vt/freq, radius)
+  theta = arim.ut.make_angles(n)
 
 .. seealso::
 
-  :func:`arim.ut.scattering_2d_cylinder_matrices`, :func:`arim.ut.scattering_angles`.
+  :func:`arim.ut.scat_2d_cylinder_matrices`, :func:`arim.ut.make_angles`.
 
-To interpolate a scattering matrix, use :func:`arim.ut.interpolate_scattering_matrix` (one matrix) or
-:func:`arim.ut.scattering_matrices_to_interp_funcs`.
+To interpolate a scattering matrix, use :func:`arim.ut.interpolate_matrix` (one matrix) or
+:func:`arim.ut.interpolate_matrices`.
 They return interpolators that take as arguments the incident and scattered angles.
 
 

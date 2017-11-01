@@ -11,20 +11,20 @@ from scipy.special._ufuncs import hankel1, hankel2
 from . import _scat
 
 
-def scattering_angles(numpoints):
+def make_angles(numpoints):
     """Return angles for scattering matrices. Linearly spaced vector in [-pi, pi[."""
     return np.linspace(-np.pi, np.pi, numpoints, endpoint=False)
 
 
-def scattering_angles_grid(numpoints):
+def make_angles_grid(numpoints):
     """Return angles for scattering matrices as a grid of incident and outgoing angles.
     """
-    theta = scattering_angles(numpoints)
+    theta = make_angles(numpoints)
     inc_theta, out_theta = np.meshgrid(theta, theta, indexing='xy')
     return inc_theta, out_theta
 
 
-def make_scattering_matrix(scattering_func, numpoints):
+def func_to_matrix(scattering_func, numpoints):
     """
     Call the function 'scattering_func' for all incident and scattered angles.
     Returns the result as a matrix.
@@ -45,12 +45,12 @@ def make_scattering_matrix(scattering_func, numpoints):
         scattering_matrix[i, j] is the coefficient for the incident angle theta[j] and
         the scattering angle theta[i].
     """
-    inc_theta, out_theta = scattering_angles_grid(numpoints)
+    inc_theta, out_theta = make_angles_grid(numpoints)
     scattering_matrix = scattering_func(inc_theta, out_theta)
     return scattering_matrix
 
 
-def interpolate_scattering_matrix(scattering_matrix):
+def interpolate_matrix(scattering_matrix):
     """
     Returns a function that takes as input the incident angles and the scattering angles.
     This returned function returns the scattering amplitudes, obtained by bilinear
@@ -74,7 +74,7 @@ def interpolate_scattering_matrix(scattering_matrix):
     return partial(_scat._interpolate_scattering_matrix_ufunc, scattering_matrix)
 
 
-def scattering_matrices_to_interp_funcs(scattering_matrices):
+def interpolate_matrices(scattering_matrices):
     """
     Convert a dictionary containing scattering matrices to a dictionary containing
     functions that interpolate the values of the scattering matrices.
@@ -87,14 +87,14 @@ def scattering_matrices_to_interp_funcs(scattering_matrices):
     -------
     dict[str, function]
     """
-    return {key: interpolate_scattering_matrix(mat) for key, mat
+    return {key: interpolate_matrix(mat) for key, mat
             in scattering_matrices.items()}
 
 
-def scattering_2d_cylinder(inc_theta, out_theta, radius, longitudinal_wavelength,
-                           transverse_wavelength,
-                           min_terms=10, term_factor=4,
-                           to_compute={'LL', 'LT', 'TL', 'TT'}):
+def scat_2d_cylinder(inc_theta, out_theta, radius, longitudinal_wavelength,
+                     transverse_wavelength,
+                     min_terms=10, term_factor=4,
+                     to_compute={'LL', 'LT', 'TL', 'TT'}):
     """
     Scattering coefficients for a 2D circle (or infinitely-long cylinder in 3D).
 
@@ -280,15 +280,17 @@ def scattering_2d_cylinder(inc_theta, out_theta, radius, longitudinal_wavelength
     return result
 
 
-def _scattering_2d_cylinder(inc_theta, out_theta, scat_key, **scat_params):
-    return scattering_2d_cylinder(inc_theta, out_theta, to_compute={scat_key},
-                                  **scat_params)[scat_key]
+def _scat_2d_cylinder(inc_theta, out_theta, scat_key, **scat_params):
+    return scat_2d_cylinder(inc_theta, out_theta, to_compute={scat_key},
+                            **scat_params)[scat_key]
 
 
-def scattering_2d_cylinder_funcs(radius, longitudinal_wavelength,
-                                 transverse_wavelength, **kwargs):
+def scat_2d_cylinder_funcs(radius, longitudinal_wavelength,
+                           transverse_wavelength, **kwargs):
     """
-    Cf. :func:`scattering_2d_cylinder`
+    Returns scattering functions for side-drilled holes.
+
+    Cf. :func:`scat_2d_cylinder`
 
     Parameters
     ----------
@@ -312,16 +314,18 @@ def scattering_2d_cylinder_funcs(radius, longitudinal_wavelength,
     )
 
     for scat_key in ['LL', 'LT', 'TL', 'TT']:
-        scat_funcs[scat_key] = partial(_scattering_2d_cylinder, scat_key=scat_key,
+        scat_funcs[scat_key] = partial(_scat_2d_cylinder, scat_key=scat_key,
                                        **scat_params)
     return scat_funcs
 
 
-def scattering_2d_cylinder_matrices(numpoints, radius, longitudinal_wavelength,
-                                    transverse_wavelength,
-                                    to_compute={'LL', 'LT', 'TL', 'TT'}, **kwargs):
+def scat_2d_cylinder_matrices(numpoints, radius, longitudinal_wavelength,
+                              transverse_wavelength,
+                              to_compute={'LL', 'LT', 'TL', 'TT'}, **kwargs):
     """
-    Cf. :func:`scattering_2d_cylinder`.
+    Returns scattering matrices for side-drilled holes.
+
+    Cf. :func:`scat_2d_cylinder`.
 
     Parameters
     ----------
@@ -339,16 +343,16 @@ def scattering_2d_cylinder_matrices(numpoints, radius, longitudinal_wavelength,
     matrices : dict
     """
     matrices = {}
-    scat_funcs = scattering_2d_cylinder_funcs(radius, longitudinal_wavelength,
-                                              transverse_wavelength, **kwargs)
+    scat_funcs = scat_2d_cylinder_funcs(radius, longitudinal_wavelength,
+                                        transverse_wavelength, **kwargs)
     for scat_key in to_compute:
-        matrices[scat_key] = make_scattering_matrix(scat_funcs[scat_key], numpoints)
+        matrices[scat_key] = func_to_matrix(scat_funcs[scat_key], numpoints)
     return matrices
 
 
-def scattering_point_source_funcs(longitudinal_velocity, transverse_velocity):
+def scat_point_source_funcs(longitudinal_velocity, transverse_velocity):
     """
-    (Unphysical) scattering functions of a point source. For debug only.
+    Returns scattering functions for (unphysical) point source. For debug only.
 
     Parameters
     ----------
@@ -369,7 +373,7 @@ def scattering_point_source_funcs(longitudinal_velocity, transverse_velocity):
     }
 
 
-def rotate_scattering_matrix(scat_matrix, phi):
+def rotate_matrix(scat_matrix, phi):
     """
     Return the scattering matrix S' of the scatterer rotated by an angle phi,
     knowing the scattering matrix S of the unrotated scatterer.
