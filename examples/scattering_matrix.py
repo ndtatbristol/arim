@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 import matplotlib.pyplot as plt
-import arim
 import numpy as np
+
+import arim
+import arim.scat
 
 vl = 6300
 vt = 3100
@@ -15,7 +17,7 @@ params = dict(longitudinal_wavelength=vl/freq,
 # %% Scattering as matrices
 
 n = 100  # number of points for discretising the inverval [-pi, pi[
-scat_matrices = arim.ut.scattering_2d_cylinder_matrices(n, **params)
+scat_matrices = arim.scat.scattering_2d_cylinder_matrices(n, **params)
 for key in ['LL', 'LT', 'TL', 'TT']:
     extent = (-180, 180, -180, 180)
     
@@ -28,9 +30,9 @@ for key in ['LL', 'LT', 'TL', 'TT']:
 
 
 # %% Scattering as functions of incident and scattered angles
-scat_funcs = arim.ut.scattering_2d_cylinder_funcs(**params)
+scat_funcs = arim.scat.scattering_2d_cylinder_funcs(**params)
 fig, ax = plt.subplots()
-theta = arim.ut.scattering_angles(n)
+theta = arim.scat.scattering_angles(n)
 for key in ['LL', 'LT', 'TL', 'TT']:
     scat_func = scat_funcs[key]
     ax.plot(theta, np.abs(scat_func(0., theta)), label=key)

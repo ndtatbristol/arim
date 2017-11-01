@@ -36,6 +36,7 @@ import arim.models.block_in_immersion as bim
 
 # %% Load configuration
 import arim.ray
+import arim.scat
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
@@ -174,7 +175,7 @@ if conf['scatterer']['type'] != 'circle':
 
 with arim.helpers.timeit('Computation of scattering matrices'):
     if conf['model.use_scattering']:
-        scat_matrices = arim.ut.scattering_2d_cylinder_matrices(
+        scat_matrices = arim.scat.scattering_2d_cylinder_matrices(
             conf['scattering.interpolation'],
             radius=conf['scatterer']['radius'],
             longitudinal_wavelength=wavelength_l,

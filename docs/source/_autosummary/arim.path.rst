@@ -10,11 +10,8 @@ arim\.path
    .. autosummary::
    
       filter_unique_views
-      make_interfaces
       make_viewnames
-      make_paths
       viewname_order
-      make_views
    
    
 

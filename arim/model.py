@@ -17,7 +17,7 @@ import numpy as np
 import numba
 
 from . import core as c
-from . import ut
+from . import ut, scat
 from .ut import snell_angles, fluid_solid, solid_l_fluid, solid_t_fluid, \
     directivity_2d_rectangular_in_fluid
 from .helpers import chunk_array
@@ -752,8 +752,8 @@ def _model_amplitudes_with_scat_matrix(tx, rx, scattering_matrix, tx_ray_weights
         inc_theta = tx_scattering_angles[tx[scan]]
         out_theta = rx_scattering_angles[rx[scan]]
 
-        scattering_amp = ut._interpolate_scattering_matrix_kernel(scattering_matrix,
-                                                                  inc_theta, out_theta)
+        scattering_amp = scat._interpolate_scattering_matrix_kernel(scattering_matrix,
+                                                                    inc_theta, out_theta)
         res[scan] = (scattering_amp
                      * tx_ray_weights[tx[scan]]
                      * rx_ray_weights[rx[scan]])
