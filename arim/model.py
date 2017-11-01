@@ -18,7 +18,7 @@ import numpy as np
 import numba
 from numpy.core.umath import sin, cos
 
-from . import core as c, scat, helpers
+from . import core as c, _scat, helpers, _scat
 
 logger = logging.getLogger(__name__)
 
@@ -1287,8 +1287,8 @@ def _model_amplitudes_with_scat_matrix(tx, rx, scattering_matrix, tx_ray_weights
         inc_theta = tx_scattering_angles[tx[scan]]
         out_theta = rx_scattering_angles[rx[scan]]
 
-        scattering_amp = scat._interpolate_scattering_matrix_kernel(scattering_matrix,
-                                                                    inc_theta, out_theta)
+        scattering_amp = _scat._interpolate_scattering_matrix_kernel(scattering_matrix,
+                                                                     inc_theta, out_theta)
         res[scan] = (scattering_amp
                      * tx_ray_weights[tx[scan]]
                      * rx_ray_weights[rx[scan]])
