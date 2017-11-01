@@ -6,8 +6,7 @@ from . import settings
 from . import exceptions
 from .core import *
 
-from . import _probes, signal, geometry, io, im, registration, model, config, helpers, ut,\
-    path
+from . import _probes, geometry, registration, config, helpers, ut
 from .geometry import Points, Grid
 
 probes = _probes.probes
