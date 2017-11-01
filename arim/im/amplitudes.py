@@ -6,6 +6,7 @@ from _warnings import warn
 
 import numpy as np
 
+import arim.model
 from .. import geometry as g
 from .. import settings as s
 from ..core import ElementShape
@@ -255,7 +256,7 @@ class DirectivityFiniteWidth2D(Amplitudes):
         for (element, (elt_dim, elt_loc)) in enumerate(
                 zip(probe.dimensions, probe.locations)):
             elt_width = elt_dim[0]
-            amplitudes[..., element] = ut.directivity_2d_rectangular_in_fluid(
+            amplitudes[..., element] = arim.model.directivity_2d_rectangular_in_fluid(
                 spher.theta[..., element], elt_width,
                 wavelength)
         return amplitudes

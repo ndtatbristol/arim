@@ -8,7 +8,8 @@ import warnings
 
 import matplotlib.pyplot as plt
 
-from arim.ut import snell_angles, solid_l_fluid
+from arim.ut import solid_l_fluid
+from arim.model import snell_angles, solid_l_fluid
 
 # %% Parameters
 
