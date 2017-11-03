@@ -401,21 +401,21 @@ def scat_2d_cylinder_matrices(numpoints, radius, longitudinal_vel,
     return matrices
 
 
-def scat_point_source_funcs(longitudinal_velocity, transverse_velocity):
+def scat_point_source_funcs(longitudinal_vel, transverse_vel):
     """
     Returns scattering functions for (unphysical) point source. For debug only.
 
     Parameters
     ----------
-    longitudinal_velocity : float
-    transverse_velocity : float
+    longitudinal_vel : float
+    transverse_vel : float
 
     Returns
     -------
     dict
     """
-    vl = longitudinal_velocity
-    vt = transverse_velocity
+    vl = longitudinal_vel
+    vt = transverse_vel
     return {
         'LL': lambda inc, out: np.full_like(inc, 1.),
         'LT': lambda inc, out: np.full_like(inc, vl / vt),
@@ -580,7 +580,7 @@ class ScatteringFromFunc(Scattering):
 
     @staticmethod
     @abc.abstractmethod
-    def _scat_func():
+    def _scat_func(*args, **kwargs):
         """Wrapped function."""
         raise NotImplementedError
 
@@ -606,6 +606,55 @@ class Sdh2dScat(ScatteringFromFunc):
         self._scat_kwargs = dict(radius=radius, longitudinal_vel=longitudinal_vel,
                                  transverse_vel=transverse_vel,
                                  min_terms=min_terms, term_factor=term_factor)
+
+
+class PointSourceScat(ScatteringFromFunc):
+    '''
+    Scattering an unphysical point source. For debug only.
+
+    For any incident and scattered angles, the scattering is defined as::
+
+        S_LL = 1
+        S_LT = v_L / v_T
+        S_TL = -v_T / v_L
+        S_TT = 1
+
+    Remark: these scattering functions could have been defined as::
+
+        S_LL = a
+        S_LT = b * v_L / v_T
+        S_TL = -b * v_T / v_L
+        S_TT = c
+
+    with any a, b, c. These coefficients were chosen arbitrarily in the present function.
+    Therefore drawing quantitative conclusions from a model using this function must be
+    done with care.
+
+    '''
+
+    @staticmethod
+    def _scat_func(phi_in, phi_out, frequency, longitudinal_vel, transverse_vel,
+                   to_compute=SCAT_KEYS):
+        shape = np.shape(phi_in)
+        assert np.shape(phi_in) == np.shape(phi_out)
+
+        v_L = longitudinal_vel
+        v_T = transverse_vel
+
+        out = dict()
+        if 'LL' in to_compute:
+            out['LL'] = np.full(shape, 1.)
+        if 'LT' in to_compute:
+            out['LT'] = np.full(shape, v_L / v_T)
+        if 'TL' in to_compute:
+            out['TL'] = np.full(shape, -v_T / v_L)
+        if 'TT' in to_compute:
+            out['TT'] = np.full(shape, 1.)
+        return out
+
+    def __init__(self, longitudinal_vel, transverse_vel):
+        self._scat_kwargs = dict(longitudinal_vel=longitudinal_vel,
+                                 transverse_vel=transverse_vel)
 
 
 class ScatteringFromMatrices(Scattering):

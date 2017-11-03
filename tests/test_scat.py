@@ -260,11 +260,15 @@ def test_rotate_scattering_matrix():
         scat_matrix)
 
 
-@pytest.fixture(params=['sdh'])
+@pytest.fixture(params=['sdh', 'point'])
 def scat_obj(request):
     if request.param == 'sdh':
         hole_radius = 5e-4
         return scat.Sdh2dScat(hole_radius, TestScattering.v_L, TestScattering.v_T)
+    elif request.param == 'point':
+        return scat.PointSourceScat(TestScattering.v_L, TestScattering.v_T)
+    else:
+        raise Exception('this fixture does not behave well')
 
 
 class TestScattering:
