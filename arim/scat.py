@@ -64,18 +64,15 @@ def interpolate_matrix(scattering_matrix):
 
     Parameters
     ----------
-    scattering_matrix
+    scattering_matrix : ndarray
 
     Returns
     -------
     func
 
     """
-    scattering_matrix = np.asarray(scattering_matrix)
-    if scattering_matrix.ndim != 2:
-        raise ValueError('scattering matrix must have a shape (n, n)')
-    if scattering_matrix.shape[0] != scattering_matrix.shape[1]:
-        raise ValueError('scattering matrix must have a shape (n, n)')
+    assert scattering_matrix.ndim == 2
+    assert scattering_matrix.shape[0] == scattering_matrix.shape[1]
 
     return partial(_scat._interpolate_scattering_matrix_ufunc, scattering_matrix)
 
@@ -95,53 +92,6 @@ def interpolate_matrices(scattering_matrices):
     """
     return {key: interpolate_matrix(mat) for key, mat
             in scattering_matrices.items()}
-
-
-def multi_to_single_freq_scat_matrices(multi_freq_scat_matrices, new_freq,
-                                       **interp1d_kwargs):
-    """
-    Return the single-frequency scattering matrices from multi-frequency scattering
-    matrices by interpolating at the desired frequency.
-
-    Parameters
-    ----------
-    multi_freq_scat_matrices : dict[str]
-        Keys: frequencies (1d array), LL, LT, TL, TT
-    new_freq : float
-        New frequency where to interpolate
-    interp1d_kwargs : kwargs
-        Arguments for `scipy.interpolate.interp1d`
-
-    Returns
-    -------
-    single_freq_scat_matrices
-
-    """
-    frequencies = multi_freq_scat_matrices['frequencies']
-    out = {}
-
-    interpolation_is_needed = len(frequencies) > 1
-    if not interpolation_is_needed:
-        # only one frequency, return the only scattering matrices
-        if new_freq != frequencies[0]:
-            warnings.warn("'new_freq' is unused because no interpolation is needed",
-                          exceptions.ArimWarning)
-        if len(interp1d_kwargs) > 0:
-            warnings.warn("interp1d arguments are unused because no interpolation "
-                          "is needed", exceptions.ArimWarning)
-
-    for key in SCAT_KEYS:
-        try:
-            matrix = multi_freq_scat_matrices[key]
-        except KeyError:
-            continue
-        else:
-            if interpolation_is_needed:
-                out[key] = interpolate.interp1d(frequencies, matrix, axis=0,
-                                                **interp1d_kwargs)(new_freq)
-            else:
-                out[key] = matrix[0]
-    return out
 
 
 def sdh_2d_scat(inc_theta, out_theta, frequency, radius, longitudinal_vel,
@@ -458,11 +408,24 @@ def rotate_matrix(scat_matrix, phi):
 
 
 def _partial_one_scat_key(scat_func, scat_key, *args, **kwargs):
+    """
+    Returns a dict of functions.
+
+        >>> assert scat_func(x, y, z, to_compute=['LT'])['LT'] == _partial_one_scat_key(scat_func, 'LT', z)(x, y)
+
+    """
     # Remark: do not try to replace this by a lambda function, a proper closure is needed
     # here.
     # See https://stackoverflow.com/questions/3252228/python-why-is-functools-partial-necessary
+    # Inspired by https://docs.python.org/3/library/functools.html#functools.partial
     to_compute = {scat_key}
-    return functools.partial(scat_func, *args, to_compute=to_compute, **kwargs)[scat_key]
+
+    def new_scat_func(*fargs, **fkeywords):
+        newkeywords = kwargs.copy()
+        newkeywords.update(fkeywords)
+        return scat_func(*args, *fargs, to_compute=to_compute, **newkeywords)[scat_key]
+
+    return new_scat_func
 
 
 def scattering_2d_factory(kind, **kwargs):
@@ -493,7 +456,7 @@ class Scattering2d(abc.ABC):
 
         """
 
-    def as_multi_freq_funcs(self):
+    def as_freq_angles_funcs(self):
         """
         Returns a dict of scattering functions that take as input the incident angle,
         the outgoing angle and the frequency.
@@ -504,7 +467,7 @@ class Scattering2d(abc.ABC):
             scat_funcs[scat_key] = _partial_one_scat_key(self, scat_key)
         return scat_funcs
 
-    def as_single_freq_funcs(self, frequency):
+    def as_angles_funcs(self, frequency):
         """
         Returns a dict of scattering functions that take as input the incident angle
         and the outgoing angle.
@@ -661,5 +624,167 @@ class PointSourceScat(Scattering2dFromFunc):
                                  transverse_vel=transverse_vel)
 
 
-class ScatFromMatrices(Scattering2d):
-    pass
+class ScatFromData(Scattering2d):
+    """
+    Scattering functions from a set of data.
+
+    This class provides the regular :class:`Scattering2d` interface for a dataset of
+    scattering matrices. The typical usage is to use this class for wrapping
+    data generated with another software in arim.
+
+    By default, this class uses a **linear interpolation** for generating values
+    at new angles.
+
+    By default, this class uses a **linear interpolation** for generating values at new
+    frequencies when at least two frequencies point are given. Outside the frequency range
+    of the data, values are extrapolated. This can be changed by modifying
+    :attr:`interp_freq_kwargs`, the arguments passed to `scipy.interpolate.interp1d`.
+    If the data contains only one frequency, this data will be used at any new frequency.
+
+    Attributes
+    ----------
+    numfreq : int
+    numangles : int
+    orig_matrices : dict
+        Shape of each value: (numfreq, numangles, numangles)
+    frequencies : ndarray
+        1d array
+    interp_freq_kwargs : dict
+        Passed to `scipy.interpolate.interp1d`.
+        Default: ``bounds_error=False, fill_value='extrapolate'``
+
+
+    """
+
+    def __init__(self, frequencies, scat_matrix_LL=None, scat_matrix_LT=None,
+                 scat_matrix_TL=None, scat_matrix_TT=None):
+        frequencies = np.asarray(frequencies)
+        if frequencies.ndim == 0:
+            frequencies = np.array([frequencies])
+        elif frequencies.ndim > 1:
+            raise ValueError("'frequencies' must be 1d")
+        numfreq = len(frequencies)
+
+        shapes = {
+            np.shape(scat_matrix_LL) if scat_matrix_LL is not None else None,
+            np.shape(scat_matrix_LT) if scat_matrix_LT is not None else None,
+            np.shape(scat_matrix_TL) if scat_matrix_TL is not None else None,
+            np.shape(scat_matrix_TT) if scat_matrix_TT is not None else None
+        }
+        shapes.discard(None)
+
+        if len(shapes) == 0:
+            raise ValueError('at least one scattering matrix must be passed')
+        elif len(shapes) > 1:
+            raise ValueError('scattering matrices must have the same shape')
+
+        shape = shapes.pop()
+        wrong_shape_err = "Scattering matrices' shape must be (numfreq, numangles, numangles)"
+        if len(shape) != 3:
+            raise ValueError(wrong_shape_err)
+        if shape[1] != shape[2]:
+            raise ValueError(wrong_shape_err)
+        if shape[0] != numfreq:
+            raise ValueError(wrong_shape_err)
+
+        self.frequencies = frequencies
+        self.numfreq = numfreq
+        self.numangles = shape[1]
+
+        self.orig_matrices = dict()
+        if scat_matrix_LL is not None:
+            self.orig_matrices['LL'] = np.ascontiguousarray(scat_matrix_LL)
+        if scat_matrix_LT is not None:
+            self.orig_matrices['LT'] = np.ascontiguousarray(scat_matrix_LT)
+        if scat_matrix_TL is not None:
+            self.orig_matrices['TL'] = np.ascontiguousarray(scat_matrix_TL)
+        if scat_matrix_TT is not None:
+            self.orig_matrices['TT'] = np.ascontiguousarray(scat_matrix_TT)
+
+        self.interp_freq_kwargs = dict(bounds_error=False, fill_value='extrapolate')
+
+    @classmethod
+    def from_dict(cls, frequencies, scat_matrix_dict):
+        """
+        Alternative constructor: takes as input a dict of scattering matrices
+        (keys: LL, LT, TL, TT)
+
+        Parameters
+        ----------
+        frequencies
+        scat_matrix_dict
+
+        Returns
+        -------
+        obj : ScatFromData
+
+        """
+        scat_matrix_LL = scat_matrix_dict.get('LL')
+        scat_matrix_LT = scat_matrix_dict.get('LT')
+        scat_matrix_TL = scat_matrix_dict.get('TL')
+        scat_matrix_TT = scat_matrix_dict.get('TT')
+        return cls(frequencies, scat_matrix_LL, scat_matrix_LT, scat_matrix_TL,
+                   scat_matrix_TT)
+
+    def __call__(self, inc_theta, out_theta, frequency, to_compute=SCAT_KEYS):
+        # Compute first the scattering matrices at the desired frequency.
+        # Then interpolate the angles.
+        # A possible optimisation: perform the interpolation on frequency and angles
+        # in one step instead of two. This would required extending interpolate_matrix.
+
+        # perform frequency interpolation:
+        matrices = self.freq_interp_matrices(self.frequencies, frequency,
+                                             self.orig_matrices,
+                                             **self.interp_freq_kwargs)
+
+        # create angle interpolators:
+        interpolators = interpolate_matrices(matrices)
+
+        # perform angle interpolation:
+        return {scat_key: interpolator(inc_theta, out_theta) for scat_key, interpolator
+                in interpolators.items()}
+
+    @staticmethod
+    def freq_interp_matrices(frequencies, new_freq, multi_freq_matrices,
+                             **interp_freq_kwargs):
+        """
+        Return the single-frequency scattering matrices from multi-frequency scattering
+        matrices by interpolating at the desired frequency.
+
+        Parameters
+        ----------
+        frequencies : ndarray
+            1d
+        new_freq : float
+        multi_freq_scat_matrices : dict[str]
+            Keys: frequencies (1d array), LL, LT, TL, TT
+        interp1d_kwargs : kwargs
+            Arguments for `scipy.interpolate.interp1d`
+
+        Returns
+        -------
+        single_freq_scat_matrices
+
+        """
+        out = {}
+
+        interpolation_is_needed = len(frequencies) > 1
+        if not interpolation_is_needed:
+            # only one frequency, return the only scattering matrices
+            if new_freq != frequencies[0]:
+                warnings.warn("No available scattering data at f={}, use f={} instead".
+                              format(new_freq, frequencies[0]),
+                              exceptions.ArimWarning)
+
+        for key in SCAT_KEYS:
+            try:
+                matrix = multi_freq_matrices[key]
+            except KeyError:
+                continue
+            else:
+                if interpolation_is_needed:
+                    out[key] = interpolate.interp1d(frequencies, matrix, axis=0,
+                                                    **interp_freq_kwargs)(new_freq)
+                else:
+                    out[key] = matrix[0]
+        return out

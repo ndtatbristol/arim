@@ -1,6 +1,9 @@
+import warnings
+
 import numpy as np
 import pytest
 
+import arim
 from arim import ut, scat
 
 
@@ -114,7 +117,6 @@ def test_sdh_2d_scat2():
                        transverse_vel=v_t)
     scat_params2 = dict(frequency=freq, radius=hole_radius, longitudinal_vel=v_l,
                         transverse_vel=v_t)
-    scat_obj = scat.SdhScat(**scat_params)
 
     result = scat.sdh_2d_scat(inc_theta, out_theta, **scat_params2)
 
@@ -171,7 +173,7 @@ def test_make_scattering_matrix():
                                _scattering_function(-np.pi + x, -np.pi))
 
 
-def test_scattering_interpolate_matrix():
+def test_interpolate_matrix():
     numpoints = 5
     dtheta = 2 * np.pi / numpoints
 
@@ -260,13 +262,48 @@ def test_rotate_scattering_matrix():
         scat_matrix)
 
 
-@pytest.fixture(params=['sdh', 'point'])
+def make_scat_data_single_freq():
+    # create realistic data
+    hole_radius = 5e-4
+    scat_sdh = scat.SdhScat(hole_radius, TestScattering.v_L, TestScattering.v_T)
+    numangles = 80
+    frequency = 2e6
+    matrices = scat_sdh.as_single_freq_matrices(frequency, numangles)
+    matrices2 = {scat_key: mat[np.newaxis] for scat_key, mat in matrices.items()}
+    return scat.ScatFromData.from_dict(frequency, matrices2)
+
+
+def make_scat_data_multi_freq():
+    # create realistic data
+    hole_radius = 5e-4
+    scat_sdh = scat.SdhScat(hole_radius, TestScattering.v_L, TestScattering.v_T)
+    frequencies = [1e6, 2e6, 3e6]
+    numangles = 80
+    matrices = scat_sdh.as_multi_freq_matrices(frequencies, numangles)
+    return scat.ScatFromData.from_dict(frequencies, matrices)
+
+
+@pytest.fixture(params=['sdh', 'point', 'data_singlefreq', 'data_multifreq'])
 def scat_obj(request):
     if request.param == 'sdh':
         hole_radius = 5e-4
         return scat.SdhScat(hole_radius, TestScattering.v_L, TestScattering.v_T)
     elif request.param == 'point':
         return scat.PointSourceScat(TestScattering.v_L, TestScattering.v_T)
+    elif request.param == 'data_singlefreq':
+        return make_scat_data_single_freq()
+    elif request.param == 'data_multifreq':
+        return make_scat_data_multi_freq()
+    else:
+        raise Exception('this fixture does not behave well')
+
+
+@pytest.fixture(params=['data_singlefreq', 'data_multifreq'])
+def scat_data_obj(request):
+    if request.param == 'data_singlefreq':
+        return make_scat_data_single_freq()
+    elif request.param == 'data_multifreq':
+        return make_scat_data_multi_freq()
     else:
         raise Exception('this fixture does not behave well')
 
@@ -331,7 +368,11 @@ class TestScattering:
                 'different values for phi_in = phi_out = -pi ({})'.format(scat_key)
 
         # test Scattering.as_multi_freq_matrices (use 2 frequencies)
-        matrices_multif = scat_obj.as_multi_freq_matrices([freq, 2 * freq], numangles)
+        with warnings.catch_warnings():
+            if isinstance(scat_obj, scat.ScatFromData):
+                # ignore a legitimate warning (frequency extrapolation)
+                warnings.filterwarnings("ignore", category=arim.exceptions.ArimWarning)
+            matrices_multif = scat_obj.as_multi_freq_matrices([freq, 2 * freq], numangles)
         for scat_key in scat_keys:
             mat = matrices_multif[scat_key]
             assert mat.shape == (2, numangles, numangles)
@@ -339,6 +380,14 @@ class TestScattering:
                                        err_msg='different output for the same frequency')
             assert mat[0, 0, 0] == reference_dict[scat_key][0, 0], \
                 'different values for phi_in = phi_out = -pi ({})'.format(scat_key)
+
+        # test Scattering.as_angles_funcs and Scattering.as_freq_angles_funcs
+        angles_funcs = scat_obj.as_angles_funcs(freq)
+        freq_angles_funcs = scat_obj.as_freq_angles_funcs()
+        for scat_key in scat_keys:
+            x = angles_funcs[scat_key](2., 3.)
+            y = freq_angles_funcs[scat_key](2., 3., freq)
+            assert x == y
 
     def test_reciprocity(self, scat_obj, show_plots):
         numangles = 20
@@ -372,3 +421,76 @@ class TestScattering:
         np.testing.assert_allclose(
             lhs, rhs, err_msg='no reciprocity - maxerror = {}, median error = {}'.format(
                 max_error, median_error), rtol=1e-7, atol=1e-8)
+
+    def test_scat_data(self, scat_data_obj):
+        scat_keys = scat.SCAT_KEYS
+
+        scat_obj = scat_data_obj  # alias
+
+        assert scat_obj.frequencies.ndim == 1
+        assert scat_obj.numfreq == scat_obj.frequencies.shape[0]
+
+        numangles = scat_obj.numangles
+
+        # asking values at the known values must be the known values
+        matrices = scat_obj.as_multi_freq_matrices(scat_obj.frequencies, numangles)
+        for scat_key in scat_keys:
+            np.testing.assert_allclose(matrices[scat_key],
+                                       scat_obj.orig_matrices[scat_key], atol=1e-14)
+
+        # another way to ask the known values
+        frequency = scat_obj.frequencies[0]
+        phi_in, phi_out = scat.make_angles_grid(numangles)
+        matrices = scat_obj(phi_in, phi_out, frequency)
+        np.testing.assert_allclose(matrices[scat_key],
+                                   scat_obj.orig_matrices[scat_key][0], atol=1e-14)
+
+        # check angle interpolation
+        phi = phi_in[0]
+        a, b = 0.25, 0.75
+        matrices = scat_obj([phi[0], phi[1], a * phi[0] + b * phi[1]],
+                            [phi[2], phi[2], phi[2]], frequency)
+        for scat_key in scat_keys:
+            val = matrices[scat_key]
+            np.testing.assert_allclose(a * val[0] + b * val[1], val[2])
+
+        # check frequency interpolation
+        if scat_obj.numfreq == 1:
+            # This should be the same value all the time
+            with warnings.catch_warnings():
+                warnings.filterwarnings("ignore", category=arim.exceptions.ArimWarning)
+
+                funcs = scat_obj.as_freq_angles_funcs()
+                for scat_key, func in funcs.items():
+                    assert func(2., 3., frequency) == func(2., 3., frequency * 2.)
+                    assert func(2., 3., frequency) == func(2., 3., frequency / 2.)
+        else:
+            # This should be a linear interpolation
+            funcs = scat_obj.as_freq_angles_funcs()
+            for scat_key, func in funcs.items():
+                x = (a * func(2., 3., scat_obj.frequencies[0]) +
+                     b * func(2., 3., scat_obj.frequencies[1]))
+                y = func(2., 3.,
+                         a * scat_obj.frequencies[0] + b * scat_obj.frequencies[1])
+                np.testing.assert_allclose(x, y)
+
+            # extrapolation: there should be not bound error
+            func(2., 3., np.min(scat_obj.frequencies) / 2)
+            func(2., 3., np.max(scat_obj.frequencies) * 2)
+
+    def test_scat_data2(self):
+        n = 10
+        # create obj with incomplete matrices
+        scat.ScatFromData([2e6], scat_matrix_TT=np.ones((1, n, n)))
+
+        # no data
+        with pytest.raises(ValueError):
+            scat.ScatFromData([2e6])
+
+        # wrong shapes
+        with pytest.raises(ValueError):
+            scat.ScatFromData([2e6, 4e6], np.ones((n, n)))
+        with pytest.raises(ValueError):
+            scat.ScatFromData([2e6, 4e6], np.ones((2, n, n + 1)))
+        # ok:
+        scat.ScatFromData([2e6, 4e6], np.ones((2, n, n)))
