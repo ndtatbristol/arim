@@ -114,7 +114,7 @@ def test_sdh_2d_scat2():
                        transverse_vel=v_t)
     scat_params2 = dict(frequency=freq, radius=hole_radius, longitudinal_vel=v_l,
                         transverse_vel=v_t)
-    scat_obj = scat.Sdh2dScat(**scat_params)
+    scat_obj = scat.SdhScat(**scat_params)
 
     result = scat.sdh_2d_scat(inc_theta, out_theta, **scat_params2)
 
@@ -264,7 +264,7 @@ def test_rotate_scattering_matrix():
 def scat_obj(request):
     if request.param == 'sdh':
         hole_radius = 5e-4
-        return scat.Sdh2dScat(hole_radius, TestScattering.v_L, TestScattering.v_T)
+        return scat.SdhScat(hole_radius, TestScattering.v_L, TestScattering.v_T)
     elif request.param == 'point':
         return scat.PointSourceScat(TestScattering.v_L, TestScattering.v_T)
     else:

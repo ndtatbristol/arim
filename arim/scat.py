@@ -465,11 +465,15 @@ def _partial_one_scat_key(scat_func, scat_key, *args, **kwargs):
     return functools.partial(scat_func, *args, to_compute=to_compute, **kwargs)[scat_key]
 
 
-def scattering_factory(kind, **kwargs):
+def scattering_2d_factory(kind, **kwargs):
     pass
 
 
-class Scattering(abc.ABC):
+class Scattering2d(abc.ABC):
+    """
+    Base object for computing the scattering functions in 2D.
+    """
+
     @abc.abstractmethod
     def __call__(self, inc_theta, out_theta, frequency, to_compute=SCAT_KEYS):
         """
@@ -565,7 +569,7 @@ class Scattering(abc.ABC):
         return self(inc_theta, out_theta, frequency, to_compute)
 
 
-class ScatteringFromFunc(Scattering):
+class Scattering2dFromFunc(Scattering2d):
     """
     Wrapper for scattering functions that take as three first arguments 'inc_theta',
     'out_theta' and 'frequency', and that accepts an argument 'to_compute'.
@@ -595,7 +599,7 @@ class ScatteringFromFunc(Scattering):
         return self.__class__.__qualname__ + '(' + arg_str + ')'
 
 
-class Sdh2dScat(ScatteringFromFunc):
+class SdhScat(Scattering2dFromFunc):
     '''
     Scattering for side-drilled hole
     '''
@@ -608,7 +612,7 @@ class Sdh2dScat(ScatteringFromFunc):
                                  min_terms=min_terms, term_factor=term_factor)
 
 
-class PointSourceScat(ScatteringFromFunc):
+class PointSourceScat(Scattering2dFromFunc):
     '''
     Scattering an unphysical point source. For debug only.
 
@@ -657,5 +661,5 @@ class PointSourceScat(ScatteringFromFunc):
                                  transverse_vel=transverse_vel)
 
 
-class ScatteringFromMatrices(Scattering):
+class ScatFromMatrices(Scattering2d):
     pass
