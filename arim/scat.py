@@ -1,18 +1,19 @@
 """
-Scattering functions
+Scattering functions and helpers
+
 """
 import math
 import warnings
 import functools
-from functools import partial
 import abc
+import contextlib
 
 import numpy as np
 from numpy.core.umath import pi, cos, sin
 from scipy.special._ufuncs import hankel1, hankel2
 from scipy import interpolate
 
-from . import _scat, exceptions
+from . import _scat, exceptions, _scat_crack
 
 SCAT_KEYS = frozenset(('LL', 'LT', 'TL', 'TT'))
 
@@ -74,7 +75,8 @@ def interpolate_matrix(scattering_matrix):
     assert scattering_matrix.ndim == 2
     assert scattering_matrix.shape[0] == scattering_matrix.shape[1]
 
-    return partial(_scat._interpolate_scattering_matrix_ufunc, scattering_matrix)
+    return functools.partial(_scat._interpolate_scattering_matrix_ufunc,
+                             scattering_matrix)
 
 
 def interpolate_matrices(scattering_matrices):
@@ -281,6 +283,111 @@ def sdh_2d_scat(inc_theta, out_theta, frequency, radius, longitudinal_vel,
     return result
 
 
+def crack_2d_scat(inc_theta, out_theta, frequency, crack_length, longitudinal_vel,
+                  transverse_vel, density, nodes_per_wavelength=20,
+                  assume_safe_for_opt=False,
+                  to_compute={'LL', 'LT', 'TL', 'TT'}):
+    """
+    Scattering matrix of the centre of a crack.
+
+    The model assumes there is little interaction with the walls, ie the crack is deep
+    enough (not a surface crack). Resolution with a Galerkin method.
+
+    Parameters
+    ----------
+    inc_theta : ndarray
+    out_theta : ndarray
+    frequency : float
+    crack_length : float
+    longitudinal_vel : float
+    transverse_vel : float
+    density : float
+    nodes_per_wavelength : int
+        Default: 20
+    assume_safe_for_opt : bool
+        Default: false. If True, use an optimised implementation which requires that
+        `inc_theta[i, j] = inc_theta[i, 0]` is for all i and j. If False, use slower but
+        more general implementation. Warning: no check is  performed to ensure the
+        assumption is true.
+    to_compute : set[str]
+
+    Returns
+    -------
+    dict of ndarray
+
+    Notes
+    -----
+    Original code: function `fn_s_matrices_for_crack_2d`` by Alexander Velichko and
+    Paul D. Wilcox from the University of Bristol NDT library.
+    Python code by Nicolas Budyn.
+
+    References
+    ----------
+    [Glushkov] Glushkov, Evgeny, Natalia Glushkova, Alexander Ekhlakov, and
+    Elena Shapar. 2006. ‘An Analytically Based Computer Model for Surface
+    Measurements in Ultrasonic Crack Detection’. Wave Motion 43 (6): 458–73.
+    doi:10.1016/j.wavemoti.2006.03.002.
+
+    Unpublished work from Alexander Velichko
+
+    """
+    valid_keys = {'LL', 'LT', 'TL', 'TT'}
+
+    if not valid_keys.issuperset(to_compute):
+        raise ValueError(
+            f"Valid 'to_compute' arguments are {valid_keys} (got {to_compute})")
+
+    final_broadcast = np.broadcast(inc_theta, out_theta)
+    if final_broadcast.ndim > 2:
+        raise NotImplementedError
+
+    inc_theta, out_theta = np.atleast_2d(inc_theta, out_theta)
+    inc_theta, out_theta = np.broadcast_arrays(inc_theta, out_theta)
+    comp_broadcast = np.broadcast(inc_theta, out_theta)
+
+    v_L = longitudinal_vel
+    v_T = transverse_vel
+    use_incident_L = 'LL' in to_compute or 'LT' in to_compute
+    use_incident_T = 'TL' in to_compute or 'TT' in to_compute
+
+    lambda_L = v_L / frequency
+    xi2 = 2 * pi * frequency / v_T
+    xi = v_T / v_L
+
+    # mesh definition
+    num_nodes = int(np.ceil(crack_length / lambda_L * nodes_per_wavelength))
+    p = 0.1133407986  # magic constant
+    h_nodes = crack_length / (num_nodes + 2 * p)
+    x_nodes = np.arange(num_nodes) * h_nodes + (h_nodes * (1 / 2 + p) - crack_length / 2)
+
+    # get matrices for the linear system
+    A_x = _scat_crack.A_x(xi, xi2, h_nodes, num_nodes)
+    A_z = _scat_crack.A_z(xi, xi2, h_nodes, num_nodes)
+
+    # init output (always in 2D)
+    S_LL = np.zeros(comp_broadcast.shape, np.complex128, order='F')
+    S_LT = np.zeros(comp_broadcast.shape, np.complex128, order='F')
+    S_TL = np.zeros(comp_broadcast.shape, np.complex128, order='F')
+    S_TT = np.zeros(comp_broadcast.shape, np.complex128, order='F')
+
+    if assume_safe_for_opt:
+        inc_theta_vect = inc_theta[0]
+        matrices = _scat_crack.crack_2d_scat_matrix(
+            inc_theta_vect, out_theta, v_L, v_T, density, frequency,
+            use_incident_L, use_incident_T, x_nodes, h_nodes, A_x,
+            A_z, S_LL, S_LT, S_TL, S_TT)
+    else:
+        matrices = _scat_crack.crack_2d_scat_general(
+            inc_theta, out_theta, v_L, v_T, density, frequency,
+            use_incident_L, use_incident_T, x_nodes, h_nodes, A_x,
+            A_z, S_LL, S_LT, S_TL, S_TT)
+
+    # reshape output to the requested shape
+    final_matrices = [m.reshape(final_broadcast.shape) for m in matrices]
+
+    return dict(zip(('LL', 'LT', 'TL', 'TT'), final_matrices))
+
+
 def rotate_matrix(scat_matrix, phi):
     """
     Return the scattering matrix S' of the scatterer rotated by an angle phi,
@@ -472,6 +579,8 @@ class Scattering2dFromFunc(Scattering2d):
 class SdhScat(Scattering2dFromFunc):
     '''
     Scattering for side-drilled hole
+
+    This class provides the :class:`Scattering2d` interface for :func:`sdh_2d_scat`.
     '''
     _scat_func = staticmethod(sdh_2d_scat)
 
@@ -482,9 +591,52 @@ class SdhScat(Scattering2dFromFunc):
                                  min_terms=min_terms, term_factor=term_factor)
 
 
+class CrackCentreScat(Scattering2dFromFunc):
+    """
+    Scattering of a crack at its centre.
+
+    This class provides the :class:`Scattering2d` interface for :func:`crack_2d_scat`.
+
+    """
+    _scat_func = staticmethod(crack_2d_scat)
+
+    def __init__(self, crack_length, longitudinal_vel,
+                 transverse_vel, density, nodes_per_wavelength=20):
+        self._scat_kwargs = dict(crack_length=crack_length,
+                                 longitudinal_vel=longitudinal_vel,
+                                 transverse_vel=transverse_vel,
+                                 density=density,
+                                 nodes_per_wavelength=nodes_per_wavelength)
+        self._in_matrix_calculation = False
+
+    def __call__(self, inc_theta, out_theta, frequency, to_compute=SCAT_KEYS):
+        return self._scat_func(inc_theta, out_theta, frequency,
+                               to_compute=to_compute,
+                               assume_safe_for_opt=self._in_matrix_calculation,
+                               **self._scat_kwargs)
+
+    @contextlib.contextmanager
+    def _scat_matrix_calculation(self):
+        """context manager to flag we are doing a scattering matrix calculation"""
+        self._in_matrix_calculation = True
+        yield
+        self._in_matrix_calculation = False
+
+    def as_multi_freq_matrices(self, frequencies, numangles, to_compute=SCAT_KEYS):
+        with self._scat_matrix_calculation():
+            return super().as_multi_freq_matrices(frequencies, numangles, to_compute)
+
+    def as_single_freq_matrices(self, frequency, numangles, to_compute=SCAT_KEYS):
+        with self._scat_matrix_calculation():
+            assert self._in_matrix_calculation == True
+            result = super().as_single_freq_matrices(frequency, numangles, to_compute)
+        assert self._in_matrix_calculation == False
+        return result
+
+
 class PointSourceScat(Scattering2dFromFunc):
     '''
-    Scattering an unphysical point source. For debug only.
+    Scattering of an unphysical point source. For debug only.
 
     For any incident and scattered angles, the scattering is defined as::
 

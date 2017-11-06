@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 
 import arim
-from arim import ut, scat
+from arim import ut, scat, _scat_crack
 
 
 def test_scattering_angles_grid():
@@ -248,7 +248,8 @@ def make_scat_data_multi_freq():
     return scat.ScatFromData.from_dict(frequencies, matrices)
 
 
-@pytest.fixture(params=['sdh', 'point', 'data_singlefreq', 'data_multifreq'])
+@pytest.fixture(params=['sdh', 'point', 'data_singlefreq', 'data_multifreq',
+                        'crack_centre'])
 def scat_obj(request):
     if request.param == 'sdh':
         hole_radius = 5e-4
@@ -259,6 +260,10 @@ def scat_obj(request):
         return make_scat_data_single_freq()
     elif request.param == 'data_multifreq':
         return make_scat_data_multi_freq()
+    elif request.param == 'crack_centre':
+        crack_length = 2.e-3
+        return scat.CrackCentreScat(crack_length, TestScattering.v_L, TestScattering.v_T,
+                                    TestScattering.density)
     else:
         raise Exception('this fixture does not behave well')
 
@@ -373,7 +378,7 @@ class TestScattering:
             plt.subplot(211)
             plt.plot(lhs.real)
             plt.plot(rhs.real)
-            plt.title(repr(scat_obj))
+            plt.title(scat_obj.__class__.__name__)
             plt.subplot(212)
             plt.plot(lhs.imag)
             plt.plot(rhs.imag)
@@ -459,3 +464,178 @@ class TestScattering:
             scat.ScatFromData([2e6, 4e6], np.ones((2, n, n + 1)))
         # ok:
         scat.ScatFromData([2e6, 4e6], np.ones((2, n, n)))
+
+
+def test_crack_2d_scat():
+    """
+    Compare the results of the python impletation to the original matlab one
+
+    October 2017
+    git hash of ndt-library : eb8192a2b54613d0c2f0f79be09ca166bb8d935c
+
+    """
+    np.testing.assert_allclose(_scat_crack.basis_function(0.2),
+                               0.997779793163178)
+    np.testing.assert_allclose(_scat_crack.basis_function(0.02),
+                               0.999977777979798)
+    np.testing.assert_allclose(_scat_crack.basis_function(-5e-4),
+                               0.999999986111111)
+    np.testing.assert_allclose(_scat_crack.basis_function(-5), 0.193049319258009)
+
+    np.testing.assert_allclose(_scat_crack.sigma(3, 0), 3.)
+    np.testing.assert_allclose(_scat_crack.sigma(-3, 0), 3.)
+    np.testing.assert_allclose(_scat_crack.sigma(0, 3), -3j)
+    np.testing.assert_allclose(_scat_crack.sigma(0, -3), -3j)
+
+    np.testing.assert_allclose(_scat_crack.F(100., 20., .1, 10.), -
+    6.201991005820587e-05 - 6.201834393840944e-04j)
+    np.testing.assert_allclose(_scat_crack.F(100., 20., .1, 100.),
+                               -1.134154772479002e-07)
+
+    np.testing.assert_allclose(_scat_crack.P(0.2),
+                               0.916975649032288 + 0.387691081895481j)
+    np.testing.assert_allclose(_scat_crack.P(0.02),
+                               0.999155676046222 + 0.039987556345679j)
+    np.testing.assert_allclose(_scat_crack.P(-5e-4),
+                               0.999999472222269 - 0.000999999805556j)
+    np.testing.assert_allclose(_scat_crack.P(-5),
+                               -0.031270551028216 + 0.020274600339756j)
+
+    A_x_matlab = np.array([
+        [
+            11.611147572274902 - 0.411760282576216j,
+            -4.167624006645408 - 0.387858246147355j,
+            -0.975637927872947 - 0.321211994499892j,
+            -0.294251905702566 - 0.225789065105809j],
+        [
+            -4.167624006645408 - 0.387858246147355j,
+            11.611147572274902 - 0.411760282576216j,
+            -4.167624006645408 - 0.387858246147355j,
+            -0.975637927872947 - 0.321211994499892j],
+        [
+            -0.975637927872947 - 0.321211994499892j,
+            -4.167624006645408 - 0.387858246147355j,
+            11.611147572274902 - 0.411760282576216j,
+            -4.167624006645408 - 0.387858246147355j],
+        [
+            -0.294251905702566 - 0.225789065105809j,
+            -0.975637927872947 - 0.321211994499892j,
+            -4.167624006645408 - 0.387858246147355j,
+            11.611147572274902 - 0.411760282576216j],
+
+    ])
+    xi = 0.5
+    xi2 = 1e4
+    h_nodes = 5e-5
+    num_nodes = 4
+    A_x = _scat_crack.A_x(xi, xi2, h_nodes, num_nodes)
+    np.testing.assert_allclose(A_x, A_x_matlab, rtol=1e-5)
+
+    A_z_matlab = np.array([
+        [
+            10.831364548525023 - 0.852510531964943j,
+            -4.600889012837459 - 0.823760906489351j,
+            -1.153402642894143 - 0.741329549593963j,
+            -0.321727351393225 - 0.616174938007808j,
+        ],
+        [
+            -4.600889012837459 - 0.823760906489351j,
+            10.831364548525023 - 0.852510531964943j,
+            -4.600889012837459 - 0.823760906489351j,
+            -1.153402642894143 - 0.741329549593963j,
+        ],
+        [
+            -1.153402642894143 - 0.741329549593963j,
+            -4.600889012837459 - 0.823760906489351j,
+            10.831364548525023 - 0.852510531964943j,
+            -4.600889012837459 - 0.823760906489351j,
+        ],
+        [
+            -0.321727351393225 - 0.616174938007808j,
+            -1.153402642894143 - 0.741329549593963j,
+            -4.600889012837459 - 0.823760906489351j,
+            10.831364548525023 - 0.852510531964943j
+        ]
+    ])
+    A_z = _scat_crack.A_z(xi, xi2, h_nodes, num_nodes)
+    np.testing.assert_allclose(A_z, A_z_matlab, rtol=1e-5)
+
+    inc_theta = np.linspace(-np.pi, np.pi, 3, endpoint=False)
+    out_theta = np.linspace(-np.pi, np.pi, 5, endpoint=False)
+    inc_theta_arr, out_theta_arr = np.meshgrid(inc_theta, out_theta, indexing='xy')
+
+    frequency = 5e6
+    v_L = 6300.
+    v_T = 3100.
+    density = 2700.
+    crack_length = 2.0e-3
+    scat_vals = scat.crack_2d_scat(inc_theta_arr, out_theta_arr, frequency, crack_length,
+                                   v_L, v_T, density)
+    scat_vals2 = scat.crack_2d_scat(inc_theta_arr, out_theta_arr, frequency, crack_length,
+                                    v_L, v_T, density, assume_safe_for_opt=True)
+    for scat_key in scat.SCAT_KEYS:
+        np.testing.assert_allclose(scat_vals[scat_key], scat_vals2[scat_key],
+                                   err_msg="different values depending on 'assume_safe_for_opt'")
+
+    S_LL_matlab = np.array([
+        [-1.0699 + 1.2424j, 0.12384 - 0.098549j, -0.082018 - 0.0029527j,
+         -0.082018 - 0.0029527j, 0.12384 - 0.098549j],
+        [0.13852 - 0.1516j, 0.027951 + 0.00065141j, -0.06977 + 0.11084j,
+         -0.29307 + 0.25468j, -0.47499 + 0.45202j],
+        [0.13852 - 0.1516j, -0.47499 + 0.45202j, -0.29307 + 0.25468j,
+         -0.06977 + 0.11084j, 0.027951 + 0.00065141j],
+    ])
+    S_LT_matlab = np.array([
+        [2.8488e-16 - 3.0033e-16j, -0.1543 + 0.48485j, 0.13084 + 0.29801j,
+         -0.13084 - 0.29801j, 0.1543 - 0.48485j],
+        [-0.21021 + 0.42328j, 0.15 - 0.039526j, 0.27275 - 0.12168j, 1.2591 - 1.024j,
+         0.44211 - 0.093854j],
+        [0.21021 - 0.42328j, -0.44211 + 0.093854j, -1.2591 + 1.024j,
+         -0.27275 + 0.12168j, -0.15 + 0.039526j],
+    ])
+    S_TL_matlab = np.array([
+        [6.8978e-17 - 7.2717e-17j, 0.040729 - 0.069972j, 0.032289 + 0.010542j,
+         -0.032289 - 0.010542j, -0.040729 + 0.069972j],
+        [-0.0055569 - 0.038185j, -0.028158 + 0.0042409j, 0.013384 + 0.020158j,
+         -0.008903 + 0.053993j, 0.10481 - 0.040638j],
+        [0.0055569 + 0.038185j, -0.10481 + 0.040638j, 0.008903 - 0.053993j,
+         -0.013384 - 0.020158j, 0.028158 - 0.0042409j],
+    ])
+    S_TT_matlab = np.array([
+        [-2.0549 + 2.6393j, -0.030879 + 0.045921j, 0.15293 - 0.16031j,
+         0.15293 - 0.16031j, -0.030879 + 0.045921j],
+        [0.0041305 - 0.089707j, 0.11045 - 0.16748j, -0.00979 - 0.13942j,
+         -0.13575 - 0.037302j, -1.3597 + 1.5069j],
+        [0.0041305 - 0.089707j, -1.3597 + 1.5069j, -0.13575 - 0.037302j,
+         -0.00979 - 0.13942j, 0.11045 - 0.16748j],
+    ])
+
+    # add a bit of tolerance due to the error in numerical integration
+    tol = dict(rtol=1e-3)
+    # Tranpose because the matlab data uses the convention [phi_in, phi_out] instead
+    # of [phi_out, phi_in]
+    # Minus sign for different polarisation of shear wave.
+    np.testing.assert_allclose(scat_vals['LL'].T, S_LL_matlab, err_msg='LL', **tol)
+    np.testing.assert_allclose(scat_vals['LT'].T, S_LT_matlab, err_msg='LT', **tol)
+    np.testing.assert_allclose(-scat_vals['TL'].T, S_TL_matlab, err_msg='TL', **tol)
+    np.testing.assert_allclose(-scat_vals['TT'].T, S_TT_matlab, err_msg='TT', **tol)
+
+    # check the Scattering2d object give the same answers
+    scat_obj = scat.CrackCentreScat(crack_length, v_L, v_T, density)
+    scat_vals2 = scat_obj(inc_theta_arr, out_theta_arr, frequency)
+    for scat_key in scat.SCAT_KEYS:
+        np.testing.assert_allclose(scat_vals[scat_key], scat_vals2[scat_key])
+
+    scat_vals = scat.crack_2d_scat(inc_theta_arr, out_theta_arr, frequency, crack_length,
+                                   v_L, v_T, density, to_compute=('LL', 'LT'))
+    np.testing.assert_allclose(scat_vals['LL'].T, S_LL_matlab, err_msg='LL', **tol)
+    np.testing.assert_allclose(scat_vals['LT'].T, S_LT_matlab, err_msg='LT', **tol)
+    np.testing.assert_allclose(-scat_vals['TL'].T, 0., err_msg='TL', **tol)
+    np.testing.assert_allclose(-scat_vals['TT'].T, 0., err_msg='TT', **tol)
+
+    scat_vals = scat.crack_2d_scat(inc_theta_arr, out_theta_arr, frequency, crack_length,
+                                   v_L, v_T, density, to_compute=('TL', 'TT'))
+    np.testing.assert_allclose(scat_vals['LL'].T, 0., err_msg='LL', **tol)
+    np.testing.assert_allclose(scat_vals['LT'].T, 0., err_msg='LT', **tol)
+    np.testing.assert_allclose(-scat_vals['TL'].T, S_TL_matlab, err_msg='TL', **tol)
+    np.testing.assert_allclose(-scat_vals['TT'].T, S_TT_matlab, err_msg='TT', **tol)

@@ -23,6 +23,7 @@ arim reference
    model
    models
    models.block_in_immersion
+   scat
 
 **Imaging**
 
@@ -42,6 +43,7 @@ arim reference
 
    io
    io.brain
+   io.scat
    ut
    plot
    signal
