@@ -1,0 +1,77 @@
+import collections
+
+import scipy.io as sio
+import numpy as np
+
+
+class InvalidFileFormat(Exception):
+    pass
+
+
+def load_scat(smatrix_filename, format='auto'):
+    """
+    Load scattering from any supported source.
+
+    Parameters
+    ----------
+    smatrix_filename : str
+        Filename
+    format : str
+        'auto' (default), 'matlab'
+
+    Returns
+    -------
+    arim.scat.ScatFromData
+
+
+    """
+    formats = ['matlab']
+
+    if format == 'matlab':
+        return load_scat_from_matlab(smatrix_filename)
+    elif format == 'auto':
+        for format in formats:
+            try:
+                return load_scat(smatrix_filename, format=format)
+            except InvalidFileFormat:
+                pass
+        # at this point, everything failed
+        raise NotImplementedError('cannot determine the file format')
+    else:
+        raise ValueError('invalid format')
+
+
+def load_scat_from_matlab(smatrix_filename):
+    """
+    Load scattering from Matlab.
+
+    Parameters
+    ----------
+    smatrix_filename
+
+    Returns
+    -------
+    arim.scat.ScatFromData
+
+    """
+    from .. import scat
+    try:
+        data = sio.loadmat(smatrix_filename)
+    except NotImplementedError as e:
+        raise InvalidFileFormat() from e
+
+    frequencies = data['frequencies']
+    numfreq = frequencies.size
+    if frequencies.shape not in {(1, numfreq), (numfreq, 1), (numfreq, )}:
+        raise ValueError("invalid shape for 'frequencies'")
+    frequencies = frequencies.reshape((numfreq, ))
+
+    matrices = dict()
+
+    for scat_key in scat.SCAT_KEYS:
+        try:
+            matrices[scat_key] = data['scattering_{}'.format(scat_key)]
+        except KeyError:
+            pass
+
+    return scat.ScatFromData.from_dict(frequencies, matrices)
