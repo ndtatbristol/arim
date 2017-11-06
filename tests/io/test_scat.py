@@ -1,11 +1,6 @@
 import numpy as np
-import pytest
 
 from arim import io, scat
-
-import arim.io.brain as mat
-from arim.exceptions import InvalidShape, InvalidDimension, NotAnArray
-from arim.core import CaptureMethod
 
 from tests import helpers
 

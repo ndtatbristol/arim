@@ -104,41 +104,6 @@ def test_sdh_2d_scat():
     np.testing.assert_allclose(result['TT'], corr_matlab_res['TT'], **args)
 
 
-def test_sdh_2d_scat2():
-    shape = (4, 5, 7)
-    out_theta = np.random.uniform(low=-np.pi, high=np.pi, size=shape)
-    inc_theta = 0.
-
-    freq = 2.e6
-    v_l = 6000
-    v_t = 3000
-    hole_radius = 5e-4
-    scat_params = dict(radius=hole_radius, longitudinal_vel=v_l,
-                       transverse_vel=v_t)
-    scat_params2 = dict(frequency=freq, radius=hole_radius, longitudinal_vel=v_l,
-                        transverse_vel=v_t)
-
-    result = scat.sdh_2d_scat(inc_theta, out_theta, **scat_params2)
-
-    scat_funcs = scat.scat_2d_cylinder_funcs(**scat_params2)
-    for key, scat_func in scat_funcs.items():
-        np.testing.assert_allclose(scat_func(inc_theta, out_theta), result[key],
-                                   err_msg=key)
-
-    assert set(result.keys()) == {'LL', 'LT', 'TL', 'TT'}
-    for key, val in result.items():
-        assert val.shape == shape
-
-    to_compute = {'LL', 'TL'}
-    result2 = scat.sdh_2d_scat(inc_theta, out_theta,
-                               to_compute=to_compute,
-                               **scat_params2)
-    assert set(result2.keys()) == to_compute
-    for key, val in result2.items():
-        assert val.shape == shape
-        assert np.allclose(val, result[key])
-
-
 def _scattering_function(inc_theta, out_theta):
     inc_theta = ut.wrap_phase(inc_theta)
     out_theta = ut.wrap_phase(out_theta)
