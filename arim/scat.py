@@ -660,7 +660,7 @@ class Scattering2dFromFunc(Scattering2d):
     - create a class that inherit this class,
     - set the wrapped function as the '_scat_func' attribute,
     - populate the ``_scat_kwargs`` attribute with the extra arguments to pass to ``_scat_func``,
-    ie any argument but ``inc_theta``, ``out_theta``, ``frequency`` and ``to_compute``.
+      ie any argument but ``inc_theta``, ``out_theta``, ``frequency`` and ``to_compute``.
 
     This class is abstract.
     """

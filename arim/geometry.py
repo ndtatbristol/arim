@@ -1,4 +1,6 @@
 """
+.. currentmodule: arim.geometry
+
 Utilities for geometric operations: translation, rotation, change of basis, etc.
 
 Basis
@@ -28,6 +30,13 @@ Physics and ISO convention (r, theta, phi):
 - phi is the azimuthal angle in the range [-pi, pi].
 
 Cf. `Wikipedia article on Spherical coordinate system <https://en.wikipedia.org/wiki/Spherical_coordinate_system>`_
+
+
+.. data:: GCS
+
+   Global coordinate system (:class:`CoordinateSystem`).
+   ``i = (1, 0, 0)``, ``j = (0, 1, 0)``,
+   ``k = (0, 0, 1)``, ``O = (0, 0, 0)``.
 
 """
 
@@ -93,10 +102,11 @@ class Points:
     The coordinates (x, y, z) are stored contiguously.
 
     This object can contain a grid of any dimension of points:
-        - one point (``points.shape == ()``)
-        - a vector of points (``points.shape == (n, )``)
-        - a matrix of points (``points.shape == (n, m)``)
-        - etc.
+
+    - one point (``points.shape == ()``)
+    - a vector of points (``points.shape == (n, )``)
+    - a matrix of points (``points.shape == (n, m)``)
+    - etc.
 
     The lenght of Points (``len(points)``) is the number of points in the first dimension of the grid. If there is only
     one point, a TypeError is raised.
@@ -237,8 +247,6 @@ class Points:
         Parameters
         ----------
         direction : ndarray
-            Shape: (\*shape, 3)
-            Example: if the current
             Shape: (3, )
 
         Returns
@@ -257,14 +265,16 @@ class Points:
         return Points(rotate(self.coords, rotation_matrix, centre), self.name)
 
     def to_gcs(self, bases, origins):
-        """Returns the coordinates of the points expressed in the global coordinate system. Returns a new Points object.
+        """Returns the coordinates of the points expressed in the global coordinate system.
+        Returns a new Points object.
 
         Cf. :func:`to_gcs`
         """
         return Points(to_gcs(self.coords, bases, origins), self.name)
 
     def from_gcs(self, bases, origins):
-        """Returns the coordinates of the points expressed in the basis/bases given as parameter. Returns a new Points object.
+        """Returns the coordinates of the points expressed in the basis/bases given as
+        parameter. Returns a new Points object.
 
         Cf. :func:`from_gcs`
         """
@@ -310,7 +320,8 @@ class Points:
 
     def points_in_rectbox(self, xmin=None, xmax=None, ymin=None, ymax=None, zmin=None,
                           zmax=None):
-        """Returns points in the rectangular box.
+        """
+        Returns points in the rectangular box.
 
         See Also
         --------
@@ -398,6 +409,8 @@ class CoordinateSystem:
 
     def convert_from_gcs(self, points_gcs):
         """
+        Convert from global to local coordinate system
+
         Parameters
         ----------
         points_gcs : Points
