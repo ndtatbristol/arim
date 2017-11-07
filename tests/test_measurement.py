@@ -1,6 +1,6 @@
 import numpy as np
 import pytest
-import arim.registration as reg
+import arim.measurement as reg
 from unittest.mock import Mock
 
 import arim
@@ -15,22 +15,8 @@ _MOVE_PROBE_ON_OXY_DATA = [
 ]
 
 
-def test_manual_registration():
-    from tests.test_core import TestProbe
-    probe = TestProbe().linear_probe()
-    frame = Mock(spec=['probe'])
-    frame.probe = probe
-
-    theta = np.deg2rad(10)
-    standoff = 15e-3
-    reg.manual_registration(frame, theta, standoff)
-    np.testing.assert_allclose(frame.probe.pcs.origin, (0, 0, standoff))
-    np.testing.assert_allclose(frame.probe.pcs.i_hat, (np.cos(theta), 0, -np.sin(theta)))
-    np.testing.assert_allclose(frame.probe.pcs.k_hat, (np.sin(theta), 0, np.cos(theta)))
-
-
 @pytest.mark.parametrize("A,B,dA,dB", _MOVE_PROBE_ON_OXY_DATA)
-def test_move_probe_over_flat_surface_ideal(A, B, dA, dB):
+def test_find_probe_loc_from_frontwall_ideal(A, B, dA, dB):
     """Test move_probe_over_flat_surface() with 2 elements"""
     A = np.asarray(A, dtype=np.float)
     B = np.asarray(B, dtype=np.float)
@@ -80,7 +66,7 @@ def test_move_probe_over_flat_surface_ideal(A, B, dA, dB):
 
 
 @pytest.mark.parametrize("theta_deg", [30, -30])
-def test_move_probe_over_flat_surface_real(theta_deg):
+def test_find_probe_loc_from_frontwall_real(theta_deg):
     """Test move_probe_on_Oxy() with a 10 element linear points1"""
     standoff = -10.
 

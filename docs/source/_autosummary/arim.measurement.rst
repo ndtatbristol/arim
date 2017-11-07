@@ -1,7 +1,7 @@
-arim\.registration
-==================
+arim\.measurement
+=================
 
-.. automodule:: arim.registration
+.. automodule:: arim.measurement
 
    
    
@@ -10,9 +10,8 @@ arim\.registration
    .. autosummary::
    
       detect_surface_from_extrema
-      manual_registration
+      find_probe_loc_from_frontwall
       move_probe_over_flat_surface
-      registration_by_flat_frontwall_detection
    
    
 

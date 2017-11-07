@@ -60,7 +60,7 @@ def test_plot_oxz(show_plots):
 
 @pytest.mark.parametrize('plot_interfaces_kwargs',
                          [dict(),
-                          dict(show_orientations=True, show_grid=True),
+                          dict(show_orientations=True, show_last=True),
                           ])
 def test_plot_interfaces(show_plots, plot_interfaces_kwargs):
     # setup interfaces

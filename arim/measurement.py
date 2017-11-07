@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Module for adjusting the position of a probe above a frontwall.
-
-
+Tools and methods based on ultrasonic data measurements
 """
 from collections import namedtuple
 import logging
@@ -11,40 +9,12 @@ import numpy as np
 
 from . import geometry as g
 
-__all__ = ['manual_registration', 'registration_by_flat_frontwall_detection',
-           'detect_surface_from_extrema', 'move_probe_over_flat_surface']
-
 _IsometryOxy = namedtuple('_IsometryOxy', 'z_o theta phi')
 
 logger = logging.getLogger(__name__)
 
 
-def manual_registration(frame, probe_angle, probe_standoff):
-    """
-    Registration of the probe for a known probe angle and standoff.
-
-    Side effect: the probe position is reset before moving the probe (align PCS with GCS first).
-    After the registration, the PCS origin is ``(0, 0, probe_standoff)`` and the first axis of the PCS is
-    ``(cos(probe_angle), 0, -sin(probe_angle))``.
-
-    Returns None (update the frame).
-
-    Parameters
-    ----------
-    frame : Frame
-    probe_angle : float
-        Angle (rad) between the axis Ox and the probe.
-    probe_standoff : float
-        Distance (m) between the probe
-    """
-    rot = g.rotation_matrix_y(probe_angle)
-
-    frame.probe.reset_position()
-    frame.probe = frame.probe.rotate(rot)
-    frame.probe = frame.probe.translate(np.array((0., 0., probe_standoff)))
-
-
-def registration_by_flat_frontwall_detection(frame, couplant, tmin=None, tmax=None):
+def find_probe_loc_from_frontwall(frame, couplant, tmin=None, tmax=None):
     """
     Registration process by detection of the frontwall, whose equation is
     assumed to be ``z = 0``. 
@@ -97,7 +67,8 @@ def registration_by_flat_frontwall_detection(frame, couplant, tmin=None, tmax=No
 
     # Move probe:
     distance_to_surface = time_to_surface * couplant.longitudinal_vel / 2
-    frame, iso = move_probe_over_flat_surface(frame, distance_to_surface, full_output=True)
+    frame, iso = move_probe_over_flat_surface(frame, distance_to_surface,
+                                              full_output=True)
 
     probe_standoff = iso.z_o
     probe_angle = iso.theta
@@ -213,7 +184,8 @@ def move_probe_over_flat_surface(frame, distance_to_surface, full_output=False):
         try:
             theta = np.arcsin(p[1])
         except Exception as e:
-            raise RuntimeError('There is no solution: it is likely one circle is in another.') from e
+            raise RuntimeError(
+                'There is no solution: it is likely one circle is in another.') from e
 
     # V/ Move the points1:
     # -----------------------------------------

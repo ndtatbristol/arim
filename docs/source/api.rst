@@ -12,7 +12,6 @@ arim reference
    core
    geometry
    ray
-   registration
    _probes
 
 **Modelling**
@@ -47,6 +46,8 @@ arim reference
    ut
    plot
    signal
+   measurement
+
 
 **Nuts and bolts**
 

@@ -29,7 +29,7 @@ import arim.models.block_in_immersion
 import arim.path
 import arim.plot as aplt
 import arim.ray
-from arim.registration import registration_by_flat_frontwall_detection
+from arim.measurement import find_probe_loc_from_frontwall
 import arim.models.block_in_immersion as bim
 
 # %% Load configuration
@@ -111,7 +111,7 @@ if conf['plot.bscan']:
 
 # Detect frontwall:
 _, _, time_to_surface = \
-    registration_by_flat_frontwall_detection(frame, couplant, **conf['registration'])
+    find_probe_loc_from_frontwall(frame, couplant, **conf['registration'])
 
 if conf['plot.registration']:
     plt.figure()
