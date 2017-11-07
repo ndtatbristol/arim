@@ -3,6 +3,36 @@
 
 Utilities for geometric operations: translation, rotation, change of basis, etc.
 
+Points
+======
+
+A :class:`Points` object contains the Cartesian coordinates of one or more
+points. The points can be stored as a ndarray.
+However ray tracing and many parts of arim expects as input an 1d array of
+points.
+
+Function :func:`points_1d_wall_z` provides an easy way to create a flat line.
+For more complicated lines and surfaces, create the points manually.
+
+Oriented points
+===============
+
+An oriented point is defined as a point and three orthonormal vectors.
+It is actually a full coordinate system.
+
+For probe and surfaces (front, back wall), the two first vectors must be
+tangential to the surface and the third vector must be normal to it.
+
+In the block in immersion model, the probe normals must be towards the
+examination object. The front and back walls' normals must be towards the
+probe.
+
+For scatterers and grid points, there is no tangent or normal vectors.
+Only the third vector of the basis is used. It defines the reference
+orientation of the scatterer. To use a rotated scatterer, one can therefore
+change the orientation of this third vector; however, the recommend technique
+is to argument ``orientation`` of :class:`arim.scat.Scattering2d`.
+
 Basis
 =====
 

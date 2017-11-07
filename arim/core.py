@@ -858,7 +858,7 @@ class Material(namedtuple('Material',
                           'longitudinal_vel transverse_vel density state_of_matter metadata')):
     """Material(longitudinal_vel, transverse_vel=None, density=None, state_of_matter=None, metadata=None)
 
-    Parameters
+    Attributes
     ----------
     longitudinal_vel : float
     transverse_vel : float or None
@@ -866,9 +866,10 @@ class Material(namedtuple('Material',
     state_of_matter : StateMatter or None
     metadata : dict or None
 
-    Example
-    -------
-        >>> alu = Material(6300, 3120, 2700, 'solid', {'long_name': 'Aluminium'})
+    Examples
+    --------
+        >>> alu = Material(6300., 3120., 2700., 'solid', {'long_name': 'Aluminium'})
+        >>> water = Material(1480., None, 1000., 'liquid', {'long_name': 'Water'})
     """
 
     def __new__(cls, longitudinal_vel, transverse_vel=None, density=None,
@@ -913,11 +914,16 @@ class Material(namedtuple('Material',
 
         Parameters
         ----------
-        mode : Mode or string
+        mode : Mode or str
 
         Returns
         -------
         velocitity: float
+
+        Examples
+        --------
+        >>> material.velocity('L')
+        # this return material.longitudinal_vel
 
         """
         mode = helpers.parse_enum_constant(mode, Mode)
@@ -956,6 +962,7 @@ class BlockInImmersion(ExaminationObject):
     couplant_material : Material
     frontwall_oriented_points : OrientedPoints
     backwall_oriented_points : OrientedPoints or None
+
     """
 
     def __init__(self, block_material, couplant_material, frontwall_oriented_points,

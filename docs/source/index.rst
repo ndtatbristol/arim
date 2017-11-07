@@ -17,9 +17,10 @@ User documentation
   :maxdepth: 2
 
   installation/installation
+  getting_started
   core/index
-  im/index
   model/index
+  im/index
   utils/index
   io/index
   examples/index

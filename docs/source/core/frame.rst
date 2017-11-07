@@ -6,12 +6,10 @@ Frame
 
 .. py:currentmodule:: arim.core
 
-.. seealso::
-
-  Reference of class :class:`Frame`
-
-A frame corresponds to one ultrasonic acquisition for a given spatial location of the probe. It describes the capture method that was used (example: FMC, HMC) and contains the voltage-time data...
-(:attr:`Frame.scanlines`).
+A :class:`Frame` is a data container for a :class:`Probe`, an :class:`ExaminationObject` and the voltage-time data
+:attr:`Frame.scanlines`. FMC, HMC, or any subset of FMC frames are supported.
+It corresponds roughly to the content of the ``exp_data`` structure of the Matlab ndt-library of the
+University of Bristol.
 
 Limits:
 
@@ -44,6 +42,6 @@ Creating a Frame from scratch::
 
     frame = arim.Frame(scanlines, time, tx, rx, probe, examination_object)
 
-Remark: the functions :func:`arim.utils.fmc` and :func:`arim.utils.hmc` creates lists of transmitters and receivers for HMC and FMC acquisitions.
+Remark: the functions :func:`arim.ut.fmc` and :func:`arim.ut.hmc` creates lists of transmitters and receivers for HMC and FMC acquisitions.
 
-To load a frame exported from BRAIN (Matlab), cf. :ref:`io_brain`.
+To load a frame exported from the Bristol ndt-library (Matlab), see :ref:`io_brain`.

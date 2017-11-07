@@ -7,9 +7,10 @@ Contents:
 .. toctree::
   :maxdepth: 2
 
-  getting_started
   probe
+  examobj
   frame
   path
+  ray_tracing
   metadata
 
