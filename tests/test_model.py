@@ -38,29 +38,32 @@ def make_context():
 
     probe_points = arim.Points([[0., 0., -10e-3]], 'Probe')
     probe_orientations = arim.geometry.default_orientations(probe_points)
+    probe_oriented_points = arim.geometry.OrientedPoints(probe_points, probe_orientations)
 
-    frontwall_points, frontwall_orientations \
+    frontwall_oriented_points \
         = arim.geometry.points_1d_wall_z(numpoints=1000, xmin=-5.e-3, xmax=20.e-3,
                                          z=0., name='Frontwall')
-    backwall_points, backwall_orientations = \
+    frontwall_points, frontwall_orientations = frontwall_oriented_points
+
+    backwall_oriented_points = \
         arim.geometry.points_1d_wall_z(numpoints=1000, xmin=-5.e-3, xmax=50.e-3, z=30.e-3,
                                        name='Backwall')
+    backwall_points, backwall_orientations = backwall_oriented_points
 
     scatterer_points = arim.Points([[0., 0., 20e-3], [50e-3, 0., 20e-3]],
                                    'Scatterers')
     scatterer_orientations = arim.geometry.default_orientations(scatterer_points)
+    scatterer_oriented_points = arim.geometry.OrientedPoints(scatterer_points,
+                                                             scatterer_orientations)
 
-    interfaces = arim.models.block_in_immersion.make_interfaces(couplant, probe_points,
-                                                                probe_orientations,
-                                                                frontwall_points,
-                                                                frontwall_orientations,
-                                                                backwall_points,
-                                                                backwall_orientations,
-                                                                scatterer_points,
-                                                                scatterer_orientations)
+    interfaces = arim.models.block_in_immersion.make_interfaces(
+        couplant, probe_oriented_points,
+        frontwall_oriented_points,
+        backwall_oriented_points,
+        scatterer_oriented_points)
 
     paths = arim.models.block_in_immersion.make_paths(block, couplant, interfaces)
-    views = arim.models.block_in_immersion.make_views(paths)
+    views = arim.models.block_in_immersion.make_views_from_paths(paths)
 
     # Do the ray tracing manually
     # Hardcode the result of ray-tracing in order to write tests with lower coupling
@@ -97,6 +100,11 @@ def make_context():
     rev_ray_geometry_dict = OrderedDict((k, arim.ray.RayGeometry.from_path(v))
                                         for (k, v) in rev_paths.items())
 
+    exam_obj = arim.BlockInImmersion(block, couplant,
+                                     (frontwall_points, frontwall_orientations),
+                                     (backwall_points, backwall_orientations),
+                                     (scatterer_points, scatterer_orientations))
+
     context = dict()
     context['block'] = block
     context['couplant'] = couplant
@@ -106,19 +114,16 @@ def make_context():
     context['views'] = views
     context['ray_geometry_dict'] = ray_geometry_dict
     context['rev_ray_geometry_dict'] = rev_ray_geometry_dict
-    context['probe_points'] = probe_points
-    context['probe_orientations'] = probe_orientations
-    context['frontwall_points'] = frontwall_points
-    context['frontwall_orientations'] = frontwall_orientations
-    context['backwall_points'] = backwall_points
-    context['backwall_orientations'] = backwall_orientations
-    context['scatterer_points'] = scatterer_points
-    context['scatterer_orientations'] = scatterer_orientations
+    context['probe_oriented_points'] = probe_oriented_points
+    context['frontwall_oriented_points'] = frontwall_oriented_points
+    context['backwall_oriented_points'] = backwall_oriented_points
+    context['scatterer_oriented_points'] = scatterer_oriented_points
     context['freq'] = 2e6
     context['element_width'] = 0.5e-3
     context['wavelength_in_couplant'] = couplant.longitudinal_vel / context['freq']
     context['numelements'] = len(probe_points)
     context['numpoints'] = len(scatterer_points)
+    context['exam_obj'] = exam_obj
 
     '''==================== copy/paste me ====================
     context = make_context()
@@ -136,12 +141,11 @@ def make_context():
     """:type : dict[str, arim.View]"""
     ray_geometry_dict = context['ray_geometry_dict']
     """:type : dict[str, arim.path.RayGeometry]"""
-    frontwall_points = context['frontwall_points']
-    frontwall_orientations = context['frontwall_orientations']
-    backwall_points = context['backwall_points']
-    backwall_orientations = context['backwall_orientations']
-    scatterer_points = context['scatterer_points']
-    scatterer_orientations = context['scatterer_orientations']
+    probe_oriented_points = context['probe_oriented_points']
+    frontwall_oriented_points = context['frontwall_oriented_points']
+    backwall_oriented_points = context['backwall_oriented_points']
+    scatterer_oriented_points = context['scatterer_oriented_points']
+    exam_obj = context['exam_obj']
     '''
 
     return context
@@ -155,14 +159,6 @@ def test_context():
     paths = context['paths']
     views = context['views']
     ray_geometry_dict = context['ray_geometry_dict']
-    probe_points = context['probe_points']
-    probe_orientations = context['probe_orientations']
-    frontwall_points = context['frontwall_points']
-    frontwall_orientations = context['frontwall_orientations']
-    backwall_points = context['backwall_points']
-    backwall_orientations = context['backwall_orientations']
-    scatterer_points = context['scatterer_points']
-    scatterer_orientations = context['scatterer_orientations']
 
     assert paths.keys() == {'L', 'LL', 'LT', 'TL', 'TT', 'T'}
     for path in paths.values():
@@ -1028,7 +1024,8 @@ def test_directivity_2d_rectangular_in_fluid():
     theta = 0.
     element_width = 1e-3
     wavelength = 0.5e-3
-    directivity = arim.model.directivity_2d_rectangular_in_fluid(theta, element_width, wavelength)
+    directivity = arim.model.directivity_2d_rectangular_in_fluid(theta, element_width,
+                                                                 wavelength)
 
     assert np.isclose(directivity, 1.0)
 
@@ -1051,7 +1048,8 @@ def test_radiation_in_fluid():
     assert isinstance(rad, complex)
 
     theta = np.linspace(-np.pi, np.pi, 50)
-    rad = arim.model.radiation_2d_rectangular_in_fluid(theta, source_radius * 2, wavelength)
+    rad = arim.model.radiation_2d_rectangular_in_fluid(theta, source_radius * 2,
+                                                       wavelength)
     assert rad.shape == theta.shape
     assert rad.dtype.kind == 'c', 'datatype is not complex'
 
@@ -1083,7 +1081,8 @@ def test_fluid_solid_real():
                                                                             rho_solid,
                                                                             c_fluid, c_l,
                                                                             c_t,
-                                                                            alpha_l, alpha_t)
+                                                                            alpha_l,
+                                                                            alpha_t)
     assert reflection.dtype.kind == 'f'
     assert transmission_l.dtype.kind == 'f'
     assert transmission_t.dtype.kind == 'f'
@@ -1136,7 +1135,8 @@ def test_fluid_solid_complex():
                                                                             rho_solid,
                                                                             c_fluid, c_l,
                                                                             c_t,
-                                                                            alpha_l, alpha_t)
+                                                                            alpha_l,
+                                                                            alpha_t)
 
     # Compute the energy incoming and outcoming: the principle of conservation of energy
     # must be respected.
@@ -1329,15 +1329,21 @@ def test_stokes_relation():
     alpha_t = arim.model.snell_angles(alpha_fluid, c_fluid, c_t)
 
     # Transmission fluid->solid
-    _, transmission_l_fs, transmission_t_fs = arim.model.fluid_solid(alpha_fluid, rho_fluid,
-                                                                     rho_solid, c_fluid, c_l,
+    _, transmission_l_fs, transmission_t_fs = arim.model.fluid_solid(alpha_fluid,
+                                                                     rho_fluid,
+                                                                     rho_solid, c_fluid,
+                                                                     c_l,
                                                                      c_t,
                                                                      alpha_l, alpha_t)
-    refl_tl, refl_tt, transmission_t_sf = arim.model.solid_t_fluid(alpha_t, rho_fluid, rho_solid,
-                                                                   c_fluid, c_l, c_t, alpha_fluid,
+    refl_tl, refl_tt, transmission_t_sf = arim.model.solid_t_fluid(alpha_t, rho_fluid,
+                                                                   rho_solid,
+                                                                   c_fluid, c_l, c_t,
+                                                                   alpha_fluid,
                                                                    alpha_l)
-    refl_ll, refl_lt, transmission_l_sf = arim.model.solid_l_fluid(alpha_l, rho_fluid, rho_solid,
-                                                                   c_fluid, c_l, c_t, alpha_fluid,
+    refl_ll, refl_lt, transmission_l_sf = arim.model.solid_l_fluid(alpha_l, rho_fluid,
+                                                                   rho_solid,
+                                                                   c_fluid, c_l, c_t,
+                                                                   alpha_fluid,
                                                                    alpha_t)
 
     # TODO: there is a magic coefficient here. Rose vs Krautkrämer discrepancy?

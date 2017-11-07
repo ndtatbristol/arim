@@ -13,6 +13,7 @@ arim\.core
 
    .. autosummary::
    
+      BlockInImmersion
       CaptureMethod
       ElementShape
       ExaminationObject

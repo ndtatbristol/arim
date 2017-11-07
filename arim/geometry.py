@@ -43,12 +43,11 @@ Cf. `Wikipedia article on Spherical coordinate system <https://en.wikipedia.org/
 # Remark: declaration of constant GCS at the end of this file
 import math
 from collections import namedtuple
-from concurrent.futures import ThreadPoolExecutor
+import concurrent.futures
 from warnings import warn
 
 import numba
 import numpy as np
-import numpy.linalg as linalg
 
 from .helpers import Cache, NoCache, chunk_array
 from . import settings as s
@@ -330,6 +329,9 @@ class Points:
         """
         return points_in_rectbox(self.x, self.y, self.z, xmin, xmax, ymin, ymax, zmin,
                                  zmax)
+
+
+OrientedPoints = namedtuple('OrientedPoints', 'points orientations')
 
 
 class CoordinateSystem:
@@ -1173,7 +1175,7 @@ def direct_isometry_3d(A, i_hat, j_hat, B, u_hat, v_hat):
 
     # baseArr = M @ baseDep
     # <=> baseDep.T @ M.T = baseArr.T
-    M = linalg.solve(baseDep.T, baseArr.T).T
+    M = np.linalg.solve(baseDep.T, baseArr.T).T
 
     # assert np.allclose(M @ baseDep, baseArr)
 
@@ -1249,7 +1251,7 @@ def distance_pairwise(points1, points2, out=None, dtype=None, block_size=None,
     chunk_size = math.ceil(block_size / 6)
 
     futures = []
-    with ThreadPoolExecutor(max_workers=numthreads) as executor:
+    with concurrent.futures.ThreadPoolExecutor(max_workers=numthreads) as executor:
         for chunk1 in chunk_array((num1,), chunk_size):
             for chunk2 in chunk_array((num2,), chunk_size):
                 chunk_tof = (chunk1[0], chunk2[0])
@@ -1393,6 +1395,8 @@ def points_1d_wall_z(xmin, xmax, z, numpoints, y=0., name=None, dtype=None):
 
 def default_orientations(points):
     """
+    Returns the default orientations for unoriented points.
+
     Assign to each point the following orientation::
 
         x = (1, 0, 0)
@@ -1401,11 +1405,11 @@ def default_orientations(points):
 
     Parameters
     ----------
-    points: arim.geometry.Points
+    points: Points
 
     Returns
     -------
-    orientations : arim.geometry.Points
+    orientations : Points
 
     """
     # No need to create a full array because all values are the same: we cheat
@@ -1416,9 +1420,35 @@ def default_orientations(points):
     return orientations
 
 
+def default_oriented_points(points):
+    """
+    Returns OrientedPoints from Points assuming the default orientations.
+
+    Parameters
+    ----------
+    points : Points
+
+    Returns
+    -------
+    oriented_points : OrientedPOints
+
+    """
+    return OrientedPoints(points, default_orientations(points))
+
+
 def points_from_probe(probe, name='Probe'):
     """
-    Probe object to Points (centres and orientations).
+    Probe object to OrientedPoints (points and orientations).
+
+    Parameters
+    ----------
+    probe
+    name
+
+    Returns
+    -------
+    OrientedPoints
+
     """
     points = probe.locations
     if name is not None:
@@ -1430,13 +1460,22 @@ def points_from_probe(probe, name='Probe'):
     orientations_arr[2] = probe.pcs.k_hat
     orientations = Points(np.broadcast_to(orientations_arr, (*points.shape, 3, 3)))
 
-    return points, orientations
+    return OrientedPoints(points, orientations)
 
 
 def points_from_grid(grid):
     """
-    Grid object to Points (centres and orientations).
+    Convert a Grid to an OrientedPoints object
+
+    Parameters
+    ----------
+    grid : Grid
+
+    Returns
+    -------
+    OrientedPoints
+
     """
     points = grid.as_points
     orientations = default_orientations(points)
-    return points, orientations
+    return OrientedPoints(points, orientations)

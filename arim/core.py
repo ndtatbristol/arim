@@ -8,10 +8,6 @@ import numpy as np
 from . import geometry as g
 from . import ut, helpers
 
-__all__ = ['FocalLaw', 'StateMatter', 'TransmissionReflection', 'Frame', 'ElementShape',
-           'Probe', 'Mode', 'Interface', 'Path', 'Material', 'ExaminationObject', 'Time',
-           'View', 'CaptureMethod']
-
 FocalLaw = namedtuple('FocalLaw', ['lookup_times_tx', 'lookup_times_rx', 'amplitudes_tx',
                                    'amplitudes_rx', 'scanline_weights'])
 
@@ -22,6 +18,9 @@ TransmissionReflection.__doc__ = "Enumerated constants: transmission or reflecti
 
 
 class CaptureMethod(enum.Enum):
+    """
+    Capture method: unsupported, fmc, hmc
+    """
     unsupported = 0
     fmc = 1
     hmc = 2
@@ -931,8 +930,41 @@ class Material(namedtuple('Material',
 
 
 class ExaminationObject:
+    """
+    Data container for the material and the geometry of the inspected object.
+    """
+
     def __init__(self, material, metadata=None):
         self.material = material
+
+        if metadata is None:
+            metadata = {}
+        self.metadata = metadata
+
+
+class BlockInImmersion(ExaminationObject):
+    """
+    Solid block immersed in a fluid
+
+    Data container
+
+    Attributes
+    ----------
+    block_material : Material
+    material : Material
+        Alias for block_material
+    couplant_material : Material
+    frontwall_oriented_points : OrientedPoints
+    backwall_oriented_points : OrientedPoints or None
+    """
+
+    def __init__(self, block_material, couplant_material, frontwall_oriented_points,
+                 backwall_oriented_points=None, metadata=None):
+        self.block_material = block_material
+        self.material = block_material  # alias
+        self.couplant_material = couplant_material
+        self.frontwall_oriented_points = frontwall_oriented_points
+        self.backwall_oriented_points = backwall_oriented_points
 
         if metadata is None:
             metadata = {}

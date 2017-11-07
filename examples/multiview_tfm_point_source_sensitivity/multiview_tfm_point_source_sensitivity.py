@@ -155,7 +155,7 @@ for p in interfaces:
     logger.debug(p)
 
 # Make views
-views = arim.models.block_in_immersion.make_views(paths)
+views = arim.models.block_in_immersion.make_views_from_paths(paths)
 if conf['views_to_use'] != 'all':
     views = OrderedDict([(viewname, view) for viewname, view in views.items()
                          if viewname in conf['views_to_use']])

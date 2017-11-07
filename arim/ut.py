@@ -378,15 +378,16 @@ def filter_unique_views(viewnames):
     return unique_views
 
 
-def make_viewnames(pathnames, unique_only=True, order_func=default_viewname_order):
+def make_viewnames(pathnames, tfm_unique_only=False, order_func=default_viewname_order):
     """
     Make all view names from the paths given as arguments.
 
     Parameters
     ----------
     pathnames : list[str]
-    unique_only : bool
-        If True, consider Default True.
+    tfm_unique_only : bool
+        Default: False. If True, returns only the views that give *different* imaging
+        results with TFM (AB-CD and DC-BA give the same imaging result).
     order_func : func
         Function for sorting the views.
 
@@ -403,7 +404,7 @@ def make_viewnames(pathnames, unique_only=True, order_func=default_viewname_orde
     if order_func is not None:
         viewnames = list(sorted(viewnames, key=default_viewname_order))
 
-    if unique_only:
+    if tfm_unique_only:
         viewnames = filter_unique_views(viewnames)
 
     return viewnames

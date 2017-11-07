@@ -13,6 +13,7 @@ arim\.models\.block\_in\_immersion
       make_interfaces
       make_paths
       make_views
+      make_views_from_paths
       ray_weights_for_views
       ray_weights_for_wall
       rx_ray_weights

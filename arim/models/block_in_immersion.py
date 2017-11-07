@@ -5,31 +5,31 @@ Boilerplate::
 
     import arim.models.block_in_immersion as bim
 
-    probe_points, probe_orientations = arim.geometry.points_from_probe(probe)
-    frontwall_points, frontwall_orientations = \
+    probe_oriented_points = arim.geometry.points_from_probe(probe)
+    frontwall_oriented_points = \
         arim.geometry.points_1d_wall_z(xmin, xmax, z_frontwall, numpoints)
-    backwall_points, backwall_orientations = \
+    backwall_oriented_points = \
         arim.geometry.points_1d_wall_z(xmin, xmax, z_backwall, numpoints)
 
     grid = arim.geometry.Grid(xmin, xmax, ymin, ymax, zmin, zmax, pixel_size)
-    grid_points, grid_orientation = arim.geometry.points_from_grid(grid)
+    grid_oriented_points = arim.geometry.points_from_grid(grid)
 
-    interfaces = bim.make_interfaces(couplant, probe_points, probe_orientations,
-                                     frontwall_points, frontwall_orientations,
-                                     backwall_points, backwall_orientations,
-                                     grid_points, grid_orientation)
-    paths = bim.make_paths(block, couplant, interfaces, max_number_of_reflection=1)
-    views = bim.make_views(paths, unique_only=True)
+    exam_obj = arim.BlockInImmersion(block_material, couplant_material,
+                                     frontwall_oriented_points,
+                                     backwall_oriented_points)
+
+    views = bim.make_views(examination_object, probe_oriented_points,
+                           scatterers_oriented_points, max_number_of_reflection=1,
+                           tfm_unique_only=False)
 
 """
-
 import logging
 from collections import namedtuple, OrderedDict
 
 import numpy as np
 
 from .. import model, ray, ut, helpers
-from .. import core as c
+from .. import core as c, geometry as g
 from ..ray import RayGeometry
 
 logger = logging.getLogger(__name__)
@@ -342,10 +342,10 @@ def ray_weights_for_wall(path, frequency, probe_element_width=None,
 
 
 def make_interfaces(couplant_material,
-                    probe_points, probe_orientations,
-                    frontwall_points, frontwall_orientations,
-                    backwall_points, backwall_orientations,
-                    grid_points, grid_orientations):
+                    probe_oriented_points,
+                    frontwall_oriented_points,
+                    backwall_oriented_points,
+                    grid_oriented_points):
     """
     Construct Interface objects for the case of a solid block in immersion
     (couplant is liquid).
@@ -359,14 +359,11 @@ def make_interfaces(couplant_material,
     Parameters
     ----------
     couplant_material: Material
-    probe_points: Points
-    probe_orientations: Points
-    frontwall_points: Points
-    frontwall_orientations: Points
-    backwall_points: Points
-    backwall_orientations: Points
-    grid_points: Points
-    grid_orientations: Points
+    couplant_material: Material
+    probe_oriented_points : OrientedPoints
+    frontwall_oriented_points: OrientedPoints
+    backwall_oriented_points: OrientedPoints
+    grid_oriented_points: OrientedPoints
 
     Returns
     -------
@@ -375,25 +372,27 @@ def make_interfaces(couplant_material,
     """
     interface_dict = OrderedDict()
 
-    interface_dict['probe'] = c.Interface(probe_points, probe_orientations,
-                                        are_normals_on_out_rays_side=True)
-    interface_dict['frontwall_trans'] = c.Interface(frontwall_points,
-                                                  frontwall_orientations,
-                                                  'fluid_solid', 'transmission',
-                                                  are_normals_on_inc_rays_side=False,
-                                                  are_normals_on_out_rays_side=True)
-    interface_dict['backwall_refl'] = c.Interface(backwall_points, backwall_orientations,
-                                                'solid_fluid', 'reflection',
-                                                reflection_against=couplant_material,
-                                                are_normals_on_inc_rays_side=False,
-                                                are_normals_on_out_rays_side=False)
-    interface_dict['grid'] = c.Interface(grid_points, grid_orientations,
-                                       are_normals_on_inc_rays_side=True)
-    interface_dict['frontwall_refl'] = c.Interface(frontwall_points, frontwall_orientations,
-                                                 'solid_fluid', 'reflection',
-                                                 reflection_against=couplant_material,
-                                                 are_normals_on_inc_rays_side=True,
-                                                 are_normals_on_out_rays_side=True)
+    interface_dict['probe'] = c.Interface(*probe_oriented_points,
+                                          are_normals_on_out_rays_side=True)
+    interface_dict['frontwall_trans'] = c.Interface(
+        *frontwall_oriented_points,
+        'fluid_solid', 'transmission',
+        are_normals_on_inc_rays_side=False,
+        are_normals_on_out_rays_side=True)
+    if backwall_oriented_points is not None:
+        interface_dict['backwall_refl'] = c.Interface(
+            *backwall_oriented_points,
+            'solid_fluid', 'reflection',
+            reflection_against=couplant_material,
+            are_normals_on_inc_rays_side=False,
+            are_normals_on_out_rays_side=False)
+    interface_dict['grid'] = c.Interface(*grid_oriented_points,
+                                         are_normals_on_inc_rays_side=True)
+    interface_dict['frontwall_refl'] = c.Interface(*frontwall_oriented_points,
+                                                   'solid_fluid', 'reflection',
+                                                   reflection_against=couplant_material,
+                                                   are_normals_on_inc_rays_side=True,
+                                                   are_normals_on_out_rays_side=True)
 
     return interface_dict
 
@@ -490,7 +489,7 @@ def make_paths(block_material, couplant_material, interface_dict,
     return paths
 
 
-def make_views(paths_dict, unique_only=True):
+def make_views_from_paths(paths_dict, tfm_unique_only=False):
     """
     Returns 'View' objects for the case of a block in immersion.
 
@@ -502,16 +501,16 @@ def make_views(paths_dict, unique_only=True):
     ----------
     paths_dict : Dict[Path]
         Key: path names (exemple: 'L', 'LT'). Values: :class:`Path`
-    unique_only : bool
-        Default: True. Returns only the views that give *different* imaging results with
-        TFM (AB-CD and DC-BA give the same imaging result).
+    tfm_unique_only : bool
+        Default: False. If True, returns only the views that give *different* imaging
+        results with TFM (AB-CD and DC-BA give the same imaging result).
 
     Returns
     -------
     views: OrderedDict[Views]
 
     """
-    viewnames = ut.make_viewnames(paths_dict.keys(), unique_only=unique_only)
+    viewnames = ut.make_viewnames(paths_dict.keys(), tfm_unique_only=tfm_unique_only)
     views = OrderedDict()
     for view_name_tuple in viewnames:
         tx_name, rx_name = view_name_tuple
@@ -523,3 +522,44 @@ def make_views(paths_dict, unique_only=True):
 
         views[view_name] = c.View(tx_path, rx_path, view_name)
     return views
+
+
+def make_views(examination_object, probe_oriented_points,
+               scatterers_oriented_points, max_number_of_reflection=1,
+               tfm_unique_only=False):
+    """
+    Make views for the measurement model of a block in immersion (scatterers response
+    only).
+
+    Parameters
+    ----------
+    examination_object : arim.core.BlockInImmersion
+    probe_oriented_points : OrientedPoints
+    scatterers_oriented_points : OrientedPoints
+    max_number_of_reflection : int
+        Number of internal reflections. Default: 1. If this number is 1 or above, the
+        backwall must be defined in ``frame.examination_object``.
+    tfm_unique_only : bool
+        Default False. If True, returns only the views that give *different* imaging
+        results with TFM (AB-CD and DC-BA give the same imaging result).
+
+    Returns
+    -------
+    views: OrderedDict[Views]
+
+    """
+    try:
+        couplant = examination_object.couplant_material
+        block = examination_object.block_material
+        frontwall_oriented_points = examination_object.frontwall_oriented_points
+        backwall_oriented_points = examination_object.backwall_oriented_points
+    except AttributeError as e:
+        raise ValueError("Examination object should be a BlockInImmersion") from e
+
+    interfaces = make_interfaces(
+        couplant, probe_oriented_points, frontwall_oriented_points,
+        backwall_oriented_points, scatterers_oriented_points)
+
+    paths = make_paths(block, couplant, interfaces, max_number_of_reflection)
+
+    return make_views_from_paths(paths, tfm_unique_only)

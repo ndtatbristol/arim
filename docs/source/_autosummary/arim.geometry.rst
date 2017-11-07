@@ -13,6 +13,7 @@ arim\.geometry
       are_points_close
       aspoints
       default_orientations
+      default_oriented_points
       direct_isometry_2d
       direct_isometry_3d
       distance_pairwise
@@ -47,6 +48,7 @@ arim\.geometry
       CoordinateSystem
       GeometryHelper
       Grid
+      OrientedPoints
       Points
       SphericalCoordinates
    

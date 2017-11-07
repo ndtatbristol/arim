@@ -225,13 +225,13 @@ def test_make_viewnames():
     T = 'T'
     LL = 'LL'
 
-    viewnames = arim.ut.make_viewnames(['L', 'T'], unique_only=False)
+    viewnames = arim.ut.make_viewnames(['L', 'T'], tfm_unique_only=False)
     assert viewnames == [(L, L), (L, T), (T, L), (T, T)]
 
-    viewnames = arim.ut.make_viewnames(['L', 'T'], unique_only=True)
+    viewnames = arim.ut.make_viewnames(['L', 'T'], tfm_unique_only=True)
     assert viewnames == [(L, L), (L, T), (T, T)]
 
-    viewnames = arim.ut.make_viewnames(['L', 'T'], unique_only=True)
+    viewnames = arim.ut.make_viewnames(['L', 'T'], tfm_unique_only=True)
     assert viewnames == [(L, L), (L, T), (T, T)]
 
     # legacy IMAGING_MODES
@@ -244,21 +244,24 @@ def test_make_viewnames():
                             "TT-TT"]
     legacy_imaging_views = [tuple(view.split('-')) for view in legacy_imaging_views]
 
-    viewnames = arim.ut.make_viewnames(['L', 'T', 'LL', 'LT', 'TL', 'TT'])
+    viewnames = arim.ut.make_viewnames(['L', 'T', 'LL', 'LT', 'TL', 'TT'],
+                                       tfm_unique_only=True)
     assert viewnames == legacy_imaging_views
 
-    viewnames = arim.ut.make_viewnames(arim.ut.DIRECT_PATHS + arim.ut.SKIP_PATHS)
+    viewnames = arim.ut.make_viewnames(arim.ut.DIRECT_PATHS + arim.ut.SKIP_PATHS,
+                                       tfm_unique_only=True)
     assert viewnames == legacy_imaging_views
 
     viewnames = arim.ut.make_viewnames(
-        arim.ut.DIRECT_PATHS + arim.ut.SKIP_PATHS + arim.ut.DOUBLE_SKIP_PATHS)
+        arim.ut.DIRECT_PATHS + arim.ut.SKIP_PATHS + arim.ut.DOUBLE_SKIP_PATHS,
+        tfm_unique_only=True)
     assert viewnames[:21] == legacy_imaging_views
     assert len(viewnames) == 105
 
     viewnames = arim.ut.make_viewnames(
         arim.ut.DIRECT_PATHS + arim.ut.SKIP_PATHS + arim.ut.DOUBLE_SKIP_PATHS,
-        unique_only=False)
+        tfm_unique_only=False)
     assert len(viewnames) == 14 * 14
 
-    viewnames = arim.ut.make_viewnames(['L', 'T', 'LL'], unique_only=True)
+    viewnames = arim.ut.make_viewnames(['L', 'T', 'LL'], tfm_unique_only=True)
     assert viewnames == [(L, L), (L, T), (T, T), (LL, L), (LL, T), (LL, LL)]

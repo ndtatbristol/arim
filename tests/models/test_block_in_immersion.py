@@ -5,6 +5,7 @@ import arim
 import arim.models.block_in_immersion as bim
 import arim.ray
 
+
 def test_ray_weights():
     context = make_context()
     paths = context['paths']
@@ -72,44 +73,6 @@ def test_ray_weights_for_views():
     assert nbytes_with_debug > nbytes_without_debug
 
 
-def test_model_amplitudes():
-    context = make_context()
-
-    block = context['block']
-    """:type : arim.Material"""
-    couplant = context['couplant']
-    """:type : arim.Material"""
-    vl = block.longitudinal_vel
-    vt = block.transverse_vel
-
-    scattering_func = {
-        'LL': lambda inc, out: np.full_like(inc, 1.),
-        'LT': lambda inc, out: np.full_like(inc, vl / vt),
-        'TL': lambda inc, out: np.full_like(inc, vt / vl),
-        'TT': lambda inc, out: np.full_like(inc, 1.),
-    }
-
-
-
-
-    interfaces = context['interfaces']
-    """:type : list[arim.Interface]"""
-    rev_paths = context['rev_paths']
-    """:type : dict[str, arim.Path]"""
-    paths = context['paths']
-    """:type : dict[str, arim.Path]"""
-    views = context['views']
-    """:type : dict[str, arim.View]"""
-    ray_geometry_dict = context['ray_geometry_dict']
-    """:type : dict[str, arim.path.RayGeometry]"""
-    frontwall_points = context['frontwall_points']
-    frontwall_orientations = context['frontwall_orientations']
-    backwall_points = context['backwall_points']
-    backwall_orientations = context['backwall_orientations']
-    scatterer_points = context['scatterer_points']
-    scatterer_orientations = context['scatterer_orientations']
-
-
 def test_path_in_immersion():
     xmin = -20e-3
     xmax = 100e-3
@@ -124,10 +87,12 @@ def test_path_in_immersion():
                                                                       name='Frontwall')
 
     frontwall_points, frontwall_orientations = arim.geometry.points_1d_wall_z(xmin, xmax,
-                                                                              z=0., numpoints=20,
+                                                                              z=0.,
+                                                                              numpoints=20,
                                                                               name='Frontwall')
     backwall_points, backwall_orientations = arim.geometry.points_1d_wall_z(xmin, xmax,
-                                                                            z=40.18e-3, numpoints=21,
+                                                                            z=40.18e-3,
+                                                                            numpoints=21,
                                                                             name='Backwall')
 
     grid = arim.geometry.Grid(xmin, xmax,
@@ -136,13 +101,11 @@ def test_path_in_immersion():
                               pixel_size=5e-3)
     grid_points, grid_orientation = arim.geometry.points_from_grid(grid)
 
-    interfaces = arim.models.block_in_immersion.make_interfaces(couplant, probe_points,
-                                                                probe_orientations,
-                                                                frontwall_points,
-                                                                frontwall_orientations,
-                                                                backwall_points,
-                                                                backwall_orientations,
-                                                                grid_points, grid_orientation)
+    interfaces = arim.models.block_in_immersion.make_interfaces(
+        couplant, (probe_points, probe_orientations),
+        (frontwall_points, frontwall_orientations),
+        (backwall_points, backwall_orientations),
+        (grid_points, grid_orientation))
     assert interfaces['probe'].points is probe_points
     assert interfaces['probe'].orientations is probe_orientations
     assert interfaces['frontwall_trans'].points is frontwall_points
@@ -171,7 +134,8 @@ def test_path_in_immersion():
         assert path_key == path.name
 
     # Make views
-    views = arim.models.block_in_immersion.make_views(paths)
+    views = arim.models.block_in_immersion.make_views_from_paths(paths,
+                                                                 tfm_unique_only=True)
     assert len(views) == 21
 
     view = views['LT-LT']
@@ -200,9 +164,21 @@ def test_path_in_immersion():
         assert path_key == path.name
 
     # Make views
-    views = arim.models.block_in_immersion.make_views(paths)
+    views = arim.models.block_in_immersion.make_views_from_paths(paths,
+                                                                 tfm_unique_only=True)
     assert len(views) == 105
 
     view = views['LT-LT']
     assert view.tx_path is paths['LT']
     assert view.rx_path is paths['TL']
+
+
+def test_make_views():
+    context = make_context()
+    probe_oriented_points = context['probe_oriented_points']
+    scatterer_oriented_points = context['scatterer_oriented_points']
+    exam_obj = context['exam_obj']
+
+    views = bim.make_views(exam_obj, probe_oriented_points, scatterer_oriented_points)
+
+    assert list(views.keys()) == list(context['views'].keys())
