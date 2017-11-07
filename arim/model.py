@@ -1102,9 +1102,11 @@ class RayWeights(namedtuple('RayWeights', [
         return nbytes
 
 
-def model_amplitudes_factory(tx, rx, view, ray_weights, scattering):
+def model_amplitudes_factory(tx, rx, view, ray_weights, scattering, scat_angle=0.):
     """
     Calculates the model coefficients once the ray weights are known.
+
+    The effective scattering is ``scattering(inc_theta - scat_angle, out_theta - scat_angle)``
 
     Parameters
     ----------
@@ -1113,7 +1115,9 @@ def model_amplitudes_factory(tx, rx, view, ray_weights, scattering):
     view : View
     ray_weights : RayWeights
     scattering : dict
-        Dict of functions (slow) or matrices (fast).
+        Dict of functions (slow but precise) or matrices(fast but precision depends on
+        the angle sampling).
+    scat_angle : float
 
     Returns
     ------
@@ -1173,12 +1177,14 @@ def model_amplitudes_factory(tx, rx, view, ray_weights, scattering):
         return _ModelAmplitudesWithScatFunction(tx, rx, scattering_obj,
                                                 tx_ray_weights, rx_ray_weights,
                                                 tx_scattering_angles,
-                                                rx_scattering_angles)
+                                                rx_scattering_angles,
+                                                scat_angle)
     else:
         return _ModelAmplitudesWithScatMatrix(tx, rx, scattering_obj,
                                               tx_ray_weights, rx_ray_weights,
                                               tx_scattering_angles,
-                                              rx_scattering_angles)
+                                              rx_scattering_angles,
+                                              scat_angle)
 
 
 class ModelAmplitudes(abc.ABC):
@@ -1246,7 +1252,7 @@ class ModelAmplitudes(abc.ABC):
 class _ModelAmplitudesWithScatFunction(ModelAmplitudes):
     def __init__(self, tx, rx, scattering_fn,
                  tx_ray_weights, rx_ray_weights,
-                 tx_scattering_angles, rx_scattering_angles):
+                 tx_scattering_angles, rx_scattering_angles, scat_angle=0.):
         self.tx = tx
         self.rx = rx
         self.scattering_fn = scattering_fn
@@ -1256,6 +1262,7 @@ class _ModelAmplitudesWithScatFunction(ModelAmplitudes):
         self.rx_scattering_angles = rx_scattering_angles
         self.numpoints, self.numelements = tx_ray_weights.shape
         self.numscanlines = self.tx.shape[0]
+        self.scat_angle = scat_angle
 
     def __getitem__(self, grid_slice):
         # Nota bene: arrays' shape is (numpoints, numscanline), i.e. the transpose
@@ -1263,9 +1270,10 @@ class _ModelAmplitudesWithScatFunction(ModelAmplitudes):
         if np.empty(self.numpoints)[grid_slice].ndim > 1:
             raise IndexError('Only the first dimension of the object is indexable.')
 
+        scat_angle = self.scat_angle
         scattering_amplitudes = self.scattering_fn(
-            np.take(self.tx_scattering_angles[grid_slice], self.tx, axis=-1),
-            np.take(self.rx_scattering_angles[grid_slice], self.rx, axis=-1))
+            np.take(self.tx_scattering_angles[grid_slice], self.tx, axis=-1) - scat_angle,
+            np.take(self.rx_scattering_angles[grid_slice], self.rx, axis=-1) - scat_angle)
 
         model_amplitudes = (scattering_amplitudes
                             * np.take(self.tx_ray_weights[grid_slice], self.tx, axis=-1)
@@ -1274,18 +1282,18 @@ class _ModelAmplitudesWithScatFunction(ModelAmplitudes):
 
 
 @numba.guvectorize(
-    'void(int32[:], int32[:], complex128[:,:], complex128[:], complex128[:], float64[:], float64[:], complex128[:])',
-    '(n),(n),(s,s),(e),(e),(e),(e)->(n)', nopython=True, target='parallel')
+    'void(int32[:], int32[:], complex128[:,:], complex128[:], complex128[:], float64[:], float64[:], float64[:], complex128[:])',
+    '(n),(n),(s,s),(e),(e),(e),(e),()->(n)', nopython=True, target='parallel')
 def _model_amplitudes_with_scat_matrix(tx, rx, scattering_matrix, tx_ray_weights,
                                        rx_ray_weights, tx_scattering_angles,
-                                       rx_scattering_angles, res):
+                                       rx_scattering_angles, scat_angle, res):
     # This is a kernel on a grid point.
     numscanlines = tx.shape[0]
     # assert res.shape[0] == tx_ray_weights.shape[0]
     # assert tx_ray_weights.shape == rx_ray_weights.shape == tx_scattering_angles.shape == rx_scattering_angles.shape
     for scan in range(numscanlines):
-        inc_theta = tx_scattering_angles[tx[scan]]
-        out_theta = rx_scattering_angles[rx[scan]]
+        inc_theta = tx_scattering_angles[tx[scan]] - scat_angle[0]
+        out_theta = rx_scattering_angles[rx[scan]] - scat_angle[0]
 
         scattering_amp = _scat._interpolate_scattering_matrix_kernel(scattering_matrix,
                                                                      inc_theta, out_theta)
@@ -1297,7 +1305,7 @@ def _model_amplitudes_with_scat_matrix(tx, rx, scattering_matrix, tx_ray_weights
 class _ModelAmplitudesWithScatMatrix(ModelAmplitudes):
     def __init__(self, tx, rx, scattering_mat,
                  tx_ray_weights, rx_ray_weights,
-                 tx_scattering_angles, rx_scattering_angles):
+                 tx_scattering_angles, rx_scattering_angles, scat_angle=0.):
         self.tx = tx
         self.rx = rx
         self.scattering_mat = scattering_mat
@@ -1307,42 +1315,18 @@ class _ModelAmplitudesWithScatMatrix(ModelAmplitudes):
         self.rx_scattering_angles = rx_scattering_angles
         self.numpoints, self.numelements = tx_ray_weights.shape
         self.numscanlines = self.tx.shape[0]
+        self.scat_angle = scat_angle
 
     def __getitem__(self, grid_slice):
         # Nota bene: arrays' shape is (numpoints, numscanline), i.e. the transpose
         # of RayWeights. They are contiguous.
-        res_dtype = np.result_type(self.scattering_mat, self.tx_ray_weights,
-                                   self.rx_ray_weights)
         return _model_amplitudes_with_scat_matrix(
             self.tx, self.rx, self.scattering_mat,
             self.tx_ray_weights[grid_slice],
             self.rx_ray_weights[grid_slice],
             self.tx_scattering_angles[grid_slice],
-            self.rx_scattering_angles[grid_slice])
+            self.rx_scattering_angles[grid_slice], self.scat_angle)
 
-        # grid_chunk = np.empty(self.numpoints)[grid_slice]
-        # if grid_chunk.ndim == 0:
-        #     # grid_slice is an int. We are working on one point, add a dimension
-        #     # to please _model_amplitudes_with_scat_matrix
-        #     res = np.zeros((1, self.numscanlines), res_dtype)
-        # elif grid_chunk.ndim == 1:
-        #     # grid_slice is a slice
-        #     res = np.zeros((grid_chunk.shape[0], self.numscanlines), res_dtype)
-        # else:
-        #     raise IndexError('Only the first dimension of the object is indexable.')
-        #
-        # res = _model_amplitudes_with_scat_matrix(
-        #     self.tx, self.rx, self.scattering_mat,
-        #     np.atleast_2d(self.tx_ray_weights[grid_slice]),
-        #     np.atleast_2d(self.rx_ray_weights[grid_slice]),
-        #     np.atleast_2d(self.tx_scattering_angles[grid_slice]),
-        #     np.atleast_2d(self.rx_scattering_angles[grid_slice]),
-        #     res)
-        # if grid_chunk.ndim == 0:
-        #     # remove the extra dimension added to please _model_amplitudes_with_scat_matrix
-        #     return res[0]
-        # else:
-        #     return res
 
 
 def sensitivity_uniform_tfm(model_amplitudes, scanline_weights, block_size=4000):

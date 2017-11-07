@@ -31,7 +31,7 @@ For scatterers and grid points, there is no tangent or normal vectors.
 Only the third vector of the basis is used. It defines the reference
 orientation of the scatterer. To use a rotated scatterer, one can therefore
 change the orientation of this third vector; however, the recommend technique
-is to argument ``orientation`` of :class:`arim.scat.Scattering2d`.
+is to argument ``scat_angle`` in :func:`arim.model.model_amplitudes_factory`.
 
 Basis
 =====
