@@ -483,7 +483,7 @@ def _tfm_with_scattering(
     """
     Forward model::
 
-        F_ij = Q_i Q'_j S_ij exp(-i omega (tau_i + tau'_j))
+        F_ij = Q_i Q'_j S_ij exp(+i omega (tau_i + tau'_j))
 
     Notation::
 
@@ -495,7 +495,7 @@ def _tfm_with_scattering(
 
     TFM::
 
-        I = sum_i sum_j conjugate(P_ij) / I_0 * F_ij exp(i omega (tau_i + tau'_j))
+        I = sum_i sum_j conjugate(P_ij) / I_0 * F_ij exp(-i omega (tau_i + tau'_j))
 
 
     Parameters

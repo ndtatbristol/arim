@@ -72,12 +72,7 @@ def test_sdh_2d_scat():
     hole_radius = 5e-4
 
     result = scat.sdh_2d_scat(inc_theta, out_theta, freq, hole_radius, v_l, v_t)
-    # There is an unexplained -1 multiplicative factor.
-    correction = dict()
-    correction['LL'] = 1.
-    correction['LT'] = -1.
-    correction['TL'] = 1.
-    correction['TT'] = 1.
+    matlab_res['LT'] *= -1  # trust Lopez-Sanchez instead of Brind, different from matlab implementation
 
     assert len(result) == 4
     assert result['LL'].shape == out_theta.shape
@@ -85,24 +80,11 @@ def test_sdh_2d_scat():
     assert result['TL'].shape == out_theta.shape
     assert result['TT'].shape == out_theta.shape
 
-    corr_matlab_res = {key: (correction[key] * val).conjugate()
-                       for key, val in matlab_res.items()}
-
-    # thetadeg = np.rad2deg(theta)
-    # import matplotlib.pyplot as plt
-    # for key in corr_matlab_res:
-    #     fig, ax = plt.subplots()
-    #     ax.plot(thetadeg, np.abs(result[key]), label='ours')
-    #     ax.plot(thetadeg, np.abs(corr_matlab_res[key]), '--', label='matlab')
-    #     ax.legend()
-    #     ax.set_title('test_elastic_scattering_2d_cylinder - ' + key)
-    #     plt.show()
-
     args = dict(rtol=1e-5)
-    np.testing.assert_allclose(result['LL'], corr_matlab_res['LL'], **args)
-    np.testing.assert_allclose(result['LT'], corr_matlab_res['LT'], **args)
-    np.testing.assert_allclose(result['TL'], corr_matlab_res['TL'], **args)
-    np.testing.assert_allclose(result['TT'], corr_matlab_res['TT'], **args)
+    np.testing.assert_allclose(result['LL'], matlab_res['LL'], **args)
+    np.testing.assert_allclose(result['LT'], matlab_res['LT'], **args)
+    np.testing.assert_allclose(result['TL'], matlab_res['TL'], **args)
+    np.testing.assert_allclose(result['TT'], matlab_res['TT'], **args)
 
 
 def _scattering_function(inc_theta, out_theta):

@@ -2,10 +2,10 @@
 Forward models
 
 
-Contribution of a scatterer for a view:
+Contribution of a scatterer for a view::
 
     F_ij(omega) = Q_i(omega, y) * Q'_j(omega, y) * S_ij(omega, y)
-                  * exp(i omega (tau_i(y) + tau_j(y))) * X(omega)
+                  * exp(-i omega (tau_i(y) + tau_j(y))) * X(omega)
 
 where X is the input signal, Q_i contains the physics for the direct path (from the
 transmitter to the scatterer), Q_j contains the physics for the reverse path

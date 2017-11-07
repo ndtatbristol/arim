@@ -109,10 +109,7 @@ def sdh_2d_scat(inc_theta, out_theta, frequency, radius, longitudinal_vel,
     coordinate system.
 
     The coefficient for LL, LT, TL and TT are obtained from Lopez-Sanchez's paper,
-    equations 33, 34, 39, 40. See also Brind's paper. Compared to these papers, the
-    complex conjugate coefficients are returned because these papers use the
-    convention ``u(ray) = u(omega) exp(-i omega ray)`` whereas we use the convention
-    ``u(ray) = u(omega) exp(+i omega ray)``.
+    equations 33, 34, 39, 40. See also Brind's paper.
 
     Another difference with these papers is the definition of theta. We use the NDT
     convention where pulse-echo corresponds to theta=0. For Brind, Lopez-Sanchez et al.
@@ -238,7 +235,7 @@ def sdh_2d_scat(inc_theta, out_theta, frequency, radius, longitudinal_vel,
         r = (np.sqrt(1j) / pi * alpha) * \
             np.einsum('...j,j->...', cos_n_phi, epsilon * A_n)
 
-        result['LL'] = r.conjugate()
+        result['LL'] = r
 
     if 'LT' in to_compute:
         # Lopez-Sanchez eq (30)
@@ -250,7 +247,7 @@ def sdh_2d_scat(inc_theta, out_theta, frequency, radius, longitudinal_vel,
         # See also comments for result['LL']
         r = (np.sqrt(1j) / pi * beta) * \
             np.einsum('...j,j->...', sin_n_phi, epsilon * B_n)
-        result['LT'] = r.conjugate()
+        result['LT'] = r
 
     if 'TL' in to_compute:
         # Lopez-Sanchez eq (41)
@@ -261,7 +258,7 @@ def sdh_2d_scat(inc_theta, out_theta, frequency, radius, longitudinal_vel,
         # See also comments for result['LL']
         r = (np.sqrt(1j) / pi * alpha) * \
             np.einsum('...j,j->...', sin_n_phi, epsilon * A_n)
-        result['TL'] = r.conjugate()
+        result['TL'] = r
 
     if 'TT' in to_compute:
         # Lopez-Sanchez eq (42)
@@ -272,7 +269,7 @@ def sdh_2d_scat(inc_theta, out_theta, frequency, radius, longitudinal_vel,
         # See also comments for result['LL']
         r = (np.sqrt(1j) / pi * beta) * \
             np.einsum('...j,j->...', cos_n_phi, epsilon * B_n)
-        result['TT'] = r.conjugate()
+        result['TT'] = r
 
     return result
 
