@@ -8,13 +8,13 @@ class InvalidFileFormat(Exception):
     pass
 
 
-def load_scat(smatrix_filename, format='auto'):
+def load_scat(filename, format='auto'):
     """
     Load scattering from any supported source.
 
     Parameters
     ----------
-    smatrix_filename : str
+    filename : str
         Filename
     format : str
         'auto' (default), 'matlab'
@@ -28,11 +28,11 @@ def load_scat(smatrix_filename, format='auto'):
     formats = ['matlab']
 
     if format == 'matlab':
-        return load_scat_from_matlab(smatrix_filename)
+        return load_scat_from_matlab(filename)
     elif format == 'auto':
         for format in formats:
             try:
-                return load_scat(smatrix_filename, format=format)
+                return load_scat(filename, format=format)
             except InvalidFileFormat:
                 pass
         # at this point, everything failed
@@ -41,13 +41,13 @@ def load_scat(smatrix_filename, format='auto'):
         raise ValueError('invalid format')
 
 
-def load_scat_from_matlab(smatrix_filename):
+def load_scat_from_matlab(filename):
     """
     Load scattering from Matlab.
 
     Parameters
     ----------
-    smatrix_filename
+    filename
 
     Returns
     -------
@@ -56,7 +56,7 @@ def load_scat_from_matlab(smatrix_filename):
     """
     from .. import scat
     try:
-        data = sio.loadmat(smatrix_filename)
+        data = sio.loadmat(filename)
     except NotImplementedError as e:
         raise InvalidFileFormat() from e
 

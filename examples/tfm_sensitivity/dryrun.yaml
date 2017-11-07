@@ -6,7 +6,6 @@ interfaces.grid:
   pixel_size: 2.e-3
 
 views_to_use: [L-L, TT-L, TT-T]
-plot.force_close: false
 plot.show_rays: true
 plot.area_of_interest: true
 tfm.use_dynamic_scale: true

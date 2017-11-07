@@ -11,6 +11,8 @@ Input: configuration files (conf.yaml, dryrun.yaml, debug.yaml).
 Output: figures, intensities as csv.
     
 """
+
+raise Exception('this script must be refactored')
 import logging
 import yaml
 import hashlib

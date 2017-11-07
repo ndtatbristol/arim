@@ -12,16 +12,15 @@ import yaml
 import hashlib
 import pandas
 import itertools
+from collections import OrderedDict
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 
-import arim
-import arim.geometry
-import arim.models.block_in_immersion
+import arim, arim.ray, arim.io
+import arim.models.block_in_immersion as bim
 import arim.plot as aplt
-import arim.ray
 from arim.measurement import find_probe_loc_from_frontwall
 
 # %% Load configuration
@@ -92,10 +91,24 @@ block = arim.Material(**conf['material.block'])
 
 wavelength_in_couplant = couplant.longitudinal_vel / frame.probe.frequency
 
-# -------------------------------------------------------------------------
-# %% Registration: get the position of the probe from the pulse-echo data
+# %% Set-up examination object and geometry
 
-# Prepare registration
+couplant = arim.Material(**conf['material.couplant'])
+block = arim.Material(**conf['material.block'])
+frontwall = \
+    arim.geometry.points_1d_wall_z(**conf['interfaces.frontwall'], name='Frontwall')
+backwall = \
+    arim.geometry.points_1d_wall_z(**conf['interfaces.backwall'], name='Backwall')
+frame.exam_obj = arim.BlockInImmersion(block, couplant, frontwall, backwall)
+
+grid = arim.geometry.Grid(**conf['interfaces.grid'], ymin=0., ymax=0.)
+grid_p = arim.geometry.points_from_grid(grid)
+
+
+# -------------------------------------------------------------------------
+# %% Get the position of the probe from the pulse-echo data
+
+# Prepare
 frame.apply_filter(arim.signal.Abs() + arim.signal.Hilbert())
 
 if conf['plot.bscan']:
@@ -103,9 +116,9 @@ if conf['plot.bscan']:
 
 # Detect frontwall:
 _, _, time_to_surface = \
-    find_probe_loc_from_frontwall(frame, couplant, **conf['registration'])
+    find_probe_loc_from_frontwall(frame, couplant, **conf['frontwall_meas'])
 
-if conf['plot.registration']:
+if conf['plot.frontwall_meas']:
     plt.figure()
     plt.plot(time_to_surface[frame.tx == frame.rx])
     plt.xlabel('element')
@@ -115,47 +128,24 @@ if conf['plot.registration']:
 
     plt.title('time between elements and frontwall - must be a line!')
 
-# -------------------------------------------------------------------------
-# %% Define interfaces
+# %% Complete geometry definition
 
-probe_points, probe_orientations = arim.geometry.points_from_probe(frame.probe)
-
-frontwall_points, frontwall_orientations \
-    = arim.geometry.points_1d_wall_z(**conf['interfaces.frontwall'], name='Frontwall')
-backwall_points, backwall_orientations = \
-    arim.geometry.points_1d_wall_z(**conf['interfaces.backwall'], name='Backwall')
-
-grid = arim.geometry.Grid(**conf['interfaces.grid'], ymin=0., ymax=0.)
-grid_points, grid_orientation = arim.geometry.points_from_grid(grid)
-area_of_interest = grid.points_in_rectbox(**conf['area_of_interest'])
-reference_area = grid.points_in_rectbox(**conf['reference_area'])
-
-interfaces = arim.models.block_in_immersion.make_interfaces(couplant, probe_points,
-                                                            probe_orientations,
-                                                            frontwall_points,
-                                                            frontwall_orientations,
-                                                            backwall_points,
-                                                            backwall_orientations,
-                                                            grid_points, grid_orientation)
-
-paths = arim.models.block_in_immersion.make_paths(block, couplant, interfaces)
+probe_p = arim.geometry.points_from_probe(frame.probe)
+all_interfaces = [probe_p, frontwall, backwall, grid_p]
 
 if conf['plot.interfaces']:
-    aplt.plot_interfaces(interfaces.values(), show_orientations=True, show_grid=True)
+    aplt.plot_interfaces(all_interfaces, show_orientations=True, show_last=False)
 
-for p in interfaces:
-    logger.debug(p)
-
-# Make views
-views = arim.models.block_in_immersion.make_views_from_paths(paths)
+# %% Make views
+views = bim.make_views(frame.exam_obj, probe_p, grid_p, **conf['views'])
 if conf['views_to_use'] != 'all':
     views = OrderedDict([(viewname, view) for viewname, view in views.items()
                          if viewname in conf['views_to_use']])
 
-
 # %% Setup Fermat solver and compute rays
-
-arim.ray.ray_tracing(views.values(), convert_to_fortran_order=True)
+    
+with arim.helpers.timeit('Ray tracing'):
+    arim.ray.ray_tracing(views.values(), convert_to_fortran_order=True)
 
 # %% Setups TFM
 frame.apply_filter(

@@ -4,7 +4,7 @@
 This script shows how to perform a basic contact TFM with arim.
 """
 
-import arim
+import arim, arim.io, arim.signal, arim.im
 import arim.plot as aplt
 
 import numpy as np

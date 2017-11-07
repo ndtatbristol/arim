@@ -10,14 +10,12 @@ vt = 3100
 freq = 5e6
 radius = 0.1e-3
 
-params = dict(longitudinal_wavelength=vl/freq,
-              transverse_wavelength=vt/freq,
-              radius=radius)
-
 # %% Scattering as matrices
 
-n = 100  # number of points for discretising the inverval [-pi, pi[
-scat_matrices = arim.scat.scat_2d_cylinder_matrices(n, **params)
+numangles = 100  # number of points for discretising the inverval [-pi, pi[
+scat_obj = arim.scat.SdhScat(radius, vl, vt)
+scat_matrices = scat_obj.as_single_freq_matrices(freq, numangles)
+
 for key in ['LL', 'LT', 'TL', 'TT']:
     extent = (-180, 180, -180, 180)
     
@@ -30,14 +28,15 @@ for key in ['LL', 'LT', 'TL', 'TT']:
 
 
 # %% Scattering as functions of incident and scattered angles
-scat_funcs = arim.scat.scat_2d_cylinder_funcs(**params)
+
 fig, ax = plt.subplots()
-theta = arim.scat.make_angles(n)
+theta_in = 0.
+theta_out = np.linspace(0, np.pi, 100)
+scat_vals = scat_obj(theta_in, theta_out, freq)
 for key in ['LL', 'LT', 'TL', 'TT']:
-    scat_func = scat_funcs[key]
-    ax.plot(theta, np.abs(scat_func(0., theta)), label=key)
+    ax.plot(np.rad2deg(theta_out), np.abs(scat_vals[key]), label=key)
 ax.legend()
 ax.set_xlabel('scattering angle (degree)')
 ax.set_ylabel('scattering amplitude (abs val.)')
-ax.set_title('Scattering amplitudes for a SDH (incident angle: 0°)')
+ax.set_title('Scattering amplitudes for a SDH (incident angle: {}°)'.format(np.rad2deg(theta_in)))
 

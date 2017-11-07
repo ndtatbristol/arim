@@ -7,7 +7,7 @@
 
 plot.bscan: true
 plot.interfaces: true
-plot.registration: true
+plot.frontwall_meas: true
 plot.tfm: true
 plot.interfaces: true
 plot.tfm: true

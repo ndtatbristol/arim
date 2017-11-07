@@ -9,7 +9,6 @@ import warnings
 
 import matplotlib.pyplot as plt
 
-from arim.ut import fluid_solid
 from arim.model import snell_angles, fluid_solid
 
 # %% Parameters
