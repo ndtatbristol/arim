@@ -5,6 +5,7 @@ import pytest
 
 import arim
 from arim import ut, scat, _scat_crack
+import tests.helpers
 
 
 def test_scattering_angles_grid():
@@ -113,7 +114,8 @@ def _scattering_function(inc_theta, out_theta):
 def test_make_scattering_matrix():
     numpoints = 5
     inc_theta, out_theta = scat.make_angles_grid(numpoints)
-    scattering_matrix = scat.func_to_matrix(_scattering_function, numpoints)
+    scattering_matrix = _scattering_function(inc_theta, out_theta)
+
 
     assert inc_theta.shape == (numpoints, numpoints)
     assert out_theta.shape == (numpoints, numpoints)
@@ -143,7 +145,8 @@ def test_interpolate_matrix():
     dtheta = 2 * np.pi / numpoints
 
     inc_theta, out_theta = scat.make_angles_grid(numpoints)
-    scattering_matrix = scat.func_to_matrix(_scattering_function, numpoints)
+    scattering_matrix = _scattering_function(inc_theta, out_theta)
+
     scat_fn = scat.interpolate_matrix(scattering_matrix)
     # raise Exception(scattering_matrix)
 
@@ -169,7 +172,7 @@ def test_interpolate_matrix():
     np.testing.assert_allclose(scat_fn(x, y), _scattering_function(x, y))
 
 
-def test_rotate_scattering_matrix():
+def test_rotate_matrix():
     # n = 10
     # scat_matrix = np.random.uniform(size=(n, n)) + 1j * np.random.uniform(size=(n, n))
     # scat_func = ut.interpolate_matrix(scat_matrix)
@@ -226,6 +229,12 @@ def test_rotate_scattering_matrix():
         scat.rotate_matrix(rotated_scat_matrix, -phi),
         scat_matrix)
 
+    # test rotate_matrices
+    matrices = dict(LL=scat_matrix, TT=np.ones((10, 10)))
+    rotated_matrices = scat.rotate_matrices(matrices, np.pi / 6)
+    assert 'LL' in rotated_matrices
+    assert 'TT' in rotated_matrices
+
 
 def make_scat_data_single_freq():
     # create realistic data
@@ -236,6 +245,27 @@ def make_scat_data_single_freq():
     matrices = scat_sdh.as_single_freq_matrices(frequency, numangles)
     matrices2 = {scat_key: mat[np.newaxis] for scat_key, mat in matrices.items()}
     return scat.ScatFromData.from_dict(frequency, matrices2)
+
+
+def test_scat_factory():
+    material = arim.Material(6300., 3120., 2700., 'solid', {'long_name': 'Aluminium'})
+
+    fname = tests.helpers.get_data_filename("scat/scat_matlab.mat")
+    scat_obj = scat.scat_factory('file', material, fname)
+    assert isinstance(scat_obj, scat.ScatFromData)
+    scat_obj(0., 0., 2e6)
+
+    scat_obj = scat.scat_factory('crack_centre', material, crack_length=2.0e-3)
+    assert isinstance(scat_obj, scat.CrackCentreScat)
+    scat_obj(0., 0., 2e6)
+
+    scat_obj = scat.scat_factory('sdh', material, radius=0.5e-3)
+    assert isinstance(scat_obj, scat.SdhScat)
+    scat_obj(0., 0., 2e6)
+
+    scat_obj = scat.scat_factory('point', material)
+    assert isinstance(scat_obj, scat.PointSourceScat)
+    scat_obj(0., 0., 2e6)
 
 
 def make_scat_data_multi_freq():
@@ -310,6 +340,17 @@ class TestScattering:
         val_dict = scat_obj(phi_in, phi_in, freq)
         for val in val_dict.values():
             assert val.shape == phi_in.shape
+
+        # test Scattering.__call__ with broadcast
+        val_dict = scat_obj(0., phi_out, freq)
+        val_dict2 = scat_obj(np.zeros_like(phi_out), phi_out, freq)
+        for scat_key in scat_keys:
+            np.testing.assert_allclose(val_dict[scat_key], val_dict2[scat_key])
+
+        val_dict = scat_obj(0., phi_out_array, freq)
+        val_dict2 = scat_obj(np.zeros_like(phi_out_array), phi_out_array, freq)
+        for scat_key in scat_keys:
+            np.testing.assert_allclose(val_dict[scat_key], val_dict2[scat_key])
 
         # test Scattering.__call__ with 2d array angles
         reference_dict = scat_obj(phi_in_array, phi_out_array, freq)

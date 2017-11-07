@@ -1,6 +1,29 @@
 """
 Scattering functions and helpers
 
+In a nutshell: use :func:`scat_factory` to create a :class:`Scattering2d` object.
+
+Single frequency scattering matrices are defined formally as::
+
+    S_LL[j, i] = scat_func_LL(phi_in[i], phi_out[j], frequency) for i, j in 0..numangles-1
+
+where `phi_in` and `phi_out` are linearly spaced 1d array between `-pi` (included) and `pi`
+(excluded), as returned by :func:`make_angles`. NB: ``S_LL[phi_out_idx, phi_in_idx]``
+
+Multiple frequency scattering matrices are defined formally as::
+
+    S_LL[k, j, i] = scat_func_LL(phi_in[i], phi_out[j], frequencies[k])
+
+.. data:: SCAT_KEYS
+   :annotation: = frozenset(('LL', 'LT', 'TL', 'TT'))
+
+   Keys for the different kinds of scattering.
+   The first letter is the mode of the
+   incident wave; the second letter is the mode of the scattered wave.
+   In this module, functions that take an argument ``to_compute`` expects a subset of
+   these keys.
+
+
 """
 import math
 import warnings
@@ -29,32 +52,6 @@ def make_angles_grid(numpoints):
     theta = make_angles(numpoints)
     inc_theta, out_theta = np.meshgrid(theta, theta, indexing='xy')
     return inc_theta, out_theta
-
-
-def func_to_matrix(scattering_func, numpoints):
-    """
-    Call the function 'scattering_func' for all incident and scattered angles.
-    Returns the result as a matrix.
-
-    Parameters
-    ----------
-    scattering_func :
-        Function that returns the amplitudes of the scattered wave.
-         Its first argument must be the angle of the incident wave, its second
-         argument must be the angle of the scattered wave.
-    numpoints : int
-        Number of points to use.
-
-    Returns
-    -------
-    scattering_matrix : ndarray
-        Shape (numpoints, numpoints)
-        scattering_matrix[i, j] is the coefficient for the incident angle theta[j] and
-        the scattering angle theta[i].
-    """
-    inc_theta, out_theta = make_angles_grid(numpoints)
-    scattering_matrix = scattering_func(inc_theta, out_theta)
-    return scattering_matrix
 
 
 def interpolate_matrix(scattering_matrix):
@@ -111,9 +108,6 @@ def sdh_2d_scat(inc_theta, out_theta, frequency, radius, longitudinal_vel,
     T scattered waves and where e_r and e_theta are the two vectors of the cylindrical
     coordinate system.
 
-    Keys for the coefficients: 'LL', 'LT', 'TL', 'TT'. The first letter refers to the kind
-    of the incident wave, the second letter refers to the kind of the scattered wave.
-
     The coefficient for LL, LT, TL and TT are obtained from Lopez-Sanchez's paper,
     equations 33, 34, 39, 40. See also Brind's paper. Compared to these papers, the
     complex conjugate coefficients are returned because these papers use the
@@ -142,7 +136,7 @@ def sdh_2d_scat(inc_theta, out_theta, frequency, radius, longitudinal_vel,
     min_terms : int
     term_factor : int
     to_compute : set
-        Coefficients to compute. Default: compute all.
+        See :data:`SCAT_KEYS`
 
     Returns
     -------
@@ -305,11 +299,12 @@ def crack_2d_scat(inc_theta, out_theta, frequency, crack_length, longitudinal_ve
     nodes_per_wavelength : int
         Default: 20
     assume_safe_for_opt : bool
-        Default: false. If True, use an optimised implementation which requires that
-        `inc_theta[i, j] = inc_theta[i, 0]` is for all i and j. If False, use slower but
+        Default: False. If True, use an optimised implementation which requires that
+        ``inc_theta[i, j] = inc_theta[i, 0]`` for all i and j. If False, use slower but
         more general implementation. Warning: no check is  performed to ensure the
-        assumption is true.
+        assumption holds.
     to_compute : set[str]
+        See :data:`SCAT_KEYS`
 
     Returns
     -------
@@ -317,7 +312,7 @@ def crack_2d_scat(inc_theta, out_theta, frequency, crack_length, longitudinal_ve
 
     Notes
     -----
-    Original code: function `fn_s_matrices_for_crack_2d`` by Alexander Velichko and
+    Original code: function ``fn_s_matrices_for_crack_2d`` by Alexander Velichko and
     Paul D. Wilcox from the University of Bristol NDT library.
     Python code by Nicolas Budyn.
 
@@ -391,7 +386,7 @@ def crack_2d_scat(inc_theta, out_theta, frequency, crack_length, longitudinal_ve
 def rotate_matrix(scat_matrix, phi):
     """
     Return the scattering matrix S' of the scatterer rotated by an angle phi,
-    knowing the scattering matrix S of the unrotated scatterer.
+    knowing the scattering matrix S of the unrotated scatterer::
 
         S'(theta_1, theta_2) = S(theta_1 - phi, theta_2 - phi)
 
@@ -421,6 +416,24 @@ def rotate_matrix(scat_matrix, phi):
     return np.fft.ifft2(freqshift * scat_matrix_f)
 
 
+def rotate_matrices(scat_matrices, phi):
+    """
+    Call :func:`rotate_matrix` on each matrix in a dict.
+
+    Parameters
+    ----------
+    scat_matrices : dict
+    phi : float
+
+    Returns
+    -------
+    dict
+
+    """
+    return {scat_key: rotate_matrix(scat_matrix, phi)
+            for scat_key, scat_matrix in scat_matrices.items()}
+
+
 def _partial_one_scat_key(scat_func, scat_key, *args, **kwargs):
     """
     Returns a dict of functions.
@@ -442,13 +455,102 @@ def _partial_one_scat_key(scat_func, scat_key, *args, **kwargs):
     return new_scat_func
 
 
-def scattering_2d_factory(kind, **kwargs):
-    pass
+def scat_factory(kind, material, *args, **kwargs):
+    """
+    Creates a Scattering2d object in a simple way
+
+    Parameters
+    ----------
+    kind : str
+    material : Material
+    args
+    kwargs
+
+    Returns
+    -------
+    Scattering2d
+
+    Examples
+    --------
+    >>> material = arim.Material(6300., 3120., 2700., 'solid', {'long_name': 'Aluminium'})
+
+    Creating the scattering object:
+
+    >>> scat_obj = scat_factory('file', material, 'scattering_data.mat')
+
+    >>> scat_obj = scat_factory('crack_centre', material, crack_length=2.0e-3)
+
+    >>> scat_obj = scat_factory('sdh', material, radius=0.5e-3)
+
+    >>> scat_obj = scat_factory('point', material) # unphysical, debug only
+
+    Each ``scat_obj`` is a :class:`Scattering2d` object.
+
+    """
+    kind = kind.lower()  # ignore case
+    if kind == 'file':
+        from . import io
+        return io.scat.load_scat(*args, **kwargs)
+    elif kind == 'crack_centre':
+        return CrackCentreScat(*args, longitudinal_vel=material.longitudinal_vel,
+                               transverse_vel=material.transverse_vel,
+                               density=material.density, **kwargs)
+    elif kind == 'sdh':
+        return SdhScat(*args, longitudinal_vel=material.longitudinal_vel,
+                       transverse_vel=material.transverse_vel, **kwargs)
+    elif kind == 'point':
+        return PointSourceScat(material.longitudinal_vel, material.transverse_vel, *args,
+                               **kwargs)
+    else:
+        raise NotImplementedError("no strategy for kind='{}'".format(kind))
 
 
 class Scattering2d(abc.ABC):
     """
     Base object for computing the scattering functions in 2D.
+
+    Examples
+    --------
+    >>> material = arim.Material(6300., 3120., 2700., 'solid', {'long_name': 'Aluminium'})
+    >>> scat_obj = scat_factory('sdh', material, radius=0.5e-3)
+
+    A :class:`Scattering2d` can be used a function of the incident angles, the scattered
+    angles and the frequency:
+
+    >>> inc_theta = np.deg2rad([0., 0., 0.])
+    >>> out_theta = np.deg2rad([0., 10., 20])
+    >>> frequency = 5e6  # Hz
+    >>> result = scat_obj(inc_theta, out_theta, frequency)
+
+    ``result`` is a dict with keys 'LL', 'LT', 'TL', 'TT'. Each value of the dict is an
+    array of shape (3, ).
+
+    >>> result2 = scat_obj(inc_theta, out_theta, frequency, to_compute=['LL'])
+
+
+    ``result2`` is a dict which contains the key 'LL'. Use this feature to reduce the amount
+    of computation. Depending on how the function is written, other keys may be returned.
+
+    To generate scattering matrices:
+
+    >>> numangles = 10  # number of angles between -pi (included) and +pi (excluded)
+    >>> single_freq_matrices = scat_obj.as_single_freq_matrices(numangles, frequency)
+
+    ``single_freq_matrices['LL']`` is here a 2d array of shape (10, 10).
+
+    >>> frequencies = [1e6, 2e6, 3e6, 4e6, 5e6]  # Hz
+    >>> multi_freq_matrices = scat_obj.as_multi_freq_matrices(numangles, frequencies)
+
+    ``multi_freq_matrices['LL']`` is here a 3d array of shape (5, 10, 10).
+
+    For convenience, functions that return an array instead of a dict of array are
+    provided.
+
+    >>> func_dict = scat_obj.as_freq_angles_funcs()
+    >>> scat_LL_func = func_dict['LL']
+    >>> scat_LL_func(phi_in, phi_out, frequency)
+    ...  # return an array
+
     """
 
     @abc.abstractmethod
@@ -462,11 +564,12 @@ class Scattering2d(abc.ABC):
         out_theta : ndarray
         frequency : float
         to_compute : set[str]
+            See :data:`SCAT_KEYS`
 
         Returns
         -------
         scat_values : dict[ndarray]
-            Keys: at least the ones given in `to_compute`.
+            Keys: at least the ones given in ``to_compute``.
 
         """
 
@@ -503,6 +606,7 @@ class Scattering2d(abc.ABC):
             Shape: (numfreq, )
         numangles : int
         to_compute
+            See :data:`SCAT_KEYS`
 
         Returns
         -------
@@ -551,11 +655,14 @@ class Scattering2dFromFunc(Scattering2d):
     Wrapper for scattering functions that take as three first arguments 'inc_theta',
     'out_theta' and 'frequency', and that accepts an argument 'to_compute'.
 
-    To use:
+    To wrap a scattering function with this class:
+
     - create a class that inherit this class,
     - set the wrapped function as the '_scat_func' attribute,
-    - populate the '_scat_kwargs' attribute with the extra arguments to pass to '_scat_func',
-    ie any argument but 'inc_theta', 'out_theta', 'frequency' and 'to_compute'.
+    - populate the ``_scat_kwargs`` attribute with the extra arguments to pass to ``_scat_func``,
+    ie any argument but ``inc_theta``, ``out_theta``, ``frequency`` and ``to_compute``.
+
+    This class is abstract.
     """
     _scat_kwargs = None  # placeholder
 
@@ -661,8 +768,7 @@ class PointSourceScat(Scattering2dFromFunc):
     @staticmethod
     def _scat_func(phi_in, phi_out, frequency, longitudinal_vel, transverse_vel,
                    to_compute=SCAT_KEYS):
-        shape = np.shape(phi_in)
-        assert np.shape(phi_in) == np.shape(phi_out)
+        shape = np.broadcast(phi_in, phi_out).shape
 
         v_L = longitudinal_vel
         v_T = transverse_vel
@@ -709,7 +815,7 @@ class ScatFromData(Scattering2d):
     frequencies : ndarray
         1d array
     interp_freq_kwargs : dict
-        Passed to `scipy.interpolate.interp1d`.
+        Passed to ``scipy.interpolate.interp1d``.
         Default: ``bounds_error=False, fill_value='extrapolate'``
 
 
@@ -818,7 +924,7 @@ class ScatFromData(Scattering2d):
         multi_freq_scat_matrices : dict[str]
             Keys: frequencies (1d array), LL, LT, TL, TT
         interp1d_kwargs : kwargs
-            Arguments for `scipy.interpolate.interp1d`
+            Arguments for ``scipy.interpolate.interp1d``
 
         Returns
         -------

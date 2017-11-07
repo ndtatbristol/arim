@@ -6,50 +6,45 @@
 Scattering
 ==========
 
-The scattering is stored as either a dictionary of functions or a dictionary of matrices (2d ndarray).
-In both cases, the keys are *LL*, *LT*, *TL*, *TT*; the first letter corresponds to the mode of the incident wave; the second letter corresponds to the mode of the scattered wave.
+.. currentmodule:: arim.scat
+
+The main module for scattering is :mod:`arim.scat`. To get started, read the documentation of :func:`scat_factory`
+and :class:`Scattering2d`.
+
+
+
 Pulse-echo corresponds to the incident angle being equal to the scattered angle.
 
 :func:`arim.model.model_amplitudes_factory` accepts this dictionary. Using matrices is general faster.
 
+Scattering object
+=================
 
-Scattering as a function
-========================
+The easiest way to use scattering is to call :func:`scat_factory`. Examples::
 
-::
+    material = arim.Material(6300., 3120., 2700., 'solid', {'long_name': 'Aluminium'})
+    scat_obj = scat_factory('file', material, 'scattering_data.mat')
+    
+    scat_obj = scat_factory('crack_centre', material, crack_length=2.0e-3)
+    
+    scat_obj = scat_factory('sdh', material, radius=0.5e-3)
+    
+    scat_obj = scat_factory('point', material) # unphysical, debug only
 
-  vl = 6300
-  vt = 3100
-  freq = 5e6
-  radius = 0.1e-3
-  scat_funcs = arim.ut.scat_2d_cylinder_funcs(vl/freq, vt/freq, radius)
-
-``scat_funcs`` is a dictionary of function. For example, ``scat_funcs['LT']`` is a function.
-Each function takes two arguments: the first is the incident angles, the second is the scattering angles.
-The output is the scattering amplitude, given as an array of the same shape of the input.
-
-Example::
-
-  # scattering amplitude at 30° for an incident wave at 0° 
-  scat_funcs['LT'](0., np.pi / 6)
-
-.. seealso::
-  :func:`arim.ut.scat_2d_cylinder_funcs`, :func:`arim.ut.scat_point_source_funcs`.
-
-Scattering as a matrix
-======================
+Scattering matrix
+=================
 
 Because computing the scattering amplitudes can be expensive, it is often useful to precompute
 them all incident and scattered angles and then to interpolate the values.
 
 The angles are discretised as a linear spaced vector in the inverval :math:`[-\pi, \pi[`. The number of points
-is denoted ``n``. They can be obtained with :func:`arim.ut.make_angles`.
+is denoted ``n``. They can be obtained with :func:`arim.scat.make_angles`.
 ::
 
   theta[k] := -pi + 2 pi k / n for k=0...n-1.
 
 The grids of incident and outgoing (scattered) angles are defined as follows.
-They can be obtained with :func:`arim.ut.make_angles_grid`.
+They can be obtained with :func:`arim.scat.make_angles_grid`.
 ::
 
   inc_angles[i, j] := theta[j]
@@ -58,29 +53,17 @@ They can be obtained with :func:`arim.ut.make_angles_grid`.
 
 At a given frequency, the scattering matrices are defined as matrices of size ``(n, n)``.
 ``scat_matrices['LT'][i, j]`` corresponds to the incident angle ``theta[j]`` and the scattered angle ``theta[i]``
-for an incident wave L and a scattered wave T..
+for an incident wave L and a scattered wave T.
 
-Example::
 
-  vl = 6300
-  vt = 3100
-  freq = 5e6
-  radius = 0.1e-3
-  n = 100
-  scat_matrices = arim.ut.scat_2d_cylinder_matrices(n, vl/freq, vt/freq, radius)
-  theta = arim.ut.make_angles(n)
+Import scattering data
+======================
 
-.. seealso::
-
-  :func:`arim.ut.scat_2d_cylinder_matrices`, :func:`arim.ut.make_angles`.
-
-To interpolate a scattering matrix, use :func:`arim.ut.interpolate_matrix` (one matrix) or
-:func:`arim.ut.interpolate_matrices`.
-They return interpolators that take as arguments the incident and scattered angles.
+See :mod:`arim.io.scat`
 
 
 File format specification
-=========================
+-------------------------
 
 `HDF5 file format <https://www.hdfgroup.org/downloads/hdf5/>`_
 
@@ -91,7 +74,7 @@ Compression for datasets: none or gzip. Letter case must be respected.
 Additional datasets/attributes are allowed but must not clash with optional datasets/attributes.
 
 Required datasets
------------------
+^^^^^^^^^^^^^^^^^
 
 ======================== ====================== ============================================= ======================
 Name                     Datatype               Shape                                         Comments
@@ -104,7 +87,7 @@ Name                     Datatype               Shape                           
 ======================== ====================== ============================================= ======================
 
 Optional datasets
------------------
+^^^^^^^^^^^^^^^^^
 
 ======================== ====================== ============================================= ======================
 Name                     Datatype               Shape                                         Comments
@@ -117,7 +100,7 @@ Name                     Datatype               Shape                           
 ======================== ====================== ============================================= ======================
 
 Required attribute
-------------------
+^^^^^^^^^^^^^^^^^^
 
 ======================== ========================== ====================== ======================  ======================
 Location                 Name                       Datatype               Shape                   Comments
@@ -127,7 +110,7 @@ Location                 Name                       Datatype               Shape
 
 
 Optional attributes
--------------------
+^^^^^^^^^^^^^^^^^^^
 
 ======================== ======================   =============== ======================  ======================
 Location                 Name                     Datatype        Shape                   Comments

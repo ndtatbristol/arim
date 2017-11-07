@@ -10,13 +10,13 @@ arim\.scat
    .. autosummary::
    
       crack_2d_scat
-      func_to_matrix
       interpolate_matrices
       interpolate_matrix
       make_angles
       make_angles_grid
+      rotate_matrices
       rotate_matrix
-      scattering_2d_factory
+      scat_factory
       sdh_2d_scat
    
    
