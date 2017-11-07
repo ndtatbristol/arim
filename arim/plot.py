@@ -672,7 +672,7 @@ def draw_rays_on_click(grid, ray, element_index, ax=None, linestyle='m--', ):
     return ray_plotter
 
 
-def plot_interfaces(oriented_points_list, ax=None, show_probe=True, show_grid=False,
+def plot_interfaces(oriented_points_list, ax=None, show_probe=True, show_last=True,
                     show_orientations=False,
                     n_arrows=10, title='Interfaces', savefig=None, filename='interfaces',
                     markers=None, show_legend=True, quiver_kwargs=None):
@@ -687,8 +687,8 @@ def plot_interfaces(oriented_points_list, ax=None, show_probe=True, show_grid=Fa
     ax : matplotlib.axis.Axis
     show_probe : boolean
         Default True
-    show_grid : boolean
-        Default: False
+    show_last : boolean
+        Default: True. Useful for hiding the grid.
     show_orientations : boolean
         Plot arrows for the orientations. Default: False
     n_arrows : int
@@ -731,7 +731,7 @@ def plot_interfaces(oriented_points_list, ax=None, show_probe=True, show_grid=Fa
     for i, (interface, marker) in enumerate(zip(oriented_points_list, markers)):
         if i == 0 and not show_probe:
             continue
-        if i == numinterfaces - 1 and not show_grid:
+        if i == numinterfaces - 1 and not show_last:
             continue
         line, = ax.plot(interface.points.x, interface.points.z, marker,
                         label=interface.points.name)

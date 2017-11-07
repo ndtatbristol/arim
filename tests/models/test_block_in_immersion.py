@@ -1,9 +1,11 @@
 import numpy as np
+import pytest
+import collections
 
 from tests.test_model import make_context
 import arim
 import arim.models.block_in_immersion as bim
-import arim.ray
+import arim.ray, arim.scat
 
 
 def test_ray_weights():
@@ -182,3 +184,93 @@ def test_make_views():
     views = bim.make_views(exam_obj, probe_oriented_points, scatterer_oriented_points)
 
     assert list(views.keys()) == list(context['views'].keys())
+
+
+SCATTERERS_SPECS = [
+    dict(kind='sdh', radius=0.5e-3),
+    dict(kind='point'),
+    dict(kind='crack_centre', crack_length=2e-3),
+]
+
+
+@pytest.mark.parametrize("scat_specs", SCATTERERS_SPECS)
+def test_model(scat_specs, show_plots):
+    couplant = arim.Material(longitudinal_vel=1480., density=1000.,
+                             state_of_matter='liquid')
+    block = arim.Material(longitudinal_vel=6320., transverse_vel=3130., density=2700.,
+                          state_of_matter='solid')
+
+    probe = arim.Probe.make_matrix_probe(5, 1e-3, 1, np.nan, 5e6)
+    probe_element_width = 0.8e-3
+    probe.set_reference_element('first')
+    probe.reset_position()
+    probe.translate([0., 0., -5e-3])
+    probe.rotate(arim.geometry.rotation_matrix_y(np.deg2rad(10)))
+
+    probe_p = arim.geometry.points_from_probe(probe)
+    frontwall = arim.geometry.points_1d_wall_z(numpoints=1000, xmin=-5.e-3, xmax=20.e-3,
+                                               z=0., name='Frontwall')
+    backwall = arim.geometry.points_1d_wall_z(numpoints=1000, xmin=-5.e-3, xmax=20.e-3,
+                                              z=30.e-3,
+                                              name='Backwall')
+    scatterer_p = arim.geometry.default_oriented_points(arim.Points([[19e-3, 0., 20e-3]]))
+    all_points = [probe_p, frontwall, backwall, scatterer_p]
+
+    # import arim.plot as aplt
+    # aplt.plot_interfaces(all_points, markers=['o', 'o', 'o', 'd'],
+    #                      show_orientations=True)
+    # aplt.plt.show()
+
+    exam_obj = arim.BlockInImmersion(block, couplant, frontwall, backwall, scatterer_p)
+    scat_obj = arim.scat.scat_factory(material=block, **scat_specs)
+    scat_funcs = scat_obj.as_angles_funcs(probe.frequency)
+
+    # compute only a subset of the FMC: first row and first column
+    tx = np.zeros(probe.numelements * 2, np.int_)
+    tx[:probe.numelements] = np.arange(probe.numelements)
+    rx = np.zeros(probe.numelements * 2, np.int_)
+    rx[probe.numelements:] = np.arange(probe.numelements)
+
+    # Compute model
+    views = bim.make_views(exam_obj, probe_p, scatterer_p, max_number_of_reflection=2)
+    arim.ray.ray_tracing(views.values())
+    ray_weights = bim.ray_weights_for_views(views, probe.frequency,
+                                            probe_element_width)
+    lti_coefficients = collections.OrderedDict()
+    for viewname, view in views.items():
+        amp_obj = arim.model.model_amplitudes_factory(tx, rx, view, ray_weights,
+                                                      scat_funcs)
+        lti_coefficients[viewname] = amp_obj[0]
+
+    # Test reciprocity
+    for i, viewname in enumerate(views):
+        viewname_r = arim.ut.reciprocal_viewname(viewname)
+        lhs = lti_coefficients[viewname][:probe.numelements]  # (tx=k, rx=0) for all k
+        rhs = lti_coefficients[viewname_r][probe.numelements:]  # (tx=0, rx=k) for all k
+
+        max_err = np.max(np.abs(lhs - rhs))
+        err_msg = 'view {} (#{}) - max_err={}'.format(viewname, i, max_err)
+
+        tol = dict(rtol=1e-7, atol=1e-8)
+
+        try:
+            np.testing.assert_allclose(lhs, rhs, err_msg=err_msg, **tol)
+        except AssertionError as e:
+            if show_plots:
+                import matplotlib.pyplot as plt
+                fig, axes = plt.subplots(nrows=2, sharex=True)
+                ax = axes[0]
+                ax.plot(lhs.real, label='tx=k, rx=0')
+                ax.plot(rhs.real, label='tx=0, rx=k')
+                ax.set_title(scat_obj.__class__.__name__ + '\n {} and {}'.format(viewname,
+                                                                                 viewname_r))
+                ax.set_ylabel('real')
+                ax.legend()
+                ax = axes[1]
+                ax.plot(lhs.imag, label='tx=k, rx=0')
+                ax.plot(rhs.imag, label='tx=0, rx=k')
+                ax.legend()
+                ax.set_xlabel('element index k')
+                ax.set_ylabel('imag')
+                plt.show()
+            raise e

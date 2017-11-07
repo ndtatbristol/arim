@@ -265,3 +265,6 @@ def test_make_viewnames():
 
     viewnames = arim.ut.make_viewnames(['L', 'T', 'LL'], tfm_unique_only=True)
     assert viewnames == [(L, L), (L, T), (T, T), (LL, L), (LL, T), (LL, LL)]
+
+def test_reciprocal_viewname():
+    assert ut.reciprocal_viewname('L-LT') == 'TL-L'

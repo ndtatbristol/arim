@@ -304,6 +304,27 @@ def make_timevect(num, step, start=0., dtype=None):
 
     return y.astype(dtype, copy=False)
 
+def reciprocal_viewname(viewname):
+    """
+    Return the name of the reciprocal view
+
+    Parameters
+    ----------
+    viewname : str
+
+    Returns
+    -------
+    reciprocal_viewname : str
+
+    Examples
+    --------
+    >>> reciprocal_viewname('L-LT')
+    'TL-L'
+
+    """
+    tx_path, rx_path = viewname.split('-')
+    return rx_path[::-1] + '-' + tx_path[::-1]
+
 
 IMAGING_MODES = ["L-L", "L-T", "T-T",
                  "LL-L", "LL-T", "LT-L", "LT-T", "TL-L", "TL-T", "TT-L", "TT-T",

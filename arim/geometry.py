@@ -1371,11 +1371,24 @@ GCS = CoordinateSystem(origin=np.array((0., 0., 0.)),
 
 def points_1d_wall_z(xmin, xmax, z, numpoints, y=0., name=None, dtype=None):
     """
-    Return a wall between 1
-
     Returns a set of regularly spaced points between (xmin, y, z) and (xmax, y, z).
 
     Orientation of the point: (0., 0., 1.)
+
+    Parameters
+    ----------
+    xmin : float
+    xmax : float
+    z : float
+    numpoints : int
+    y : float
+        Default 0
+    name : str or None
+    dtype : numpy.dtype
+
+    Returns
+    -------
+    Oriented points
 
     """
     if dtype is None:
@@ -1390,7 +1403,7 @@ def points_1d_wall_z(xmin, xmax, z, numpoints, y=0., name=None, dtype=None):
 
     orientations = default_orientations(points)
 
-    return points, orientations
+    return OrientedPoints(points, orientations)
 
 
 def default_orientations(points):
