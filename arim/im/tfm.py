@@ -305,10 +305,10 @@ class SingleViewTFM(BaseTFM):
             msg += "efficient."
             warnings.warn(msg, ArimWarning, stacklevel=2)
 
-        assert tx_rays.path[0] is frame.probe.locations
-        assert rx_rays.path[0] is frame.probe.locations
-        assert tx_rays.path[-1] is grid.as_points
-        assert rx_rays.path[-1] is grid.as_points
+        assert tx_rays.fermat_path[0] is frame.probe.locations
+        assert rx_rays.fermat_path[0] is frame.probe.locations
+        assert tx_rays.fermat_path[-1] is grid.as_points
+        assert rx_rays.fermat_path[-1] is grid.as_points
         self.tx_rays = tx_rays
         self.rx_rays = rx_rays
         self.view = view

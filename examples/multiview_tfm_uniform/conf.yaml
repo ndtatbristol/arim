@@ -95,9 +95,5 @@ plot.show_rays: false
 plot.force_close: true
 
 arim.plot:
-  savefig: true
   plot_oxz.figsize: [12, 3]
   plot_oxz_many.figsize: [16, 10]
-
-# Save intensities to csv:
-save_to_csv: true

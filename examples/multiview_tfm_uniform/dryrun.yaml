@@ -12,11 +12,6 @@ interfaces.backwall:
 interfaces.grid:
   pixel_size: 2.e-3
 
-arim.plot:
-  savefig: false
-
-save_to_csv: false
-
 tfm.use_dynamic_scale: true
 
 views_to_use: [L-L, LL-T, LT-L, TL-TT]

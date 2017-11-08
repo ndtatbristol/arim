@@ -12,9 +12,4 @@ plot.tfm: true
 plot.interfaces: true
 plot.tfm: true
 
-arim.plot:
-  savefig: false
-
 tfm.fillvalue: !!float nan
-
-save_to_csv: false

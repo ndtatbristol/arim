@@ -18,7 +18,7 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 
-import arim, arim.ray, arim.io
+import arim, arim.ray, arim.io, arim.signal, arim.im
 import arim.models.block_in_immersion as bim
 import arim.plot as aplt
 from arim.measurement import find_probe_loc_from_frontwall
@@ -36,12 +36,14 @@ import argparse
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('-d', '--debug', action='store_true', help='use debug conf file')
 parser.add_argument('-n', '--dryrun', action='store_true', help='use dry-run conf file')
+parser.add_argument('-s', '--save', action='store_true', default=False,
+                    help='save results')
 args = parser.parse_args()
 
 
 # print(args)
 
-def load_configuration(debug=False, dryrun=False):
+def load_configuration(debug=False, dryrun=False, **kwargs):
     with open('conf.yaml', 'rb') as f:
         conf = arim.config.Config(yaml.load(f))
 
@@ -69,6 +71,8 @@ def load_configuration(debug=False, dryrun=False):
 
 conf = load_configuration(**vars(args))
 # print(yaml.dump(dict(conf), default_flow_style=False))
+
+aplt.conf['savefig'] = args.save
 
 # %% Figure and logger
 mpl.rcParams['savefig.dpi'] = 300
@@ -103,6 +107,8 @@ frame.exam_obj = arim.BlockInImmersion(block, couplant, frontwall, backwall)
 
 grid = arim.geometry.Grid(**conf['interfaces.grid'], ymin=0., ymax=0.)
 grid_p = arim.geometry.points_from_grid(grid)
+area_of_interest = grid.points_in_rectbox(**conf['area_of_interest'])
+reference_area = grid.points_in_rectbox(**conf['reference_area'])
 
 
 # -------------------------------------------------------------------------
@@ -214,7 +220,7 @@ for tfm in tfms:
 out = pandas.DataFrame(tmp, columns='view intensity'.split())
 out['intensity_db'] = arim.ut.decibel(out['intensity'], ref_db)
 
-if conf['save_to_csv']:
+if args.save:
     out.to_csv('intensities.csv')
 
 print(out)
