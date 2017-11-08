@@ -89,7 +89,7 @@ def test_plot_interfaces(show_plots, plot_interfaces_kwargs):
     backwall = arim.geometry.OrientedPoints(points, orientations)
 
     grid_obj = arim.Grid(xmin, xmax, 0, 0, 0, z_backwall, 1e-3)
-    grid = arim.geometry.points_from_grid(grid_obj)
+    grid = grid_obj.to_oriented_points()
 
     interfaces = [probe, frontwall, backwall, grid]
     # end setup interfaces

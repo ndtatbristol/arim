@@ -100,9 +100,9 @@ backwall = \
     arim.geometry.points_1d_wall_z(**conf['interfaces.backwall'], name='Backwall')
 exam_obj = arim.BlockInImmersion(block, couplant, frontwall, backwall)
 
-probe_p = arim.geometry.points_from_probe(probe)
+probe_p = probe.to_oriented_points()
 grid = arim.geometry.Grid(**conf['interfaces.grid'], ymin=0., ymax=0.)
-grid_p = arim.geometry.points_from_grid(grid)
+grid_p = grid.to_oriented_points()
 
 all_interfaces = [probe_p, frontwall, backwall, grid_p]
 

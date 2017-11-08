@@ -27,7 +27,7 @@ The recommended way is to use :func:`arim.models.block_in_immersion.make_views`.
 This function requires the positions of the probe as a :class:`arim.geometry.OrientedPoints` object::
 
   probe = arim.Probe(...)  # to fill up
-  probe_p = arim.geometry.points_from_probe(probe)
+  probe_p = probe.to_oriented_points()
 
 It also requires the position of the scatterers as :class:`arim.geometry.OrientedPoints`::
 
@@ -37,7 +37,7 @@ It also requires the position of the scatterers as :class:`arim.geometry.Oriente
 Alternatively, the scatterers can be defined from a regularly spaced grid::
 
   grid = arim.geometry.Grid(xmin, xmax, ymin, ymax, zmin, zmax, pixel_size)
-  scatterer_p = arim.geometry.points_from_grid(grid)
+  scatterer_p = grid.to_oriented_points()
 
 A :class:`BlockInImmersion` object is required, see :ref:`examobj`.
 

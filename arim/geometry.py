@@ -721,6 +721,18 @@ class Grid:
         return points_in_rectbox(self.xx, self.yy, self.zz, xmin, xmax, ymin, ymax, zmin,
                                  zmax)
 
+    def to_oriented_points(self):
+        """
+        Returns the locations and the orientations of the grid points
+        as a OrientedPoints object.
+
+        Returns
+        -------
+        OrientedPoints
+
+        """
+        return points_from_grid(self)
+
 
 class GeometryHelper:
     """

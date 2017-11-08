@@ -106,7 +106,7 @@ backwall = \
 frame.exam_obj = arim.BlockInImmersion(block, couplant, frontwall, backwall)
 
 grid = arim.geometry.Grid(**conf['interfaces.grid'], ymin=0., ymax=0.)
-grid_p = arim.geometry.points_from_grid(grid)
+grid_p = grid.to_oriented_points()
 area_of_interest = grid.points_in_rectbox(**conf['area_of_interest'])
 reference_area = grid.points_in_rectbox(**conf['reference_area'])
 
@@ -136,7 +136,7 @@ if conf['plot.frontwall_meas']:
 
 # %% Complete geometry definition
 
-probe_p = arim.geometry.points_from_probe(frame.probe)
+probe_p = frame.probe.to_oriented_points()
 all_interfaces = [probe_p, frontwall, backwall, grid_p]
 
 if conf['plot.interfaces']:

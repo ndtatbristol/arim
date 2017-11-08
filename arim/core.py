@@ -540,6 +540,18 @@ class Probe:
 
         self.rotate(rotation_matrix)
 
+    def to_oriented_points(self):
+        """
+        Returns the locations and the orientations of the probe elements in the GCS
+        as a OrientedPoints object.
+
+        Returns
+        -------
+        OrientedPoints
+
+        """
+        return g.points_from_probe(self)
+
 
 class Mode(enum.Enum):
     """Enumerated constants for the modes: L or T."""

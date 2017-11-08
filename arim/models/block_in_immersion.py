@@ -5,21 +5,20 @@ Boilerplate::
 
     import arim.models.block_in_immersion as bim
 
-    probe_oriented_points = arim.geometry.points_from_probe(probe)
-    frontwall_oriented_points = \
+    probe_p = probe.to_oriented_points()
+    frontwall = \
         arim.geometry.points_1d_wall_z(xmin, xmax, z_frontwall, numpoints)
-    backwall_oriented_points = \
+    backwall = \
         arim.geometry.points_1d_wall_z(xmin, xmax, z_backwall, numpoints)
 
     grid = arim.geometry.Grid(xmin, xmax, ymin, ymax, zmin, zmax, pixel_size)
-    grid_oriented_points = arim.geometry.points_from_grid(grid)
+    grid_p = grid.to_oriented_points()
 
     exam_obj = arim.BlockInImmersion(block_material, couplant_material,
-                                     frontwall_oriented_points,
-                                     backwall_oriented_points)
+                                     frontwall, backwall)
 
-    views = bim.make_views(examination_object, probe_oriented_points,
-                           scatterers_oriented_points, max_number_of_reflection=1,
+    views = bim.make_views(examination_object, probe_p,
+                           grid_p, max_number_of_reflection=1,
                            tfm_unique_only=False)
 
 """

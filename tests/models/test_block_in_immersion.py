@@ -101,7 +101,7 @@ def test_path_in_immersion():
                               ymin=0., ymax=0.,
                               zmin=0., zmax=20e-3,
                               pixel_size=5e-3)
-    grid_points, grid_orientation = arim.geometry.points_from_grid(grid)
+    grid_points, grid_orientation = grid.to_oriented_points()
 
     interfaces = arim.models.block_in_immersion.make_interfaces(
         couplant, (probe_points, probe_orientations),
@@ -207,7 +207,7 @@ def test_model(scat_specs, show_plots):
     probe.translate([0., 0., -5e-3])
     probe.rotate(arim.geometry.rotation_matrix_y(np.deg2rad(10)))
 
-    probe_p = arim.geometry.points_from_probe(probe)
+    probe_p = probe.to_oriented_points()
     frontwall = arim.geometry.points_1d_wall_z(numpoints=1000, xmin=-5.e-3, xmax=20.e-3,
                                                z=0., name='Frontwall')
     backwall = arim.geometry.points_1d_wall_z(numpoints=1000, xmin=-5.e-3, xmax=20.e-3,
