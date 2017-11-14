@@ -4,6 +4,7 @@ Defines core objects of arim.
 from collections import namedtuple
 import enum
 import numpy as np
+import copy
 
 from . import geometry as g
 from . import ut, helpers
@@ -33,12 +34,19 @@ class Frame:
     Scanlines are stored a 2D array of length `numscanlines x numsamples`. Each line of the array  is a scanline, i.e.
     the data received by a specific element when a specific element was transmitting.
 
+    Parameters
+    ----------
+    scanlines
+    tx
+    rx
+    probe
+    examination_object
+    metadata
+
     Attributes
     ----------
     scanlines : ndarray
-        Filtered scanlines.
-    scanlines_raw : ndarray
-        Unfiltered scanlines (if available).
+        Time-traces as a 2d array of shape `(numscanlines, numsamples)`.
     time : Time
         Time vector associated to all scanlines.
     tx : ndarray
@@ -59,32 +67,10 @@ class Frame:
 
     """
 
-    # todo: remove scanlines_raw, too much magic and a pain to handle
-
-    def __init__(self, scanlines, time, tx, rx, probe, examination_object,
-                 scanlines_raw=None, metadata=None):
-        """
-
-        Parameters
-        ----------
-        scanlines
-            Scanlines. Assumed these are raw scanlines, unless ``scanlines_raw`` is given.
-        time
-        tx
-        rx
-        probe
-        examination_object
-        scanlines_raw : array or None
-            Raw scanlines, if different from ``scanlines``.
-        metadata
-
-        Returns
-        -------
-
-        """
+    def __init__(self, scanlines, time, tx, rx, probe, examination_object, metadata=None):
         # Check shape and dimensions
         try:
-            samples = time.samples
+            time.samples
         except AttributeError:
             raise TypeError(
                 "'time' should be an object 'Time' (current: {}).".format(type(time)))
@@ -99,22 +85,16 @@ class Frame:
         if rx.dtype.kind not in ('i', 'u'):
             raise TypeError('receivers must be integer indices (got {})'.format(rx.dtype))
 
-        if scanlines_raw is None:
-            scanlines_raw = scanlines
-
         (numscanlines, _) = helpers.get_shape_safely(scanlines, 'scanlines',
                                                      (None, numsamples))
         _ = helpers.get_shape_safely(tx, 'tx', (numscanlines,))
         _ = helpers.get_shape_safely(rx, 'rx', (numscanlines,))
-        _ = helpers.get_shape_safely(scanlines_raw, 'scanlines_raw',
-                                     (numscanlines, numsamples))
 
         unique_tx_rx_pairs = {(tx_i, rx_i) for tx_i, rx_i in zip(tx, rx)}
         if len(unique_tx_rx_pairs) < numscanlines:
             raise ValueError('The frame contains duplicate scanlines')
 
         self.scanlines = scanlines
-        self.scanlines_raw = scanlines_raw
         self.tx = tx
         self.rx = rx
         self.time = time
@@ -126,13 +106,15 @@ class Frame:
 
         if metadata is None:
             metadata = {}
-        if metadata.get('capture_method', None) is None:
-            metadata['capture_method'] = CaptureMethod[ut.infer_capture_method(tx, rx)]
         self.metadata = metadata
+
+    @property
+    def capture_method(self):
+        return CaptureMethod[ut.infer_capture_method(self.tx, self.rx)]
 
     def apply_filter(self, filt):
         """
-        Filter the raw scanlines and save them in the frame.
+        Filter the scanlines and save them in the frame.
 
         Warning: the attribute ``scanlines`` is overwritten during this operation.
 
@@ -142,16 +124,16 @@ class Frame:
 
         Returns
         -------
-        filtered scanlines
+        frame: Frame
+            New Frame object where the scanlines are filtered. All objects are passed
+            by reference.
 
         """
-        self.scanlines = filt(self.scanlines_raw)
-        assert self.scanlines.shape == self.scanlines_raw.shape
-        self.metadata['filter'] = str(filt)
+        new_scanlines = filt(self.scanlines)
+        return self.__class__(new_scanlines, self.time, self.tx, self.rx, self.probe,
+                              self.examination_object, self.metadata)
 
-        return self.scanlines
-
-    def get_scanline(self, tx, rx, use_raw=False):
+    def get_scanline(self, tx, rx):
         """
         Return the scanline corresponding to the pair (tx, rx).
 
@@ -159,21 +141,15 @@ class Frame:
         ----------
         tx: int
         rx: int
-        raw: bool
-            Default: False
 
         Returns
         -------
         scan: 1d array
 
         """
-        if use_raw:
-            scanlines = self.scanlines_raw
-        else:
-            scanlines = self.scanlines
         match = np.logical_and(self.tx == tx, self.rx == rx)
 
-        match_scanline = scanlines[match]
+        match_scanline = self.scanlines[match]
         if match_scanline.shape[0] == 1:
             return match_scanline[0]
         else:
@@ -217,8 +193,7 @@ class Frame:
             new_scanlines[new_scan_idx] = self.scanlines[old_scan_idx]
 
         return self.__class__(new_scanlines, self.time, new_tx, new_rx, self.probe,
-                              self.examination_object,
-                              None, self.metadata)
+                              self.examination_object, self.metadata)
 
 
 class ElementShape(enum.IntEnum):
@@ -351,13 +326,6 @@ class Probe:
         self.numelements = numelements
         self.frequency = None if frequency is None else float(frequency)
         self.bandwidth = None if bandwidth is None else float(bandwidth)
-
-        # Try to infer probe_type:
-        if self.metadata.get('probe_type', None) is None:
-            if numelements == 1:
-                self.metadata['probe_type'] = 'single'
-            elif g.are_points_aligned(locations):
-                self.metadata['probe_type'] = 'linear'
 
     def __str__(self):
         return "{} - {} elements, {:.1f} MHz".format(

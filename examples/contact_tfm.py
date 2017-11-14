@@ -39,13 +39,14 @@ plt.draw()
 
 filt = arim.signal.Hilbert() + \
        arim.signal.ButterworthBandpass(order=5, cutoff_min=0.5e6, cutoff_max=6e6, time=frame.time)
-frame.apply_filter(filt)
+frame_raw = frame
+frame = frame_raw.apply_filter(filt)
 
 #%% Plot scanlines
 plt.figure()
 tx, rx = (19, 19)
-plt.plot(frame.time.samples, frame.get_scanline(tx, rx, use_raw=True), label='raw')
-plt.plot(frame.time.samples, np.abs(frame.get_scanline(tx, rx, use_raw=False)), label='filtered')
+plt.plot(frame_raw.time.samples, frame_raw.get_scanline(tx, rx), label='raw')
+plt.plot(frame.time.samples, np.abs(frame.get_scanline(tx, rx)), label='filtered')
 plt.gca().xaxis.set_major_formatter(aplt.micro_formatter)
 plt.gca().xaxis.set_minor_formatter(aplt.micro_formatter)
 plt.xlabel('time (µs)')

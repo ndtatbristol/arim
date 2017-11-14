@@ -115,18 +115,18 @@ reference_area = grid.points_in_rectbox(**conf['reference_area'])
 # %% Get the position of the probe from the pulse-echo data
 
 # Prepare
-frame.apply_filter(arim.signal.Abs() + arim.signal.Hilbert())
+frame_frontwall_meas = frame.apply_filter(arim.signal.Hilbert())
 
 if conf['plot.bscan']:
-    ax, imag = aplt.plot_bscan_pulse_echo(frame, clim=[-40, 0])
+    ax, imag = aplt.plot_bscan_pulse_echo(frame_frontwall_meas, clim=[-40, 0])
 
 # Detect frontwall:
 _, _, time_to_surface = \
-    find_probe_loc_from_frontwall(frame, couplant, **conf['frontwall_meas'])
+    find_probe_loc_from_frontwall(frame_frontwall_meas, couplant, **conf['frontwall_meas'])
 
 if conf['plot.frontwall_meas']:
     plt.figure()
-    plt.plot(time_to_surface[frame.tx == frame.rx])
+    plt.plot(time_to_surface[frame_frontwall_meas.tx == frame_frontwall_meas.rx])
     plt.xlabel('element')
     plt.ylabel('time (µs)')
     plt.gca().yaxis.set_major_formatter(aplt.micro_formatter)
@@ -154,7 +154,7 @@ with arim.helpers.timeit('Ray tracing'):
     arim.ray.ray_tracing(views.values(), convert_to_fortran_order=True)
 
 # %% Setups TFM
-frame.apply_filter(
+frame = frame.apply_filter(
     arim.signal.Hilbert() + arim.signal.ButterworthBandpass(5, 3e6, 5.5e6, frame.time))
 
 tfms = []
