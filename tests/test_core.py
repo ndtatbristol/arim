@@ -208,7 +208,7 @@ def test_make_matrix_probe():
 
 @pytest.fixture(scope='module')
 def probe():
-    numelements = 16
+    numelements = 4
     locx = np.arange(numelements, dtype=np.float) * 0.1e-3
     locx -= locx.mean()
     locy = np.zeros(numelements, dtype=np.float)
@@ -250,16 +250,8 @@ def frame(probe, examination_object):
 
     time = c.Time(start=5e-6, step=1 / 25e6, num=1000)
 
-    # generate some fake signals
-    f1 = probe.frequency
-    f2 = probe.frequency * 1.2
-    f3 = probe.frequency * 8
-    scan = np.sin(2 * np.pi * time.samples * f1) + np.sin(
-        2 * np.pi * time.samples * f2) + np.sin(
-        2 * np.pi * time.samples * f3)
-
     scanlines = np.zeros((len(tx), len(time)))
-    scanlines[...] = scan
+    scanlines[...] = (tx * 1000 + rx)[..., np.newaxis]
 
     return c.Frame(scanlines, time, tx, rx, probe, examination_object, metadata=metadata)
 
@@ -273,6 +265,30 @@ class TestFrame:
 
         scan = frame.get_scanline(tx, rx, use_raw=True)
         assert scan.shape == (frame.numsamples,)
+
+        with pytest.raises(IndexError):
+            frame.get_scanline(1000, 0)
+
+
+    def test_expand_frame_assuming_reciprocity_hmc(self, frame):
+        fmc_frame = frame.expand_frame_assuming_reciprocity()
+
+        expected_tx, expected_rx = ut.fmc(frame.probe.numelements)
+        np.testing.assert_array_equal(fmc_frame.tx, expected_tx)
+        np.testing.assert_array_equal(fmc_frame.rx, expected_rx)
+
+        for tx, rx in zip(expected_tx, expected_rx):
+            if tx <= rx:
+                orig_scan = fmc_frame.get_scanline(tx, rx)
+            else:
+                orig_scan = fmc_frame.get_scanline(rx, tx)
+            expanded_scan = fmc_frame.get_scanline(tx, rx)
+            np.testing.assert_allclose(orig_scan, expanded_scan)
+
+        fmc_frame2 = fmc_frame.expand_frame_assuming_reciprocity()
+        np.testing.assert_array_equal(fmc_frame2.tx, fmc_frame.tx)
+        np.testing.assert_array_equal(fmc_frame2.rx, fmc_frame.rx)
+        np.testing.assert_array_equal(fmc_frame2.scanlines, fmc_frame.scanlines)
 
 
 class TestProbe:

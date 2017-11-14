@@ -59,6 +59,8 @@ class Frame:
 
     """
 
+    # todo: remove scanlines_raw, too much magic and a pain to handle
+
     def __init__(self, scanlines, time, tx, rx, probe, examination_object,
                  scanlines_raw=None, metadata=None):
         """
@@ -106,6 +108,10 @@ class Frame:
         _ = helpers.get_shape_safely(rx, 'rx', (numscanlines,))
         _ = helpers.get_shape_safely(scanlines_raw, 'scanlines_raw',
                                      (numscanlines, numsamples))
+
+        unique_tx_rx_pairs = {(tx_i, rx_i) for tx_i, rx_i in zip(tx, rx)}
+        if len(unique_tx_rx_pairs) < numscanlines:
+            raise ValueError('The frame contains duplicate scanlines')
 
         self.scanlines = scanlines
         self.scanlines_raw = scanlines_raw
@@ -167,7 +173,52 @@ class Frame:
             scanlines = self.scanlines
         match = np.logical_and(self.tx == tx, self.rx == rx)
 
-        return scanlines[match, ...].reshape((self.numsamples,))
+        match_scanline = scanlines[match]
+        if match_scanline.shape[0] == 1:
+            return match_scanline[0]
+        else:
+            raise IndexError('no scanline')
+
+    def expand_frame_assuming_reciprocity(self):
+        """
+        Return a new Frame where new scanlines are inferred assuming reciprocity of
+        transmitters and receivers.
+
+        Assumes that the scanline obtained with the transmitter i and the receiver j
+        is the same as the one obtained with the transmitter j and the receiver i.
+        If the original frame is a FMC, this function returns a copy of the original
+        frame.
+
+        Canonical example: expand a HMC frame to a FMC frame.
+
+        Returns
+        -------
+        Frame
+
+        """
+        orig_pairs = {(tx, rx) for tx, rx in zip(self.tx, self.rx)}
+        reciprocal_pairs = {(rx, tx) for tx, rx in zip(self.tx, self.rx)}
+        all_pairs = sorted(orig_pairs | reciprocal_pairs)
+
+        pair_to_scan_idx = {(tx, rx): i for i, (tx, rx) in
+                            enumerate(zip(self.tx, self.rx))}
+
+        new_scanlines = np.empty((len(all_pairs), len(self.time)), self.scanlines.dtype)
+
+        new_tx, new_rx = zip(*all_pairs)
+        for new_scan_idx, (tx, rx) in enumerate(all_pairs):
+            try:
+                # use the available information if present
+                old_scan_idx = pair_to_scan_idx[tx, rx]
+            except KeyError:
+                # this is the expansion
+                old_scan_idx = pair_to_scan_idx[rx, tx]
+
+            new_scanlines[new_scan_idx] = self.scanlines[old_scan_idx]
+
+        return self.__class__(new_scanlines, self.time, new_tx, new_rx, self.probe,
+                              self.examination_object,
+                              None, self.metadata)
 
 
 class ElementShape(enum.IntEnum):
