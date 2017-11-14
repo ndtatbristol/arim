@@ -52,6 +52,7 @@ class TestTFM:
         frame.rx = rx
         frame.numscanlines = len(tx)
         frame.probe = probe
+        frame.is_complete_assuming_reciprocity = Mock(return_value=True)
 
         lookup_times_tx = np.zeros((grid.numpoints, len(tx)))
         lookup_times_rx = np.zeros((grid.numpoints, len(tx)))

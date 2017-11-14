@@ -268,7 +268,9 @@ class TestFrame:
             frame.get_scanline(1000, 0)
 
     def test_expand_frame_assuming_reciprocity_hmc(self, frame):
+        assert not frame.is_complete_assuming_reciprocity()
         fmc_frame = frame.expand_frame_assuming_reciprocity()
+        assert fmc_frame.is_complete_assuming_reciprocity()
 
         expected_tx, expected_rx = ut.fmc(frame.probe.numelements)
         np.testing.assert_array_equal(fmc_frame.tx, expected_tx)

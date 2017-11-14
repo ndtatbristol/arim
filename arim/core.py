@@ -195,6 +195,19 @@ class Frame:
         return self.__class__(new_scanlines, self.time, new_tx, new_rx, self.probe,
                               self.examination_object, self.metadata)
 
+    def is_complete_assuming_reciprocity(self):
+        """
+        Returns: "for all pair of elements (i, j), the scanline (i, j) is in the frame
+        if and only if the scanline (j, i) exists."
+
+        Returns
+        -------
+        bool
+        """
+        orig_pairs = {(tx, rx) for tx, rx in zip(self.tx, self.rx)}
+        reciprocal_pairs = {(rx, tx) for tx, rx in zip(self.tx, self.rx)}
+        return orig_pairs == reciprocal_pairs
+
 
 class ElementShape(enum.IntEnum):
     """Enumeration which describes the shape of an element.

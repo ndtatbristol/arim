@@ -7,6 +7,7 @@ import warnings
 from collections import namedtuple
 import numba
 from concurrent.futures import ThreadPoolExecutor
+import logging
 
 from .. import geometry as g
 from .. import model, ut
@@ -17,7 +18,7 @@ from .. import core as c
 from ..exceptions import ArimWarning
 from ..helpers import chunk_array
 
-__all__ = ['BaseTFM', 'ContactTFM', 'SingleViewTFM', 'SimpleTFM', 'tfm_with_scattering']
+logger = logging.getLogger(__name__)
 
 ExtramaLookupTimes = namedtuple('ExtramaLookupTimes',
                                 'tmin tmax tx_elt_for_tmin rx_elt_for_tmin tx_elt_for_tmax rx_elt_for_tmax')
@@ -53,7 +54,8 @@ class BaseTFM:
     """
 
     def __init__(self, frame, grid, amplitudes_tx='uniform', amplitudes_rx='uniform',
-                 scanline_weights=None, dtype=None, geom_probe_to_grid=None):
+                 scanline_weights=None, dtype=None, geom_probe_to_grid=None,
+                 is_safe_for_noncomplete_frame=False):
         self.frame = frame
         self.grid = grid
 
@@ -74,6 +76,11 @@ class BaseTFM:
             scanline_weights = np.asarray(scanline_weights)
             assert scanline_weights.shape == frame.numscanlines
         self._scanline_weights = scanline_weights
+
+        if not is_safe_for_noncomplete_frame:
+            if not frame.is_complete_assuming_reciprocity():
+                logger.warning('Using a noncomplete frame is not recommended, '
+                               'use Frame.expand_frame_assuming_reciprocity()')
 
         if amplitudes_tx == 'uniform':
             amplitudes_tx = amplitudes.UniformAmplitudes(frame, grid)
@@ -268,7 +275,7 @@ class ContactTFM(BaseTFM):
         self.__lookup_times = None
 
         self.speed = speed
-        super().__init__(**kwargs)
+        super().__init__(**kwargs, is_safe_for_noncomplete_frame=True)
 
     def get_lookup_times_tx(self):
         """
@@ -563,8 +570,6 @@ def _tfm_with_scattering(
     del model_amplitudes
 
     das.das._general_delay_and_sum_nearest(weighted_scanlines, tx, rx,
-                                                   tx_lookup_times, rx_lookup_times,
-                                                   tfm_amplitudes,
-                                                   dt, t0, fillvalue, tfm_result)
-
-
+                                           tx_lookup_times, rx_lookup_times,
+                                           tfm_amplitudes,
+                                           dt, t0, fillvalue, tfm_result)
