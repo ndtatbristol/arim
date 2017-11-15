@@ -154,15 +154,9 @@ def test_multiview_tfm(use_real_grid):
     view = arim.View(path_LL, path_T, 'LL-T')
     arim.ray.ray_tracing([view], convert_to_fortran_order=True)
 
-    # check there is no time limit issues
-    assert view.tx_path.rays.times.min() > time.start
-    assert view.tx_path.rays.times.min() > time.start
-    assert view.tx_path.rays.times.max() < time.end
-    assert view.tx_path.rays.times.max() < time.end
-
     # make TFM
     tfm = im.SingleViewTFM(frame, grid, view)
-    tfm.run()
+    tfm.run(fillvalue=np.nan)
 
     # Check this value is unchanged over time!
     expected_val = 13.810041527100738
