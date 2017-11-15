@@ -216,28 +216,38 @@ def test_grid():
     dz = 1e-3
 
     grid = g.Grid(xmin, xmax, ymin, ymax, zmin, zmax, (dx, dy, dz))
-    assert len(grid.x) == 21
+    assert grid.shape == (grid.numx, grid.numy, grid.numz)
+
+    assert len(grid.xvect) == 21
     assert grid.xmin == xmin
     assert grid.xmax == xmax
-    assert grid.dx == dx
+    assert np.isclose(grid.dx, dx)
+    assert grid.x.shape == (grid.numx, grid.numy, grid.numz)
 
-    assert len(grid.y) == 1
+    assert len(grid.yvect) == 1
     assert grid.ymin == ymin
     assert grid.ymax == ymax
     assert grid.dy is None
+    assert grid.y.shape == (grid.numx, grid.numy, grid.numz)
 
-    assert len(grid.z) == 11
+    assert len(grid.zvect) == 11
     assert grid.zmin == zmin
     assert grid.zmax == zmax
-    assert grid.dz == dz
+    assert np.isclose(grid.dz, dz)
+    assert grid.z.shape == (grid.numx, grid.numy, grid.numz)
 
     assert grid.numpoints == 21 * 1 * 11
 
-    points = grid.as_points
-    points2 = grid.as_points
-    assert points is points2
+    points = grid.to_1d_points()
     assert isinstance(points, g.Points)
     assert len(points) == grid.numpoints
+
+    grid_p = grid.to_oriented_points()
+    assert grid_p.points.shape == (grid.numpoints,)
+    assert grid_p.orientations.shape == (grid.numpoints, 3)
+
+    match = grid.points_in_rectbox(xmax=-9.5e-3)
+    assert match.sum() == 1 * grid.numy * grid.numz
 
 
 # shape, name, size
@@ -566,6 +576,10 @@ class TestPoints:
         points2 = g.aspoints(points.coords)
         assert isinstance(points2, g.Points)
         assert np.allclose(points.coords, points2.coords)
+
+    def test_to_1d_points(self, points):
+        new_points = points.to_1d_points()
+        assert new_points.ndim == 1
 
 
 class TestCoordinateSystem:

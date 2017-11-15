@@ -35,7 +35,7 @@ class BaseTFM:
     Parameters
     ----------
     frame : Frame
-    grid : Grid
+    grid : Points or Grid
     amplitudes : Amplitudes or str
         An amplitude object. Accepted keywords: 'uniform'.
     dtype : numpy.dtype
@@ -46,7 +46,7 @@ class BaseTFM:
     ----------
     result : ndarray
     frame : Frame
-    grid : Grid
+    grid : Points or Grid
     dtype
     amplitudes : Amplitudes
     geom_probe_to_grid
@@ -66,10 +66,10 @@ class BaseTFM:
         self.res = None
 
         if geom_probe_to_grid is None:
-            geom_probe_to_grid = g.GeometryHelper(frame.probe.locations, grid.as_points,
+            geom_probe_to_grid = g.GeometryHelper(frame.probe.locations, grid.to_1d_points(),
                                                   frame.probe.pcs)
         else:
-            assert geom_probe_to_grid.is_valid(frame.probe, grid.as_points)
+            assert geom_probe_to_grid.is_valid(frame.probe, grid.to_1d_points())
         self._geom_probe_to_grid = geom_probe_to_grid
 
         if scanline_weights is not None:
@@ -171,7 +171,7 @@ class BaseTFM:
         Default behaviour: reshape results (initially 1D array) to 3D array with
         same shape as the grid.
         """
-        return res.reshape((self.grid.numx, self.grid.numy, self.grid.numz))
+        return res.reshape(self.grid.shape)
 
     @property
     def geom_probe_to_grid(self):
@@ -314,8 +314,6 @@ class SingleViewTFM(BaseTFM):
 
         assert tx_rays.fermat_path[0] is frame.probe.locations
         assert rx_rays.fermat_path[0] is frame.probe.locations
-        assert tx_rays.fermat_path[-1] is grid.as_points
-        assert rx_rays.fermat_path[-1] is grid.as_points
         self.tx_rays = tx_rays
         self.rx_rays = rx_rays
         self.view = view

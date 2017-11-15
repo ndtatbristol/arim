@@ -121,7 +121,8 @@ class TestAmplitude:
         assert np.allclose(multi_amp(), 1.)
 
 
-def test_multiview_tfm():
+@pytest.mark.parametrize("use_real_grid", [True, False])
+def test_multiview_tfm(use_real_grid):
     # make probe
     probe = arim.Probe.make_matrix_probe(5, 0.5e-3, 1, np.nan, 1e6)
     probe.set_reference_element('first')
@@ -137,11 +138,16 @@ def test_multiview_tfm():
     frame = arim.Frame(scanlines, time, tx_arr, rx_arr, probe, arim.ExaminationObject(block))
 
     # prepare view LL-T in contact
-    grid = arim.Grid(0., 0., 0., 0., 5e-3, 5e-3, np.nan)
+    if use_real_grid:
+        grid = arim.Grid(0., 0., 0., 0., 5e-3, 5e-3, np.nan)
+        grid_interface = arim.Interface(*grid.to_oriented_points())
+    else:
+        grid = arim.Points(np.array([0., 0., 5e-3]), name='Grid')
+        grid_interface = arim.Interface(*arim.geometry.default_oriented_points(grid.to_1d_points()))
+
     backwall = arim.geometry.points_1d_wall_z(-1e-3, 1e-3, 10e-3, 200)
     backwall_interface = arim.Interface(*backwall)
     probe_interface = arim.Interface(*probe.to_oriented_points())
-    grid_interface = arim.Interface(*grid.to_oriented_points())
 
     path_LL = arim.Path([probe_interface, backwall_interface, grid_interface], [block, block], ['L', 'L'])
     path_T = arim.Path([probe_interface, grid_interface], [block], ['T'])
@@ -159,5 +165,9 @@ def test_multiview_tfm():
     tfm.run()
 
     # Check this value is unchanged over time!
-    expected = np.array([[[13.810041527100738]]])
-    np.testing.assert_allclose(tfm.res, expected)
+    expected_val = 13.810041527100738
+    assert tfm.res.shape == grid.shape
+    if use_real_grid:
+        np.testing.assert_array_almost_equal(tfm.res, [[[expected_val]]])
+    else:
+        np.testing.assert_allclose(tfm.res, expected_val)

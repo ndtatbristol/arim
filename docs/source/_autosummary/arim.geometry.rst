@@ -23,7 +23,6 @@ arim\.geometry
       norm2
       norm2_2d
       points_1d_wall_z
-      points_from_grid
       points_from_probe
       points_in_rectbox
       rotate

@@ -198,10 +198,11 @@ class Points:
 
     @property
     def size(self):
-        size = 1
-        for i in self.shape:
-            size *= i
-        return size
+        return self.coords.size // 3
+
+    @property
+    def numpoints(self):
+        return self.size
 
     def __str__(self):
         return 'P:{}'.format(self.name)
@@ -359,6 +360,17 @@ class Points:
         """
         return points_in_rectbox(self.x, self.y, self.z, xmin, xmax, ymin, ymax, zmin,
                                  zmax)
+
+    def to_1d_points(self):
+        """
+        Returns a new 1d Points object (shape: (numpoints, ))
+
+        Returns
+        -------
+        Points
+
+        """
+        return Points(self.coords.reshape((self.size, 3)), self.name)
 
 
 OrientedPoints = namedtuple('OrientedPoints', 'points orientations')
@@ -583,33 +595,41 @@ class CoordinateSystem:
         return self.__class__(self.origin.copy(), self.i_hat.copy(), self.j_hat.copy())
 
 
-class Grid:
+class Grid(Points):
     """
     Regularly spaced 3d grid
 
     Attributes
     ----------
-    x: ndarray
+    xvect: ndarray
         Unique points along first axis
-    y: ndarray
+    yvect: ndarray
         Unique points along second axis
-    z: ndarray
+    zvect: ndarray
         Unique points along third axis
-    xx: ndarray
+    x: ndarray
         First coordinate of all points. Shape: ``(numx, numy, numz)``
-    yy: ndarray
+    y: ndarray
         Second coordinate of all points. Shape: ``(numx, numy, numz)``
-    zz: ndarray
+    z: ndarray
         Third coordinate of all points. Shape: ``(numx, numy, numz)``
-    dx, dy, dz: float
-        Exact distance between points
+    dx, dy, dz: float or None
+        Exact distance between points. None if only one point along the axis
     numx, numy, numz, numpoints
 
     Parameters
     ----------
+    xmin : float
+    xmax : float
+    xmin : float
+    ymax : float
+    zmin : float
+    zmax  : float
     pixel_size: float
         *Approximative* distance between points to use. Either one or three floats.
     """
+
+    __slots__ = ('coords', 'name', 'xvect', 'yvect', 'zvect')
 
     def __init__(self, xmin, xmax, ymin, ymax, zmin, zmax, pixel_size):
         try:
@@ -621,117 +641,109 @@ class Grid:
 
         if xmin == xmax:
             x = np.array([xmin])
-            dx = None
         else:
             if xmin > xmax:
                 warn("xmin > xmax in grid", ArimWarning, stacklevel=2)
             x = np.linspace(xmin, xmax, int(np.abs(np.ceil((xmax - xmin) / dx)) + 1),
                             dtype=s.FLOAT)
-            dx = np.mean(np.diff(x))
 
         if ymin == ymax:
             y = np.array([ymin], dtype=s.FLOAT)
-            dy = None
         else:
             if ymin > ymax:
                 warn("ymin > ymax in grid", ArimWarning, stacklevel=2)
             y = np.linspace(ymin, ymax, int(np.abs(np.ceil((ymax - ymin) / dy)) + 1),
                             dtype=s.FLOAT)
-            dy = np.mean(np.diff(y))
 
         if zmin == zmax:
             z = np.array([zmin], dtype=s.FLOAT)
-            dz = None
         else:
             if zmin > zmax:
                 warn("zmin > zmax in grid", ArimWarning, stacklevel=2)
             z = np.linspace(zmin, zmax, int(np.abs(np.ceil((zmax - zmin) / dz)) + 1),
                             dtype=s.FLOAT)
-            dz = np.mean(np.diff(z))
 
-        self.xx, self.yy, self.zz = np.meshgrid(x, y, z, indexing='ij')
-
-        self.x = x
-        self.y = y
-        self.z = z
-        self.dx = dx
-        self.dy = dy
-        self.dz = dz
+        all_coords = np.stack(np.meshgrid(x, y, z, indexing='ij'), axis=-1)
+        super().__init__(all_coords, 'Grid')
+        self.xvect = x
+        self.yvect = y
+        self.zvect = z
 
     @property
     def xmin(self):
-        return self.x[0]
+        return self.xvect[0]
 
     @property
     def xmax(self):
-        return self.x[-1]
+        return self.xvect[-1]
 
     @property
     def ymin(self):
-        return self.y[0]
+        return self.yvect[0]
 
     @property
     def ymax(self):
-        return self.y[-1]
+        return self.yvect[-1]
 
     @property
     def zmin(self):
-        return self.z[0]
+        return self.zvect[0]
 
     @property
     def zmax(self):
-        return self.z[-1]
+        return self.zvect[-1]
 
     @property
     def numx(self):
-        return len(self.x)
+        return len(self.xvect)
 
     @property
     def numy(self):
-        return len(self.y)
+        return len(self.yvect)
 
     @property
     def numz(self):
-        return len(self.z)
+        return len(self.zvect)
 
     @property
-    def numpoints(self):
-        return self.numx * self.numy * self.numz
+    def dx(self):
+        try:
+            return self.xvect[1] - self.xvect[0]
+        except IndexError:
+            return None
+
+    @property
+    def dy(self):
+        try:
+            return self.yvect[1] - self.yvect[0]
+        except IndexError:
+            return None
+
+    @property
+    def dz(self):
+        try:
+            return self.zvect[1] - self.zvect[0]
+        except IndexError:
+            return None
 
     @property
     def as_points(self):
         """
-        Returns the grid points as Points object of dimension 1 (flatten the grid points). Returns always the same object.
+        Returns the grid points as Points object of dimension 1 (flatten the grid points).
         """
-        if getattr(self, '_points', None) is None:
-            self._points = Points.from_xyz(self.xx.ravel(), self.yy.ravel(),
-                                           self.zz.ravel(),
-                                           self.__class__.__qualname__)
-        return self._points
-
-    def points_in_rectbox(self, xmin=None, xmax=None, ymin=None, ymax=None, zmin=None,
-                          zmax=None):
-        """Returns points in the rectangular box.
-
-        See Also
-        --------
-        points_in_rectbox
-
-        """
-        return points_in_rectbox(self.xx, self.yy, self.zz, xmin, xmax, ymin, ymax, zmin,
-                                 zmax)
+        warn(DeprecationWarning('use method to_1d_points() instead'))
+        return self.to_1d_points()
 
     def to_oriented_points(self):
         """
-        Returns the locations and the orientations of the grid points
-        as a OrientedPoints object.
+        Returns a 1d OrientedPoints from the grid points (assume default orientation)
 
         Returns
         -------
         OrientedPoints
 
         """
-        return points_from_grid(self)
+        return default_oriented_points(self.to_1d_points())
 
 
 class GeometryHelper:
@@ -788,7 +800,7 @@ class GeometryHelper:
         return self._pcs
 
     def is_valid(self, probe, points):
-        return (probe is self._points1_gcs) and (points is self._points2_gcs)
+        return (probe is self._points1_gcs)
 
     def distance_pairwise(self):
         out = self._cache.get('distance_pairwise', None)
@@ -1515,22 +1527,4 @@ def points_from_probe(probe, name='Probe'):
     orientations_arr[2] = probe.pcs.k_hat
     orientations = Points(np.broadcast_to(orientations_arr, (*points.shape, 3, 3)))
 
-    return OrientedPoints(points, orientations)
-
-
-def points_from_grid(grid):
-    """
-    Convert a Grid to an OrientedPoints object
-
-    Parameters
-    ----------
-    grid : Grid
-
-    Returns
-    -------
-    OrientedPoints
-
-    """
-    points = grid.as_points
-    orientations = default_orientations(points)
     return OrientedPoints(points, orientations)

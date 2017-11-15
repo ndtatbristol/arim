@@ -357,7 +357,7 @@ def plot_oxz(data, grid, ax=None, title=None, clim=None, interpolation='none',
 
         grid = arim.geometry.Grid(-5e-3, 5e-3, 0, 0, 0, 15e-3, .1e-3)
         k = 2 * np.pi / 10e-3
-        data = (np.cos(grid.xx * 2 * k) * np.sin(grid.zz * k))
+        data = (np.cos(grid.x * 2 * k) * np.sin(grid.z * k))
         ax, im = aplt.plot_oxz(data, grid)
 
 
@@ -610,7 +610,7 @@ class RayPlotter:
             print('show_ray_on_clic() finish with no error')
 
     def draw_ray(self, ax, x, z):
-        gridpoints = self.grid.as_points
+        gridpoints = self.grid.to_1d_points()
         wanted_point = (x, self.y, z)
         point_index = gridpoints.closest_point(*wanted_point)
         obtained_point = gridpoints[point_index]
