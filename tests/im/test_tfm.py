@@ -7,7 +7,7 @@ import copy
 import arim
 import arim.im as im
 import arim.im.amplitudes
-import arim.im.tfm
+import arim.im.tfm, arim.ray
 import arim.io
 import arim.geometry as g
 
@@ -119,3 +119,45 @@ class TestAmplitude:
         amp2 = arim.im.amplitudes.UniformAmplitudes(frame, grid)
         multi_amp = arim.im.amplitudes.MultiAmplitudes([amp1, amp2])
         assert np.allclose(multi_amp(), 1.)
+
+
+def test_multiview_tfm():
+    # make probe
+    probe = arim.Probe.make_matrix_probe(5, 0.5e-3, 1, np.nan, 1e6)
+    probe.set_reference_element('first')
+    probe.reset_position()
+    probe.translate([0., 0., -1e-3])
+
+    # make frame
+    tx_arr, rx_arr = arim.ut.hmc(probe.numelements)
+    time = arim.Time(.5e-6, 1 / 20e6, 100)
+    np.random.seed(42)
+    scanlines = np.random.rand(len(tx_arr), len(time))
+    block = arim.Material(6300, 3100)
+    frame = arim.Frame(scanlines, time, tx_arr, rx_arr, probe, arim.ExaminationObject(block))
+
+    # prepare view LL-T in contact
+    grid = arim.Grid(0., 0., 0., 0., 5e-3, 5e-3, np.nan)
+    backwall = arim.geometry.points_1d_wall_z(-1e-3, 1e-3, 10e-3, 200)
+    backwall_interface = arim.Interface(*backwall)
+    probe_interface = arim.Interface(*probe.to_oriented_points())
+    grid_interface = arim.Interface(*grid.to_oriented_points())
+
+    path_LL = arim.Path([probe_interface, backwall_interface, grid_interface], [block, block], ['L', 'L'])
+    path_T = arim.Path([probe_interface, grid_interface], [block], ['T'])
+    view = arim.View(path_LL, path_T, 'LL-T')
+    arim.ray.ray_tracing([view], convert_to_fortran_order=True)
+
+    # check there is no time limit issues
+    assert view.tx_path.rays.times.min() > time.start
+    assert view.tx_path.rays.times.min() > time.start
+    assert view.tx_path.rays.times.max() < time.end
+    assert view.tx_path.rays.times.max() < time.end
+
+    # make TFM
+    tfm = im.SingleViewTFM(frame, grid, view)
+    tfm.run()
+
+    # Check this value is unchanged over time!
+    expected = np.array([[[13.810041527100738]]])
+    np.testing.assert_allclose(tfm.res, expected)
