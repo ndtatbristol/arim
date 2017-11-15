@@ -159,7 +159,8 @@ def ray_tracing_for_paths(paths_list, convert_to_fortran_order=False):
     rays_dict = fermat_solver.solve()
 
     if convert_to_fortran_order:
-        rays_dict = {k: v.to_fortran_order() for k, v in rays_dict.items()}
+        old_rays_dict = rays_dict
+        rays_dict = {k: v.to_fortran_order() for k, v in old_rays_dict.items()}
 
     # Save results in attribute path.rays:
     for path, fermat_path in zip(paths_list, fermat_paths_tuple):
@@ -216,6 +217,9 @@ class Rays:
     fermat_path : FermatPath
         Sets of points crossed by the rays.
 
+    order : None, 'C' or 'F'
+        Force the order if the indices
+
     Attributes
     ----------
     times
@@ -231,7 +235,7 @@ class Rays:
 
     # __slots__ = []
 
-    def __init__(self, times, interior_indices, fermat_path):
+    def __init__(self, times, interior_indices, fermat_path, order=None):
         assert times.ndim == 2
         assert interior_indices.ndim == 3
         assert times.shape == interior_indices.shape[1:] == (
@@ -242,7 +246,7 @@ class Rays:
             raise TypeError("Indices must be unsigned integers.")
         assert times.dtype.kind == 'f'
 
-        indices = self.make_indices(interior_indices)
+        indices = self.make_indices(interior_indices, order=order)
 
         self._times = times
         self._indices = indices
@@ -262,7 +266,6 @@ class Rays:
 
         interior_indices = np.zeros((0, n, m), dtype=dtype_indices)
         return cls(times, interior_indices, path)
-
 
     @property
     def fermat_path(self):
@@ -404,7 +407,7 @@ class Rays:
         """
         return self.__class__(np.asfortranarray(self.times),
                               np.asfortranarray(self.interior_indices),
-                              self.fermat_path)
+                              self.fermat_path, 'F')
 
     @staticmethod
     def expand_rays(interior_indices, indices_new_interface):
@@ -445,7 +448,6 @@ class Rays:
             _discrete_ray_tracing._expand_rays(interior_indices, indices_new_interface,
                                                expanded_indices, n, m, p, d)
             return expanded_indices
-
 
     def reverse(self, order='f'):
         """
@@ -978,7 +980,6 @@ class RayGeometry:
         """
         self._cache = self._cache.__class__()
         self._final_keys = set()
-
 
     @_cache_ray_geometry
     def inc_leg_size(self, interface_idx):
