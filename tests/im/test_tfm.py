@@ -165,3 +165,48 @@ def test_multiview_tfm(use_real_grid):
         np.testing.assert_array_almost_equal(tfm.res, [[[expected_val]]])
     else:
         np.testing.assert_allclose(tfm.res, expected_val)
+
+
+@pytest.mark.parametrize("use_hmc", [False, True])
+def test_contact_tfm(use_hmc):
+    # make probe
+    probe = arim.Probe.make_matrix_probe(5, 0.5e-3, 1, np.nan, 1e6)
+    probe.set_reference_element('first')
+    probe.reset_position()
+    probe.translate([0., 0., -1e-3])
+
+    # make frame
+    if use_hmc:
+        tx_arr, rx_arr = arim.ut.hmc(probe.numelements)
+    else:
+        tx_arr, rx_arr = arim.ut.fmc(probe.numelements)
+
+    time = arim.Time(.5e-6, 1 / 20e6, 100)
+
+    # use random data but ensure reciprocity
+    scanlines = np.zeros((len(tx_arr), len(time)))
+    for i, (tx, rx) in enumerate(zip(tx_arr, rx_arr)):
+        np.random.seed((tx * rx) ** 2)  # symmetric in tx and rx
+        scanlines[i] = np.random.rand(len(time))
+
+    # check reciprocity
+    if not use_hmc:
+        for i, (tx, rx) in enumerate(zip(tx_arr, rx_arr)):
+            scanline_1 = scanlines[i]
+            scanline_2 = scanlines[np.logical_and(tx_arr == rx, rx_arr == tx)][0]
+            np.testing.assert_allclose(scanline_1, scanline_2, err_msg='fmc data not symmetric')
+
+    block = arim.Material(6300, 3100)
+    frame = arim.Frame(scanlines, time, tx_arr, rx_arr, probe, arim.ExaminationObject(block))
+
+    # prepare view LL-T in contact
+    grid = arim.Points(np.array([0., 0., 5e-3]), name='Grid')
+
+    tfm = im.ContactTFM(frame=frame, grid=grid, speed=block.longitudinal_vel)
+    # import pdb; pdb.set_trace()
+    tfm.run(fillvalue=np.nan)
+
+    # Check this value is unchanged over time!
+    expected_val = 12.49925772283528
+    assert tfm.res.shape == grid.shape
+    np.testing.assert_allclose(tfm.res, expected_val)
