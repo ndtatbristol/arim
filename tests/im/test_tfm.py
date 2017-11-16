@@ -130,10 +130,13 @@ def test_multiview_tfm(use_real_grid):
     probe.translate([0., 0., -1e-3])
 
     # make frame
-    tx_arr, rx_arr = arim.ut.hmc(probe.numelements)
+    tx_arr, rx_arr = arim.ut.fmc(probe.numelements)
     time = arim.Time(.5e-6, 1 / 20e6, 100)
-    np.random.seed(42)
-    scanlines = np.random.rand(len(tx_arr), len(time))
+    # use random data but ensure reciprocity
+    scanlines = np.zeros((len(tx_arr), len(time)))
+    for i, (tx, rx) in enumerate(zip(tx_arr, rx_arr)):
+        np.random.seed((tx * rx) ** 2)  # symmetric in tx and rx
+        scanlines[i] = np.random.rand(len(time))
     block = arim.Material(6300, 3100)
     frame = arim.Frame(scanlines, time, tx_arr, rx_arr, probe, arim.ExaminationObject(block))
 
@@ -159,12 +162,22 @@ def test_multiview_tfm(use_real_grid):
     tfm.run(fillvalue=np.nan)
 
     # Check this value is unchanged over time!
-    expected_val = 13.810041527100738
+    expected_val = 12.745499105785953
     assert tfm.res.shape == grid.shape
     if use_real_grid:
         np.testing.assert_array_almost_equal(tfm.res, [[[expected_val]]])
     else:
         np.testing.assert_allclose(tfm.res, expected_val)
+
+    # Reverse view
+    view_rev = arim.View(path_LL, path_T, 'T-LL')
+    tfm_rev = im.SingleViewTFM(frame, grid, view_rev)
+    tfm_rev.run(fillvalue=np.nan)
+    assert tfm.res.shape == grid.shape
+    if use_real_grid:
+        np.testing.assert_array_almost_equal(tfm_rev.res, [[[expected_val]]])
+    else:
+        np.testing.assert_allclose(tfm_rev.res, expected_val)
 
 
 @pytest.mark.parametrize("use_hmc", [False, True])
