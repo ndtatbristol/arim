@@ -4,7 +4,7 @@ import numpy as np
 from collections import OrderedDict
 
 import arim.geometry as g
-from arim import Probe, ExaminationObject, Material, Time, FocalLaw, Frame
+from arim import Probe, ExaminationObject, Material, Time, Frame
 import arim.im.das as das
 
 

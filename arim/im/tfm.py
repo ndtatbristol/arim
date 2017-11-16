@@ -1,5 +1,11 @@
 """
 This module defines classes to perform TFM and TFM-like imaging.
+
+If the following conditions are verified:
+- the Frame is noncomplete assuming reciprocity (example: HMC),
+- the tx and rx lookup times are the same,
+- the tx and rx amplitudes are the same,
+
 """
 
 import numpy as np
@@ -20,8 +26,255 @@ from ..helpers import chunk_array
 
 logger = logging.getLogger(__name__)
 
-ExtramaLookupTimes = namedtuple('ExtramaLookupTimes',
-                                'tmin tmax tx_elt_for_tmin rx_elt_for_tmin tx_elt_for_tmax rx_elt_for_tmax')
+
+class IncompleteFrameWarning(ArimWarning):
+    pass
+
+
+class TxRxAmplitudes:
+    """
+    Tfm amplitudes where A_ij = A_i * A'_j
+
+    Parameters
+    ----------
+    amplitudes_tx : ndarray
+        Shape (numelements, numgridpoints)
+    amplitudes_rx : ndarray
+        Shape (numelements, numgridpoints)
+    force_c_order : bool
+        Default True
+
+    """
+    __slots__ = ('amplitudes_tx', 'amplitudes_rx')
+
+    def __init__(self, amplitudes_tx, amplitudes_rx, force_c_order=True):
+        if force_c_order:
+            amplitudes_tx = np.ascontiguousarray(amplitudes_tx)
+            amplitudes_rx = np.ascontiguousarray(amplitudes_rx)
+
+        assert amplitudes_tx.dtype == amplitudes_rx.dtype
+
+        assert amplitudes_tx.ndim == amplitudes_rx.ndim == 2
+        self.amplitudes_tx = amplitudes_tx
+        self.amplitudes_rx = amplitudes_rx
+
+    @property
+    def shape(self):
+        return self.amplitudes_tx.shape
+
+    @property
+    def dtype(self):
+        return self.amplitudes_tx.dtype
+
+    def __iter__(self):
+        # easy unpacking
+        yield self.amplitudes_tx
+        yield self.amplitudes_rx
+
+
+class FocalLaw:
+    __slots__ = ('lookup_times_tx', 'lookup_times_rx', 'amplitudes', 'scanline_weights', '_numscanlines')
+
+    def __init__(self, lookup_times_tx, lookup_times_rx, amplitudes=None, scanline_weights=None, force_c_order=True):
+        if force_c_order:
+            lookup_times_tx = np.ascontiguousarray(lookup_times_tx)
+            lookup_times_rx = np.ascontiguousarray(lookup_times_rx)
+
+        assert lookup_times_tx.ndim == lookup_times_rx.ndim == 2
+        assert lookup_times_tx.shape == lookup_times_rx.shape
+
+        if scanline_weights is not None:
+            if force_c_order:
+                scanline_weights = np.ascontiguousarray(scanline_weights)
+            assert scanline_weights.ndim == 1
+            numscanlines = scanline_weights.shape[0]
+        else:
+            numscanlines = None
+
+        if amplitudes is not None:
+            # don't force to C order because 'amplitudes' may be a arim.model.ModelAmplitudes or a TxRxAmplitudes
+            if isinstance(amplitudes, TxRxAmplitudes):
+                # arrays of shape (numgridpoints, numelements)
+                assert amplitudes.shape == lookup_times_tx.shape
+            else:
+                # arrays of shape (numgridpoints, numscanlines)
+                assert amplitudes.ndim == 2
+                assert amplitudes.shape[1] == lookup_times_tx.shape[1]
+                if numscanlines is not None:
+                    assert amplitudes.shape[1] == numscanlines
+                else:
+                    numscanlines = amplitudes.shape[1]
+
+        self.lookup_times_tx = lookup_times_tx
+        self.lookup_times_rx = lookup_times_rx
+        self.amplitudes = amplitudes
+        self.scanline_weights = scanline_weights
+        self._numscanlines = numscanlines
+
+    @property
+    def numelements(self):
+        return self.lookup_times_tx.shape[1]
+
+    @property
+    def numgridpoints(self):
+        return self.lookup_times_tx.shape[0]
+
+    @property
+    def numscanlines(self):
+        if self._numscanlines is None:
+            raise AttributeError('no data for inferring the number of scanlines')
+        else:
+            return self._numscanlines
+
+    def weigh_scanlines(self, scanlines):
+        """
+        Multiply each scanline by a weight
+
+        Canonical usage: use a weight of 2 for the scanlines i != j in the HMC for contact TFM.
+
+        Parameters
+        ----------
+        scanlines : ndarray
+
+        Returns
+        -------
+        scanlines : ndarray
+        """
+        assert scanlines.ndim == 2
+        if self.scanline_weights is None:
+            return scanlines
+        else:
+            out = scanlines * self.scanline_weights[:, np.newaxis]
+            assert out.ndim == 2
+            return out
+
+    def amp_dtype(self):
+        if self.amplitudes is not None:
+            return self.amplitudes.dtype
+        else:
+            return None
+
+
+class TfmResult:
+    __slots__ = ('res', 'grid')
+
+    def __init__(self, res, grid):
+        assert res.shape == grid.shape
+        self.res = res
+        self.grid = grid
+
+    def maximum_intensity_in_rectbox(self, xmin=None, xmax=None, ymin=None, ymax=None,
+                                     zmin=None, zmax=None):
+        """
+        Returns the maximum absolute intensity of the TFM image in the rectangular box
+        defined by the parameters. If a parameter is None, the box is unbounded in the
+        corresponding direction.
+
+        Intensity is given as it is (no dB conversion).
+
+        Parameters
+        ----------
+        xmin : float or None
+        xmax : float or None
+        ymin : float or None
+        ymax : float or None
+        zmin : float or None
+        zmax : float or None
+
+        Returns
+        -------
+        intensity : float
+
+        """
+        assert self.res is not None
+        area_of_interest = self.grid.points_in_rectbox(xmin, xmax, ymin, ymax,
+                                                       zmin, zmax)
+        return self.maximum_intensity_in_area(area_of_interest)
+
+    def maximum_intensity_in_area(self, area):
+        """
+        Returns the maximum absolute intensity of the TFM image in an area.
+
+        Intensity is given as it is (no dB conversion).
+
+        Parameters
+        ----------
+        area : ndarray or None or slice
+            Indices of the grid.
+
+        Returns
+        -------
+        intensity : float
+        """
+        if area is None:
+            area = slice(None)
+        return np.nanmax(np.abs(self.res[area]))
+
+
+def contact_tfm(frame, grid, velocity, amplitudes=None, **kwargs_delay_and_sum):
+    """
+    Contact TFM
+
+    Parameters
+    ----------
+    frame : Frame
+    grid : Points
+    velocity : float
+    amplitudes : None or ndarray or TxRxAmplitudes
+    kwargs_delay_and_sum : dict
+
+    Returns
+    -------
+    tfm_res : TfmResult
+
+    """
+    lookup_times = g.distance_pairwise(grid.to_1d_points(), frame.probe.locations) / velocity
+    assert lookup_times.ndim == 2
+    assert lookup_times.shape == (grid.numpoints, frame.probe.numelements)
+
+    if amplitudes is not None:
+        if not frame.is_complete_assuming_reciprocity():
+            logger.warning('Possible erroneous usage of a noncomplete frame in TFM; '
+                           'use Frame.expand_frame_assuming_reciprocity()', IncompleteFrameWarning)
+
+    scanline_weights = ut.default_scanline_weights(frame.tx, frame.rx)
+    focal_law = FocalLaw(lookup_times, lookup_times, amplitudes, scanline_weights)
+
+    res = das.delay_and_sum(frame, focal_law, **kwargs_delay_and_sum)
+    res = res.reshape(grid.shape)
+    return TfmResult(res, grid)
+
+
+def tfm_for_view(frame, grid, view, amplitudes=None, **kwargs_delay_and_sum):
+    """
+    TFM for a view
+
+    Parameters
+    ----------
+    frame : Frame
+    grid : Points
+    velocity : float
+    amplitudes : None or ndarray or TxRxAmplitudes
+    kwargs_delay_and_sum : dict
+
+    Returns
+    -------
+    tfm_res : TfmResult
+
+    """
+    # do not use scanline weights, it is likely to be ill-defined here
+    if not frame.is_complete_assuming_reciprocity():
+        logger.warning('Possible erroneous usage of a noncomplete frame in TFM; '
+                       'use Frame.expand_frame_assuming_reciprocity()', IncompleteFrameWarning)
+
+    lookup_times_tx = view.tx_path.rays.times.T
+    lookup_times_rx = view.rx_path.rays.times.T
+
+    focal_law = FocalLaw(lookup_times_tx, lookup_times_rx, amplitudes)
+
+    res = das.delay_and_sum(frame, focal_law, **kwargs_delay_and_sum)
+    res = res.reshape(grid.shape)
+    return TfmResult(res, grid)
 
 
 class BaseTFM:
@@ -79,8 +332,8 @@ class BaseTFM:
 
         if not is_safe_for_noncomplete_frame:
             if not frame.is_complete_assuming_reciprocity():
-                logger.warning('Using a noncomplete frame is not recommended, '
-                               'use Frame.expand_frame_assuming_reciprocity()')
+                logger.warning('Possible erroneous usage of a noncomplete frame in TFM; '
+                               'use Frame.expand_frame_assuming_reciprocity()', IncompleteFrameWarning)
 
         if amplitudes_tx == 'uniform':
             amplitudes_tx = amplitudes.UniformAmplitudes(frame, grid)
@@ -228,40 +481,11 @@ class BaseTFM:
                                         zmin=None, zmax=None):
         """
         Returns the minimum and maximum of the lookup times in an rectangular box.
-        The output is returned as a named tuple for convenience.
-
-        Parameters
-        ----------
-        xmin : float or None
-        xmax : float or None
-        ymin : float or None
-        ymax : float or None
-        zmin : float or None
-        zmax : float or None
-
-        Returns
-        -------
-        out : ExtramaLookupTimes
-            Respectively: returns the minimum and maximum times (fields ``tmin`` and ``tmax``) and the elements indices
-            corresponding to these values. If several couples of elements are matching, the first couple is returned.
-
-        Notes
-        -----
-
-            $$\min\limits_{i,j}{\(a_i + b_j\)} = \min\limits_{i}{a_i} + \min\limits_{j}{b_j}$$
-
+        See :func:`extrema_lookup_times_in_rectbox`
         """
-        area_of_interest = self.grid.points_in_rectbox(xmin, xmax, ymin, ymax,
-                                                       zmin, zmax).ravel()
-
-        all_lookup_times_tx = self.get_lookup_times_tx()
-        all_lookup_times_rx = self.get_lookup_times_rx()
-        lookup_times_tx = np.ascontiguousarray(all_lookup_times_tx[area_of_interest, ...])
-        lookup_times_rx = np.ascontiguousarray(all_lookup_times_rx[area_of_interest, ...])
-        tx = np.ascontiguousarray(self.frame.tx)
-        rx = np.ascontiguousarray(self.frame.rx)
-        out = _extrema_lookup_times(lookup_times_tx, lookup_times_rx, tx, rx)
-        return ExtramaLookupTimes(*out)
+        return extrema_lookup_times_in_rectbox(
+            self.get_lookup_times_tx(), self.get_lookup_times_rx(),
+            self.frame.tx, self.frame.rx, xmin, xmax, ymin, ymax, zmin, zmax)
 
 
 class ContactTFM(BaseTFM):
@@ -381,6 +605,48 @@ class SimpleTFM(BaseTFM):
 
     def get_lookup_times_rx(self):
         return self._lookup_times_rx
+
+
+ExtramaLookupTimes = namedtuple('ExtramaLookupTimes',
+                                'tmin tmax tx_elt_for_tmin rx_elt_for_tmin tx_elt_for_tmax rx_elt_for_tmax')
+
+
+def extrema_lookup_times_in_rectbox(grid, lookup_times_tx, lookup_times_rx, tx, rx,
+                                    xmin=None, xmax=None, ymin=None, ymax=None, zmin=None, zmax=None):
+    """
+    Returns the minimum and maximum of the lookup times in an rectangular box.
+    The output is returned as a named tuple for convenience.
+
+    Parameters
+    ----------
+    xmin : float or None
+    xmax : float or None
+    ymin : float or None
+    ymax : float or None
+    zmin : float or None
+    zmax : float or None
+
+    Returns
+    -------
+    out : ExtramaLookupTimes
+        Respectively: returns the minimum and maximum times (fields ``tmin`` and ``tmax``) and the elements indices
+        corresponding to these values. If several couples of elements are matching, the first couple is returned.
+
+    Notes
+    -----
+
+        $$\min\limits_{i,j}{\(a_i + b_j\)} = \min\limits_{i}{a_i} + \min\limits_{j}{b_j}$$
+
+    """
+    area_of_interest = grid.points_in_rectbox(xmin, xmax, ymin, ymax,
+                                              zmin, zmax).ravel()
+
+    sub_lookup_times_tx = np.ascontiguousarray(lookup_times_tx[area_of_interest, ...])
+    sub_lookup_times_rx = np.ascontiguousarray(lookup_times_rx[area_of_interest, ...])
+    tx = np.ascontiguousarray(tx)
+    rx = np.ascontiguousarray(rx)
+    out = _extrema_lookup_times(sub_lookup_times_tx, sub_lookup_times_rx, tx, rx)
+    return ExtramaLookupTimes(*out)
 
 
 @numba.jit(nopython=True, cache=True)

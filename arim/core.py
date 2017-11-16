@@ -4,13 +4,9 @@ Defines core objects of arim.
 from collections import namedtuple
 import enum
 import numpy as np
-import copy
 
 from . import geometry as g
 from . import ut, helpers
-
-FocalLaw = namedtuple('FocalLaw', ['lookup_times_tx', 'lookup_times_rx', 'amplitudes_tx',
-                                   'amplitudes_rx', 'scanline_weights'])
 
 StateMatter = enum.Enum('StateMatter', 'liquid solid')
 StateMatter.__doc__ = "Enumerated constants for the states of matter."

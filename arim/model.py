@@ -1263,6 +1263,7 @@ class _ModelAmplitudesWithScatFunction(ModelAmplitudes):
         self.numpoints, self.numelements = tx_ray_weights.shape
         self.numscanlines = self.tx.shape[0]
         self.scat_angle = scat_angle
+        self.dtype = np.result_type(tx_ray_weights, rx_ray_weights, scattering_fn(0., 0.))
 
     def __getitem__(self, grid_slice):
         # Nota bene: arrays' shape is (numpoints, numscanline), i.e. the transpose
@@ -1316,6 +1317,7 @@ class _ModelAmplitudesWithScatMatrix(ModelAmplitudes):
         self.numpoints, self.numelements = tx_ray_weights.shape
         self.numscanlines = self.tx.shape[0]
         self.scat_angle = scat_angle
+        self.dtype = np.result_type(tx_ray_weights, rx_ray_weights, scattering_mat)
 
     def __getitem__(self, grid_slice):
         # Nota bene: arrays' shape is (numpoints, numscanline), i.e. the transpose
@@ -1326,7 +1328,6 @@ class _ModelAmplitudesWithScatMatrix(ModelAmplitudes):
             self.rx_ray_weights[grid_slice],
             self.tx_scattering_angles[grid_slice],
             self.rx_scattering_angles[grid_slice], self.scat_angle)
-
 
 
 def sensitivity_uniform_tfm(model_amplitudes, scanline_weights, block_size=4000):

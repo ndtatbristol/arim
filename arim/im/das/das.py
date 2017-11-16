@@ -22,16 +22,15 @@ def _check_shapes(frame, focal_law):
     numpoints, numelements = focal_law.lookup_times_tx.shape
 
     assert focal_law.lookup_times_rx.shape == (numpoints, numelements)
-    assert focal_law.amplitudes_tx.shape == (numpoints, numelements)
-    assert focal_law.amplitudes_rx.shape == (numpoints, numelements)
-    assert focal_law.scanline_weights.shape == (numscanlines,)
+    assert focal_law.amplitudes.amplitudes_tx.shape == (numpoints, numelements)
+    assert focal_law.amplitudes.amplitudes_rx.shape == (numpoints, numelements)
     assert frame.tx.shape == (numscanlines,)
     assert frame.rx.shape == (numscanlines,)
 
     assert focal_law.lookup_times_tx.flags.c_contiguous
     assert focal_law.lookup_times_rx.flags.c_contiguous
-    assert focal_law.amplitudes_tx.flags.c_contiguous
-    assert focal_law.amplitudes_rx.flags.c_contiguous
+    assert focal_law.amplitudes.amplitudes_tx.flags.c_contiguous
+    assert focal_law.amplitudes.amplitudes_rx.flags.c_contiguous
     assert frame.scanlines.flags.c_contiguous
     assert frame.tx.flags.c_contiguous
     assert frame.rx.flags.c_contiguous
@@ -69,15 +68,15 @@ def delay_and_sum_numba(frame, focal_law, fillvalue=0., result=None, block_size=
     numpoints, numelements = focal_law.lookup_times_tx.shape
 
     _check_shapes(frame, focal_law)
-    dtype_float, dtype_amp, dtype_data = _infer_datatypes(frame, focal_law, result)
+
+    weighted_scanlines = focal_law.weigh_scanlines(frame.scanlines)
+    dtype_float, dtype_amp, dtype_data = _infer_datatypes(weighted_scanlines, focal_law, result)
 
     if result is None:
         result = np.full((numpoints,), 0, dtype=dtype_data)
     assert result.shape == (numpoints,)
 
-    weighted_scanlines = frame.scanlines * focal_law.scanline_weights[:, np.newaxis]
-
-    # Parameters for multithrading:
+    # Parameters for multithreading:
     if block_size is None:
         block_size = s.BLOCK_SIZE_DELAY_AND_SUM
     if numthreads is None:
@@ -111,7 +110,7 @@ def delay_and_sum_numba(frame, focal_law, fillvalue=0., result=None, block_size=
     return result
 
 
-def _infer_datatypes(frame, focal_law, result, dtype_float=None, dtype_amp=None,
+def _infer_datatypes(scanlines, focal_law, result, dtype_float=None, dtype_amp=None,
                      dtype_data=None):
     """
     Returns
@@ -124,9 +123,9 @@ def _infer_datatypes(frame, focal_law, result, dtype_float=None, dtype_amp=None,
     if dtype_float is None:
         dtype_float = np.result_type(focal_law.lookup_times_tx, focal_law.lookup_times_rx)
     if dtype_amp is None:
-        dtype_amp = np.result_type(focal_law.amplitudes_tx, focal_law.amplitudes_rx)
+        dtype_amp = focal_law.amplitudes.dtype
     if dtype_data is None:
-        data_arrays = [focal_law.scanline_weights, frame.scanlines, dtype_amp]
+        data_arrays = [scanlines, dtype_amp]
         if result is not None:
             data_arrays.append(result)
         dtype_data = np.result_type(*data_arrays)
@@ -348,8 +347,12 @@ def delay_and_sum_naive(frame, focal_law, fillvalue=0., result=None,
     numscanlines = frame.numscanlines
     numpoints, numelements = focal_law.lookup_times_tx.shape
 
+    from .. import tfm
+    assert isinstance(focal_law.amplitudes, tfm.TxRxAmplitudes)
+
     _check_shapes(frame, focal_law)
-    _, _, dtype_data = _infer_datatypes(frame, focal_law, result)
+    weighted_scanlines = focal_law.weigh_scanlines(frame.scanlines)
+    _, _, dtype_data = _infer_datatypes(weighted_scanlines, focal_law, result)
 
     if result is None:
         result = np.full((numpoints,), 0, dtype=dtype_data)
@@ -359,9 +362,11 @@ def delay_and_sum_naive(frame, focal_law, fillvalue=0., result=None,
 
     lookup_times_tx = focal_law.lookup_times_tx
     lookup_times_rx = focal_law.lookup_times_rx
-    amplitudes_tx = focal_law.amplitudes_tx
-    amplitudes_rx = focal_law.amplitudes_rx
+    amplitudes_tx = focal_law.amplitudes.amplitudes_tx
+    amplitudes_rx = focal_law.amplitudes.amplitudes_rx
     scanline_weights = focal_law.scanline_weights
+    if scanline_weights is None:
+        scanline_weights = np.ones(numscanlines)
     scanlines = frame.scanlines
     tx = frame.tx
     rx = frame.rx
@@ -387,8 +392,7 @@ def delay_and_sum_naive(frame, focal_law, fillvalue=0., result=None,
     return result
 
 
-def delay_and_sum_cpu(frame, focal_law, fillvalue=0., result=None, block_size=None,
-                      numthreads=None, interpolate_position='nearest'):
+def delay_and_sum_cpu(frame, focal_law, fillvalue=0., result=None, interpolate_position='nearest'):
     """
     Delay-and-sum function using internally a C++ version.
 
@@ -413,9 +417,9 @@ def delay_and_sum_cpu(frame, focal_law, fillvalue=0., result=None, block_size=No
     numsamples = len(frame.time)
 
     _check_shapes(frame, focal_law)
-    dtype_float, dtype_amp, dtype_data = _infer_datatypes(frame, focal_law, result)
+    weighted_scanlines = focal_law.weigh_scanlines(frame.scanlines)
+    dtype_float, dtype_amp, dtype_data = _infer_datatypes(weighted_scanlines, focal_law, result)
 
-    weighted_scanlines = frame.scanlines * focal_law.scanline_weights[:, np.newaxis]
 
     if result is None:
         result = np.full((numpoints,), 0, dtype=dtype_data)
@@ -444,8 +448,8 @@ def delay_and_sum_cpu(frame, focal_law, fillvalue=0., result=None, block_size=No
     lookup_times_tx = np.array(focal_law.lookup_times_tx, dtype=dtype_float, copy=False)
     lookup_times_rx = np.array(focal_law.lookup_times_rx, dtype=dtype_float, copy=False)
     weighted_scanlines = np.array(weighted_scanlines, dtype=dtype_data, copy=False)
-    amplitudes_tx = np.array(focal_law.amplitudes_tx, dtype=dtype_amp, copy=False)
-    amplitudes_rx = np.array(focal_law.amplitudes_rx, dtype=dtype_amp, copy=False)
+    amplitudes_tx = np.array(focal_law.amplitudes.amplitudes_tx, dtype=dtype_amp, copy=False)
+    amplitudes_rx = np.array(focal_law.amplitudes.amplitudes_rx, dtype=dtype_amp, copy=False)
 
     func(weighted_scanlines, tx, rx,
          lookup_times_tx,
@@ -458,10 +462,21 @@ def delay_and_sum_cpu(frame, focal_law, fillvalue=0., result=None, block_size=No
     return result
 
 
-def delay_and_sum(*args, **kwargs):
+def delay_and_sum(frame, focal_law, *args, **kwargs):
     """
     Recommended delay-and-sum function
 
     Alias of :func:`delay_and_sum_cpu`
     """
-    return delay_and_sum_cpu(*args, **kwargs)
+    from .. import tfm
+    if isinstance(focal_law.amplitudes, tfm.TxRxAmplitudes):
+        pass
+    elif focal_law.amplitudes is None:
+        uniform_amps = np.ones_like(focal_law.lookup_times_tx)
+        focal_law = tfm.FocalLaw(
+            focal_law.lookup_times_tx, focal_law.lookup_times_rx,
+            tfm.TxRxAmplitudes(uniform_amps, uniform_amps),
+            focal_law.scanline_weights)
+    else:
+        raise NotImplementedError
+    return delay_and_sum_cpu(frame, focal_law, *args, **kwargs)

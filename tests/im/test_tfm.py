@@ -158,8 +158,7 @@ def test_multiview_tfm(use_real_grid):
     arim.ray.ray_tracing([view], convert_to_fortran_order=True)
 
     # make TFM
-    tfm = im.SingleViewTFM(frame, grid, view)
-    tfm.run(fillvalue=np.nan)
+    tfm = im.tfm.tfm_for_view(frame, grid, view, fillvalue=np.nan)
 
     # Check this value is unchanged over time!
     expected_val = 12.745499105785953
@@ -171,8 +170,7 @@ def test_multiview_tfm(use_real_grid):
 
     # Reverse view
     view_rev = arim.View(path_LL, path_T, 'T-LL')
-    tfm_rev = im.SingleViewTFM(frame, grid, view_rev)
-    tfm_rev.run(fillvalue=np.nan)
+    tfm_rev = im.tfm.tfm_for_view(frame, grid, view_rev, fillvalue=np.nan)
     assert tfm.res.shape == grid.shape
     if use_real_grid:
         np.testing.assert_array_almost_equal(tfm_rev.res, [[[expected_val]]])
@@ -215,9 +213,7 @@ def test_contact_tfm(use_hmc):
     # prepare view LL-T in contact
     grid = arim.Points(np.array([0., 0., 5e-3]), name='Grid')
 
-    tfm = im.ContactTFM(frame=frame, grid=grid, speed=block.longitudinal_vel)
-    # import pdb; pdb.set_trace()
-    tfm.run(fillvalue=np.nan)
+    tfm = im.contact_tfm(frame, grid, block.longitudinal_vel, fillvalue=np.nan)
 
     # Check this value is unchanged over time!
     expected_val = 12.49925772283528
