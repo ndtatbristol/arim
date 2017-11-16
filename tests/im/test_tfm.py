@@ -38,6 +38,39 @@ def tfm(frame, grid):
     return im.ContactTFM(speed, frame=frame, grid=grid)
 
 
+def test_extrema_lookup_times_in_rectbox():
+    grid = g.Grid(-10., 10., 0., 0., 0., 15., 1.)
+    tx = [0, 0, 0, 1, 1, 1]
+    rx = [0, 1, 2, 1, 1, 2]
+
+    lookup_times_tx = np.zeros((grid.numpoints, len(tx)))
+    lookup_times_rx = np.zeros((grid.numpoints, len(tx)))
+
+    # scanline 5 (tx=1, rx=2) is the minimum time:
+    grid_idx = 5
+    lookup_times_tx[grid_idx, 5] = -1.5
+    lookup_times_rx[grid_idx, 5] = -1.5
+    # some noise:
+    lookup_times_tx[grid_idx, 4] = -2.
+    lookup_times_rx[grid_idx, 4] = -0.1
+
+    # scanline 1 (tx=0, rx=1) is the maximum time:
+    grid_idx = 3
+    lookup_times_tx[grid_idx, 1] = 1.5
+    lookup_times_rx[grid_idx, 1] = 1.5
+    # some noise:
+    lookup_times_tx[0, 0] = 2.
+    lookup_times_rx[0, 0] = 0.1
+
+    out = im.tfm.extrema_lookup_times_in_rectbox(grid, lookup_times_tx, lookup_times_rx, tx, rx)
+    assert math.isclose(out.tmin, -3.)
+    assert math.isclose(out.tmax, 3.)
+    assert out.tx_elt_for_tmin == 1
+    assert out.rx_elt_for_tmin == 2
+    assert out.tx_elt_for_tmax == 0
+    assert out.rx_elt_for_tmax == 1
+
+
 class TestTFM:
     def test_contact_tfm(self, grid, frame):
         speed = 6300
