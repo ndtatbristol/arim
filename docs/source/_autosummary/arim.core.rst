@@ -17,7 +17,6 @@ arim\.core
       CaptureMethod
       ElementShape
       ExaminationObject
-      FocalLaw
       Frame
       Interface
       InterfaceKind

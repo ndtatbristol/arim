@@ -1,3 +1,5 @@
+.. _tfm:
+
 =====================
 Total focusing method
 =====================
@@ -6,29 +8,92 @@ Total focusing method
 
 Original paper on TFM: [Holmes2005]_
 
-Related module: :mod:`arim.im.tfm`
+Related modules:
 
-To compute TFM, instantiate a :class:`ContactTFM` or :class:`MultiviewTFM` object.
+- :mod:`arim.im.tfm`: high-level functions for TFM
+- :mod:`arim.im.das`: actual computation of delay-and-sum
 
-In arim the following general definition of TFM  is used [Budyn_engd1]_:
+
+Definition
+----------
+
+The most generic definition available in arim is:
 
 .. math::
 
-  I(r) = \sum_{i=1}^{n} \sum_{j=1}^{n} 
-    a_{i,\mathit{tx}}(r) a_{j,\mathit{rx}}(r)
+  I(r) = \sum_{i,j \in S}
+    A_{ij}(r)
     g_{ij}(
-      \tau_{i,\mathit{tx}}(r) + \tau_{j,\mathit{rx}}(r)
+      \tau_{i}(r) + \tau'_{j}(r)
       )
 
-Where:
+:math:`g_{ij}(t)` is the scanline of the transmitter `i` and the receiver `j`, obtained from
+:attr:`arim.core.Frame.scanlines`. The set `S` of the transmitters and receivers is obtained from
+:attr:`arim.core.Frame.tx` and :attr:`arim.core.Frame.rx`. Its size is denoted `numscanlines`.
+TFM is always applied on all scanlines in the frame; to apply TFM on a subset of the scanlines, create a new Frame
+with only the selected scanlines and pass it to TFM.
 
-  - :math:`g_{ij}` corresponds to the scanline with such as ``tx = i`` and ``rx = j`` (cf. :doc:`../core/frame`)
-  - :math:`a_{\cdot,\mathit{tx}}` is returned by :meth:`BaseTFM.get_amplitudes_tx`.
-  - :math:`a_{\cdot,\mathit{rx}}` is returned by :meth:`BaseTFM.get_amplitudes_rx`.
-  - :math:`\tau_{\cdot,\mathit{rx}}` is returned by :meth:`BaseTFM.get_lookup_times_tx`.
-  - :math:`\tau_{\cdot,\mathit{rx}}` is returned by :meth:`BaseTFM.get_lookup_times_rx`.
+:math:`\tau_{i}(r)` is the time of flight for the transmission path between the element `i` and the grid point `r`.
+These times are stored in ``lookup_times_tx``, a 2d array of shape `(numgridpoints, numelements)`. Similarly, the
+times of fight for the reception path are stored in ``lookup_times_rx``.
 
-Lookup times for multiview TFM are computed with :mod:`arim.im.fermat_solver`.
+The weights :math:`A_{ij}(r)` are stored in a `(numgridpoints, numscanlines)` array named ``amplitudes``. Because this
+array may be too big for the memory, chunking it may be necessary (example: :class:`arim.model.ModelAmplitudes`).
 
-The module :mod:`arim.im.amplitudes` contains several classes for computing amplitudes.
+If the following decomposition is possible
+
+.. math::
+
+    A_{ij}(r) = B_{i}(r) B'_{j}(r)
+
+then ``amplitudes`` can be a :class:`arim.model.TxRxAmplitudes` object where ``amplitudes_tx`` and ``amplitudes_rx``,
+which contain respectively :math:`B_{i}(r)` and  :math:`B'_{j}(r)`, are arrays of shape `(numelements, numscanlines)`.
+
+Finally if for all `i`, `j` and `r`
+
+.. math::
+
+  A_{ij}(r) = 1,
+
+``amplitudes`` may be set to ``None``. Internally a faster implementation of delay-and-sum will be used.
+
+Perfoming TFM
+-------------
+
+See :mod:`arim.im.tfm` and :mod:`arim.im.das`
+
+
+TFM with HMC frame
+------------------
+
+In linear imaging, it is assumed that :math:`g_{ij}(t) = g_{ji}(t)`, which leads to acquire only half the full matrix
+response (half matrix capture, HMC).
+
+Under this assumption, if for all `i` and `r`,  :math:`B_i(r) = B'_i(r)` and :math:`\tau_i(r) = \tau'_i(r)`, then
+
+.. math::
+
+  I(r)
+    &= \sum_{i,j = 1}^{n} B_{i}(r) B'_{j}(r) g_{ij}(\tau_{i}(r) + \tau'_{j}(r))) \\
+    &= \sum_{i,j = 1}^{n} B_{i}(r) B_{j}(r) g_{ij}(\tau_{i}(r) + \tau_{j}(r))) \\
+    &= \sum_{i = 1}^{n} B_{i}(r)^2 g_{ii}(2 \tau_{i}(r))
+    + 2 \sum_{i,j = 1\\i < j}^{n} B_{i}(r) B_{j}(r) g_{ij}(\tau_{i}(r) + \tau_{j}(r)) \\
+    &= \sum_{i,j = 1\\i \leq j}^{n} B_{i}(r) B_{j}(r) g'_{ij}(\tau_{i}(r) + \tau_{j}(r))
+
+where
+
+.. math::
+
+  g'_{ij}(t) =
+  \begin{cases}
+  g_{ij},  & \text{if $i=j$} \\
+  2 g_{ij},  & \text{if $i \neq j$}
+  \end{cases}
+
+This reduces the number of summands and therefore the computation time. This last equation is used in
+:func:`contact_tfm`. Internally, the weighted scanlines :math:`g'_{ij}` are obtained with
+:meth:`FocalLaw.weigh_scanlines`.
+
+This technique is not used :func:`tfm_for_view` because the times of flight in transmission and reception are not
+the same in general.
 

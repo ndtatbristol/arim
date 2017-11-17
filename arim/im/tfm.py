@@ -1,10 +1,9 @@
 """
-This module defines classes to perform TFM and TFM-like imaging.
+Main functions: :func:`contact_tfm`, :func:`tfm_for_view`
 
-If the following conditions are verified:
-- the Frame is noncomplete assuming reciprocity (example: HMC),
-- the tx and rx lookup times are the same,
-- the tx and rx amplitudes are the same,
+.. seealso::
+
+    :ref:`tfm`
 
 """
 
@@ -28,7 +27,7 @@ class IncompleteFrameWarning(ArimWarning):
 
 class TxRxAmplitudes:
     """
-    Tfm amplitudes where A_ij = A_i * A'_j
+    Tfm amplitudes where A_ij = B_i * B'_j
 
     Parameters
     ----------
@@ -68,6 +67,28 @@ class TxRxAmplitudes:
 
 
 class FocalLaw:
+    """
+    Focal law for TFM.
+
+    Parameters
+    ----------
+    lookup_times_tx : ndarray
+    lookup_times_rx : ndarray
+    amplitudes : TxRxAmplitudes or ndarray or None
+    scanline_weights : ndarray or None
+        Use
+    force_c_order
+
+    Attributes
+    ----------
+    lookup_times_tx : ndarray
+    lookup_times_rx : ndarray
+    amplitudes : TxRxAmplitudes or ndarray or None
+    scanline_weights : ndarray or None
+    numscanlines : int
+    numelements
+
+    """
     __slots__ = ('lookup_times_tx', 'lookup_times_rx', 'amplitudes', 'scanline_weights', '_numscanlines')
 
     def __init__(self, lookup_times_tx, lookup_times_rx, amplitudes=None, scanline_weights=None, force_c_order=True):
@@ -133,7 +154,7 @@ class FocalLaw:
 
         Returns
         -------
-        scanlines : ndarray
+        weighted_scanlines : ndarray
         """
         assert scanlines.ndim == 2
         if self.scanline_weights is None:
@@ -151,6 +172,9 @@ class FocalLaw:
 
 
 class TfmResult:
+    """
+    Data container for TFM result
+    """
     __slots__ = ('res', 'grid')
 
     def __init__(self, res, grid):
@@ -206,9 +230,11 @@ class TfmResult:
         return np.nanmax(np.abs(self.res[area]))
 
 
-def contact_tfm(frame, grid, velocity, amplitudes=None, **kwargs_delay_and_sum):
+def contact_tfm(frame, grid, velocity, amplitudes=None, scanline_weights='default', **kwargs_delay_and_sum):
     """
     Contact TFM
+
+    Supports HMC and FMC frame.
 
     Parameters
     ----------
@@ -216,6 +242,8 @@ def contact_tfm(frame, grid, velocity, amplitudes=None, **kwargs_delay_and_sum):
     grid : Points
     velocity : float
     amplitudes : None or ndarray or TxRxAmplitudes
+    scanline_weights : None or ndarray or 'default'
+        Default: 2 for i!=j, 1 for i==j. None: 1 for all scanlines.
     kwargs_delay_and_sum : dict
 
     Returns
@@ -232,7 +260,8 @@ def contact_tfm(frame, grid, velocity, amplitudes=None, **kwargs_delay_and_sum):
             logger.warning('Possible erroneous usage of a noncomplete frame in TFM; '
                            'use Frame.expand_frame_assuming_reciprocity()', IncompleteFrameWarning)
 
-    scanline_weights = ut.default_scanline_weights(frame.tx, frame.rx)
+    if scanline_weights == 'default':
+        scanline_weights = ut.default_scanline_weights(frame.tx, frame.rx)
     focal_law = FocalLaw(lookup_times, lookup_times, amplitudes, scanline_weights)
 
     res = das.delay_and_sum(frame, focal_law, **kwargs_delay_and_sum)
@@ -255,6 +284,11 @@ def tfm_for_view(frame, grid, view, amplitudes=None, **kwargs_delay_and_sum):
     Returns
     -------
     tfm_res : TfmResult
+
+    Notes
+    -----
+    No check is performed to ensure that the calculation is safe for incomplete frames (HMC for example).
+    In this case, an :exc:`IncompleteFrameWarning` is emitted.
 
     """
     # do not use scanline weights, it is likely to be ill-defined here
@@ -296,11 +330,6 @@ def extrema_lookup_times_in_rectbox(grid, lookup_times_tx, lookup_times_rx, tx, 
     out : ExtramaLookupTimes
         Respectively: returns the minimum and maximum times (fields ``tmin`` and ``tmax``) and the elements indices
         corresponding to these values. If several couples of elements are matching, the first couple is returned.
-
-    Notes
-    -----
-
-        $$\min\limits_{i,j}{\(a_i + b_j\)} = \min\limits_{i}{a_i} + \min\limits_{j}{b_j}$$
 
     """
     area_of_interest = grid.points_in_rectbox(xmin, xmax, ymin, ymax,

@@ -9,6 +9,9 @@ arim\.im\.tfm
 
    .. autosummary::
    
+      contact_tfm
+      extrema_lookup_times_in_rectbox
+      tfm_for_view
       tfm_with_scattering
    
    
@@ -19,14 +22,19 @@ arim\.im\.tfm
 
    .. autosummary::
    
-      BaseTFM
-      ContactTFM
       ExtramaLookupTimes
-      SimpleTFM
-      SingleViewTFM
+      FocalLaw
+      TfmResult
+      TxRxAmplitudes
    
    
 
    
+   
+   .. rubric:: Exceptions
+
+   .. autosummary::
+   
+      IncompleteFrameWarning
    
    

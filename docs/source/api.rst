@@ -30,7 +30,6 @@ arim reference
    :toctree: _autosummary
 
    im
-   im.amplitudes
    im.tfm
    im.das
 
