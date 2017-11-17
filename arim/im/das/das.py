@@ -99,8 +99,8 @@ def delay_and_sum_numba(frame, focal_law, fillvalue=0., result=None, block_size=
                 weighted_scanlines, frame.tx, frame.rx,
                 focal_law.lookup_times_tx[chunk],
                 focal_law.lookup_times_rx[chunk],
-                focal_law.amplitudes_tx[chunk],
-                focal_law.amplitudes_rx[chunk],
+                focal_law.amplitudes.amplitudes_tx[chunk],
+                focal_law.amplitudes.amplitudes_rx[chunk],
                 frame.time.step, frame.time.start, fillvalue,
                 result[chunk]))
     # Raise exceptions that happened, if any:

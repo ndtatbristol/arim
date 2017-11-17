@@ -14,30 +14,6 @@ import arim.geometry as g
 from tests.helpers import get_data_filename
 
 
-@pytest.fixture()
-def probe():
-    return arim.probes['ima_50_MHz_64_1d']
-
-
-@pytest.fixture()
-def grid():
-    return g.Grid(-10., 10., 0., 0., 0., 15., 1.)
-
-
-@pytest.fixture()
-def frame():
-    expdata_filename = get_data_filename("brain/exp_data.mat7.mat")
-    frame = arim.io.load_expdata(expdata_filename)
-    frame.probe = probe()
-    return frame
-
-
-@pytest.fixture()
-def tfm(frame, grid):
-    speed = 1.0
-    return im.ContactTFM(speed, frame=frame, grid=grid)
-
-
 def test_extrema_lookup_times_in_rectbox():
     grid = g.Grid(-10., 10., 0., 0., 0., 15., 1.)
     tx = [0, 0, 0, 1, 1, 1]
@@ -69,72 +45,6 @@ def test_extrema_lookup_times_in_rectbox():
     assert out.rx_elt_for_tmin == 2
     assert out.tx_elt_for_tmax == 0
     assert out.rx_elt_for_tmax == 1
-
-
-class TestTFM:
-    def test_contact_tfm(self, grid, frame):
-        speed = 6300
-        tfm = im.ContactTFM(speed, frame=frame, grid=grid)
-        res = tfm.run()
-
-    def test_extrema_lookup_times_in_rectbox(self, grid, probe):
-        frame = Mock(spec='tx rx metadata numscanlines probe')
-        tx = [0, 0, 0, 1, 1, 1]
-        rx = [0, 1, 2, 1, 1, 2]
-        frame.tx = tx
-        frame.rx = rx
-        frame.numscanlines = len(tx)
-        frame.probe = probe
-        frame.is_complete_assuming_reciprocity = Mock(return_value=True)
-
-        lookup_times_tx = np.zeros((grid.numpoints, len(tx)))
-        lookup_times_rx = np.zeros((grid.numpoints, len(tx)))
-
-        # scanline 5 (tx=1, rx=2) is the minimum time:
-        grid_idx = 5
-        lookup_times_tx[grid_idx, 5] = -1.5
-        lookup_times_rx[grid_idx, 5] = -1.5
-        # some noise:
-        lookup_times_tx[grid_idx, 4] = -2.
-        lookup_times_rx[grid_idx, 4] = -0.1
-
-        # scanline 1 (tx=0, rx=1) is the maximum time:
-        grid_idx = 3
-        lookup_times_tx[grid_idx, 1] = 1.5
-        lookup_times_rx[grid_idx, 1] = 1.5
-        # some noise:
-        lookup_times_tx[0, 0] = 2.
-        lookup_times_rx[0, 0] = 0.1
-
-        with patch.object(im.BaseTFM, 'get_lookup_times_tx',
-                          return_value=lookup_times_tx):
-            with patch.object(im.BaseTFM, 'get_lookup_times_rx',
-                              return_value=lookup_times_rx):
-                tfm = im.BaseTFM(frame, grid)
-                out = tfm.extrema_lookup_times_in_rectbox()
-        assert math.isclose(out.tmin, -3.)
-        assert math.isclose(out.tmax, 3.)
-        assert out.tx_elt_for_tmin == 1
-        assert out.rx_elt_for_tmin == 2
-        assert out.tx_elt_for_tmax == 0
-        assert out.rx_elt_for_tmax == 1
-
-    def test_simple_tfm(self, grid, frame):
-        # Check that SimpleTFM and ContactTFM gives consistent values:
-        frame_bak = copy.deepcopy(frame)
-        grid_bak = copy.deepcopy(grid)
-
-        speed = 6300
-        tfm_contact = im.ContactTFM(speed, frame=frame, grid=grid)
-        res_contact = tfm_contact.run()
-
-        lookup_times_tx = tfm_contact.get_lookup_times_tx()
-        lookup_times_rx = tfm_contact.get_lookup_times_rx()
-
-        tfm = im.SimpleTFM(frame_bak, grid_bak, lookup_times_tx, lookup_times_rx)
-        res = tfm.run()
-
-        np.testing.assert_allclose(res, res_contact)
 
 
 class TestAmplitude:

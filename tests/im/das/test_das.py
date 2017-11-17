@@ -6,6 +6,7 @@ from collections import OrderedDict
 import arim.geometry as g
 from arim import Probe, ExaminationObject, Material, Time, Frame
 import arim.im.das as das
+import arim.im.tfm
 
 
 def make_delay_and_sum_case1():
@@ -54,7 +55,8 @@ def make_delay_and_sum_case1():
     scanline_weights = np.array([1.0, 2.0, 1.0])  # HMC
     amplitudes_tx = np.array([[1.0, 1.0]])
     amplitudes_rx = np.array([[1.0, 1.0]])
-    focal_law = FocalLaw(lookup_times_tx, lookup_times_rx, amplitudes_tx, amplitudes_rx, scanline_weights)
+    amplitudes = arim.im.tfm.TxRxAmplitudes(amplitudes_tx, amplitudes_rx)
+    focal_law = arim.im.tfm.FocalLaw(lookup_times_tx, lookup_times_rx, amplitudes, scanline_weights)
 
     frame = Frame(scanlines, time, tx, rx, probe, examination_object)
 
@@ -108,6 +110,7 @@ def make_delay_and_sum_case_random(dtype_float, dtype_data):
     scanlines = _random_uniform(dtype_data, 100., 101., size=(numscanlines, len(time)))
     amplitudes_tx = _random_uniform(dtype_data, 1.0, 1.1, size=(numpoints, numelements))
     amplitudes_rx = _random_uniform(dtype_data, -1.0, -1.1, size=(numpoints, numelements))
+    amplitudes = arim.im.tfm.TxRxAmplitudes(amplitudes_tx, amplitudes_rx)
     scanline_weights = _random_uniform(dtype_data, size=(numscanlines))
     lookup_times_tx = _random_uniform(dtype_float, start_lookup, stop_lookup, (numpoints, numelements))
     lookup_times_rx = _random_uniform(dtype_float, start_lookup, stop_lookup, (numpoints, numelements))
@@ -116,10 +119,9 @@ def make_delay_and_sum_case_random(dtype_float, dtype_data):
     #lookup_times_tx[0, 0] = time.start / 2.
     #lookup_times_rx[1, 1] = time.end * 2.
 
-    focal_law = FocalLaw(lookup_times_tx, lookup_times_rx, amplitudes_tx, amplitudes_rx, scanline_weights)
+    focal_law = arim.im.tfm.FocalLaw(lookup_times_tx, lookup_times_rx, amplitudes, scanline_weights)
 
     frame = Frame(scanlines, time, tx, rx, probe, examination_object)
-    # import pdb; pdb.set_trace()
 
     return frame, focal_law
 
@@ -162,6 +164,7 @@ def test_delay_and_sum_all(das_func, datatypes, fillvalue):
 
     result = das_func(**kwargs)
     assert result.dtype == dtype_data
+    import pdb; pdb.set_trace()
 
     reference_result = das.delay_and_sum_naive(**kwargs)
 
