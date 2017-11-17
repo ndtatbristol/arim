@@ -164,7 +164,6 @@ def test_delay_and_sum_all(das_func, datatypes, fillvalue):
 
     result = das_func(**kwargs)
     assert result.dtype == dtype_data
-    import pdb; pdb.set_trace()
 
     reference_result = das.delay_and_sum_naive(**kwargs)
 

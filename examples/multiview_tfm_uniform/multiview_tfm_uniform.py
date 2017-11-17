@@ -148,42 +148,39 @@ if conf['views_to_use'] != 'all':
     views = OrderedDict([(viewname, view) for viewname, view in views.items()
                          if viewname in conf['views_to_use']])
 
-# %% Setup Fermat solver and compute rays
+# %% Perform ray tracing
     
-with arim.helpers.timeit('Ray tracing'):
-    arim.ray.ray_tracing(views.values(), convert_to_fortran_order=True)
+arim.ray.ray_tracing(views.values(), convert_to_fortran_order=True)
 
-# %% Setups TFM
-frame = frame.apply_filter(
-    arim.signal.Hilbert() + arim.signal.ButterworthBandpass(5, 3e6, 5.5e6, frame.time))
+# %% Filter scanlines
 
-tfms = []
+with arim.helpers.timeit('Filtering scanlines'):
+    frame_filtered = frame.apply_filter(
+        arim.signal.Hilbert() + arim.signal.ButterworthBandpass(5, 3e6, 5.5e6, frame.time))
+
+# Perform TFM on FMC rather than HMC (erroneous here) 
+frame_filtered = frame_filtered.expand_frame_assuming_reciprocity()
+
+# %% Run TFM
+
+tfms = OrderedDict()
 for i, view in enumerate(views.values()):
-    amps_tx = arim.im.UniformAmplitudes(frame, grid)
-    amps_rx = arim.im.UniformAmplitudes(frame, grid)
+    with arim.helpers.timeit('TFM {}'.format(view.name), logger=logger):
+        tfms[view.name] = arim.im.tfm.tfm_for_view(frame_filtered, grid, view,
+                fillvalue=conf['tfm.fillvalue'])
 
-    tfm = arim.im.SingleViewTFM(frame, grid, view,
-                                amplitudes_tx=amps_tx, amplitudes_rx=amps_rx)
-    tfms.append(tfm)
-
-# %% Run all TFM
-
-with arim.helpers.timeit('Delay-and-sum', logger=logger):
-    for tfm in tfms:
-        tfm.run(fillvalue=conf['tfm.fillvalue'])
 
 # %% Plot all TFM
 
 if conf['plot.tfm']:
-    # func_res = lambda x: np.imag(x)
     if conf['tfm.use_dynamic_scale']:
-        scale = aplt.common_dynamic_db_scale([tfm.res for tfm in tfms], reference_area)
+        scale = aplt.common_dynamic_db_scale([tfm.res for tfm in tfms.values()],
+                                              reference_area)
     else:
         scale = itertools.repeat((None, None))
 
-    for i, tfm in enumerate(tfms):
-        view = tfm.view
-        viewname = tfm.view.name
+    for i, (viewname, view) in enumerate(views.items()):
+        tfm = tfms[viewname]
 
         ref_db, clim = next(scale)
 
@@ -197,11 +194,8 @@ if conf['plot.tfm']:
             linestyle_tx = 'm--'
             linestyle_rx = 'c-.'
 
-            aplt.draw_rays_on_click(grid, tfm.tx_rays, element_index, ax, linestyle_tx)
-            aplt.draw_rays_on_click(grid, tfm.rx_rays, element_index, ax, linestyle_rx)
-
-        if conf['plot.force_close']:
-            plt.close(ax.figure)
+            aplt.draw_rays_on_click(grid, view.tx_path.rays, element_index, ax, linestyle_tx)
+            aplt.draw_rays_on_click(grid, view.rx_path.rays, element_index, ax, linestyle_rx)
 
 # Block script until windows are closed.
 plt.show()
@@ -212,8 +206,7 @@ print('Amplitudes (dB) in areas of interest:')
 print()
 columns = 'viewname intensity intensity_db'
 tmp = []
-for tfm in tfms:
-    viewname = tfm.view.name
+for viewname, tfm in tfms.items():
     intensity = tfm.maximum_intensity_in_area(area_of_interest)
     tmp.append((viewname, intensity))
     # intensity_db = arim.ut.decibel(intensity, ref_db)
@@ -224,5 +217,3 @@ if args.save:
     out.to_csv('intensities.csv')
 
 print(out)
-print()
-print('hash: {}'.format(hashlib.md5(str(out).encode()).hexdigest()))

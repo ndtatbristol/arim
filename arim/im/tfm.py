@@ -9,18 +9,13 @@ If the following conditions are verified:
 """
 
 import numpy as np
-import warnings
 from collections import namedtuple
 import numba
 from concurrent.futures import ThreadPoolExecutor
 import logging
 
-from .. import geometry as g
-from .. import model, ut
-from . import amplitudes
+from .. import geometry as g, model, ut
 from . import das
-from .. import settings as s
-from .. import core as c
 from ..exceptions import ArimWarning
 from ..helpers import chunk_array
 

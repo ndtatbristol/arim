@@ -1,17 +1,12 @@
 import numpy as np
 import pytest
-from unittest.mock import Mock, patch
 import math
-import copy
 
 import arim
 import arim.im as im
-import arim.im.amplitudes
 import arim.im.tfm, arim.ray
 import arim.io
 import arim.geometry as g
-
-from tests.helpers import get_data_filename
 
 
 def test_extrema_lookup_times_in_rectbox():
@@ -45,23 +40,6 @@ def test_extrema_lookup_times_in_rectbox():
     assert out.rx_elt_for_tmin == 2
     assert out.tx_elt_for_tmax == 0
     assert out.rx_elt_for_tmax == 1
-
-
-class TestAmplitude:
-    def test_uniform(self, frame, grid):
-        amplitudes = arim.im.amplitudes.UniformAmplitudes(frame, grid)
-        res = amplitudes()
-        assert np.allclose(res, 1.)
-
-    def test_directivity_finite_width_2d(self, frame, grid):
-        amplitudes = arim.im.amplitudes.DirectivityFiniteWidth2D(frame, grid, speed=1.0)
-        res = amplitudes()
-
-    def test_multi_amplitudes(self, frame, grid):
-        amp1 = arim.im.amplitudes.UniformAmplitudes(frame, grid)
-        amp2 = arim.im.amplitudes.UniformAmplitudes(frame, grid)
-        multi_amp = arim.im.amplitudes.MultiAmplitudes([amp1, amp2])
-        assert np.allclose(multi_amp(), 1.)
 
 
 @pytest.mark.parametrize("use_real_grid", [True, False])
@@ -156,7 +134,7 @@ def test_contact_tfm(use_hmc):
     # prepare view LL-T in contact
     grid = arim.Points(np.array([0., 0., 5e-3]), name='Grid')
 
-    tfm = im.contact_tfm(frame, grid, block.longitudinal_vel, fillvalue=np.nan)
+    tfm = im.tfm.contact_tfm(frame, grid, block.longitudinal_vel, fillvalue=np.nan)
 
     # Check this value is unchanged over time!
     expected_val = 12.49925772283528

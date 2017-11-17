@@ -91,8 +91,7 @@ plot.bscan: false
 plot.interfaces: false
 plot.frontwall_meas: false
 plot.tfm: true
-plot.show_rays: false
-plot.force_close: true
+plot.show_rays: true
 
 arim.plot:
   plot_oxz.figsize: [12, 3]

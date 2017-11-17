@@ -4,7 +4,7 @@
 This script shows how to perform a basic contact TFM with arim.
 """
 
-import arim, arim.io, arim.signal, arim.im
+import arim, arim.io, arim.signal, arim.im.tfm
 import arim.plot as aplt
 
 import numpy as np
@@ -61,8 +61,7 @@ grid = arim.geometry.Grid(xmin=-20e-3, xmax=20e-3,
                           zmin=0., zmax=50e-3,
                           pixel_size=0.15e-3)
 speed = frame.examination_object.material.longitudinal_vel
-tfm = arim.im.ContactTFM(speed, frame=frame, grid=grid)
-tfm.run()
+tfm = arim.im.tfm.contact_tfm(frame, grid, speed)
 
 #%% Plot TFM in linear scale
 
