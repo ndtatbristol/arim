@@ -1,18 +1,6 @@
 import numba
 import numpy as np
-from collections import OrderedDict
 import logging
-
-from ... import settings as s
-from . import _delay_and_sum_cpu
-from concurrent.futures import ThreadPoolExecutor
-from ...helpers import chunk_array
-
-_DATATYPES = OrderedDict()
-_DATATYPES['f'] = (np.float32, np.float32)
-_DATATYPES['c'] = (np.float32, np.complex64)
-_DATATYPES['d'] = (np.float64, np.float64)
-_DATATYPES['z'] = (np.float64, np.complex128)
 
 logger = logging.getLogger(__name__)
 
@@ -437,75 +425,6 @@ def delay_and_sum_naive(frame, focal_law, fillvalue=0., result=None,
                 result[point] += scanline_weights[scan] * amplitudes_tx[point, tx[scan]] \
                                  * amplitudes_rx[point, rx[scan]] * scanlines[
                                      scan, lookup_index]
-    return result
-
-
-def delay_and_sum_cpu(frame, focal_law, fillvalue=0., result=None, interpolate_position='nearest'):
-    """
-    Delay-and-sum function using internally a C++ version.
-
-    Multi-threading with OpenMP.
-
-    Parameters
-    ----------
-    frame
-    focal_law
-    fillvalue
-    result
-    block_size
-    numthreads
-    interpolate_position
-
-    Returns
-    -------
-
-    """
-    numscanlines = frame.numscanlines
-    numpoints, numelements = focal_law.lookup_times_tx.shape
-    numsamples = len(frame.time)
-
-    _check_shapes(frame, focal_law)
-    weighted_scanlines = focal_law.weigh_scanlines(frame.scanlines)
-    dtype_float, dtype_amp, dtype_data = _infer_datatypes(weighted_scanlines, focal_law, result)
-
-    if result is None:
-        result = np.full((numpoints,), 0, dtype=dtype_data)
-    assert result.shape == (numpoints,)
-    if interpolate_position != 'nearest':
-        raise NotImplementedError
-
-    # Function of module '_delay_and_sum_cpu' have their signature
-    # as names.
-    # Example: _delay_and_sum_nearest_float64_complex128_complex128
-    sig_types = "{}_{}_{}".format(dtype_float.name, dtype_amp.name, dtype_data.name)
-    try:
-        func = getattr(_delay_and_sum_cpu, '_delay_and_sum_nearest_{}'.format(sig_types))
-    except AttributeError:
-        raise ValueError("no matching signature")
-
-    logger.debug("Delay-and-sum function: {}".format(func.__name__))
-
-    invdt = dtype_float.type(1 / frame.time.step)
-    tstart = dtype_float.type(frame.time.start)
-    fillvalue = dtype_data.type(fillvalue)
-
-    tx = np.array(frame.tx, dtype=np.uint, copy=False)
-    rx = np.array(frame.rx, dtype=np.uint, copy=False)
-
-    lookup_times_tx = np.array(focal_law.lookup_times_tx, dtype=dtype_float, copy=False)
-    lookup_times_rx = np.array(focal_law.lookup_times_rx, dtype=dtype_float, copy=False)
-    weighted_scanlines = np.array(weighted_scanlines, dtype=dtype_data, copy=False)
-    amplitudes_tx = np.array(focal_law.amplitudes.amplitudes_tx, dtype=dtype_amp, copy=False)
-    amplitudes_rx = np.array(focal_law.amplitudes.amplitudes_rx, dtype=dtype_amp, copy=False)
-
-    func(weighted_scanlines, tx, rx,
-         lookup_times_tx,
-         lookup_times_rx,
-         amplitudes_tx,
-         amplitudes_rx,
-         invdt, tstart, fillvalue,
-         result, numpoints, numsamples, numelements,
-         numscanlines)
     return result
 
 

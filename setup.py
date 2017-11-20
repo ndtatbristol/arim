@@ -47,12 +47,6 @@ ext_modules = [
         extra_compile_args=['/Ox', '/EHsc', '/openmp'],
         # include_dirs=[numpy.get_include()],
     ),
-    Extension(
-        "arim.im.das._delay_and_sum_cpu",
-        sources=["arim/im/das/_delay_and_sum_cpu.pyx", "arim/im/das/delay_and_sum_cpu.cpp"],
-        language="c++",
-        extra_compile_args=['/Ox', '/EHsc', '/openmp'],
-    ),
 ]
 
 

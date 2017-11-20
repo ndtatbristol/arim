@@ -89,7 +89,7 @@ DATATYPES['z'] = (np.float64, np.complex128)
 # ]
 
 
-@pytest.fixture(params=['naive', 'numba', 'cpu'])
+@pytest.fixture(params=['naive', 'numba'])
 def das_func(request):
     return getattr(das, 'delay_and_sum_' + request.param)
 
