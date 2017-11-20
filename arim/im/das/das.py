@@ -22,23 +22,24 @@ def _check_shapes(frame, focal_law):
     numpoints, numelements = focal_law.lookup_times_tx.shape
 
     assert focal_law.lookup_times_rx.shape == (numpoints, numelements)
-    assert focal_law.amplitudes.amplitudes_tx.shape == (numpoints, numelements)
-    assert focal_law.amplitudes.amplitudes_rx.shape == (numpoints, numelements)
+    if focal_law.amplitudes is not None:
+        assert focal_law.amplitudes.amplitudes_tx.shape == (numpoints, numelements)
+        assert focal_law.amplitudes.amplitudes_rx.shape == (numpoints, numelements)
+        assert focal_law.amplitudes.amplitudes_tx.flags.c_contiguous
+        assert focal_law.amplitudes.amplitudes_rx.flags.c_contiguous
+
     assert frame.tx.shape == (numscanlines,)
     assert frame.rx.shape == (numscanlines,)
 
     assert focal_law.lookup_times_tx.flags.c_contiguous
     assert focal_law.lookup_times_rx.flags.c_contiguous
-    assert focal_law.amplitudes.amplitudes_tx.flags.c_contiguous
-    assert focal_law.amplitudes.amplitudes_rx.flags.c_contiguous
     assert frame.scanlines.flags.c_contiguous
     assert frame.tx.flags.c_contiguous
     assert frame.rx.flags.c_contiguous
 
 
 def delay_and_sum_numba(frame, focal_law, fillvalue=0., result=None, block_size=None,
-                        numthreads=None,
-                        interpolate_position='nearest'):
+                        numthreads=None, interpolate_position='nearest'):
     """
     Delay-and-sum function using Numba compiler.
 
@@ -123,9 +124,17 @@ def _infer_datatypes(scanlines, focal_law, result, dtype_float=None, dtype_amp=N
     if dtype_float is None:
         dtype_float = np.result_type(focal_law.lookup_times_tx, focal_law.lookup_times_rx)
     if dtype_amp is None:
-        dtype_amp = focal_law.amplitudes.dtype
+        if focal_law.amplitudes is None:
+            has_amp = False
+            dtype_amp = None
+        else:
+            has_amp = True
+            dtype_amp = focal_law.amplitudes.dtype
     if dtype_data is None:
-        data_arrays = [scanlines, dtype_amp]
+        if has_amp:
+            data_arrays = [scanlines, dtype_amp]
+        else:
+            data_arrays = [scanlines]
         if result is not None:
             data_arrays.append(result)
         dtype_data = np.result_type(*data_arrays)
@@ -230,6 +239,64 @@ def _delay_and_sum_amplitudes_linear(weighted_scanlines, tx, rx, lookup_times_tx
                 lscanUseVal = lscanVal + frac1 * (lscanVal1 - lscanVal)
                 result[point] += amplitudes_tx[point, tx[scan]] \
                                  * amplitudes_rx[point, rx[scan]] * lscanUseVal
+
+
+def delay_and_sum_numba_noamp(frame, focal_law, fillvalue=0., result=None):
+    """
+    Delay and sum with uniform amplitudes
+
+    Parameters
+    ----------
+    frame
+    focal_law
+    fillvalue
+    result
+
+    Returns
+    -------
+    result
+
+    """
+    numpoints, numelements = focal_law.lookup_times_tx.shape
+
+    _check_shapes(frame, focal_law)
+
+    weighted_scanlines = focal_law.weigh_scanlines(frame.scanlines)
+    dtype_float, dtype_amp, dtype_data = _infer_datatypes(weighted_scanlines, focal_law, result)
+
+    if result is None:
+        result = np.full((numpoints,), 0, dtype=dtype_data)
+    assert result.shape == (numpoints,)
+
+    invdt = 1 / frame.time.step
+    t0 = frame.time.start
+
+    _delay_and_sum_noamp(weighted_scanlines, frame.tx, frame.rx,
+                         focal_law.lookup_times_tx, focal_law.lookup_times_rx,
+                         invdt, t0, fillvalue, result)
+    return result
+
+
+# todo: add cache=True if it becomes compatible with parallel=True (numba)
+@numba.jit(nopython=True, nogil=True, parallel=True)
+def _delay_and_sum_noamp(weighted_scanlines, tx, rx, lookup_times_tx,
+                         lookup_times_rx, invdt, t0, fillvalue, result):
+    numscanlines, numsamples = weighted_scanlines.shape
+    numpoints, numelements = lookup_times_tx.shape
+
+    for point in numba.prange(numpoints):
+        res_tmp = 0.
+
+        for scan in range(numscanlines):
+            lookup_time = lookup_times_tx[point, tx[scan]] + lookup_times_rx[
+                point, rx[scan]]
+            lookup_index = round((lookup_time - t0) * invdt)
+
+            if lookup_index < 0 or lookup_index >= numsamples:
+                res_tmp += fillvalue
+            else:
+                res_tmp += weighted_scanlines[scan, lookup_index]
+        result[point] = res_tmp
 
 
 @numba.jit(nopython=True, nogil=True, cache=True)
@@ -420,7 +487,6 @@ def delay_and_sum_cpu(frame, focal_law, fillvalue=0., result=None, interpolate_p
     weighted_scanlines = focal_law.weigh_scanlines(frame.scanlines)
     dtype_float, dtype_amp, dtype_data = _infer_datatypes(weighted_scanlines, focal_law, result)
 
-
     if result is None:
         result = np.full((numpoints,), 0, dtype=dtype_data)
     assert result.shape == (numpoints,)
@@ -470,13 +536,8 @@ def delay_and_sum(frame, focal_law, *args, **kwargs):
     """
     from .. import tfm
     if isinstance(focal_law.amplitudes, tfm.TxRxAmplitudes):
-        pass
+        return delay_and_sum_cpu(frame, focal_law, *args, **kwargs)
     elif focal_law.amplitudes is None:
-        uniform_amps = np.ones_like(focal_law.lookup_times_tx)
-        focal_law = tfm.FocalLaw(
-            focal_law.lookup_times_tx, focal_law.lookup_times_rx,
-            tfm.TxRxAmplitudes(uniform_amps, uniform_amps),
-            focal_law.scanline_weights)
+        return delay_and_sum_numba_noamp(frame, focal_law, *args, **kwargs)
     else:
         raise NotImplementedError
-    return delay_and_sum_cpu(frame, focal_law, *args, **kwargs)
