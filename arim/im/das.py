@@ -1,3 +1,21 @@
+"""
+Delay-and-sum functions
+
+Contains different implementation of delay-and-sum algorithm.
+
+.. currentmodule:: arim.im.das
+
+Data structures
+---------------
+
+- ``lookup_times_tx``: ndarray of shape (numgridpoints, numelements)
+- ``lookup_times_rx``: ndarray of shape (numgridpoints, numelements)
+- ``amplitudes_tx``: ndarray of shape (numgridpoints, numelements)
+- ``amplitudes_tx``: ndarray of shape (numgridpoints, numelements)
+- ``amplitudes``: TxRxAmplitudes or ndarray (numgridpoints, numscanlines) or None
+
+"""
+
 import numba
 import numpy as np
 import logging
@@ -383,7 +401,7 @@ def delay_and_sum_naive(frame, focal_law, fillvalue=0., result=None,
     numscanlines = frame.numscanlines
     numpoints, numelements = focal_law.lookup_times_tx.shape
 
-    from .. import tfm
+    from . import tfm
     assert isinstance(focal_law.amplitudes, tfm.TxRxAmplitudes)
 
     _check_shapes(frame, focal_law)
@@ -430,11 +448,11 @@ def delay_and_sum_naive(frame, focal_law, fillvalue=0., result=None,
 
 def delay_and_sum(frame, focal_law, *args, **kwargs):
     """
+    Dispatcher function for delay-and-sum algorithm 
+    
     Recommended delay-and-sum function
-
-    Alias of :func:`delay_and_sum_cpu`
     """
-    from .. import tfm
+    from . import tfm
     if isinstance(focal_law.amplitudes, tfm.TxRxAmplitudes):
         return delay_and_sum_numba(frame, focal_law, *args, **kwargs)
     elif focal_law.amplitudes is None:
