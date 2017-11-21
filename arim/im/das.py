@@ -228,7 +228,7 @@ def _delay_and_sum_amplitudes_linear(weighted_scanlines, tx, rx, lookup_times_tx
         result[point] = res_tmp
 
 
-def delay_and_sum_numba_noamp(frame, focal_law, fillvalue=0., result=None):
+def delay_and_sum_numba_noamp(frame, focal_law, fillvalue=0., interpolation='nearest', result=None):
     """
     Delay and sum with uniform amplitudes
 
@@ -237,6 +237,8 @@ def delay_and_sum_numba_noamp(frame, focal_law, fillvalue=0., result=None):
     frame
     focal_law
     fillvalue
+    interpolation : str
+        Interpolation of scanlines. 'linear' or 'nearest'
     result
 
     Returns
@@ -258,9 +260,16 @@ def delay_and_sum_numba_noamp(frame, focal_law, fillvalue=0., result=None):
     invdt = 1 / frame.time.step
     t0 = frame.time.start
 
-    _delay_and_sum_noamp(weighted_scanlines, frame.tx, frame.rx,
-                         focal_law.lookup_times_tx, focal_law.lookup_times_rx,
-                         invdt, t0, fillvalue, result)
+    if interpolation == 'nearest':
+        das_func = _delay_and_sum_noamp
+    elif interpolation == 'linear':
+        das_func = _delay_and_sum_noamp_linear
+    else:
+        raise ValueError("invalid interpolation")
+
+    das_func(weighted_scanlines, frame.tx, frame.rx,
+             focal_law.lookup_times_tx, focal_law.lookup_times_rx,
+             invdt, t0, fillvalue, result)
     return result
 
 
@@ -283,6 +292,34 @@ def _delay_and_sum_noamp(weighted_scanlines, tx, rx, lookup_times_tx,
                 res_tmp += fillvalue
             else:
                 res_tmp += weighted_scanlines[scan, lookup_index]
+        result[point] = res_tmp
+
+
+@numba.jit(nopython=True, nogil=True, parallel=True)
+def _delay_and_sum_noamp_linear(weighted_scanlines, tx, rx, lookup_times_tx,
+                                lookup_times_rx, invdt, t0, fillvalue, result):
+    numscanlines, numsamples = weighted_scanlines.shape
+    numpoints, numelements = lookup_times_tx.shape
+
+    for point in numba.prange(numpoints):
+        res_tmp = 0.
+
+        for scan in range(numscanlines):
+            lookup_time = lookup_times_tx[point, tx[scan]] + lookup_times_rx[
+                point, rx[scan]]
+
+            lookup_index_exact = (lookup_time - t0) * invdt
+            lookup_index_left = int(lookup_index_exact)
+            lookup_index_right = lookup_index_left + 1
+            frac = lookup_index_exact - lookup_index_left
+
+            if lookup_index_left < 0 or lookup_index_right >= numsamples:
+                res_tmp += fillvalue
+            else:
+                scan_val_left = weighted_scanlines[scan, lookup_index_left]
+                scan_val_right = weighted_scanlines[scan, lookup_index_right]
+                res_tmp += (1 - frac) * scan_val_left + frac * scan_val_right
+
         result[point] = res_tmp
 
 
