@@ -103,7 +103,7 @@ frontwall = \
     arim.geometry.points_1d_wall_z(**conf['interfaces.frontwall'], name='Frontwall')
 backwall = \
     arim.geometry.points_1d_wall_z(**conf['interfaces.backwall'], name='Backwall')
-frame.exam_obj = arim.BlockInImmersion(block, couplant, frontwall, backwall)
+frame.examination_object = arim.BlockInImmersion(block, couplant, frontwall, backwall)
 
 grid = arim.geometry.Grid(**conf['interfaces.grid'], ymin=0., ymax=0.)
 grid_p = grid.to_oriented_points()
@@ -143,7 +143,7 @@ if conf['plot.interfaces']:
     aplt.plot_interfaces(all_interfaces, show_orientations=True, show_last=False)
 
 # %% Make views
-views = bim.make_views(frame.exam_obj, probe_p, grid_p, **conf['views'])
+views = bim.make_views(frame.examination_object, probe_p, grid_p, **conf['views'])
 if conf['views_to_use'] != 'all':
     views = OrderedDict([(viewname, view) for viewname, view in views.items()
                          if viewname in conf['views_to_use']])
