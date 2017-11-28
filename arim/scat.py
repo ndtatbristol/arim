@@ -30,13 +30,16 @@ import warnings
 import functools
 import abc
 import contextlib
+import numba
+import ctypes
 
 import numpy as np
 from numpy.core.umath import pi, cos, sin
 from scipy.special._ufuncs import hankel1, hankel2
+import scipy.integrate
 from scipy import interpolate
 
-from . import _scat, exceptions, _scat_crack
+from . import _scat, exceptions, _scat_crack, ut
 
 SCAT_KEYS = frozenset(('LL', 'LT', 'TL', 'TT'))
 
@@ -380,6 +383,183 @@ def crack_2d_scat(inc_theta, out_theta, frequency, crack_length, longitudinal_ve
     return dict(zip(('LL', 'LT', 'TL', 'TT'), final_matrices))
 
 
+@numba.cfunc("f8(f8, voidptr)", cache=True)
+def _crack_tip_integrand(x, data):
+    alpha, k_p, k_s = numba.carray(data, 3, dtype=numba.float64)
+    return -math.atan(
+        (4 * x ** 2 * math.sqrt(x ** 2 - k_p ** 2) * math.sqrt(k_s ** 2 - x ** 2)) /
+        (2 * x ** 2 - k_s ** 2) ** 2) / ((x + alpha) * math.pi)
+
+
+def _crack_tip_k_plus_integral(alpha, k_p, k_s, eps=1e-3, **quad_kwargs):
+    # integral in equation 2b
+    # includes the -1/pi factor
+    integrand_params = np.array([alpha, k_p, k_s])
+    integrand_params_ptr = ctypes.cast(integrand_params.ctypes, ctypes.c_void_p)
+    integrand_c = scipy.LowLevelCallable(_crack_tip_integrand.ctypes, integrand_params_ptr)
+
+    # singularity at x = -alpha = beta
+    beta = -alpha
+
+    assert k_p < k_s
+    assert eps > 0
+
+    if k_p < beta < k_s:
+        # enforce k_p <= beta - eps/2
+        #   and  beta + eps/2 <= k_s
+        max_allowable_eps = min(2 * (beta - k_p), 2 * (k_s - beta))
+        assert max_allowable_eps > 0
+        if eps >= max_allowable_eps:
+            # overwrite eps if too big
+            eps = max_allowable_eps / 2
+
+        integral_left, error_left = scipy.integrate.quad(integrand_c, k_p, beta - eps / 2, **quad_kwargs)
+        integral_right, error_right = scipy.integrate.quad(integrand_c, beta + eps / 2, k_s, **quad_kwargs)
+
+        integral = integral_left + integral_right
+        error = np.sqrt(error_left ** 2 + error_right ** 2)
+    else:
+        integral, error = scipy.integrate.quad(integrand_c, k_p, k_s)
+
+    return integral, error
+
+
+def _crack_tip_k_plus_integral_arr(alpha_arr, k_p, k_s, **quad_kwargs):
+    out = np.empty_like(alpha_arr, np.float)
+    it = np.nditer([alpha_arr, out], op_flags=(['readonly'], ['writeonly', 'allocate']))
+    for alpha, res in it:
+        res[...] = _crack_tip_k_plus_integral(alpha, k_p, k_s, **quad_kwargs)[0]
+    return it.operands[1]
+
+
+def _crack_tip_k_plus(alpha_arr, k_p, k_s, **quad_kwargs):
+    return np.exp(_crack_tip_k_plus_integral_arr(alpha_arr, k_p, k_s, **quad_kwargs))
+
+
+def crack_tip_2d(inc_theta, out_theta, longitudinal_vel,
+                 transverse_vel, rayleigh_vel=None, to_compute=('LL', 'LT', 'TL', 'TT'), **quad_kwargs):
+    """
+    Analytical model of the diffraction of elastic waves by a crack tip. The crack length is infinite.
+
+    Parameters
+    ----------
+    inc_theta
+    out_theta
+    longitudinal_vel
+    transverse_vel
+    rayleigh_vel : float or None
+        If None, use :func:`arim.ut.rayleigh_vel`
+    to_compute
+    quad_kwargs
+
+    Returns
+    -------
+    res
+
+    Notes
+    -----
+    [Ogilvy83] Ogilvy, J. A., and J. A. G. Temple. 1983. ‘Diffraction of Elastic Waves by Cracks: Application to
+    Time-of-Flight Inspection’. Ultrasonics 21 (6):259–69. https://doi.org/10.1016/0041-624X(83)90058-6.
+
+    """
+    res = dict()
+
+    # use paper notations
+    # 1e7 is a scaling factor. The theoretical result does not depend on the frequency
+    # but the numerical result because of finite numerical precision.
+    k_p = 1e7 / longitudinal_vel
+    k_s = 1e7 / transverse_vel
+
+    if rayleigh_vel is None:
+        rayleigh_vel = ut.rayleigh_vel(longitudinal_vel, transverse_vel)
+    k_0 = 1e7 / rayleigh_vel
+
+    k_p2 = k_p ** 2
+    k_s2 = k_s ** 2
+
+    beta = inc_theta
+    theta = out_theta
+
+    e_ipi4 = np.sqrt(1j)  # exp(1j pi / 4)
+
+    sin = np.sin
+    cos = np.cos
+    sqrt = np.sqrt
+    pi = np.pi
+
+    cos_theta = cos(theta)
+    cos_beta = cos(beta)
+
+    if 'LT' in to_compute or 'TT' in to_compute:
+        k_plus_ks_cos_theta = _crack_tip_k_plus(-k_s * cos_theta, k_p, k_s, **quad_kwargs)
+    else:
+        k_plus_ks_cos_theta = None
+    if 'LL' in to_compute or 'TL' in to_compute:
+        k_plus_kp_cos_theta = _crack_tip_k_plus(-k_p * cos_theta, k_p, k_s, **quad_kwargs)
+    else:
+        k_plus_kp_cos_theta = None
+    if 'TL' in to_compute or 'TT' in to_compute:
+        k_plus_ks_cos_beta = _crack_tip_k_plus(-k_s * cos_beta, k_p, k_s, **quad_kwargs)
+    else:
+        k_plus_ks_cos_beta = None
+    if 'LL' in to_compute or 'LT' in to_compute:
+        k_plus_kp_cos_beta = _crack_tip_k_plus(-k_p * cos_beta, k_p, k_s, **quad_kwargs)
+    else:
+        k_plus_kp_cos_beta = None
+
+    if 'LL' in to_compute:
+        # Gp(theta, beta)
+        res['LL'] = (
+            e_ipi4 * sin(beta / 2) * (
+                sin(theta / 2)
+                * (2 * k_p2 * cos_beta ** 2 - k_s2)
+                * (2 * k_p2 * cos_theta ** 2 - k_s2)
+                + 2 * k_p ** 3 * cos(beta / 2) * cos_beta * sin(2 * theta)
+                * sqrt(k_s - k_p * cos_theta) * sqrt(k_s - k_p * cos_beta))
+            / (2 * pi * (k_s2 - k_p2) * (cos_theta + cos_beta)
+               * (k_0 - k_p * cos_theta) * (k_0 - k_p * cos_beta)
+               * k_plus_kp_cos_theta * k_plus_kp_cos_beta)
+        )
+    if 'LT' in to_compute:
+        # G_s(theta, beta)
+        res['LT'] = (e_ipi4 * sqrt(k_p / k_s) * (
+            k_s2 * sin(beta / 2)
+            * (
+                sqrt(2 * k_p) * (2 * k_p2 * cos_beta ** 2 - k_s2)
+                * sin(2 * theta) * sqrt((k_p - k_s * cos_theta).astype(np.complex))
+                - 4 * k_p2 * sqrt(2 * k_s) * cos(beta / 2) * cos_beta
+                * sin(theta / 2) * cos(2 * theta)
+                * sqrt(k_s - k_p * cos_beta))
+        ) / (4 * pi * (k_s2 - k_p2) * (k_s * cos_theta + k_p * cos_beta)
+             * (k_0 - k_s * cos_theta) * (k_0 - k_p * cos_beta)
+             * k_plus_ks_cos_theta * k_plus_kp_cos_beta))
+    if 'TL' in to_compute:
+        # F_p(theta, beta)
+        res['TL'] = (e_ipi4 * sqrt(k_s / k_p) * (k_s2 * sin(beta / 2) * (
+            -k_p2 * sqrt(2 * k_s) * cos(2 * beta) * sin(2 * theta)
+            * sqrt(k_s - k_p * cos(theta))
+            + 4 * sqrt(2 * k_p) * cos(beta / 2) * cos(beta) * sin(theta / 2)
+            * (2 * k_p2 * cos_theta ** 2 - k_s2)
+            * sqrt((k_p - k_s * cos_beta).astype(np.complex))
+        )) / (4 * pi * (k_s2 - k_p2)
+              * (k_p * cos_theta + k_s * cos_beta)
+              * (k_0 - k_p * cos_theta) * (k_0 - k_s * cos_beta)
+              * k_plus_kp_cos_theta * k_plus_ks_cos_beta))
+    if 'TT' in to_compute:
+        # F_s(theta, beta)
+        res['TT'] = (e_ipi4 * k_s ** 3 * sin(beta / 2) * (
+            k_s * cos(2 * beta) * cos(2 * theta) * sin(theta / 2)
+            + 2 * cos(beta / 2) * cos(beta) * sin(2 * theta)
+            * sqrt((k_p - k_s * cos_theta).astype(np.complex))
+            * sqrt((k_p - k_s * cos_beta).astype(np.complex))
+        ) / (2 * pi * (k_s2 - k_p2) * (cos_theta + cos_beta)
+             * (k_0 - k_s * cos_theta) * (k_0 - k_s * cos_beta)
+             * k_plus_ks_cos_theta * k_plus_ks_cos_beta
+             ))
+
+    return res
+
+
 def rotate_matrix(scat_matrix, phi):
     """
     Return the scattering matrix S' of the scatterer rotated by an angle phi,
@@ -477,6 +657,8 @@ def scat_factory(kind, material, *args, **kwargs):
 
     >>> scat_obj = scat_factory('crack_centre', material, crack_length=2.0e-3)
 
+    >>> scat_obj = scat_factory('crack_tip', material)
+
     >>> scat_obj = scat_factory('sdh', material, radius=0.5e-3)
 
     >>> scat_obj = scat_factory('point', material) # unphysical, debug only
@@ -492,6 +674,8 @@ def scat_factory(kind, material, *args, **kwargs):
         return CrackCentreScat(*args, longitudinal_vel=material.longitudinal_vel,
                                transverse_vel=material.transverse_vel,
                                density=material.density, **kwargs)
+    elif kind == 'crack_tip':
+        return CrackTipScat(material.longitudinal_vel, material.transverse_vel, *args, **kwargs)
     elif kind == 'sdh':
         return SdhScat(*args, longitudinal_vel=material.longitudinal_vel,
                        transverse_vel=material.transverse_vel, **kwargs)
@@ -784,6 +968,23 @@ class PointSourceScat(Scattering2dFromFunc):
     def __init__(self, longitudinal_vel, transverse_vel):
         self._scat_kwargs = dict(longitudinal_vel=longitudinal_vel,
                                  transverse_vel=transverse_vel)
+
+
+class CrackTipScat(Scattering2dFromFunc):
+    """
+    Crack tip diffraction
+
+    Wrapper for :func:`crack_tip_2d`
+    """
+    _scat_func = staticmethod(crack_tip_2d)
+
+    def __call__(self, inc_theta, out_theta, frequency, to_compute=SCAT_KEYS):
+        # drop frequency argument
+        return self._scat_func(inc_theta, out_theta, to_compute=to_compute, **self._scat_kwargs)
+
+    def __init__(self, longitudinal_vel, transverse_vel, rayleigh_vel=None, **quad_args):
+        self._scat_kwargs = dict(longitudinal_vel=longitudinal_vel,
+                                 transverse_vel=transverse_vel, rayleigh_vel=rayleigh_vel, **quad_args)
 
 
 class ScatFromData(Scattering2d):

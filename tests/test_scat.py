@@ -249,6 +249,10 @@ def test_scat_factory():
     assert isinstance(scat_obj, scat.PointSourceScat)
     scat_obj(0., 0., 2e6)
 
+    scat_obj = scat.scat_factory('crack_tip', material)
+    assert isinstance(scat_obj, scat.CrackTipScat)
+    scat_obj(0., 0., 2e6)
+
 
 def make_scat_data_multi_freq():
     # create realistic data
@@ -261,7 +265,7 @@ def make_scat_data_multi_freq():
 
 
 @pytest.fixture(params=['sdh', 'point', 'data_singlefreq', 'data_multifreq',
-                        'crack_centre'])
+                        'crack_centre', 'crack_tip'])
 def scat_obj(request):
     if request.param == 'sdh':
         hole_radius = 5e-4
@@ -276,6 +280,8 @@ def scat_obj(request):
         crack_length = 2.e-3
         return scat.CrackCentreScat(crack_length, TestScattering.v_L, TestScattering.v_T,
                                     TestScattering.density)
+    elif request.param == 'crack_tip':
+        return scat.CrackTipScat(TestScattering.v_L, TestScattering.v_T)
     else:
         raise Exception('this fixture does not behave well')
 
@@ -343,6 +349,8 @@ class TestScattering:
         for idx in np.ndindex(*phi_in_array.shape):
             val_dict = scat_obj(phi_in_array[idx], phi_out_array[idx], freq)
             for scat_key in scat_keys:
+                if np.isnan(reference_dict[scat_key][idx]):
+                    continue
                 assert val_dict[scat_key] == reference_dict[scat_key][idx]
 
         # computing the values for one scat_key
@@ -409,8 +417,8 @@ class TestScattering:
 
         lhs = lhs_func(LT)
         rhs = rhs_func(TL.T)
-        max_error = np.max(np.abs(lhs - rhs))
-        median_error = np.median(np.abs(lhs - rhs))
+        max_error = np.nanmax(np.abs(lhs - rhs))
+        median_error = np.nanmedian(np.abs(lhs - rhs))
         np.testing.assert_allclose(
             lhs, rhs, err_msg='no reciprocity - maxerror = {}, median error = {}'.format(
                 max_error, median_error), rtol=1e-7, atol=1e-8)

@@ -266,5 +266,17 @@ def test_make_viewnames():
     viewnames = arim.ut.make_viewnames(['L', 'T', 'LL'], tfm_unique_only=True)
     assert viewnames == [(L, L), (L, T), (T, T), (LL, L), (LL, T), (LL, LL)]
 
+
 def test_reciprocal_viewname():
     assert ut.reciprocal_viewname('L-LT') == 'TL-L'
+
+
+def test_rayleigh_wave():
+    # steel
+    v_l = 5900.
+    v_t = 3200.
+
+    v_r = ut.rayleigh_vel(v_l, v_t)
+    v_r_expected = 2959.250291  # the value was not checked against literature
+
+    np.testing.assert_allclose(v_r, v_r_expected)

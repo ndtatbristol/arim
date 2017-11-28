@@ -304,6 +304,7 @@ def make_timevect(num, step, start=0., dtype=None):
 
     return y.astype(dtype, copy=False)
 
+
 def reciprocal_viewname(viewname):
     """
     Return the name of the reciprocal view
@@ -429,3 +430,30 @@ def make_viewnames(pathnames, tfm_unique_only=False, order_func=default_viewname
         viewnames = filter_unique_views(viewnames)
 
     return viewnames
+
+
+def rayleigh_vel(longitudinal_vel, transverse_vel):
+    """
+    Approximate Rayleigh velocitiy.
+
+    Parameters
+    ----------
+    longitudinal_vel : float
+    transverse_vel : float
+
+    Returns
+    -------
+    rayleigh_vel : float
+
+    Notes
+    -----
+    [Freund98] Freund, L. B.. 1998. `Dynamic Fracture Mechanics`.
+    Cambridge University Press. p. 83. ISBN 978-0521629225.
+
+
+    """
+    poisson = ((longitudinal_vel ** 2 - 2 * transverse_vel ** 2)
+               / (2 * (longitudinal_vel ** 2 - transverse_vel ** 2)))
+    if poisson <= 0:
+        raise ValueError
+    return transverse_vel * (0.862 + 1.14 * poisson) / (1 + poisson)
