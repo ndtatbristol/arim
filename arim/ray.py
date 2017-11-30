@@ -19,7 +19,6 @@ from . import geometry as g
 from .helpers import Cache, NoCache
 from .exceptions import InvalidDimension, ArimWarning
 from .helpers import chunk_array
-from . import _discrete_ray_tracing  # cython module
 
 
 def find_minimum_times(time_1, time_2, dtype=None, dtype_indices=None, block_size=None,
@@ -68,7 +67,7 @@ def find_minimum_times(time_1, time_2, dtype=None, dtype_indices=None, block_siz
     if dtype is None:
         dtype = np.result_type(time_1, time_2)
     if dtype_indices is None:
-        dtype_indices = s.UINT
+        dtype_indices = s.INT
 
     if block_size is None:
         block_size = s.BLOCK_SIZE_FIND_MIN_TIMES
@@ -186,6 +185,49 @@ def ray_tracing(views_list, convert_to_fortran_order=False):
                                  convert_to_fortran_order=convert_to_fortran_order)
 
 
+@numba.jit(nopython=True, nogil=True, parallel=True)
+def _expand_rays(interior_indices, indices_new_interface, expanded_indices):
+    """
+    Expand the rays by one interface knowing the beginning of the rays and the
+    points the rays must go through at the last interface.
+
+    A0, A1, ..., A(d+1) are (d+2) interfaces.
+
+    n: number of points of interface A0
+    m: number of points of interface Ad
+    p: number of points of interface A(d+1)
+
+    Arrays layout must be contiguous.
+
+    Output: out_ray
+
+    Parameters
+    ----------
+    interior_indices: *interior* indices of rays going from A(0) to A(d).
+        Shape: (d, n, m)
+    indices_new_interface: indices of the points of interface A(d) that the rays
+    starting from A(0) cross to go to A(d+1).
+        Shape: (n, p)
+    expanded_indices: OUTPUT
+        Shape (d+1, n, p)
+
+    """
+    d, n, m = interior_indices.shape
+    _, p = indices_new_interface.shape
+
+    for i in numba.prange(n):
+        for j in range(p):
+            # get the point on interface A(d) to which the ray goes
+            idx = indices_new_interface[i, j]
+
+            # copy the head of ray
+            for k in range(d):
+                expanded_indices[k, i, j] = interior_indices[k, i, idx]
+
+            # add the last point
+            expanded_indices[d, i, j] = idx
+
+
 class Rays:
     """
     Rays(times, interior_indices, path)
@@ -242,8 +284,7 @@ class Rays:
             len(fermat_path.points[0]), len(fermat_path.points[-1]))
         assert fermat_path.num_points_sets == interior_indices.shape[0] + 2
 
-        if interior_indices.dtype.kind != 'u':
-            raise TypeError("Indices must be unsigned integers.")
+        assert interior_indices.dtype.kind == 'i'
         assert times.dtype.kind == 'f'
 
         indices = self.make_indices(interior_indices, order=order)
@@ -445,8 +486,7 @@ class Rays:
             return indices_new_interface.reshape(new_shape)
         else:
             expanded_indices = np.empty((d + 1, n, p), dtype=interior_indices.dtype)
-            _discrete_ray_tracing._expand_rays(interior_indices, indices_new_interface,
-                                               expanded_indices, n, m, p, d)
+            _expand_rays(interior_indices, indices_new_interface, expanded_indices)
             return expanded_indices
 
     def reverse(self, order='f'):
@@ -613,9 +653,7 @@ class FermatSolver:
             dtype = s.FLOAT
 
         if dtype_indices is None:
-            max_length = max((p.len_largest_interface for p in fermat_paths_set))
-            # dtype_indices = smallest_uint_that_fits(max_length)
-            dtype_indices = s.UINT
+            dtype_indices = s.INT
 
         for path in fermat_paths_set:
             try:

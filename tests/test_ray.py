@@ -141,7 +141,8 @@ class TestRays4:
         return path
 
     @pytest.fixture
-    def interior_indices(self, dtype_indices):
+    def interior_indices(self):
+        dtype_indices = arim.settings.INT
         n, m, p, q = self.numpoints
         interior_indices_1 = (np.arange(n * q, dtype=dtype_indices) % m).reshape(n, q)
         interior_indices_2 = (np.arange(n * q, dtype=dtype_indices) % p).reshape(n, q)
@@ -251,8 +252,9 @@ class TestRays2:
         return path
 
     @pytest.fixture
-    def rays(self, path, dtype_indices):
+    def rays(self, path):
         """Test alternative constructor of Rays"""
+        dtype_indices = arim.settings.INT
         n, m = self.numpoints
         times = np.random.uniform(10., 20., size=(n, m))
         rays = ray.Rays.make_rays_two_interfaces(times, path, dtype_indices)
@@ -299,11 +301,6 @@ class TestRays2:
         assert rays_f.indices.flags.fortran
         np.testing.assert_equal(rays_f.indices, rays.indices)
         np.testing.assert_almost_equal(rays_f.times, rays.times)
-
-
-@pytest.fixture(scope="module", params=[np.uint])
-def dtype_indices(request):
-    return request.param
 
 
 def test_fermat_solver():
@@ -486,7 +483,7 @@ class TestRayGeometry:
 
         # The i-th ray starts from the source and ends at the i-th destination point.
         shape = [len(source_interface.points), len(dest_interface.points)]
-        ray_indices = np.zeros((0, *shape), np.uint)
+        ray_indices = np.zeros((0, *shape), arim.settings.INT)
         times = np.empty(shape, float)
         times.fill(np.nan)
 

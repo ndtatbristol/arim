@@ -85,7 +85,8 @@ def make_context():
     }
     for pathname, path in paths.items():
         rays = arim.ray.Rays(np.asarray(expected_ray_times[pathname]),
-                             np.asarray(expected_ray_indices[pathname], np.uint32),
+                             np.asarray(expected_ray_indices[pathname],
+                                arim.settings.INT),
                              path.to_fermat_path())
         path.rays = rays
 
