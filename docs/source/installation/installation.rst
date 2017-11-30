@@ -30,23 +30,17 @@ Optional dependency:
 
 - `h5py <http://www.h5py.org/>`_: for reading MATLAB v7 datafile (used in :mod:`arim.io`)
 
-Dependencies for building from source:
+Installation
+============
 
+Installation from a wheel file (recommended)
+--------------------------------------------
 
-
-Binary installation
-===================
-
-This is the easiest way to install arim. It requires a binary version of arim provided by the developement team (wheel file).
-
-Installation with Anaconda (recommended)
-----------------------------------------
-
-Use case: general usage.
+Use case: general case.
 
 Install `Anaconda distribution <https://www.anaconda.com/download/>`_ (Python 3 version).
 
-Get a wheel package of arim (``whl`` file) from the developpement team.
+Get a wheel package of arim (``.whl`` file) from the developpement team.
 
 Start an Anaconda Prompt (in Windows, it should be in the Start menu) and type in::
 
@@ -57,8 +51,8 @@ Example::
   pip install arim-0.3-py3-none-any.whl
 
 
-Installation in a virtual environment
--------------------------------------
+Installation from a wheel file in a virtual environment
+-------------------------------------------------------
 
 Use cases:
 
@@ -94,50 +88,65 @@ Example::
 
 .. _source_install:
 
-Build and install from source
-==============================
-
-Use case:
-
-- no wheel is provided for the platform and/or the Python version that the user uses
-- and/or developer installation
-
-Compiler requirements
----------------------
-
-A C++ compiler with OpenMP 2.0 or newer is required.
-
-For Windows and Python 3.5 or Python 3.6, the development team recommends using Visual C++ 2015 build tools.
-They can be obtain as a `standalone <http://landinghub.visualstudio.com/visual-cpp-build-tools>`_
-or by installing Visual Studio 2015.
-
-.. seealso::
-
-  `Python documentation: Windows compilers <https://wiki.python.org/moin/WindowsCompilers>`_
-
-
-Additional Python dependency
+Source installation from git
 ----------------------------
 
-`Cython <http://cython.org/>`_: static compiler
+Use cases:
 
-Installation
-------------
+- tracking the latest changes in arim,
+- and/or developer installation
 
-Install all requirements, in a virtual environment if desired. Get arim source code.
 
-In a prompt, build and install::
+Install all requirements, in a virtual environment if desired.
+Clone the `github repository <https://github.com/nbud/arim>`_. The newly created directory is referred below
+as your *local git repository*. It contains:
+
+- ``arim/setup.py``: file for installing arim
+- ``arim/arim``: directory of the code of arim
+- ``arim/examples``: directory of example scripts
+- ``arim/tests``: directory of unit tests for arim
+- ``arim/docs``: directory of the present documentation (must be built first, :ref:`build_doc`)
+- other elements.
+
+
+Option 1: normal installation
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+In the Anaconda Prompt, change to the top arim directory (the one with ``setup.py``) and type::
 
   python setup.py install
 
-Alternatively, for an editable inplace installation (useful for development), type::
+The content of your local git repository will be *copied* into the ``site-packages`` directory, which is the main
+location where Python stores the non-standard libraries For an Anaconda installation on Windows with default settings,
+this directory is::
+
+  C:\ProgramData\Anaconda3\Lib\site-packages
+
+When running ``import arim`` in Python, the files from the ``site-packages`` directory will be imported. Consequently,
+updating your local git repository *will not change* the installed files. The local git repository can be safely deleted
+if needed.
+
+
+Option 2: developer installation
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+In the Anaconda Prompt, change to the top arim directory (the one with ``setup.py``) and type::
 
   python setup.py develop
+
+The content of the your local git repository becomes the place where Python looks up arim files during an import. These
+files are *not copied* into the ``site-packages`` directory.  When running ``import arim`` in Python, the files from the
+local git repository are imported.
 
 .. seealso::
 
    :ref:`developer_installation`
 
+
+Update arim
+===========
+
+Re-run the installation procedure with the updated wheel or source files.
 
 Check arim is working
 =====================

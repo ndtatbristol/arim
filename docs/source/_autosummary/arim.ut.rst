@@ -19,6 +19,7 @@ arim\.ut
       instantaneous_phase_shift
       make_timevect
       make_viewnames
+      rayleigh_vel
       reciprocal_viewname
       wrap_phase
    

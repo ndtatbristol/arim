@@ -7,7 +7,6 @@ From https://github.com/pypa/sampleproject/blob/master/setup.py
 """
 
 from setuptools import setup, find_packages, Extension
-from Cython.Build import cythonize
 
 import codecs
 import re
@@ -36,19 +35,6 @@ def find_version(*file_paths):
         return version_match.group(1)
     raise RuntimeError("Unable to find version string.")
 # --- End snippet
-
-
-ext_modules = [
-    Extension(
-        "arim._discrete_ray_tracing",
-        sources=["arim/discrete_ray_tracing_c.cpp", "arim/_discrete_ray_tracing.pyx"],
-        language="c++",
-        # extra_compile_args=['/Ox', '/EHsc'],
-        extra_compile_args=['/Ox', '/EHsc', '/openmp'],
-        # include_dirs=[numpy.get_include()],
-    ),
-]
-
 
 setup(
     name='arim',
@@ -136,7 +122,7 @@ setup(
         ],
     },
 
-    ext_modules=cythonize(ext_modules),
+    # ext_modules=[],
 
     zip_safe=False,
 )

@@ -10,6 +10,7 @@ arim\.scat
    .. autosummary::
    
       crack_2d_scat
+      crack_tip_2d
       interpolate_matrices
       interpolate_matrix
       make_angles
@@ -28,6 +29,7 @@ arim\.scat
    .. autosummary::
    
       CrackCentreScat
+      CrackTipScat
       PointSourceScat
       ScatFromData
       Scattering2d
