@@ -123,15 +123,11 @@ def _find_minimum_times(time_1, time_2, out_min_times, out_best_indices):
     m, p = time_2.shape
     for i in range(n):
         for j in range(p):
-            best_time = np.inf
-            best_index = m  # invalid index
             for k in range(m):
                 new_time = time_1[i, k] + time_2[k, j]
-                if new_time < best_time:
-                    best_time = new_time
-                    best_index = k
-            out_min_times[i, j] = best_time
-            out_best_indices[i, j] = best_index
+                if new_time < out_min_times[i, j]:
+                    out_min_times[i, j] = new_time
+                    out_best_indices[i, j] = k
 
 
 logger = logging.getLogger(__name__)

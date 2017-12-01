@@ -39,7 +39,7 @@ DATETIME = "%Y-%m-%d %H:%M:%S"  # call: datetime.datetime.now().strftime(DATETIM
 BLOCK_SIZE_EUC_DISTANCE = 500
 BLOCK_SIZE_DELAY_AND_SUM = 500
 BLOCK_SIZE_FIND_MIN_TIMES = 50000
-NUMTHREADS = cpu_count() + 1
+NUMTHREADS = cpu_count()
 
 
 # ------------------------------------------------------------------------------
