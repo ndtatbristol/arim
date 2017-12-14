@@ -339,8 +339,8 @@ def ray_weights_for_wall(path, frequency, probe_element_width=None,
 
 def make_interfaces(couplant_material,
                     probe_oriented_points,
-                    frontwall_oriented_points,
-                    backwall_oriented_points,
+                    frontwall,
+                    backwall,
                     grid_oriented_points):
     """
     Construct Interface objects for the case of a solid block in immersion
@@ -357,8 +357,8 @@ def make_interfaces(couplant_material,
     couplant_material: Material
     couplant_material: Material
     probe_oriented_points : OrientedPoints
-    frontwall_oriented_points: OrientedPoints
-    backwall_oriented_points: OrientedPoints
+    frontwall: OrientedPoints
+    backwall: OrientedPoints
     grid_oriented_points: OrientedPoints
 
     Returns
@@ -371,20 +371,20 @@ def make_interfaces(couplant_material,
     interface_dict['probe'] = c.Interface(*probe_oriented_points,
                                           are_normals_on_out_rays_side=True)
     interface_dict['frontwall_trans'] = c.Interface(
-        *frontwall_oriented_points,
+        *frontwall,
         'fluid_solid', 'transmission',
         are_normals_on_inc_rays_side=False,
         are_normals_on_out_rays_side=True)
-    if backwall_oriented_points is not None:
+    if backwall is not None:
         interface_dict['backwall_refl'] = c.Interface(
-            *backwall_oriented_points,
+            *backwall,
             'solid_fluid', 'reflection',
             reflection_against=couplant_material,
             are_normals_on_inc_rays_side=False,
             are_normals_on_out_rays_side=False)
     interface_dict['grid'] = c.Interface(*grid_oriented_points,
                                          are_normals_on_inc_rays_side=True)
-    interface_dict['frontwall_refl'] = c.Interface(*frontwall_oriented_points,
+    interface_dict['frontwall_refl'] = c.Interface(*frontwall,
                                                    'solid_fluid', 'reflection',
                                                    reflection_against=couplant_material,
                                                    are_normals_on_inc_rays_side=True,
@@ -547,14 +547,14 @@ def make_views(examination_object, probe_oriented_points,
     try:
         couplant = examination_object.couplant_material
         block = examination_object.block_material
-        frontwall_oriented_points = examination_object.frontwall_oriented_points
-        backwall_oriented_points = examination_object.backwall_oriented_points
+        frontwall = examination_object.frontwall
+        backwall = examination_object.backwall
     except AttributeError as e:
         raise ValueError("Examination object should be a BlockInImmersion") from e
 
     interfaces = make_interfaces(
-        couplant, probe_oriented_points, frontwall_oriented_points,
-        backwall_oriented_points, scatterers_oriented_points)
+        couplant, probe_oriented_points, frontwall,
+        backwall, scatterers_oriented_points)
 
     paths = make_paths(block, couplant, interfaces, max_number_of_reflection)
 
