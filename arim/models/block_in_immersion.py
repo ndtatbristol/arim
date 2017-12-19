@@ -157,8 +157,8 @@ def rx_ray_weights(path, ray_geometry, frequency, probe_element_width=None,
         weights_dict['transrefl'] = one
     if use_beamspread:
         weights_dict['beamspread'] = (
-            model.reverse_beamspread_2d_for_path(ray_geometry)
-            * np.sqrt(d.wavelengths_in_block[path.modes[-1]]))
+                model.reverse_beamspread_2d_for_path(ray_geometry)
+                * np.sqrt(d.wavelengths_in_block[path.modes[-1]]))
     else:
         weights_dict['beamspread'] = one
 
@@ -559,3 +559,207 @@ def make_views(examination_object, probe_oriented_points,
     paths = make_paths(block, couplant, interfaces, max_number_of_reflection)
 
     return make_views_from_paths(paths, tfm_unique_only)
+
+
+def singlefreq_scat_transfer_functions(views, tx, rx, frequency, freq_array, scat_obj,
+                                       probe_element_width=None,
+                                       use_directivity=True, use_beamspread=True,
+                                       use_transrefl=True, scat_angle=0):
+    """
+    Transfer function for all views, returned view per view.
+
+    Parameters
+    ----------
+    views : Dict[Views]
+    tx : ndarray
+        Shape: (numscanlines, )
+    rx : ndarray
+        Shape: (numscanlines, )
+    frequency : float
+    freq_array : ndarray
+        Shape: (numfreq, )
+    scat_obj : arim.scat.Scattering2d
+    probe_element_width : float or None
+    use_directivity : bool
+    use_beamspread : bool
+    use_transrefl : bool
+    scat_angle : float
+
+    Yields
+    ------
+    viewname
+        Key of `views`
+    partial_transfer_function_f : ndarray
+        Shape: (numscanlines, numfreq). Complex. Contribution for one view.
+
+
+    """
+    scat_funcs = scat_obj.as_angles_funcs(frequency)
+
+    ray_weights = ray_weights_for_views(views, frequency=frequency, probe_element_width=probe_element_width,
+                                        use_beamspread=use_beamspread, use_directivity=use_directivity,
+                                        use_transrefl=use_transrefl)
+
+    for viewname, view in views.items():
+        logger.info('Transfer function for scatterers in view {}'.format(viewname))
+        # compute Q_i Q'_j S_ij
+        # shape: (numscanlines, numscatterers)
+        model_coefficients = model.model_amplitudes_factory(
+            tx, rx, view, ray_weights, scat_funcs,
+            scat_angle=scat_angle)[...].T
+
+        # shape: (numscanlines, numscatterers)
+        delay = (np.take(view.tx_path.rays.times, tx, axis=0) +
+                 np.take(view.rx_path.rays.times, rx, axis=0))
+
+        # Transfer[Scanline, Frequency] = Sum_Scatterer
+        #   exp(2j pi delay[Scanline, Scatterer] frequency[Frequency])
+        #   * model_coefficients[Scanline, Scatterer]
+        partial_transfer_function_f = np.einsum(
+            'ik,ijk->ij', model_coefficients,
+            np.exp(2j * np.pi * freq_array[np.newaxis, :, np.newaxis] * delay[:, np.newaxis, :])).conj()
+        yield viewname, partial_transfer_function_f
+
+
+def singlefreq_scat_transfer_function(views, tx, rx, frequency, freq_array, scat_obj,
+                                      probe_element_width=None,
+                                      use_directivity=True, use_beamspread=True,
+                                      use_transrefl=True, scat_angle=0):
+    """
+    Transfer function for all views.
+
+    Parameters
+    ----------
+    views : dict[Views]
+    tx : ndarray
+        Shape: (numscanlines, )
+    rx : ndarray
+        Shape: (numscanlines, )
+    frequency : float
+    freq_array : ndarray
+        Shape: (numfreq, )
+    scat_obj : arim.scat.Scattering2d
+    probe_element_width : float or None
+    use_directivity : bool
+    use_beamspread : bool
+    use_transrefl : bool
+    scat_angle : float
+
+    Returns
+    -------
+    partial_transfer_function_f : ndarray
+        Shape: (numscanlines, numfreq). Complex. Total for all views
+
+    """
+    return sum(singlefreq_scat_transfer_functions(
+        views, tx, rx, frequency, freq_array, scat_obj, probe_element_width,
+        use_directivity, use_beamspread, use_transrefl, scat_angle)[1])
+
+
+def multifreq_scat_transfer_functions(views, tx, rx, freq_array, scat_obj,
+                                      probe_element_width=None,
+                                      use_directivity=True, use_beamspread=True,
+                                      use_transrefl=True, scat_angle=0):
+    """
+    Transfer function for all views, returned view per view.
+
+    Parameters
+    ----------
+    views : Dict[Views]
+    tx : ndarray
+        Shape: (numscanlines, )
+    rx : ndarray
+        Shape: (numscanlines, )
+    freq_array : ndarray
+        Shape: (numfreq, )
+    scat_obj : arim.scat.Scattering2d
+    probe_element_width : float or None
+    use_directivity : bool
+    use_beamspread : bool
+    use_transrefl : bool
+    scat_angle : float
+
+    Yields
+    ------
+    viewname
+        Key of `views`
+    partial_transfer_function_f : ndarray
+        Shape: (numscanlines, numfreq). Complex. Contribution for one view.
+
+
+    """
+    # precompute all ray weights
+    ray_weights_allfreq = []
+    for frequency in freq_array:
+        if np.isclose(frequency, 0.):
+            ray_weights_allfreq.append(None)
+        else:
+            ray_weights = ray_weights_for_views(views, frequency=frequency, probe_element_width=probe_element_width,
+                                                use_beamspread=use_beamspread, use_directivity=use_directivity,
+                                                use_transrefl=use_transrefl)
+            ray_weights_allfreq.append(ray_weights)
+
+    for viewname, view in views.items():
+        logger.info('Transfer function for scatterers in view {}'.format(viewname))
+
+        partial_transfer_function_f = np.zeros((len(tx), len(freq_array)), np.complex_)
+
+        # shape: (numscanlines, numscatterers)
+        delay = (np.take(view.tx_path.rays.times, tx, axis=0) +
+                 np.take(view.rx_path.rays.times, rx, axis=0))
+
+        for freq_idx, frequency in enumerate(freq_array):
+            scat_funcs = scat_obj.as_angles_funcs(frequency)
+
+            if np.isclose(frequency, 0.):
+                partial_transfer_function_f[:, freq_idx] = 0.
+                continue
+
+            # compute Q_i Q'_j S_ij
+            # shape: (numscanlines, numscatterers)
+            model_coefficients = model.model_amplitudes_factory(
+                tx, rx, view, ray_weights, scat_funcs,
+                scat_angle=scat_angle)[...].T
+
+            # Transfer[Scanline, Frequency] = Sum_Scatterer
+            #   exp(2j pi delay[Scanline, Scatterer] frequency[Frequency])
+            #   * model_coefficients[Scanline, Scatterer]
+            partial_transfer_function_f[:, freq_idx] = np.sum(
+                model_coefficients * np.exp(2j * np.pi * frequency * delay),
+                axis=-1
+            ).conj()
+        yield viewname, partial_transfer_function_f
+
+
+def multifreq_scat_transfer_function(views, tx, rx, freq_array, scat_obj,
+                                     probe_element_width=None,
+                                     use_directivity=True, use_beamspread=True,
+                                     use_transrefl=True, scat_angle=0):
+    """
+    Transfer function for all views.
+
+    Parameters
+    ----------
+    views : dict[Views]
+    tx : ndarray
+        Shape: (numscanlines, )
+    rx : ndarray
+        Shape: (numscanlines, )
+    freq_array : ndarray
+        Shape: (numfreq, )
+    scat_obj : arim.scat.Scattering2d
+    probe_element_width : float or None
+    use_directivity : bool
+    use_beamspread : bool
+    use_transrefl : bool
+    scat_angle : float
+
+    Returns
+    -------
+    partial_transfer_function_f : ndarray
+        Shape: (numscanlines, numfreq). Complex. Total for all views
+
+    """
+    return sum(multifreq_scat_transfer_functions(
+        views, tx, rx, freq_array, scat_obj, probe_element_width,
+        use_directivity, use_beamspread, use_transrefl, scat_angle)[1])

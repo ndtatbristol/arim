@@ -1,0 +1,77 @@
+probe:
+  frequency: 5.e+6
+  numx: 32
+  pitch_x: 0.3e-3
+  numy: 1
+  pitch_y: .nan
+  dimensions: [0.2e-3, 15.e-3, .nan]
+
+probe_location:
+  ref_element: first # 'first', 'mean', 'end' or a number
+  angle_deg: 15.
+  standoff: -0.010
+
+toneburst:
+  num_cycles: 5
+
+couplant_material:
+  metadata:
+    long_name: Water
+    source: Bilaniuk and Wong 1993
+  longitudinal_vel: 1490.
+  density: 1000.
+  state_of_matter: liquid
+
+block_material:
+  metadata:
+    long_name: Aluminium
+    source: Krautkrämer 1990
+  longitudinal_vel: 6320.
+  transverse_vel: 3130.
+  density: 2700.
+  state_of_matter: solid
+
+# scatterer:
+  # kind: 'file'
+  # filename: 'scattering_rounded_notch.mat'
+  # filename: 'scattering_notch.mat'
+
+# scatterer:
+#   kind: 'crack_centre'
+#   crack_length: 2.e-3
+
+# scatterer:
+#   kind: 'crack_tip'
+
+scatterer:
+  kind: 'sdh'
+  radius: 500.e-6
+
+# scatterer:
+#   kind: 'point'
+
+scatterer_angle_deg: -90.
+
+scatterers:
+  - x: 20.e-3
+    z: 15.e-3
+
+frontwall:
+  numpoints: 3000
+  xmin: 0.e-3
+  xmax: 60.e-3
+  z: 0.
+
+backwall:
+  numpoints: 3000
+  xmin: 0.e-3
+  xmax: 60.e-3
+  z: 40.e-3
+
+# for imaging:
+grid:
+  xmin: 15.e-3
+  xmax: 25.e-3
+  zmin: 10.e-3
+  zmax: 20.e-3
+  pixel_size: .125e-3
