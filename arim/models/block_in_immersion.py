@@ -715,6 +715,8 @@ def multifreq_scat_transfer_functions(views, tx, rx, freq_array, scat_obj,
                 partial_transfer_function_f[:, freq_idx] = 0.
                 continue
 
+            ray_weights = ray_weights_allfreq[freq_idx]
+
             # compute Q_i Q'_j S_ij
             # shape: (numscanlines, numscatterers)
             model_coefficients = model.model_amplitudes_factory(
