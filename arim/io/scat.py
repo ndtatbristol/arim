@@ -1,7 +1,4 @@
-import collections
-
-import scipy.io as sio
-import numpy as np
+__all__ = ['load_scat', 'load_scat_from_matlab']
 
 
 class InvalidFileFormat(Exception):
@@ -55,6 +52,8 @@ def load_scat_from_matlab(filename):
 
     """
     from .. import scat
+    import scipy.io as sio
+
     try:
         data = sio.loadmat(filename)
     except NotImplementedError as e:
@@ -62,9 +61,9 @@ def load_scat_from_matlab(filename):
 
     frequencies = data['frequencies']
     numfreq = frequencies.size
-    if frequencies.shape not in {(1, numfreq), (numfreq, 1), (numfreq, )}:
+    if frequencies.shape not in {(1, numfreq), (numfreq, 1), (numfreq,)}:
         raise ValueError("invalid shape for 'frequencies'")
-    frequencies = frequencies.reshape((numfreq, ))
+    frequencies = frequencies.reshape((numfreq,))
 
     matrices = dict()
 

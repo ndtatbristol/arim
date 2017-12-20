@@ -6,7 +6,7 @@ from . import settings
 from . import exceptions
 from .core import *
 
-from . import _probes, geometry, measurement, config, helpers, ut
+from . import _probes, geometry, measurement, config, helpers, ut, io
 from .geometry import Points, Grid
 
 

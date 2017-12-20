@@ -12,18 +12,12 @@ Implemented as of 20/6/2016:
 """
 
 import numpy as np
-from scipy.io import loadmat
 
 from .. import geometry as g
 from .. import settings as s
 from ..core import Probe, Time, ExaminationObject, Material, Frame
 
-__all__ = ['NotHandledByScipy', 'InvalidExpData', 'load_expdata']
-
-try:
-    import h5py
-except ImportError:
-    h5py = None
+__all__ = ['load_expdata']
 
 
 class NotHandledByScipy(Exception):
@@ -32,6 +26,14 @@ class NotHandledByScipy(Exception):
 
 class InvalidExpData(IOError):
     pass
+
+
+def _import_h5py():
+    try:
+        import h5py
+    except ImportError:
+        h5py = None
+    return h5py
 
 
 def load_expdata(file):
@@ -54,6 +56,7 @@ def load_expdata(file):
         (exp_data, array, filename) = _load_from_scipy(file)
     except NotHandledByScipy:
         # It seems the file is HDF5 (matlab 7.3)
+        h5py = _import_h5py()
         if h5py is None:
             raise Exception(
                 "Unable to import Matlab file because its file format version is unsupported. "
@@ -145,8 +148,9 @@ def _load_from_scipy(file):
     :return:
     :raises: NotHandledByScipy
     """
+    import scipy.io as sio
     try:
-        data = loadmat(file)
+        data = sio.loadmat(file)
     except NotImplementedError as e:
         raise NotHandledByScipy(e)
 
@@ -167,6 +171,8 @@ def _load_from_scipy(file):
 
 
 def _load_from_hdf5(file):
+    import h5py
+
     # This line might raise an OSError:
     f = h5py.File(file, mode='r')
 
