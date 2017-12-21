@@ -219,8 +219,8 @@ def sdh_2d_scat(inc_theta, out_theta, frequency, radius, longitudinal_vel,
     if 'LL' in to_compute:
         # Lopez-Sanchez eq (29)
         A_n = 1j / (2 * alpha) * (
-            1 + (c2_alpha * c1_beta - d2_alpha * d1_beta) /
-            (c1_alpha * c1_beta - d1_alpha * d1_beta))
+                1 + (c2_alpha * c1_beta - d2_alpha * d1_beta) /
+                (c1_alpha * c1_beta - d1_alpha * d1_beta))
 
         # Brind (2.9) without:
         #   - u0, the amplitude of the incident wave,
@@ -255,7 +255,7 @@ def sdh_2d_scat(inc_theta, out_theta, frequency, radius, longitudinal_vel,
     if 'TL' in to_compute:
         # Lopez-Sanchez eq (41)
         A_n = 2 * n / (pi * beta) * (n2 - beta2 / 2 - 1) / (
-            c1_alpha * c1_beta - d1_alpha * d1_beta)
+                c1_alpha * c1_beta - d1_alpha * d1_beta)
 
         # Lopez-Sanchez eq (39)
         # See also comments for result['LL']
@@ -510,37 +510,37 @@ def crack_tip_2d(inc_theta, out_theta, longitudinal_vel,
     if 'LL' in to_compute:
         # Gp(theta, beta)
         res['LL'] = (
-            e_ipi4 * sin(beta / 2) * (
+                e_ipi4 * sin(beta / 2) * (
                 sin(theta / 2)
                 * (2 * k_p2 * cos_beta ** 2 - k_s2)
                 * (2 * k_p2 * cos_theta ** 2 - k_s2)
                 + 2 * k_p ** 3 * cos(beta / 2) * cos_beta * sin(2 * theta)
                 * sqrt(k_s - k_p * cos_theta) * sqrt(k_s - k_p * cos_beta))
-            / (2 * pi * (k_s2 - k_p2) * (cos_theta + cos_beta)
-               * (k_0 - k_p * cos_theta) * (k_0 - k_p * cos_beta)
-               * k_plus_kp_cos_theta * k_plus_kp_cos_beta)
+                / (2 * pi * (k_s2 - k_p2) * (cos_theta + cos_beta)
+                   * (k_0 - k_p * cos_theta) * (k_0 - k_p * cos_beta)
+                   * k_plus_kp_cos_theta * k_plus_kp_cos_beta)
         )
     if 'LT' in to_compute:
         # G_s(theta, beta)
         res['LT'] = (e_ipi4 * sqrt(k_p / k_s) * (
-            k_s2 * sin(beta / 2)
-            * (
-                sqrt(2 * k_p) * (2 * k_p2 * cos_beta ** 2 - k_s2)
-                * sin(2 * theta) * sqrt((k_p - k_s * cos_theta).astype(np.complex))
-                - 4 * k_p2 * sqrt(2 * k_s) * cos(beta / 2) * cos_beta
-                * sin(theta / 2) * cos(2 * theta)
-                * sqrt(k_s - k_p * cos_beta))
+                k_s2 * sin(beta / 2)
+                * (
+                        sqrt(2 * k_p) * (2 * k_p2 * cos_beta ** 2 - k_s2)
+                        * sin(2 * theta) * sqrt((k_p - k_s * cos_theta).astype(np.complex))
+                        - 4 * k_p2 * sqrt(2 * k_s) * cos(beta / 2) * cos_beta
+                        * sin(theta / 2) * cos(2 * theta)
+                        * sqrt(k_s - k_p * cos_beta))
         ) / (4 * pi * (k_s2 - k_p2) * (k_s * cos_theta + k_p * cos_beta)
              * (k_0 - k_s * cos_theta) * (k_0 - k_p * cos_beta)
              * k_plus_ks_cos_theta * k_plus_kp_cos_beta))
     if 'TL' in to_compute:
         # F_p(theta, beta)
         res['TL'] = (e_ipi4 * sqrt(k_s / k_p) * (k_s2 * sin(beta / 2) * (
-            -k_p2 * sqrt(2 * k_s) * cos(2 * beta) * sin(2 * theta)
-            * sqrt(k_s - k_p * cos(theta))
-            + 4 * sqrt(2 * k_p) * cos(beta / 2) * cos(beta) * sin(theta / 2)
-            * (2 * k_p2 * cos_theta ** 2 - k_s2)
-            * sqrt((k_p - k_s * cos_beta).astype(np.complex))
+                -k_p2 * sqrt(2 * k_s) * cos(2 * beta) * sin(2 * theta)
+                * sqrt(k_s - k_p * cos(theta))
+                + 4 * sqrt(2 * k_p) * cos(beta / 2) * cos(beta) * sin(theta / 2)
+                * (2 * k_p2 * cos_theta ** 2 - k_s2)
+                * sqrt((k_p - k_s * cos_beta).astype(np.complex))
         )) / (4 * pi * (k_s2 - k_p2)
               * (k_p * cos_theta + k_s * cos_beta)
               * (k_0 - k_p * cos_theta) * (k_0 - k_s * cos_beta)
@@ -548,10 +548,10 @@ def crack_tip_2d(inc_theta, out_theta, longitudinal_vel,
     if 'TT' in to_compute:
         # F_s(theta, beta)
         res['TT'] = (e_ipi4 * k_s ** 3 * sin(beta / 2) * (
-            k_s * cos(2 * beta) * cos(2 * theta) * sin(theta / 2)
-            + 2 * cos(beta / 2) * cos(beta) * sin(2 * theta)
-            * sqrt((k_p - k_s * cos_theta).astype(np.complex))
-            * sqrt((k_p - k_s * cos_beta).astype(np.complex))
+                k_s * cos(2 * beta) * cos(2 * theta) * sin(theta / 2)
+                + 2 * cos(beta / 2) * cos(beta) * sin(2 * theta)
+                * sqrt((k_p - k_s * cos_theta).astype(np.complex))
+                * sqrt((k_p - k_s * cos_beta).astype(np.complex))
         ) / (2 * pi * (k_s2 - k_p2) * (cos_theta + cos_beta)
              * (k_0 - k_s * cos_theta) * (k_0 - k_s * cos_beta)
              * k_plus_ks_cos_theta * k_plus_ks_cos_beta
@@ -829,6 +829,24 @@ class Scattering2d(abc.ABC):
         """
         inc_theta, out_theta = make_angles_grid(numangles)
         return self(inc_theta, out_theta, frequency, to_compute)
+
+    def as_multi_freq_matrices_obj(self, frequencies, numangles, to_compute=SCAT_KEYS):
+        """
+        Returns scattering matrices at different frequencies as a ScatFromData object.
+
+        Parameters
+        ----------
+        frequencies : ndarray
+        numangles : int
+        to_compute : set[str]
+
+        Returns
+        -------
+        ScatFromData
+
+        """
+        matrices = self.as_multi_freq_matrices(frequencies, numangles, to_compute)
+        return ScatFromData.from_dict(frequencies, matrices)
 
 
 class Scattering2dFromFunc(Scattering2d):

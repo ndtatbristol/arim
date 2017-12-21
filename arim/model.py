@@ -1145,8 +1145,7 @@ def model_amplitudes_factory(tx, rx, view, ray_weights, scattering, scat_angle=0
     """
     # Pick the right scattering matrix/function.
     # scat_key is LL, LT, TL or TT
-    scat_key = view.tx_path.modes[-1].key() + view.rx_path.modes[-1].key()
-    scattering_obj = scattering[scat_key]
+    scattering_obj = scattering[view.scat_key()]
 
     try:
         scattering_obj.shape
@@ -1263,7 +1262,7 @@ class _ModelAmplitudesWithScatFunction(ModelAmplitudes):
         self.numpoints, self.numelements = tx_ray_weights.shape
         self.numscanlines = self.tx.shape[0]
         self.scat_angle = scat_angle
-        self.dtype = np.result_type(tx_ray_weights, rx_ray_weights, scattering_fn(0., 0.))
+        self.dtype = np.complex_
 
     def __getitem__(self, grid_slice):
         # Nota bene: arrays' shape is (numpoints, numscanline), i.e. the transpose

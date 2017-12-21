@@ -564,7 +564,8 @@ def make_views(examination_object, probe_oriented_points,
 def singlefreq_scat_transfer_functions(views, tx, rx, frequency, freq_array, scat_obj,
                                        probe_element_width=None,
                                        use_directivity=True, use_beamspread=True,
-                                       use_transrefl=True, scat_angle=0):
+                                       use_transrefl=True, scat_angle=0.,
+                                       numangles_for_scat_interp=0):
     """
     Transfer function for all views, returned view per view.
 
@@ -584,6 +585,9 @@ def singlefreq_scat_transfer_functions(views, tx, rx, frequency, freq_array, sca
     use_beamspread : bool
     use_transrefl : bool
     scat_angle : float
+    numangles_for_scat_interp : int
+        If non zero, compute scattering for a finite amount of angles and use linear interpolation for missing data.
+        Large speed-up but possible loss of accuracy if the number of angles is too low.
 
     Yields
     ------
@@ -594,7 +598,21 @@ def singlefreq_scat_transfer_functions(views, tx, rx, frequency, freq_array, sca
 
 
     """
-    scat_funcs = scat_obj.as_angles_funcs(frequency)
+    from ..scat import ScatFromData
+
+    scat_keys_to_compute = set(view.scat_key() for view in views.values())
+    # model_amplitudes_factory is way faster with the scattering is given as matrices instead of functions.
+    # If matrices can be computed cheaply, it's worth it.
+    if isinstance(scat_obj, ScatFromData):
+        with helpers.timeit('Scattering', logger):
+            scattering = scat_obj.as_single_freq_matrices(frequency, scat_obj.numangles,
+                                                          to_compute=scat_keys_to_compute)
+    elif numangles_for_scat_interp > 0:
+        with helpers.timeit('Scattering', logger):
+            scattering = scat_obj.as_single_freq_matrices(frequency, numangles_for_scat_interp,
+                                                          to_compute=scat_keys_to_compute)
+    else:
+        scattering = scat_obj.as_angles_funcs(frequency)
 
     ray_weights = ray_weights_for_views(views, frequency=frequency, probe_element_width=probe_element_width,
                                         use_beamspread=use_beamspread, use_directivity=use_directivity,
@@ -602,10 +620,11 @@ def singlefreq_scat_transfer_functions(views, tx, rx, frequency, freq_array, sca
 
     for viewname, view in views.items():
         logger.info('Transfer function for scatterers in view {}'.format(viewname))
+
         # compute Q_i Q'_j S_ij
         # shape: (numscanlines, numscatterers)
         model_coefficients = model.model_amplitudes_factory(
-            tx, rx, view, ray_weights, scat_funcs,
+            tx, rx, view, ray_weights, scattering,
             scat_angle=scat_angle)[...].T
 
         # shape: (numscanlines, numscatterers)
@@ -624,7 +643,8 @@ def singlefreq_scat_transfer_functions(views, tx, rx, frequency, freq_array, sca
 def singlefreq_scat_transfer_function(views, tx, rx, frequency, freq_array, scat_obj,
                                       probe_element_width=None,
                                       use_directivity=True, use_beamspread=True,
-                                      use_transrefl=True, scat_angle=0):
+                                      use_transrefl=True, scat_angle=0.,
+                                      numangles_for_scat_interp=0):
     """
     Transfer function for all views.
 
@@ -653,13 +673,14 @@ def singlefreq_scat_transfer_function(views, tx, rx, frequency, freq_array, scat
     """
     return sum(singlefreq_scat_transfer_functions(
         views, tx, rx, frequency, freq_array, scat_obj, probe_element_width,
-        use_directivity, use_beamspread, use_transrefl, scat_angle)[1])
+        use_directivity, use_beamspread, use_transrefl, scat_angle, numangles_for_scat_interp)[1])
 
 
 def multifreq_scat_transfer_functions(views, tx, rx, freq_array, scat_obj,
                                       probe_element_width=None,
                                       use_directivity=True, use_beamspread=True,
-                                      use_transrefl=True, scat_angle=0):
+                                      use_transrefl=True, scat_angle=0.,
+                                      numangles_for_scat_interp=0):
     """
     Transfer function for all views, returned view per view.
 
@@ -678,6 +699,9 @@ def multifreq_scat_transfer_functions(views, tx, rx, freq_array, scat_obj,
     use_beamspread : bool
     use_transrefl : bool
     scat_angle : float
+    numangles_for_scat_interp : int
+        If non zero, compute scattering for a finite amount of angles and use linear interpolation for missing data.
+        Large speed-up but possible loss of accuracy if the number of angles is too low.
 
     Yields
     ------
@@ -688,16 +712,35 @@ def multifreq_scat_transfer_functions(views, tx, rx, freq_array, scat_obj,
 
 
     """
+    nonzero_freq_idx = ~np.isclose(freq_array, 0)
+    nonzero_freq_array = freq_array[nonzero_freq_idx]
+    nonzero_to_all_freq_idx = np.arange(len(freq_array))[nonzero_freq_idx]
+
     # precompute all ray weights
     ray_weights_allfreq = []
-    for frequency in freq_array:
-        if np.isclose(frequency, 0.):
-            ray_weights_allfreq.append(None)
-        else:
+    with helpers.timeit('Computation of ray weights', logger):
+        for frequency in nonzero_freq_array:
+            # logger.debug(f'ray weight freq={frequency}')
             ray_weights = ray_weights_for_views(views, frequency=frequency, probe_element_width=probe_element_width,
                                                 use_beamspread=use_beamspread, use_directivity=use_directivity,
                                                 use_transrefl=use_transrefl)
             ray_weights_allfreq.append(ray_weights)
+
+    from ..scat import ScatFromData
+
+    scat_keys_to_compute = set(view.scat_key() for view in views.values())
+    # model_amplitudes_factory is way faster with the scattering is given as matrices instead of functions.
+    # If matrices can be computed cheaply, it's worth it.
+    if isinstance(scat_obj, ScatFromData):
+        with helpers.timeit('Scattering', logger):
+            scat_matrices = scat_obj.as_multi_freq_matrices(nonzero_freq_array, scat_obj.numangles,
+                                                            to_compute=scat_keys_to_compute)
+    elif numangles_for_scat_interp > 0:
+        with helpers.timeit('Scattering', logger):
+            scat_matrices = scat_obj.as_multi_freq_matrices(nonzero_freq_array, numangles_for_scat_interp,
+                                                            to_compute=scat_keys_to_compute)
+    else:
+        scat_matrices = None
 
     for viewname, view in views.items():
         logger.info('Transfer function for scatterers in view {}'.format(viewname))
@@ -708,25 +751,27 @@ def multifreq_scat_transfer_functions(views, tx, rx, freq_array, scat_obj,
         delay = (np.take(view.tx_path.rays.times, tx, axis=0) +
                  np.take(view.rx_path.rays.times, rx, axis=0))
 
-        for freq_idx, frequency in enumerate(freq_array):
-            scat_funcs = scat_obj.as_angles_funcs(frequency)
+        for freq_idx, frequency in enumerate(nonzero_freq_array):
+            all_freq_idx = nonzero_to_all_freq_idx[freq_idx]
+            # logger.debug(f'transfer func freq={frequency}')
 
-            if np.isclose(frequency, 0.):
-                partial_transfer_function_f[:, freq_idx] = 0.
-                continue
+            if scat_matrices:
+                scattering = {key: mat[freq_idx] for key, mat in scat_matrices.items()}
+            else:
+                scattering = scat_obj.as_angles_funcs(frequency)
 
             ray_weights = ray_weights_allfreq[freq_idx]
 
             # compute Q_i Q'_j S_ij
             # shape: (numscanlines, numscatterers)
             model_coefficients = model.model_amplitudes_factory(
-                tx, rx, view, ray_weights, scat_funcs,
+                tx, rx, view, ray_weights, scattering,
                 scat_angle=scat_angle)[...].T
 
             # Transfer[Scanline, Frequency] = Sum_Scatterer
             #   exp(2j pi delay[Scanline, Scatterer] frequency[Frequency])
             #   * model_coefficients[Scanline, Scatterer]
-            partial_transfer_function_f[:, freq_idx] = np.sum(
+            partial_transfer_function_f[:, all_freq_idx] = np.sum(
                 model_coefficients * np.exp(2j * np.pi * frequency * delay),
                 axis=-1
             ).conj()
@@ -736,7 +781,8 @@ def multifreq_scat_transfer_functions(views, tx, rx, freq_array, scat_obj,
 def multifreq_scat_transfer_function(views, tx, rx, freq_array, scat_obj,
                                      probe_element_width=None,
                                      use_directivity=True, use_beamspread=True,
-                                     use_transrefl=True, scat_angle=0):
+                                     use_transrefl=True, scat_angle=0.,
+                                     numangles_for_scat_interp=0):
     """
     Transfer function for all views.
 
@@ -764,4 +810,5 @@ def multifreq_scat_transfer_function(views, tx, rx, freq_array, scat_obj,
     """
     return sum(multifreq_scat_transfer_functions(
         views, tx, rx, freq_array, scat_obj, probe_element_width,
-        use_directivity, use_beamspread, use_transrefl, scat_angle)[1])
+        use_directivity, use_beamspread, use_transrefl, scat_angle,
+        numangles_for_scat_interp)[1])

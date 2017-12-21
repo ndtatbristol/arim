@@ -1145,3 +1145,15 @@ class View(namedtuple('View', ['tx_path', 'rx_path', 'name'])):
 
     def __repr__(self):
         return "{}({})".format(self.__class__.__name__, self.name)
+
+    def scat_key(self):
+        """
+        Return the scattering key (LL, LT, TL or TT) corresponding to the view.
+
+        Returns
+        -------
+        str
+
+        """
+        return self.tx_path.modes[-1].key() + self.rx_path.modes[-1].key()
+
