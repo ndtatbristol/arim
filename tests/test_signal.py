@@ -1,5 +1,6 @@
-import pytest
 import numpy as np
+import scipy.signal
+import pytest
 
 from arim import signal
 from arim import Time
@@ -62,3 +63,17 @@ def test_composed_filters():
     assert (add3 + (multiply2 + substract1))(x) == 11.0
 
     composed = multiply2 + add3
+
+
+@pytest.mark.parametrize("shape,axis", [(11, -1), (10, -1), ((20, 10), -1), ((20, 11), -1),
+                                        ((20, 10), 0), ((21, 10), 0), (1, -1)])
+def test_rfft_to_hilbert(shape, axis):
+    x = np.random.uniform(size=shape)
+
+    y = np.fft.rfft(x, axis=axis)
+    n = np.atleast_1d(shape)[axis]
+
+    z = signal.rfft_to_hilbert(y, n, axis=axis)
+    z_desired = scipy.signal.hilbert(x, axis=axis)
+
+    np.testing.assert_allclose(z, z_desired)

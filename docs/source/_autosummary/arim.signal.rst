@@ -5,6 +5,12 @@ arim\.signal
 
    
    
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      rfft_to_hilbert
+   
    
 
    

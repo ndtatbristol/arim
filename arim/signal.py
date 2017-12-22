@@ -7,8 +7,9 @@ from enum import Enum
 
 import numpy as np
 from scipy.signal import butter, filtfilt, hilbert
+import scipy.fftpack
 
-__all__ = ['Filter', 'ButterworthBandpass', 'ComposedFilter', 'Hilbert', 'NoFilter', 'Abs']
+__all__ = ['Filter', 'ButterworthBandpass', 'ComposedFilter', 'Hilbert', 'NoFilter', 'Abs', 'rfft_to_hilbert']
 
 
 class Filter:
@@ -42,6 +43,7 @@ class NoFilter(Filter):
     """
     A filter that does nothing (return data unchanged).
     """
+
     def __call__(self, arr):
         return arr
 
@@ -165,18 +167,69 @@ class Hilbert(Filter):
     Returns the analytical signal, i.e. ``signal + i * hilbert_signal`` where
     ``hilbert_signal`` is the Hilbert transform of ``signal``.
     """
+
     def __call__(self, arr, axis=-1):
         return hilbert(arr, axis=axis)
 
     def __str__(self):
         return 'Hilbert transform'
 
+
 class Abs(Filter):
     """
     Returns the absolute value of a signal.
     """
+
     def __call__(self, arr):
         return np.abs(arr)
 
     def __str__(self):
         return "Absolute value"
+
+
+def rfft_to_hilbert(xf, n, axis=-1):
+    """
+    Convert the Fourier transform of a real signal to the analytic signal.
+
+    This is equivalent but faster than doing::
+
+        scipy.signal.hilbert(np.fft.irfft(xf, n))
+
+    where typically ::
+
+        xf = np.fft.rfft(x)
+        n = len(xf)
+
+    Convert the positive frequency part as the spectrum, as obtained with ``numpy.fft.rfft``,
+
+    Parameters
+    ----------
+    xf : ndarray
+        Input array
+    n : int
+        Length of the time domain signal
+    axis : int
+        Default: -1
+
+    Returns
+    -------
+    out : complex ndarray
+
+    """
+    # cf code of https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.hilbert.html
+    if xf.ndim == 0:
+        h = 1.
+    else:
+        h = np.zeros(xf.shape[axis])
+        if n % 2 == 0:
+            h[0] = h[n // 2] = 1
+            h[1:n // 2] = 2
+        else:
+            h[0] = 1
+            h[1:(n + 1) // 2] = 2
+
+    if xf.ndim > 1:
+        ind = [np.newaxis] * xf.ndim
+        ind[axis] = slice(None)
+        h = h[ind]
+    return scipy.fftpack.ifft(h * xf, n, axis)
