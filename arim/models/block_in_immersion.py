@@ -21,6 +21,25 @@ Boilerplate::
                            grid_p, max_number_of_reflection=1,
                            tfm_unique_only=False)
 
+Scattering precomputation
+=========================
+
+In the computation of the model, there are two options for scattering. The
+first option is to pass functions, which are called for each pair of incident
+and scatterer angles. The evaluation time per angle pair is in general almost
+constant.
+
+The second option is to pass scattering matrices, which are the function
+outputs for a grid of incident and scatterer angle. Missing angles are obtained
+by linear interpolation. The second option suffers from a loss of accuracy if
+the number of angles used for evaluation is too small. The total evaluation
+time is the sum of the precomputation time and the interpolation.
+
+For a small number of angles to evaluate, passing the functions (option 1) is
+often the most computationally efficient. For a large amount of angles to
+evaluate, precomputing the scattering matrices (option 2) is often more
+computationally efficient.
+
 """
 import logging
 from collections import namedtuple, OrderedDict
@@ -565,7 +584,7 @@ def singlefreq_scat_transfer_functions(views, tx, rx, frequency, freq_array, sca
                                        probe_element_width=None,
                                        use_directivity=True, use_beamspread=True,
                                        use_transrefl=True, scat_angle=0.,
-                                       numangles_for_scat_interp=0):
+                                       numangles_for_scat_precomp=0):
     """
     Transfer function for all views, returned view per view.
 
@@ -585,9 +604,9 @@ def singlefreq_scat_transfer_functions(views, tx, rx, frequency, freq_array, sca
     use_beamspread : bool
     use_transrefl : bool
     scat_angle : float
-    numangles_for_scat_interp : int
-        If non zero, compute scattering for a finite amount of angles and use linear interpolation for missing data.
-        Large speed-up but possible loss of accuracy if the number of angles is too low.
+    numangles_for_scat_precomp : int
+        Number of angles in [-pi, pi] for scattering precomputation.
+        0 to disable. See module documentation.
 
     Yields
     ------
@@ -607,9 +626,9 @@ def singlefreq_scat_transfer_functions(views, tx, rx, frequency, freq_array, sca
         with helpers.timeit('Scattering', logger):
             scattering = scat_obj.as_single_freq_matrices(frequency, scat_obj.numangles,
                                                           to_compute=scat_keys_to_compute)
-    elif numangles_for_scat_interp > 0:
+    elif numangles_for_scat_precomp > 0:
         with helpers.timeit('Scattering', logger):
-            scattering = scat_obj.as_single_freq_matrices(frequency, numangles_for_scat_interp,
+            scattering = scat_obj.as_single_freq_matrices(frequency, numangles_for_scat_precomp,
                                                           to_compute=scat_keys_to_compute)
     else:
         scattering = scat_obj.as_angles_funcs(frequency)
@@ -644,7 +663,7 @@ def singlefreq_scat_transfer_function(views, tx, rx, frequency, freq_array, scat
                                       probe_element_width=None,
                                       use_directivity=True, use_beamspread=True,
                                       use_transrefl=True, scat_angle=0.,
-                                      numangles_for_scat_interp=0):
+                                      numangles_for_scat_precomp=0):
     """
     Transfer function for all views.
 
@@ -664,6 +683,9 @@ def singlefreq_scat_transfer_function(views, tx, rx, frequency, freq_array, scat
     use_beamspread : bool
     use_transrefl : bool
     scat_angle : float
+    numangles_for_scat_precomp : int
+        Number of angles in [-pi, pi] for scattering precomputation.
+        0 to disable. See module documentation.
 
     Returns
     -------
@@ -673,14 +695,14 @@ def singlefreq_scat_transfer_function(views, tx, rx, frequency, freq_array, scat
     """
     return sum(singlefreq_scat_transfer_functions(
         views, tx, rx, frequency, freq_array, scat_obj, probe_element_width,
-        use_directivity, use_beamspread, use_transrefl, scat_angle, numangles_for_scat_interp)[1])
+        use_directivity, use_beamspread, use_transrefl, scat_angle, numangles_for_scat_precomp)[1])
 
 
 def multifreq_scat_transfer_functions(views, tx, rx, freq_array, scat_obj,
                                       probe_element_width=None,
                                       use_directivity=True, use_beamspread=True,
                                       use_transrefl=True, scat_angle=0.,
-                                      numangles_for_scat_interp=0):
+                                      numangles_for_scat_precomp=0):
     """
     Transfer function for all views, returned view per view.
 
@@ -699,9 +721,9 @@ def multifreq_scat_transfer_functions(views, tx, rx, freq_array, scat_obj,
     use_beamspread : bool
     use_transrefl : bool
     scat_angle : float
-    numangles_for_scat_interp : int
-        If non zero, compute scattering for a finite amount of angles and use linear interpolation for missing data.
-        Large speed-up but possible loss of accuracy if the number of angles is too low.
+    numangles_for_scat_precomp : int
+        Number of angles in [-pi, pi] for scattering precomputation.
+        0 to disable. See module documentation.
 
     Yields
     ------
@@ -735,9 +757,9 @@ def multifreq_scat_transfer_functions(views, tx, rx, freq_array, scat_obj,
         with helpers.timeit('Scattering', logger):
             scat_matrices = scat_obj.as_multi_freq_matrices(nonzero_freq_array, scat_obj.numangles,
                                                             to_compute=scat_keys_to_compute)
-    elif numangles_for_scat_interp > 0:
+    elif numangles_for_scat_precomp > 0:
         with helpers.timeit('Scattering', logger):
-            scat_matrices = scat_obj.as_multi_freq_matrices(nonzero_freq_array, numangles_for_scat_interp,
+            scat_matrices = scat_obj.as_multi_freq_matrices(nonzero_freq_array, numangles_for_scat_precomp,
                                                             to_compute=scat_keys_to_compute)
     else:
         scat_matrices = None
@@ -782,7 +804,7 @@ def multifreq_scat_transfer_function(views, tx, rx, freq_array, scat_obj,
                                      probe_element_width=None,
                                      use_directivity=True, use_beamspread=True,
                                      use_transrefl=True, scat_angle=0.,
-                                     numangles_for_scat_interp=0):
+                                     numangles_for_scat_precomp=0):
     """
     Transfer function for all views.
 
@@ -801,6 +823,9 @@ def multifreq_scat_transfer_function(views, tx, rx, freq_array, scat_obj,
     use_beamspread : bool
     use_transrefl : bool
     scat_angle : float
+    numangles_for_scat_precomp : int
+        Number of angles in [-pi, pi] for scattering precomputation.
+        0 to disable. See module documentation.
 
     Returns
     -------
@@ -811,4 +836,4 @@ def multifreq_scat_transfer_function(views, tx, rx, freq_array, scat_obj,
     return sum(multifreq_scat_transfer_functions(
         views, tx, rx, freq_array, scat_obj, probe_element_width,
         use_directivity, use_beamspread, use_transrefl, scat_angle,
-        numangles_for_scat_interp)[1])
+        numangles_for_scat_precomp)[1])
