@@ -582,9 +582,9 @@ class CoordinateSystem:
         Compare two coordinate system.
         """
         return (
-            np.allclose(self.origin, other.origin, rtol=rtol, atol=atol) and
-            np.allclose(self.i_hat, other.i_hat, rtol=rtol, atol=atol) and
-            np.allclose(self.j_hat, other.j_hat, rtol=rtol, atol=atol))
+                np.allclose(self.origin, other.origin, rtol=rtol, atol=atol) and
+                np.allclose(self.i_hat, other.i_hat, rtol=rtol, atol=atol) and
+                np.allclose(self.j_hat, other.j_hat, rtol=rtol, atol=atol))
 
     @property
     def basis_matrix(self):
@@ -668,6 +668,52 @@ class Grid(Points):
         self.xvect = x
         self.yvect = y
         self.zvect = z
+
+    @classmethod
+    def grid_centred_at_point(cls, centre_x, centre_y, centre_z, size_x, size_y, size_z, pixel_size):
+        """
+        Create a regularly spaced 3d grid centred around a point.
+
+        The centre is a point of the grid, which imposes the number of points in any non-null direction is odd.
+
+        Parameters
+        ----------
+        centre_x : float
+        centre_y : float
+        centre_z : float
+        size_x : float
+        size_y : float
+        size_z : float
+        pixel_size : float
+            Approximate size
+
+        Returns
+        -------
+        Grid
+
+        """
+        # Reminder:
+        #   L = (N-1)*D
+        #   D = L/(N-1)
+        #   N = L/D + 1
+        # The smallest odd integer above x is: math.ceil(x)|1
+        numpoints_x = math.ceil(size_x / pixel_size + 1) | 1
+        numpoints_y = math.ceil(size_y / pixel_size + 1) | 1
+        numpoints_z = math.ceil(size_z / pixel_size + 1) | 1
+
+        # The pixel size is exactly size/(numpoints-1). However it leads to numerical issue in __init__(), so
+        # use size/(numpoints-1.5) instead
+        dx = size_x / (numpoints_x - 1.5)
+        dy = size_y / (numpoints_y - 1.5)
+        dz = size_z / (numpoints_z - 1.5)
+        return cls(
+            centre_x - size_x / 2,
+            centre_x + size_x / 2,
+            centre_y - size_y / 2,
+            centre_y + size_y / 2,
+            centre_z - size_z / 2,
+            centre_z + size_z / 2,
+            (dx, dy, dz))
 
     @property
     def xmin(self):
@@ -1036,8 +1082,8 @@ def are_points_close(points1, points2, atol=1e-8, rtol=0.):
     bool
     """
     return (
-        len(points1.shape) == len(points2.shape) and
-        np.allclose(points1.coords, points2.coords, rtol=rtol, atol=atol))
+            len(points1.shape) == len(points2.shape) and
+            np.allclose(points1.coords, points2.coords, rtol=rtol, atol=atol))
 
 
 def are_points_aligned(points, rtol=0., atol=1e-08):

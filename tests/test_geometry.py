@@ -250,6 +250,34 @@ def test_grid():
     assert match.sum() == 1 * grid.numy * grid.numz
 
 
+@pytest.mark.parametrize("pixel_size", [0.5, 0.6, 0.7, 0.8, 0.9, 1.])
+def test_grid_centred(pixel_size):
+    centre_x = 15.
+    centre_y = 0.
+    centre_z = 10.
+    size_x = 5.
+    size_y = 0.
+    size_z = 10.
+
+    grid = g.Grid.grid_centred_at_point(centre_x, centre_y, centre_z,
+                                            size_x, size_y, size_z, pixel_size)
+    np.testing.assert_allclose(grid.xmin, 12.5)
+    np.testing.assert_allclose(grid.xmax, 17.5)
+    np.testing.assert_allclose(grid.yvect, [0.])
+    np.testing.assert_allclose(grid.zmin, 5.)
+    np.testing.assert_allclose(grid.zmax, 15.)
+    assert grid.dx <= pixel_size
+    assert grid.dy is None
+    assert grid.dz <= pixel_size
+    assert grid.numx % 2 == 1
+    assert grid.numy == 1
+    assert grid.numz % 2 == 1
+    idx = grid.closest_point(centre_x, centre_y, centre_z)
+    np.testing.assert_allclose(
+        [grid.x.flat[idx], grid.y.flat[idx], grid.z.flat[idx]],
+        [centre_x, centre_y, centre_z])
+
+
 # shape, name, size
 points_parameters = [
     ((), 'TestPoints', 1),
