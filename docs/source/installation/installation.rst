@@ -20,10 +20,10 @@ Dependencies for arim itself:
 - `scipy <https://www.scipy.org/>`_
 - `numba <http://numba.pydata.org/>`_: efficient computation
 - `matplotlib <http://matplotlib.org/>`_: plotting library used in :mod:`arim.plot` and in scripts
+- `pyyaml <http://pyyaml.org/>`_: used for reading configuration files
 
 Dependencies for the example scripts (not used by arim *per se*):
 
-- `pyyaml <http://pyyaml.org/>`_: used for reading configuration files.
 - `pandas <http://pyyaml.org/>`_: data analysis tools
 
 Optional dependency:
