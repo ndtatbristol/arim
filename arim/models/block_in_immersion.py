@@ -43,8 +43,10 @@ computationally efficient.
 """
 import logging
 from collections import namedtuple, OrderedDict
+import cmath
 
 import numpy as np
+import numba
 
 from .. import model, ray, ut, helpers
 from .. import core as c, geometry as g
@@ -580,6 +582,45 @@ def make_views(examination_object, probe_oriented_points,
     return make_views_from_paths(paths, tfm_unique_only)
 
 
+@numba.jit(nopython=True, parallel=True)
+def _make_transfer_function_singlef(times_tx, times_rx, model_coefficients, freq_array, out):
+    """
+    Transfer[Scanline, Frequency] = Sum_Scatterer
+       exp(2j pi delay[Scanline, Scatterer] frequency[Frequency])
+       * model_coefficients[Scanline, Scatterer]
+
+    Parameters
+    ----------
+    times_tx :
+        shape: (numscanlines, numscatterers)
+    times_rx
+    model_coefficients :
+        shape: (numscanlines, numscatterers)
+    freq_array
+        shape: numfreq
+    out :
+        Transfer func.
+        shape : (numscanlines, numfreq)
+
+
+    Returns
+    -------
+
+    """
+    numscanlines = times_tx.shape[0]
+    numscatterers = times_tx.shape[1]
+
+    for scan_idx in numba.prange(numscanlines):
+        for freq_idx in range(freq_array.shape[0]):
+            tmp = 0j
+            freq = freq_array[freq_idx]
+            for scat_idx in range(numscatterers):
+                tmp += model_coefficients[scan_idx, scat_idx] * cmath.exp(
+                    -2j * np.pi * freq * (times_tx[scan_idx, scat_idx] + times_rx[scan_idx, scat_idx]))
+            out[scan_idx, freq_idx] = tmp
+    return out
+
+
 def singlefreq_scat_transfer_functions(views, tx, rx, frequency, freq_array, scat_obj,
                                        probe_element_width=None,
                                        use_directivity=True, use_beamspread=True,
@@ -645,17 +686,17 @@ def singlefreq_scat_transfer_functions(views, tx, rx, frequency, freq_array, sca
         model_coefficients = model.model_amplitudes_factory(
             tx, rx, view, ray_weights, scattering,
             scat_angle=scat_angle)[...].T
+        model_coefficients = np.conj(model_coefficients, out=model_coefficients)
 
-        # shape: (numscanlines, numscatterers)
-        delay = (np.take(view.tx_path.rays.times, tx, axis=0) +
-                 np.take(view.rx_path.rays.times, rx, axis=0))
+        times_tx = np.take(view.tx_path.rays.times, tx, axis=0)
+        times_rx = np.take(view.rx_path.rays.times, rx, axis=0)
 
-        # Transfer[Scanline, Frequency] = Sum_Scatterer
-        #   exp(2j pi delay[Scanline, Scatterer] frequency[Frequency])
-        #   * model_coefficients[Scanline, Scatterer]
-        partial_transfer_function_f = np.einsum(
-            'ik,ijk->ij', model_coefficients,
-            np.exp(2j * np.pi * freq_array[np.newaxis, :, np.newaxis] * delay[:, np.newaxis, :])).conj()
+        # shape (numscanlines, numfreq)
+        partial_transfer_function_f = np.zeros((len(tx), len(freq_array)), np.complex_)
+
+        _make_transfer_function_singlef(times_tx, times_rx, model_coefficients, freq_array, partial_transfer_function_f)
+
+
         yield viewname, partial_transfer_function_f
 
 
