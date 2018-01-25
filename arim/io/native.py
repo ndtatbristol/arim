@@ -56,6 +56,12 @@ def load_conf(dirname):
     Returns
     -------
     arim.config.Config
+
+    Notes
+    -----
+    Load {dirname}/conf.yaml and all yaml files in {dirname}/conf.d/.
+
+    All keys named 'filename'
     """
     root_dir = pathlib.Path(dirname).resolve(strict=True)
 
