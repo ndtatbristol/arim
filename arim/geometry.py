@@ -715,6 +715,19 @@ class Grid(Points):
             centre_z + size_z / 2,
             (dx, dy, dz))
 
+    def upsample(self, new_pixel_size):
+        """
+        Returns a new Grid object with
+        Parameters
+        ----------
+        new_pixel_size
+
+        Returns
+        -------
+
+        """
+        return self.__class__(self.xmin, self.xmax, self.ymin, self.ymax, self.zmin, self.zmax, new_pixel_size)
+
     @property
     def xmin(self):
         return self.xvect[0]

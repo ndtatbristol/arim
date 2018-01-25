@@ -260,7 +260,7 @@ def test_grid_centred(pixel_size):
     size_z = 10.
 
     grid = g.Grid.grid_centred_at_point(centre_x, centre_y, centre_z,
-                                            size_x, size_y, size_z, pixel_size)
+                                        size_x, size_y, size_z, pixel_size)
     np.testing.assert_allclose(grid.xmin, 12.5)
     np.testing.assert_allclose(grid.xmax, 17.5)
     np.testing.assert_allclose(grid.yvect, [0.])
@@ -276,6 +276,26 @@ def test_grid_centred(pixel_size):
     np.testing.assert_allclose(
         [grid.x.flat[idx], grid.y.flat[idx], grid.z.flat[idx]],
         [centre_x, centre_y, centre_z])
+
+
+@pytest.mark.parametrize("pixel_size", [0.5, 0.6, 0.7, 0.8, 0.9, 1.])
+def test_grid_clone(pixel_size):
+    xmin = -10e-3
+    xmax = 10e-3
+
+    ymin = 3e-3
+    ymax = 3e-3
+
+    zmin = -10e-3
+    zmax = 0
+
+    orig_grid = g.Grid(xmin, xmax, ymin, ymax, zmin, zmax, pixel_size)
+    grid = g.Grid(
+        orig_grid.xmin, orig_grid.xmax, orig_grid.ymin, orig_grid.ymax, orig_grid.zmin, orig_grid.zmax,
+        (orig_grid.dx, orig_grid.dy, orig_grid.dz))
+    assert orig_grid.numx == grid.numx
+    assert orig_grid.numy == grid.numy
+    assert orig_grid.numz == grid.numz
 
 
 # shape, name, size
