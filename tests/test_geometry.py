@@ -266,9 +266,7 @@ def test_grid_centred(pixel_size):
     np.testing.assert_allclose(grid.yvect, [0.])
     np.testing.assert_allclose(grid.zmin, 5.)
     np.testing.assert_allclose(grid.zmax, 15.)
-    assert grid.dx <= pixel_size
     assert grid.dy is None
-    assert grid.dz <= pixel_size
     assert grid.numx % 2 == 1
     assert grid.numy == 1
     assert grid.numz % 2 == 1

@@ -627,6 +627,7 @@ class Grid(Points):
     zmax  : float
     pixel_size: float
         *Approximative* distance between points to use. Either one or three floats.
+
     """
 
     __slots__ = ('coords', 'name', 'xvect', 'yvect', 'zvect')
@@ -643,25 +644,22 @@ class Grid(Points):
             x = np.array([xmin])
         else:
             if xmin > xmax:
-                warn("xmin > xmax in grid", ArimWarning, stacklevel=2)
-            x = np.linspace(xmin, xmax, int(np.abs(np.ceil((xmax - xmin) / dx)) + 1),
-                            dtype=s.FLOAT)
+                warn("xmin > xmax in grid", ArimWarning)
+            x = np.linspace(xmin, xmax, round((abs(xmax - xmin) + dx) / dx), dtype=s.FLOAT)
 
         if ymin == ymax:
             y = np.array([ymin], dtype=s.FLOAT)
         else:
             if ymin > ymax:
-                warn("ymin > ymax in grid", ArimWarning, stacklevel=2)
-            y = np.linspace(ymin, ymax, int(np.abs(np.ceil((ymax - ymin) / dy)) + 1),
-                            dtype=s.FLOAT)
+                warn("ymin > ymax in grid", ArimWarning)
+            y = np.linspace(ymin, ymax, round((abs(ymax - ymin) + dy) / dy), dtype=s.FLOAT)
 
         if zmin == zmax:
             z = np.array([zmin], dtype=s.FLOAT)
         else:
             if zmin > zmax:
-                warn("zmin > zmax in grid", ArimWarning, stacklevel=2)
-            z = np.linspace(zmin, zmax, int(np.abs(np.ceil((zmax - zmin) / dz)) + 1),
-                            dtype=s.FLOAT)
+                warn("zmin > zmax in grid", ArimWarning)
+            z = np.linspace(zmin, zmax, round((abs(zmax - zmin) + dz) / dz), dtype=s.FLOAT)
 
         all_coords = np.stack(np.meshgrid(x, y, z, indexing='ij'), axis=-1)
         super().__init__(all_coords, 'Grid')
@@ -697,15 +695,28 @@ class Grid(Points):
         #   D = L/(N-1)
         #   N = L/D + 1
         # The smallest odd integer above x is: math.ceil(x)|1
+        assert size_x >= 0.
+        assert size_y >= 0.
+        assert size_z >= 0.
+
         numpoints_x = math.ceil(size_x / pixel_size + 1) | 1
         numpoints_y = math.ceil(size_y / pixel_size + 1) | 1
         numpoints_z = math.ceil(size_z / pixel_size + 1) | 1
 
-        # The pixel size is exactly size/(numpoints-1). However it leads to numerical issue in __init__(), so
-        # use size/(numpoints-1.5) instead
-        dx = size_x / (numpoints_x - 1.5)
-        dy = size_y / (numpoints_y - 1.5)
-        dz = size_z / (numpoints_z - 1.5)
+        # The pixel size is exactly size/(numpoints-1)
+        try:
+            dx = size_x / (numpoints_x - 1)
+        except ZeroDivisionError:
+            dx = size_x
+        try:
+            dy = size_y / (numpoints_y - 1)
+        except ZeroDivisionError:
+            dy = size_y
+        try:
+            dz = size_z / (numpoints_z - 1)
+        except ZeroDivisionError:
+            dz = size_z
+
         return cls(
             centre_x - size_x / 2,
             centre_x + size_x / 2,
@@ -715,15 +726,17 @@ class Grid(Points):
             centre_z + size_z / 2,
             (dx, dy, dz))
 
-    def upsample(self, new_pixel_size):
+    def resample(self, new_pixel_size):
         """
-        Returns a new Grid object with
+        Returns a new Grid object with a new pixel size
+
         Parameters
         ----------
         new_pixel_size
 
         Returns
         -------
+        Grid
 
         """
         return self.__class__(self.xmin, self.xmax, self.ymin, self.ymax, self.zmin, self.zmax, new_pixel_size)
