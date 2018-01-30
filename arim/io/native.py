@@ -40,18 +40,22 @@ _ConfigLoader.add_constructor('!include', _ConfigLoader.include)
 
 
 def load_conf_file(filename):
-    """Load configuration file"""
+    """Load a single configuration file"""
     with open(filename, 'r') as f:
         return config.Config(yaml.load(f, _ConfigLoader))
 
 
-def load_conf(dirname):
+def load_conf(dirname, filepath_keys={'filename', 'datafile'}):
     """
-    Load the configuration from a '.arim' directory
+    Load the configuration from a `.arim` directory
 
     Parameters
     ----------
     dirname
+    filepath_keys : set
+        Config keys that stores files. If they are relative paths, they will be replaced
+        by an absolute path (str object) assuming the root dir is the `.arim` directory.
+        Set to False to disable.
 
     Returns
     -------
@@ -60,8 +64,6 @@ def load_conf(dirname):
     Notes
     -----
     Load {dirname}/conf.yaml and all yaml files in {dirname}/conf.d/.
-
-    All keys named 'filename'
     """
     root_dir = pathlib.Path(dirname).resolve(strict=True)
 
@@ -95,7 +97,36 @@ def load_conf(dirname):
         result_dir = pathlib.Path(root_dir / pathlib.Path(result_dir)).resolve(strict=True)
     conf['result_dir'] = result_dir
 
+    if filepath_keys:
+        _resolve_filenames(conf, root_dir, filepath_keys)
+
     return conf
+
+
+def _resolve_filenames(d, root_dir, target_keys):
+    """
+    Replace target keys by an absolute pathlib.Path where the root dir
+    is `root_dir`
+
+    Parameters
+    ----------
+    d : dict or anything
+    root_dir : pathlib.Path
+    target_keys : set
+
+    Returns
+    -------
+    d
+        Updated dictionary
+
+    """
+    if not isinstance(d, dict):
+        return
+    for k, v in d.items():
+        if k in target_keys:
+            d[k] = str(root_dir / v)
+        else:
+            _resolve_filenames(v, root_dir, target_keys)
 
 
 def probe_from_conf(conf, apply_probe_location=True):
