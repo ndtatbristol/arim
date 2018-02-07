@@ -150,3 +150,9 @@ class TestDasDispatcher:
         res = das.delay_and_sum(frame, focal_law, interpolation=('linear', ))
         res = das.delay_and_sum(frame, focal_law, interpolation=('lanczos', 3))
 
+        frame, focal_law = make_delay_and_sum_case_random(dtype_float, dtype_data, amplitudes='random')
+        res = das.delay_and_sum(frame, focal_law, fillvalue=0.)
+        res = das.delay_and_sum(frame, focal_law, fillvalue=np.nan)
+        res = das.delay_and_sum(frame, focal_law, interpolation='nearest')
+        res = das.delay_and_sum(frame, focal_law, interpolation='linear')
+

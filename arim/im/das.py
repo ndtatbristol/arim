@@ -58,7 +58,7 @@ def _check_shapes(frame, focal_law):
     assert frame.rx.flags.c_contiguous
 
 
-def delay_and_sum_numba(frame, focal_law, fillvalue=0., result=None, interpolate_position='nearest'):
+def delay_and_sum_numba(frame, focal_law, fillvalue=0., interpolation='nearest', result=None):
     """
     Delay-and-sum function using Numba compiler.
 
@@ -77,8 +77,9 @@ def delay_and_sum_numba(frame, focal_law, fillvalue=0., result=None, interpolate
         Block size for multithreading. Use arim.settings if not provided
     numthreads : int
         Number of threads for multithreading. Use arim.settings if not provided
-    interpolate_position : string
-        'nearest' or 'linear'. Default: nearest
+    interpolation : str
+        Interpolation of scanlines between samples. 'linear', 'nearest'
+    result
 
     Returns
     -------
@@ -96,9 +97,9 @@ def delay_and_sum_numba(frame, focal_law, fillvalue=0., result=None, interpolate
         result = np.full((numpoints,), 0, dtype=dtype_data)
     assert result.shape == (numpoints,)
 
-    if interpolate_position.lower() == 'nearest':
+    if interpolation.lower() == 'nearest':
         delay_and_sum_function = _delay_and_sum_amplitudes_nearest
-    elif interpolate_position.lower() == 'linear':
+    elif interpolation.lower() == 'linear':
         delay_and_sum_function = _delay_and_sum_amplitudes_linear
     else:
         raise ValueError("invalid 'interpolate_position'")
@@ -618,7 +619,7 @@ def delay_and_sum_naive(frame, focal_law, fillvalue=0., result=None,
 def delay_and_sum(frame, focal_law, *args, **kwargs):
     """
     Dispatcher function for delay-and-sum algorithm 
-    
+
     Recommended delay-and-sum function
     """
     from . import tfm
