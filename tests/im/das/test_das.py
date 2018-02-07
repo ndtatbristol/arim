@@ -121,7 +121,6 @@ def test_delay_and_sum_all(das_func, datatypes, fillvalue):
     assert np.sum(np.isfinite(result)) > 0, "all nan!"
     assert np.count_nonzero(result) > 0, "all zeros!"
 
-
 class TestDasDispatcher:
     def test_amplitudes_uniform_vs_noamp(self, datatypes):
         dtype_float, dtype_data = datatypes
@@ -139,3 +138,15 @@ class TestDasDispatcher:
             np.testing.assert_allclose(result, reference_result, equal_nan=True, rtol=1e-5)
         else:
             np.testing.assert_allclose(result, reference_result, equal_nan=True)
+
+    def test_call_das(self, datatypes):
+        dtype_float, dtype_data = datatypes
+        frame, focal_law = make_delay_and_sum_case_random(dtype_float, dtype_data, amplitudes='none')
+        res = das.delay_and_sum(frame, focal_law, fillvalue=0.)
+        res = das.delay_and_sum(frame, focal_law, fillvalue=np.nan)
+        res = das.delay_and_sum(frame, focal_law, interpolation='nearest')
+        res = das.delay_and_sum(frame, focal_law, interpolation=('nearest', ))
+        res = das.delay_and_sum(frame, focal_law, interpolation='linear')
+        res = das.delay_and_sum(frame, focal_law, interpolation=('linear', ))
+        res = das.delay_and_sum(frame, focal_law, interpolation=('lanczos', 3))
+

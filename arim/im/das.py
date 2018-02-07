@@ -5,6 +5,18 @@ Contains different implementation of delay-and-sum algorithm.
 
 .. currentmodule:: arim.im.das
 
+Examples
+--------
+
+::
+
+    res = das.delay_and_sum(frame, focal_law, fillvalue=0.)
+    res = das.delay_and_sum(frame, focal_law, fillvalue=np.nan)
+    res = das.delay_and_sum(frame, focal_law, interpolation='nearest')
+    res = das.delay_and_sum(frame, focal_law, interpolation='linear')
+    res = das.delay_and_sum(frame, focal_law, interpolation=('lanczos', 3))
+
+
 Data structures
 ---------------
 
@@ -16,9 +28,11 @@ Data structures
 
 """
 
+import math
+import logging
+
 import numba
 import numpy as np
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -228,6 +242,57 @@ def _delay_and_sum_amplitudes_linear(weighted_scanlines, tx, rx, lookup_times_tx
         result[point] = res_tmp
 
 
+@numba.jit(nopython=True, nogil=True, parallel=True)
+def _delay_and_sum_amplitudes_linear(weighted_scanlines, tx, rx, lookup_times_tx,
+                                     lookup_times_rx, amplitudes_tx,
+                                     amplitudes_rx, dt, t0, fillvalue, result):
+    """
+    Numba implementation of the delay and sum algorithm, using linear
+    interpolation for time point.
+
+    Parameters
+    ----------
+    weighted_scanlines : ndarray [numscanlines x numsamples]
+    lookup_times_tx : ndarray [numpoints x numelements]
+        Times of flight (floats) between the transmitters and the grid points.
+    lookup_times_rx : ndarray [numpoints x numelements]
+        Times of flight (floats) between the grid points and the receivers.
+    amplitudes_tx : ndarray [numpoints x numelements]
+    amplitudes_rx : ndarray [numpoints x numelements]
+    result : ndarray [numpoints]
+        Result.
+    tx, rx : ndarray [numscanlines]
+        Mapping between the scanlines and the transmitter/receiver.
+        Values: integers in [0, numelements[
+
+    Returns
+    -------
+    None
+    """
+    numscanlines, numsamples = weighted_scanlines.shape
+    numpoints, numelements = lookup_times_tx.shape
+
+    for point in numba.prange(numpoints):
+        res_tmp = 0.
+        for scan in range(numscanlines):
+            lookup_time = lookup_times_tx[point, tx[scan]] + lookup_times_rx[
+                point, rx[scan]]
+            loc1 = (lookup_time - t0) / dt
+            lookup_index = int(loc1)
+            frac1 = loc1 - lookup_index
+            lookup_index1 = lookup_index + 1
+
+            if lookup_index < 0 or lookup_index1 >= numsamples:
+                res_tmp += fillvalue
+            else:
+                lscanVal = weighted_scanlines[scan, lookup_index]
+                lscanVal1 = weighted_scanlines[scan, lookup_index1]
+                lscanUseVal = lscanVal + frac1 * (lscanVal1 - lscanVal)
+                res_tmp += amplitudes_tx[point, tx[scan]] \
+                           * amplitudes_rx[point, rx[scan]] * lscanUseVal
+        result[point] = res_tmp
+
+
 def delay_and_sum_numba_noamp(frame, focal_law, fillvalue=0., interpolation='nearest', result=None):
     """
     Delay and sum with uniform amplitudes
@@ -238,7 +303,7 @@ def delay_and_sum_numba_noamp(frame, focal_law, fillvalue=0., interpolation='nea
     focal_law
     fillvalue
     interpolation : str
-        Interpolation of scanlines. 'linear' or 'nearest'
+        Interpolation of scanlines between samples. 'linear', 'nearest', ('lanczos', a)
     result
 
     Returns
@@ -260,16 +325,28 @@ def delay_and_sum_numba_noamp(frame, focal_law, fillvalue=0., interpolation='nea
     invdt = 1 / frame.time.step
     t0 = frame.time.start
 
-    if interpolation == 'nearest':
+    if isinstance(interpolation, str):
+        interpolation_name = interpolation
+        interpolation_args = ()
+    else:
+        interpolation_name = interpolation[0]
+        interpolation_args = interpolation[1:]
+
+    if interpolation_name == 'nearest':
         das_func = _delay_and_sum_noamp
-    elif interpolation == 'linear':
+        assert len(interpolation_args) == 0
+    elif interpolation_name == 'linear':
         das_func = _delay_and_sum_noamp_linear
+        assert len(interpolation_args) == 0
+    elif interpolation_name == 'lanczos':
+        das_func = _delay_and_sum_noamp_lanczos
+        assert len(interpolation_args) == 1
     else:
         raise ValueError("invalid interpolation")
 
     das_func(weighted_scanlines, frame.tx, frame.rx,
              focal_law.lookup_times_tx, focal_law.lookup_times_rx,
-             invdt, t0, fillvalue, result)
+             invdt, t0, fillvalue, *interpolation_args, result)
     return result
 
 
@@ -319,6 +396,61 @@ def _delay_and_sum_noamp_linear(weighted_scanlines, tx, rx, lookup_times_tx,
                 scan_val_left = weighted_scanlines[scan, lookup_index_left]
                 scan_val_right = weighted_scanlines[scan, lookup_index_right]
                 res_tmp += (1 - frac) * scan_val_left + frac * scan_val_right
+
+        result[point] = res_tmp
+
+
+@numba.jit(nopython=True, cache=True)
+def sinc(x):
+    if x == 0:
+        return 0.0
+    else:
+        return math.sin(math.pi * x) / (math.pi * x)
+
+
+@numba.jit(nopython=True, cache=True)
+def lanczos_window(x, a):
+    if not (-a < x < a):
+        return 0.
+    else:
+        return sinc(x) * sinc(x / a)
+
+
+@numba.jit(nopython=True, cache=True)
+def lanczos_interpolation(t, x, a):
+    i_min = math.floor(t) - a + 1
+    i_max = math.floor(t) + a + 1  # +1 because of how range() works
+    n = len(x)
+    out = 0.
+    for i in range(i_min, i_max):
+        out += x[i % n] * lanczos_window(t - i, a)
+    return out
+
+
+@numba.jit(nopython=True, nogil=True, parallel=True)
+def _delay_and_sum_noamp_lanczos(weighted_scanlines, tx, rx, lookup_times_tx,
+                                 lookup_times_rx, invdt, t0, fillvalue, a, result):
+    """
+    Delay and sum with Lanczos interpolation with factor 'a' of the scanlines.
+
+    https://en.wikipedia.org/wiki/Lanczos_resampling
+    """
+    numscanlines, numsamples = weighted_scanlines.shape
+    numpoints, numelements = lookup_times_tx.shape
+
+    for point in numba.prange(numpoints):
+        res_tmp = 0.
+
+        for scan in range(numscanlines):
+            lookup_time = lookup_times_tx[point, tx[scan]] + lookup_times_rx[
+                point, rx[scan]]
+
+            lookup_index = (lookup_time - t0) * invdt
+
+            if lookup_index < 0 or lookup_index >= numsamples:
+                res_tmp += fillvalue
+            else:
+                res_tmp += lanczos_interpolation(lookup_index, weighted_scanlines[scan], a)
 
         result[point] = res_tmp
 
