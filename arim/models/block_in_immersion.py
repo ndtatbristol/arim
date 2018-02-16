@@ -300,6 +300,67 @@ def frontwall_path(couplant_material, block_material, probe_points,
         name='Frontwall')
 
 
+def backwall_paths(couplant_material, block_material, probe_oriented_points,
+                   frontwall, backwall):
+    """
+    Make backwall paths
+
+    Probe -> couplant -> frontwall -> block (L or T) -> backwall -> block (L or T) -> frontwall -> couplant -> probe
+
+    Parameters
+    ----------
+    couplant_material : Material
+    block_material : Material
+    probe_oriented_points : OrientedPoints
+    frontwall: OrientedPoints
+    backwall: OrientedPoints
+
+    Returns
+    -------
+    OrderedDict of Path
+        Keys: LL, LT, TL, TT
+
+    """
+    probe_start = c.Interface(*probe_oriented_points,
+                              are_normals_on_out_rays_side=True)
+
+    frontwall_couplant_to_block = c.Interface(
+        *frontwall,
+        'fluid_solid', 'transmission',
+        are_normals_on_inc_rays_side=False,
+        are_normals_on_out_rays_side=True)
+
+    backwall_refl = c.Interface(
+        *backwall,
+        'solid_fluid', 'reflection',
+        reflection_against=couplant_material,
+        are_normals_on_inc_rays_side=False,
+        are_normals_on_out_rays_side=False)
+
+    frontwall_block_to_couplant = c.Interface(
+        *frontwall,
+        'solid_fluid', 'transmission',
+        are_normals_on_inc_rays_side=True,
+        are_normals_on_out_rays_side=False)
+
+    probe_end = c.Interface(*probe_oriented_points,
+                            are_normals_on_inc_rays_side=True)
+
+    paths = OrderedDict()
+
+    for mode1 in (c.Mode.L, c.Mode.T):
+        for mode2 in (c.Mode.L, c.Mode.T):
+            key = mode1.key() + mode2.key()
+            paths[key] = c.Path(
+                interfaces=(probe_start, frontwall_couplant_to_block, backwall_refl,
+                            frontwall_block_to_couplant, probe_end),
+                materials=(couplant_material, block_material, block_material, couplant_material),
+                modes=(c.Mode.L, mode1, mode2, c.Mode.L),
+                name='Backwall ' + key)
+
+    return paths
+
+
 def ray_weights_for_wall(path, frequency, probe_element_width=None,
                          use_directivity=True, use_beamspread=True,
                          use_transrefl=True):
@@ -695,7 +756,6 @@ def singlefreq_scat_transfer_functions(views, tx, rx, frequency, freq_array, sca
         partial_transfer_function_f = np.zeros((len(tx), len(freq_array)), np.complex_)
 
         _make_transfer_function_singlef(times_tx, times_rx, model_coefficients, freq_array, partial_transfer_function_f)
-
 
         yield viewname, partial_transfer_function_f
 
