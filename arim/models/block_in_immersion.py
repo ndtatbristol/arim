@@ -114,7 +114,7 @@ def tx_ray_weights(path, ray_geometry, frequency, probe_element_width=None,
     one = np.ones((len(path.interfaces[0].points), d.numgridpoints), order='F')
 
     if use_directivity:
-        weights_dict['directivity'] = model.radiation_2d_rectangular_in_fluid_for_path(
+        weights_dict['directivity'] = model.directivity_2d_rectangular_in_fluid_for_path(
             ray_geometry, probe_element_width, d.wavelength_in_couplant)
     else:
         weights_dict['directivity'] = one
@@ -124,8 +124,7 @@ def tx_ray_weights(path, ray_geometry, frequency, probe_element_width=None,
     else:
         weights_dict['transrefl'] = one
     if use_beamspread:
-        weights_dict['beamspread'] = (model.beamspread_2d_for_path(ray_geometry) *
-                                      np.sqrt(d.wavelength_in_couplant))
+        weights_dict['beamspread'] = model.beamspread_2d_for_path(ray_geometry)
     else:
         weights_dict['beamspread'] = one
 
@@ -164,7 +163,7 @@ def rx_ray_weights(path, ray_geometry, frequency, probe_element_width=None,
     d = _init_ray_weights(path, frequency, probe_element_width, use_directivity)
 
     weights_dict = dict()
-    one = np.ones((len(path.interfaces[0].points), d.numgridpoints))
+    one = np.ones((len(path.interfaces[0].points), d.numgridpoints), order='F')
 
     if use_directivity:
         weights_dict['directivity'] = model.directivity_2d_rectangular_in_fluid_for_path(
@@ -177,15 +176,17 @@ def rx_ray_weights(path, ray_geometry, frequency, probe_element_width=None,
     else:
         weights_dict['transrefl'] = one
     if use_beamspread:
-        weights_dict['beamspread'] = (
-                model.reverse_beamspread_2d_for_path(ray_geometry)
-                * np.sqrt(d.wavelengths_in_block[path.modes[-1]]))
+        weights_dict['beamspread'] = model.reverse_beamspread_2d_for_path(ray_geometry)
     else:
         weights_dict['beamspread'] = one
+
+    # the coefficient accounts for the normalisation convention of the scattering in Bristol's literature
+    scat_normalisation = np.sqrt(d.wavelengths_in_block[path.modes[-1]])
 
     weights = (weights_dict['directivity'] *
                weights_dict['transrefl'] *
                weights_dict['beamspread'])
+    weights *= scat_normalisation
     return weights, weights_dict
 
 
@@ -394,12 +395,10 @@ def ray_weights_for_wall(path, frequency, probe_element_width=None,
     one = np.ones((len(path.interfaces[0].points), d.numgridpoints), order='F')
 
     if use_directivity:
-        directivity_tx = model.radiation_2d_rectangular_in_fluid_for_path(
-            ray_geometry, probe_element_width, d.wavelength_in_couplant)
-        directivity_rx = model.directivity_2d_rectangular_in_fluid_for_path(
+        directivity = model.directivity_2d_rectangular_in_fluid_for_path(
             ray_geometry, probe_element_width, d.wavelength_in_couplant)
 
-        weights_dict['directivity'] = directivity_tx * directivity_rx.T
+        weights_dict['directivity'] = directivity * directivity.T
     else:
         weights_dict['directivity'] = one
     if use_transrefl:
@@ -408,8 +407,7 @@ def ray_weights_for_wall(path, frequency, probe_element_width=None,
     else:
         weights_dict['transrefl'] = one
     if use_beamspread:
-        weights_dict['beamspread'] = (model.beamspread_2d_for_path(ray_geometry) *
-                                      np.sqrt(d.wavelength_in_couplant))
+        weights_dict['beamspread'] = model.beamspread_2d_for_path(ray_geometry)
     else:
         weights_dict['beamspread'] = one
 
