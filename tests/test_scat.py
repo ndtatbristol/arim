@@ -264,8 +264,9 @@ def make_scat_data_multi_freq():
     return scat.ScatFromData.from_dict(frequencies, matrices)
 
 
+# TODO: add test 'crack_tip' once properly implemented
 @pytest.fixture(params=['sdh', 'point', 'data_singlefreq', 'data_multifreq',
-                        'crack_centre', 'crack_tip'])
+                        'crack_centre'])
 def scat_obj(request):
     if request.param == 'sdh':
         hole_radius = 5e-4
@@ -351,7 +352,7 @@ class TestScattering:
             for scat_key in scat_keys:
                 if np.isnan(reference_dict[scat_key][idx]):
                     continue
-                assert val_dict[scat_key] == reference_dict[scat_key][idx]
+                np.testing.assert_allclose(val_dict[scat_key], reference_dict[scat_key][idx])
 
         # computing the values for one scat_key
         for scat_key in scat_keys:
