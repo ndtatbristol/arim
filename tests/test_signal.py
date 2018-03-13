@@ -18,7 +18,7 @@ def test_butterworth_bandpass():
     x_all = x_raw + np.sin(time.samples * 2 * np.pi * f2)
 
     # Objective: get f1 without f2
-    filt = signal.ButterworthBandpass(order=3, cutoff_min=0, cutoff_max=(f1 + f2) / 2,
+    filt = signal.ButterworthBandpass(order=3, cutoff_min=f1 / 2, cutoff_max=(f1 + f2) / 2,
                                       time=time)
 
     # This should work without error:
