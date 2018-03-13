@@ -11,10 +11,10 @@ import arim.im.tfm
 
 def _random_uniform(dtype, low=0., high=1., size=None):
     z = np.zeros(size, dtype)
-    if np.issubdtype(dtype, np.complex):
+    if np.issubdtype(dtype, np.complexfloating):
         z.real = np.random.uniform(low, high, size)
         z.imag = np.random.uniform(low, high, size)
-    elif np.issubdtype(dtype, np.float):
+    elif np.issubdtype(dtype, np.floating):
         z[...] = np.random.uniform(low, high, size)
     else:
         raise NotImplementedError
