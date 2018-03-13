@@ -777,7 +777,7 @@ def plot_interfaces(oriented_points_list, ax=None, show_probe=True, show_last=Tr
     return ax
 
 
-def common_dynamic_db_scale(data_list, area=None, db_range=40.):
+def common_dynamic_db_scale(data_list, area=None, db_range=40., ref_db=None):
     """
     Scale such as:
       - 0 dB corresponds to the maximum value in the area for all data arrays,
@@ -810,7 +810,8 @@ def common_dynamic_db_scale(data_list, area=None, db_range=40.):
 
     for data in data_list:
         data_max_list.append(np.nanmax(np.abs(data[area])))
-    ref_db = max(data_max_list)
+    if ref_db is None:
+        ref_db = max(data_max_list)
 
     data_max_db_list = ut.decibel(data_max_list, ref_db)
 
