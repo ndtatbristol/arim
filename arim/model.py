@@ -104,94 +104,6 @@ def _rotate_array(arr, n):
     return np.concatenate([arr[n:], arr[:n]])
 
 
-def radiation_2d_rectangular_in_fluid(theta, element_width, wavelength):
-    """
-    Piston model.
-
-    Field is::
-
-        p(r, theta, ray) = V0(omega) * Z * R(theta) * exp(i omega ray - k r) * sqrt(wavelength / r)
-
-    where:
-        - V0 is the (uniform) velocity on the piston
-        - P(theta) is the output of the current function,
-        - Z = rho c is the acoustic impedance
-
-    Reference: Schmerr, Fundamentals of ultrasonic phased array, eq (2.38)
-
-    R is dimensionless.
-
-    Parameters
-    ----------
-    theta : ndarray
-    element_width
-    wavelength
-
-    Returns
-    -------
-    radiation : ndarray
-
-
-    """
-    directivity = directivity_2d_rectangular_in_fluid(theta, element_width, wavelength)
-
-    r = np.sqrt(1j) * (element_width / wavelength) * directivity
-    return r
-
-
-def radiation_2d_cylinder_in_fluid(source_radius, wavelength):
-    """
-    Radiation term in far field for a cylinder radiating uniform in a fluid.
-
-    The field generated is::
-
-        p(r, ray) = V0(omega) * Z * R * exp(i omega ray - k r) * sqrt(wavelength / r)
-
-    where:
-        - V0 is the (uniform) velocity on the piston
-        - R is the output of the current function
-        - Z = rho c is the acoustic impedance
-
-    Reference: Theoretical Acoustics, Philip M. Morse & K. Uno Ingard, equation 7.3.3
-
-    R is dimensionless.
-
-
-    Parameters
-    ----------
-    source_radius : float
-    wavelength : float
-
-    Returns
-    -------
-    transmission_term : complex
-
-    """
-    rad = 2. * np.sqrt(1j) * (source_radius / wavelength)
-    return rad
-
-
-def radiation_2d_rectangular_in_fluid_for_path(ray_geometry, element_width, wavelength):
-    """
-    Wrapper for :func:`radiation_2d_rectangular_in_fluid` that uses
-    a :class:`RayGeometry` object.
-
-
-    Parameters
-    ----------
-    ray_geometry : arim.ray.RayGeometry
-    element_width
-    wavelength
-
-    Returns
-    -------
-
-    """
-    return radiation_2d_rectangular_in_fluid(
-        ray_geometry.conventional_out_angle(0),
-        element_width, wavelength)
-
-
 def directivity_2d_rectangular_in_fluid(theta, element_width, wavelength):
     """
     Returns the directivity of an element based on the integration of uniformally radiating sources
@@ -346,10 +258,10 @@ def fluid_solid(alpha_fluid, rho_fluid, rho_solid, c_fluid, c_l, c_t, alpha_l=No
     cos_2_alpha_t = cos(2 * alpha_t)
 
     reflection = (
-                     ct_cl2 * sin(2 * alpha_l) * sin(2 * alpha_t)
-                     + cos_2_alpha_t * cos_2_alpha_t
-                     - (rho_fluid * c_fluid * cos(alpha_l)) /
-                     (rho_solid * c_l * cos(alpha_fluid))
+                         ct_cl2 * sin(2 * alpha_l) * sin(2 * alpha_t)
+                         + cos_2_alpha_t * cos_2_alpha_t
+                         - (rho_fluid * c_fluid * cos(alpha_l)) /
+                         (rho_solid * c_l * cos(alpha_fluid))
                  ) / N
 
     # Eq A.8
@@ -434,14 +346,14 @@ def solid_l_fluid(alpha_l, rho_fluid, rho_solid, c_fluid, c_l, c_t, alpha_fluid=
     reflection_l = (ct_cl2 * sin(2 * alpha_l) * sin(2 * alpha_t)
                     - cos_2_alpha_t * cos_2_alpha_t
                     + rho_fluid * c_fluid / (rho_solid * c_l) * cos(alpha_l) / cos(
-        alpha_fluid)) / N
+                alpha_fluid)) / N
 
     # Eq A.11
     reflection_t = (2 * ct_cl2 * sin(2 * alpha_l) * cos(2 * alpha_t)) / N
 
     # Eq A.12
     transmission = 2 * rho_fluid * c_fluid * cos(alpha_l) * cos(2 * alpha_t) / (
-        N * rho_solid * c_l * cos(alpha_fluid))
+            N * rho_solid * c_l * cos(alpha_fluid))
 
     return reflection_l, reflection_t, transmission
 
@@ -512,7 +424,7 @@ def solid_t_fluid(alpha_t, rho_fluid, rho_solid, c_fluid, c_l, c_t, alpha_fluid=
 
     # Eq A.15
     transmission = 2 * rho_fluid * c_fluid * cos(alpha_l) * sin(2 * alpha_t) / (
-        N * rho_solid * c_l * cos(alpha_fluid))
+            N * rho_solid * c_l * cos(alpha_fluid))
 
     # TODO: Rose in "Ultrasonic guided waves in solid media" gives the oppositeof these
     # coefficients. Fix this?

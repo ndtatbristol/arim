@@ -86,7 +86,7 @@ def make_context():
     for pathname, path in paths.items():
         rays = arim.ray.Rays(np.asarray(expected_ray_times[pathname]),
                              np.asarray(expected_ray_indices[pathname],
-                                arim.settings.INT),
+                                        arim.settings.INT),
                              path.to_fermat_path())
         path.rays = rays
 
@@ -375,8 +375,6 @@ def test_caching():
         _ = model.reverse_beamspread_2d_for_path(ray_geometry)
         _ = model.transmission_reflection_for_path(path, ray_geometry)
         _ = model.reverse_transmission_reflection_for_path(path, ray_geometry)
-        _ = model.radiation_2d_rectangular_in_fluid_for_path(
-            ray_geometry, element_width, wavelength)
         _ = model.directivity_2d_rectangular_in_fluid_for_path(
             ray_geometry, element_width, wavelength)
 
@@ -400,12 +398,6 @@ def test_caching():
         r1 = model.reverse_transmission_reflection_for_path(path, ray_geometry)
         r2 = model.reverse_transmission_reflection_for_path(
             new_path(pathname), new_ray_geometry(pathname))
-        np.testing.assert_allclose(r1, r2, err_msg=pathname)
-
-        r1 = model.radiation_2d_rectangular_in_fluid_for_path(
-            ray_geometry, element_width, wavelength)
-        r2 = model.radiation_2d_rectangular_in_fluid_for_path(
-            new_ray_geometry(pathname), element_width, wavelength)
         np.testing.assert_allclose(r1, r2, err_msg=pathname)
 
         r1 = model.directivity_2d_rectangular_in_fluid_for_path(
@@ -772,41 +764,6 @@ def test_transmission_reflection_reverse_stokes():
                                err_msg=pathname)
 
 
-def test_radiation_2d_rectangular_in_fluid():
-    """
-    test model.radiation_2d_rectangular_in_fluid_for_path()"
-    """
-    context = make_context()
-    couplant = context['couplant']
-    paths = context['paths']
-    """:type : dict[str, arim.Path]"""
-    ray_geometry_dict = context['ray_geometry_dict']
-    """:type : dict[str, arim.path.RayGeometry]"""
-
-    wavelength = couplant.longitudinal_vel / context['freq']
-
-    # hardcoded results
-    expected_radiation = {
-        'L': array([[0.47777476 + 0.47777476j, 0.46128071 + 0.46128071j]]),
-        'T': array([[0.47777476 + 0.47777476j, 0.41368391 + 0.41368391j]]),
-        'LL': array([[0.47777476 + 0.47777476j, 0.46621085 + 0.46621085j]]),
-        'LT': array([[0.47777476 + 0.47777476j, 0.46465044 + 0.46465044j]]),
-        'TL': array([[0.47777476 + 0.47777476j, 0.46020818 + 0.46020818j]]),
-        'TT': array([[0.47777476 + 0.47777476j, 0.43310535 + 0.43310535j]]),
-    }
-    radiation = dict()
-    print()
-    for pathname, path in paths.items():
-        ray_geometry = ray_geometry_dict[pathname]
-        radiation[pathname] = model.radiation_2d_rectangular_in_fluid_for_path(
-            ray_geometry, context['element_width'], wavelength)
-        np.testing.assert_allclose(radiation[pathname], expected_radiation[pathname],
-                                   rtol=0., atol=1e-6)
-        # Uncomment the following line to generate hardcoded-values:
-        # (use -s flag in pytest to show output)
-        # print("'{}': {},".format(pathname, repr(radiation[pathname])))
-
-
 def bak_test_sensitivity():
     numpoints = 30
     numelements = 16
@@ -1037,24 +994,6 @@ def test_directivity_2d_rectangular_in_fluid():
                       0.931080327325574)
 
 
-def test_radiation_in_fluid():
-    # water:
-    v = 1480.
-
-    freq = 2e6
-    wavelength = freq / v
-
-    source_radius = 0.2e-3
-    rad = arim.model.radiation_2d_cylinder_in_fluid(source_radius, wavelength)
-    assert isinstance(rad, complex)
-
-    theta = np.linspace(-np.pi, np.pi, 50)
-    rad = arim.model.radiation_2d_rectangular_in_fluid(theta, source_radius * 2,
-                                                       wavelength)
-    assert rad.shape == theta.shape
-    assert rad.dtype.kind == 'c', 'datatype is not complex'
-
-
 def test_fluid_solid_real():
     """
     Test fluid_solid() below critical angles (real only).
@@ -1154,7 +1093,7 @@ def test_fluid_solid_complex():
 
     inc_energy = 0.5 * pres_i ** 2 / (rho_fluid * c_fluid) * area_fluid
     energy_refl = 0.5 * (np.abs(reflection) * pres_i) ** 2 / (
-        rho_fluid * c_fluid) * area_fluid
+            rho_fluid * c_fluid) * area_fluid
     energy_l = 0.5 * (np.abs(transmission_l) * pres_i) ** 2 / (rho_solid * c_l) * area_l
     energy_t = 0.5 * (np.abs(transmission_t) * pres_i) ** 2 / (rho_solid * c_t) * area_t
 
@@ -1254,7 +1193,7 @@ def test_solid_t_fluid_complex():
 
     inc_energy = 0.5 * pres_i ** 2 / (rho_solid * c_t) * area_t
     energy_trans = 0.5 * (np.abs(transmission) * pres_i) ** 2 / (
-        rho_fluid * c_fluid) * area_fluid
+            rho_fluid * c_fluid) * area_fluid
     energy_l = 0.5 * (np.abs(reflection_l) * pres_i) ** 2 / (rho_solid * c_l) * area_l
     energy_t = 0.5 * (np.abs(reflection_t) * pres_i) ** 2 / (rho_solid * c_t) * area_t
 
