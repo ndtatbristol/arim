@@ -419,8 +419,9 @@ def plot_oxz(data, grid, ax=None, title=None, clim=None, interpolation='none',
         ax.set_title(title)
     for p in patches:
         ax.add_patch(p)
-
-    ax.axis('equal')
+ 
+    # Like axis('equal') but mitigates https://github.com/matplotlib/matplotlib/issues/11416
+    ax.axis(aspect=1)
     ax.axis([grid.xmin, grid.xmax, grid.zmax, grid.zmin])
     if savefig:
         if filename is None:
