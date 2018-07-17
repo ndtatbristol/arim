@@ -23,8 +23,7 @@ def main():
     Entry point for Command Line Interface.
     """
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--version", help="print software version",
-                        action="store_true")
+    parser.add_argument("--version", help="print software version", action="store_true")
     args = parser.parse_args()
 
     if args.version:
@@ -37,5 +36,5 @@ def main():
         sys.exit(-1)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

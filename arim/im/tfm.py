@@ -39,7 +39,8 @@ class TxRxAmplitudes:
         Default True
 
     """
-    __slots__ = ('amplitudes_tx', 'amplitudes_rx')
+
+    __slots__ = ("amplitudes_tx", "amplitudes_rx")
 
     def __init__(self, amplitudes_tx, amplitudes_rx, force_c_order=True):
         if force_c_order:
@@ -89,9 +90,23 @@ class FocalLaw:
     numelements
 
     """
-    __slots__ = ('lookup_times_tx', 'lookup_times_rx', 'amplitudes', 'scanline_weights', '_numscanlines')
 
-    def __init__(self, lookup_times_tx, lookup_times_rx, amplitudes=None, scanline_weights=None, force_c_order=True):
+    __slots__ = (
+        "lookup_times_tx",
+        "lookup_times_rx",
+        "amplitudes",
+        "scanline_weights",
+        "_numscanlines",
+    )
+
+    def __init__(
+        self,
+        lookup_times_tx,
+        lookup_times_rx,
+        amplitudes=None,
+        scanline_weights=None,
+        force_c_order=True,
+    ):
         if force_c_order:
             lookup_times_tx = np.ascontiguousarray(lookup_times_tx)
             lookup_times_rx = np.ascontiguousarray(lookup_times_rx)
@@ -138,7 +153,7 @@ class FocalLaw:
     @property
     def numscanlines(self):
         if self._numscanlines is None:
-            raise AttributeError('no data for inferring the number of scanlines')
+            raise AttributeError("no data for inferring the number of scanlines")
         else:
             return self._numscanlines
 
@@ -175,15 +190,17 @@ class TfmResult:
     """
     Data container for TFM result
     """
-    __slots__ = ('res', 'grid')
+
+    __slots__ = ("res", "grid")
 
     def __init__(self, res, grid):
         assert res.shape == grid.shape
         self.res = res
         self.grid = grid
 
-    def maximum_intensity_in_rectbox(self, xmin=None, xmax=None, ymin=None, ymax=None,
-                                     zmin=None, zmax=None):
+    def maximum_intensity_in_rectbox(
+        self, xmin=None, xmax=None, ymin=None, ymax=None, zmin=None, zmax=None
+    ):
         """
         Returns the maximum absolute intensity of the TFM image in the rectangular box
         defined by the parameters. If a parameter is None, the box is unbounded in the
@@ -206,8 +223,9 @@ class TfmResult:
 
         """
         assert self.res is not None
-        area_of_interest = self.grid.points_in_rectbox(xmin, xmax, ymin, ymax,
-                                                       zmin, zmax)
+        area_of_interest = self.grid.points_in_rectbox(
+            xmin, xmax, ymin, ymax, zmin, zmax
+        )
         return self.maximum_intensity_in_area(area_of_interest)
 
     def maximum_intensity_in_area(self, area):
@@ -230,7 +248,14 @@ class TfmResult:
         return np.nanmax(np.abs(self.res[area]))
 
 
-def contact_tfm(frame, grid, velocity, amplitudes=None, scanline_weights='default', **kwargs_delay_and_sum):
+def contact_tfm(
+    frame,
+    grid,
+    velocity,
+    amplitudes=None,
+    scanline_weights="default",
+    **kwargs_delay_and_sum
+):
     """
     Contact TFM
 
@@ -251,16 +276,21 @@ def contact_tfm(frame, grid, velocity, amplitudes=None, scanline_weights='defaul
     tfm_res : TfmResult
 
     """
-    lookup_times = g.distance_pairwise(grid.to_1d_points(), frame.probe.locations) / velocity
+    lookup_times = (
+        g.distance_pairwise(grid.to_1d_points(), frame.probe.locations) / velocity
+    )
     assert lookup_times.ndim == 2
     assert lookup_times.shape == (grid.numpoints, frame.probe.numelements)
 
     if amplitudes is not None:
         if not frame.is_complete_assuming_reciprocity():
-            logger.warning('Possible erroneous usage of a noncomplete frame in TFM; '
-                           'use Frame.expand_frame_assuming_reciprocity()', IncompleteFrameWarning)
+            logger.warning(
+                "Possible erroneous usage of a noncomplete frame in TFM; "
+                "use Frame.expand_frame_assuming_reciprocity()",
+                IncompleteFrameWarning,
+            )
 
-    if scanline_weights == 'default':
+    if scanline_weights == "default":
         scanline_weights = ut.default_scanline_weights(frame.tx, frame.rx)
     focal_law = FocalLaw(lookup_times, lookup_times, amplitudes, scanline_weights)
 
@@ -293,8 +323,11 @@ def tfm_for_view(frame, grid, view, amplitudes=None, **kwargs_delay_and_sum):
     """
     # do not use scanline weights, it is likely to be ill-defined here
     if not frame.is_complete_assuming_reciprocity():
-        logger.warning('Possible erroneous usage of a noncomplete frame in TFM; '
-                       'use Frame.expand_frame_assuming_reciprocity()', IncompleteFrameWarning)
+        logger.warning(
+            "Possible erroneous usage of a noncomplete frame in TFM; "
+            "use Frame.expand_frame_assuming_reciprocity()",
+            IncompleteFrameWarning,
+        )
 
     lookup_times_tx = view.tx_path.rays.times.T
     lookup_times_rx = view.rx_path.rays.times.T
@@ -306,12 +339,25 @@ def tfm_for_view(frame, grid, view, amplitudes=None, **kwargs_delay_and_sum):
     return TfmResult(res, grid)
 
 
-ExtramaLookupTimes = namedtuple('ExtramaLookupTimes',
-                                'tmin tmax tx_elt_for_tmin rx_elt_for_tmin tx_elt_for_tmax rx_elt_for_tmax')
+ExtramaLookupTimes = namedtuple(
+    "ExtramaLookupTimes",
+    "tmin tmax tx_elt_for_tmin rx_elt_for_tmin tx_elt_for_tmax rx_elt_for_tmax",
+)
 
 
-def extrema_lookup_times_in_rectbox(grid, lookup_times_tx, lookup_times_rx, tx, rx,
-                                    xmin=None, xmax=None, ymin=None, ymax=None, zmin=None, zmax=None):
+def extrema_lookup_times_in_rectbox(
+    grid,
+    lookup_times_tx,
+    lookup_times_rx,
+    tx,
+    rx,
+    xmin=None,
+    xmax=None,
+    ymin=None,
+    ymax=None,
+    zmin=None,
+    zmax=None,
+):
     """
     Returns the minimum and maximum of the lookup times in an rectangular box.
     The output is returned as a named tuple for convenience.
@@ -332,8 +378,9 @@ def extrema_lookup_times_in_rectbox(grid, lookup_times_tx, lookup_times_rx, tx, 
         corresponding to these values. If several couples of elements are matching, the first couple is returned.
 
     """
-    area_of_interest = grid.points_in_rectbox(xmin, xmax, ymin, ymax,
-                                              zmin, zmax).ravel()
+    area_of_interest = grid.points_in_rectbox(
+        xmin, xmax, ymin, ymax, zmin, zmax
+    ).ravel()
 
     sub_lookup_times_tx = np.ascontiguousarray(lookup_times_tx[area_of_interest, ...])
     sub_lookup_times_rx = np.ascontiguousarray(lookup_times_rx[area_of_interest, ...])
@@ -365,14 +412,31 @@ def _extrema_lookup_times(lookup_times_tx, lookup_times_rx, tx_list, rx_list):
                 tmin = t
                 tx_elt_for_tmin = tx_list[scanline]
                 rx_elt_for_tmin = rx_list[scanline]
-    return tmin, tmax, tx_elt_for_tmin, rx_elt_for_tmin, tx_elt_for_tmax, rx_elt_for_tmax
+    return (
+        tmin,
+        tmax,
+        tx_elt_for_tmin,
+        rx_elt_for_tmin,
+        tx_elt_for_tmax,
+        rx_elt_for_tmax,
+    )
 
 
-def tfm_with_scattering(frame, grid, view, fillvalue, scattering_fn,
-                        tx_ray_weights, rx_ray_weights,
-                        tx_scattering_angles, rx_scattering_angles,
-                        scanline_weights=None, divide_by_sensitivity=True,
-                        numthreads=None, block_size=None):
+def tfm_with_scattering(
+    frame,
+    grid,
+    view,
+    fillvalue,
+    scattering_fn,
+    tx_ray_weights,
+    rx_ray_weights,
+    tx_scattering_angles,
+    rx_scattering_angles,
+    scanline_weights=None,
+    divide_by_sensitivity=True,
+    numthreads=None,
+    block_size=None,
+):
     # todo: refactor this
     numscanlines = frame.numscanlines
     numpoints = grid.numpoints
@@ -409,13 +473,24 @@ def tfm_with_scattering(frame, grid, view, fillvalue, scattering_fn,
     futures = []
     with ThreadPoolExecutor(max_workers=numthreads) as executor:
         for chunk in chunk_array((grid.numpoints,), block_size, axis=0):
-            _tfm_with_scattering(weighted_scanlines, scanline_weights, frame.tx, frame.rx,
-                                 tx_lookup_times[chunk], rx_lookup_times[chunk],
-                                 tx_amplitudes[chunk], rx_amplitudes[chunk],
-                                 scattering_fn, tx_scattering_angles[..., chunk[0]],
-                                 rx_scattering_angles[..., chunk[0]],
-                                 frame.time.step, frame.time.start, fillvalue,
-                                 sensitivity_result[chunk], tfm_result[chunk])
+            _tfm_with_scattering(
+                weighted_scanlines,
+                scanline_weights,
+                frame.tx,
+                frame.rx,
+                tx_lookup_times[chunk],
+                rx_lookup_times[chunk],
+                tx_amplitudes[chunk],
+                rx_amplitudes[chunk],
+                scattering_fn,
+                tx_scattering_angles[..., chunk[0]],
+                rx_scattering_angles[..., chunk[0]],
+                frame.time.step,
+                frame.time.start,
+                fillvalue,
+                sensitivity_result[chunk],
+                tfm_result[chunk],
+            )
     # Raise exceptions that happened, if any:
     for future in futures:
         future.result()
@@ -439,12 +514,23 @@ def tfm_with_scattering(frame, grid, view, fillvalue, scattering_fn,
 
 
 def _tfm_with_scattering(
-        weighted_scanlines, scanline_weights, tx, rx, tx_lookup_times, rx_lookup_times,
-        tx_amplitudes, rx_amplitudes, scattering_fn,
-        tx_scattering_angles, rx_scattering_angles,
-        dt, t0, fillvalue,
-        sensitivity_result,
-        tfm_result):
+    weighted_scanlines,
+    scanline_weights,
+    tx,
+    rx,
+    tx_lookup_times,
+    rx_lookup_times,
+    tx_amplitudes,
+    rx_amplitudes,
+    scattering_fn,
+    tx_scattering_angles,
+    rx_scattering_angles,
+    dt,
+    t0,
+    fillvalue,
+    sensitivity_result,
+    tfm_result,
+):
     """
     Forward model::
 
@@ -509,25 +595,37 @@ def _tfm_with_scattering(
     assert tfm_result.shape == (numpoints,)
 
     # This can be big, warning:
-    scattering_amplitudes = scattering_fn(np.take(tx_scattering_angles, tx, axis=0),
-                                          np.take(rx_scattering_angles, rx, axis=0))
+    scattering_amplitudes = scattering_fn(
+        np.take(tx_scattering_angles, tx, axis=0),
+        np.take(rx_scattering_angles, rx, axis=0),
+    )
     scattering_amplitudes = np.ascontiguousarray(scattering_amplitudes.T)
     assert scattering_amplitudes.shape == (numpoints, numscanlines)
 
     # Model amplitudes P_ij
-    model_amplitudes = (scattering_amplitudes * np.take(tx_amplitudes, tx, axis=1)
-                        * np.take(rx_amplitudes, rx, axis=1))
+    model_amplitudes = (
+        scattering_amplitudes
+        * np.take(tx_amplitudes, tx, axis=1)
+        * np.take(rx_amplitudes, rx, axis=1)
+    )
     del scattering_amplitudes
 
     # Compute sensitivity image (write result on sensitivity_result)
-    model.sensitivity_image(model_amplitudes, scanline_weights,
-                            sensitivity_result)
+    model.sensitivity_image(model_amplitudes, scanline_weights, sensitivity_result)
 
     # Remark: the sensitivity here does not depend on the
     tfm_amplitudes = model_amplitudes.conjugate()
     del model_amplitudes
 
-    das.das._general_delay_and_sum_nearest(weighted_scanlines, tx, rx,
-                                           tx_lookup_times, rx_lookup_times,
-                                           tfm_amplitudes,
-                                           dt, t0, fillvalue, tfm_result)
+    das.das._general_delay_and_sum_nearest(
+        weighted_scanlines,
+        tx,
+        rx,
+        tx_lookup_times,
+        rx_lookup_times,
+        tfm_amplitudes,
+        dt,
+        t0,
+        fillvalue,
+        tfm_result,
+    )

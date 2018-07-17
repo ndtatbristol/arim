@@ -7,7 +7,7 @@ import re
 import copy
 import collections
 
-__all__ = ['Config']
+__all__ = ["Config"]
 
 
 class Config(dict):
@@ -25,14 +25,12 @@ class Config(dict):
     def __repr__(self):
         class_name = self.__class__.__name__
         indent = len(class_name) + 1
-        repr_split = pprint.pformat(dict(self), indent=1,
-                                    width=80 - indent).split('\n')
-        repr_indented = ('\n' + ' ' * indent).join(repr_split)
-        return '{0}({1})'.format(class_name, repr_indented)
+        repr_split = pprint.pformat(dict(self), indent=1, width=80 - indent).split("\n")
+        repr_indented = ("\n" + " " * indent).join(repr_split)
+        return "{0}({1})".format(class_name, repr_indented)
 
     def __str__(self):
-        return '\n'.join('{0}: {1}'.format(k, v)
-                         for k, v in sorted(self.items()))
+        return "\n".join("{0}: {1}".format(k, v) for k, v in sorted(self.items()))
 
     def keys(self):
         """
@@ -60,9 +58,9 @@ class Config(dict):
 
         """
         pattern_re = re.compile(pattern)
-        return self.__class__((key, value)
-                              for key, value in self.items()
-                              if pattern_re.search(key))
+        return self.__class__(
+            (key, value) for key, value in self.items() if pattern_re.search(key)
+        )
 
     def copy(self):
         """
@@ -100,8 +98,11 @@ def recursive_dict_merge(base_dict, top_dict):
     base_dict.update(top_dict)
     """
     for key, val in list(top_dict.items()):
-        if (key in base_dict and isinstance(base_dict[key], collections.Mapping) and
-                isinstance(val, collections.Mapping)):
+        if (
+            key in base_dict
+            and isinstance(base_dict[key], collections.Mapping)
+            and isinstance(val, collections.Mapping)
+        ):
             recursive_dict_merge(base_dict[key], val)
         else:
             base_dict[key] = val

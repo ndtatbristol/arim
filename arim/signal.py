@@ -9,7 +9,15 @@ import numpy as np
 from scipy.signal import butter, filtfilt, hilbert
 import scipy.fftpack
 
-__all__ = ['Filter', 'ButterworthBandpass', 'ComposedFilter', 'Hilbert', 'NoFilter', 'Abs', 'rfft_to_hilbert']
+__all__ = [
+    "Filter",
+    "ButterworthBandpass",
+    "ComposedFilter",
+    "Hilbert",
+    "NoFilter",
+    "Abs",
+    "rfft_to_hilbert",
+]
 
 
 class Filter:
@@ -48,7 +56,7 @@ class NoFilter(Filter):
         return arr
 
     def __str__(self):
-        return 'No filter'
+        return "No filter"
 
 
 class ComposedFilter(Filter):
@@ -135,11 +143,15 @@ class ButterworthBandpass(Filter):
         self.cutoff_min = cutoff_min
         self.cutoff_max = cutoff_max
 
-        self.b, self.a = butter(order, Wn, btype='bandpass')
+        self.b, self.a = butter(order, Wn, btype="bandpass")
 
     def __str__(self):
-        return '{} [{:.1f}, {:.1f}] MHz order {}'.format(self.__class__.__qualname__,
-                                                         self.cutoff_min * 1e-6, self.cutoff_max * 1e-6, self.order)
+        return "{} [{:.1f}, {:.1f}] MHz order {}".format(
+            self.__class__.__qualname__,
+            self.cutoff_min * 1e-6,
+            self.cutoff_max * 1e-6,
+            self.order,
+        )
 
     def __call__(self, arr, axis=-1, **kwargs):
         """
@@ -172,7 +184,7 @@ class Hilbert(Filter):
         return hilbert(arr, axis=axis)
 
     def __str__(self):
-        return 'Hilbert transform'
+        return "Hilbert transform"
 
 
 class Abs(Filter):
@@ -223,10 +235,10 @@ def rfft_to_hilbert(xf, n, axis=-1):
         h = np.zeros(xf.shape[axis])
         if n % 2 == 0:
             h[0] = h[n // 2] = 1
-            h[1:n // 2] = 2
+            h[1 : n // 2] = 2
         else:
             h[0] = 1
-            h[1:(n + 1) // 2] = 2
+            h[1 : (n + 1) // 2] = 2
 
     if xf.ndim > 1:
         ind = [np.newaxis] * xf.ndim

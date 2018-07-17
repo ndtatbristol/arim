@@ -43,41 +43,61 @@ from .exceptions import ArimWarning
 from . import geometry as g
 from .config import Config
 
-__all__ = ['micro_formatter', 'mega_formatter', 'milli_formatter',
-           'plot_bscan_pulse_echo', 'plot_oxz', 'plot_oxz_many', 'plot_tfm',
-           'plot_directivity_finite_width_2d',
-           'draw_rays_on_click', 'RayPlotter', 'conf', 'common_dynamic_db_scale']
+__all__ = [
+    "micro_formatter",
+    "mega_formatter",
+    "milli_formatter",
+    "plot_bscan_pulse_echo",
+    "plot_oxz",
+    "plot_oxz_many",
+    "plot_tfm",
+    "plot_directivity_finite_width_2d",
+    "draw_rays_on_click",
+    "RayPlotter",
+    "conf",
+    "common_dynamic_db_scale",
+]
 
 logger = logging.getLogger(__name__)
 
-micro_formatter = ticker.FuncFormatter(lambda x, pos: '{:.1f}'.format(x * 1e6))
-micro_formatter.__doc__ = 'Format an axis to micro (µ).\nExample: ``ax.xaxis.set_major_formatter(micro_formatter)``'
+micro_formatter = ticker.FuncFormatter(lambda x, pos: "{:.1f}".format(x * 1e6))
+micro_formatter.__doc__ = "Format an axis to micro (µ).\nExample: ``ax.xaxis.set_major_formatter(micro_formatter)``"
 
-milli_formatter = ticker.FuncFormatter(lambda x, pos: '{:.1f}'.format(x * 1e3))
-milli_formatter.__doc__ = 'Format an axis to milli (m).\nExample: ``ax.xaxis.set_major_formatter(milli_formatter)``'
+milli_formatter = ticker.FuncFormatter(lambda x, pos: "{:.1f}".format(x * 1e3))
+milli_formatter.__doc__ = "Format an axis to milli (m).\nExample: ``ax.xaxis.set_major_formatter(milli_formatter)``"
 
-mega_formatter = ticker.FuncFormatter(lambda x, pos: '{:.1f}'.format(x * 1e-6))
-mega_formatter.__doc__ = 'Format an axis to mega (M).\nExample: ``ax.xaxis.set_major_formatter(mega_formatter)``'
+mega_formatter = ticker.FuncFormatter(lambda x, pos: "{:.1f}".format(x * 1e-6))
+mega_formatter.__doc__ = "Format an axis to mega (M).\nExample: ``ax.xaxis.set_major_formatter(mega_formatter)``"
 
-conf = Config([
-    ('savefig', False),  # save the figure?
-    ('plot_oxz.figsize', None),
-    ('plot_oxz_many.figsize', None),
-
-])
+conf = Config(
+    [
+        ("savefig", False),  # save the figure?
+        ("plot_oxz.figsize", None),
+        ("plot_oxz_many.figsize", None),
+    ]
+)
 
 
 def _elements_ticker(i, pos, elements):
     i = int(i)
     if i >= len(elements):
-        return ''
+        return ""
     else:
         return str(elements[i])
 
 
-def plot_bscan_pulse_echo(frame, use_dB=True, ax=None, title='B-scan', clim=None,
-                          interpolation='none', draw_cbar=True,
-                          cmap=None, savefig=None, filename='bscan'):
+def plot_bscan_pulse_echo(
+    frame,
+    use_dB=True,
+    ax=None,
+    title="B-scan",
+    clim=None,
+    interpolation="none",
+    draw_cbar=True,
+    cmap=None,
+    savefig=None,
+    filename="bscan",
+):
     """
     Plot a B-scan. Use the pulse-echo scanlines.
 
@@ -103,7 +123,7 @@ def plot_bscan_pulse_echo(frame, use_dB=True, ax=None, title='B-scan', clim=None
         fig = ax.figure
 
     if savefig is None:
-        savefig = conf['savefig']
+        savefig = conf["savefig"]
 
     pulse_echo = frame.tx == frame.rx
     numpulseecho = sum(pulse_echo)
@@ -115,23 +135,28 @@ def plot_bscan_pulse_echo(frame, use_dB=True, ax=None, title='B-scan', clim=None
         if clim is None:
             clim = [-40., 0.]
 
-    im = ax.imshow(scanlines,
-                   extent=[frame.time.start, frame.time.end, 0, numpulseecho - 1],
-                   interpolation=interpolation, cmap=cmap, origin='lower')
-    ax.set_xlabel('Time (µs)')
-    ax.set_ylabel('Element')
+    im = ax.imshow(
+        scanlines,
+        extent=[frame.time.start, frame.time.end, 0, numpulseecho - 1],
+        interpolation=interpolation,
+        cmap=cmap,
+        origin="lower",
+    )
+    ax.set_xlabel("Time (µs)")
+    ax.set_ylabel("Element")
     ax.xaxis.set_major_formatter(micro_formatter)
     ax.xaxis.set_minor_formatter(micro_formatter)
 
     def elements_ticker_func(i, pos):
-        print('call elements_ticker: {}'.format((i, pos)))
-        s = '{:d}'.format(elements[i])
+        print("call elements_ticker: {}".format((i, pos)))
+        s = "{:d}".format(elements[i])
         print(s)
         return s
 
     # elements_ticker = ticker.FuncFormatter(lambda x, pos: '{:d}'.format(elements[int(x)]))
     elements_ticker = ticker.FuncFormatter(
-        functools.partial(_elements_ticker, elements=elements))
+        functools.partial(_elements_ticker, elements=elements)
+    )
     ax.yaxis.set_major_formatter(elements_ticker)
     ax.yaxis.set_minor_formatter(elements_ticker)
     ax.yaxis.set_major_locator(ticker.MultipleLocator(4))
@@ -143,17 +168,24 @@ def plot_bscan_pulse_echo(frame, use_dB=True, ax=None, title='B-scan', clim=None
     if title is not None:
         ax.set_title(title)
 
-    ax.axis('tight')
+    ax.axis("tight")
 
     if savefig:
         ax.figure.savefig(filename)
     return ax, im
 
 
-def plot_scanline(frame, idx, to_show='filtered', func_res=np.real, ax=None,
-                  title='Scanline', show_legend=True, savefig=None,
-                  filename='scanline'
-                  ):
+def plot_scanline(
+    frame,
+    idx,
+    to_show="filtered",
+    func_res=np.real,
+    ax=None,
+    title="Scanline",
+    show_legend=True,
+    savefig=None,
+    filename="scanline",
+):
     """
     Plot a scanline: time versus amplitude.
 
@@ -184,16 +216,16 @@ def plot_scanline(frame, idx, to_show='filtered', func_res=np.real, ax=None,
         fig = ax.figure
 
     if savefig is None:
-        savefig = conf['savefig']
+        savefig = conf["savefig"]
 
     to_show = to_show.lower()
-    if to_show == 'both':
+    if to_show == "both":
         show_raw = True
         show_filtered = True
-    elif to_show == 'raw':
+    elif to_show == "raw":
         show_raw = True
         show_filtered = False
-    elif to_show == 'filtered':
+    elif to_show == "filtered":
         show_raw = False
         show_filtered = True
     else:
@@ -201,15 +233,21 @@ def plot_scanline(frame, idx, to_show='filtered', func_res=np.real, ax=None,
 
     lines = {}
     if show_raw:
-        line = ax.plot(frame.time.samples, frame.scanlines_raw[idx],
-                       label='#{idx} raw'.format(idx=idx))
-        lines['raw'] = line
+        line = ax.plot(
+            frame.time.samples,
+            frame.scanlines_raw[idx],
+            label="#{idx} raw".format(idx=idx),
+        )
+        lines["raw"] = line
     if show_filtered:
-        line = ax.plot(frame.time.samples, func_res(frame.scanlines[idx]),
-                       label='#{idx} filtered'.format(idx=idx))
-        lines['filtered'] = line
-    ax.set_xlabel('time (µs)')
-    ax.set_ylabel('amplitude')
+        line = ax.plot(
+            frame.time.samples,
+            func_res(frame.scanlines[idx]),
+            label="#{idx} filtered".format(idx=idx),
+        )
+        lines["filtered"] = line
+    ax.set_xlabel("time (µs)")
+    ax.set_ylabel("amplitude")
     ax.xaxis.set_major_formatter(micro_formatter)
     ax.xaxis.set_minor_formatter(micro_formatter)
 
@@ -217,7 +255,7 @@ def plot_scanline(frame, idx, to_show='filtered', func_res=np.real, ax=None,
         ax.set_title(title)
 
     if show_legend:
-        ax.legend(loc='best')
+        ax.legend(loc="best")
 
     if savefig:
         fig.savefig(filename)
@@ -225,9 +263,17 @@ def plot_scanline(frame, idx, to_show='filtered', func_res=np.real, ax=None,
     return ax, lines
 
 
-def plot_psd(frame, idx='all', to_show='filtered', welch_params=None, ax=None,
-             title='Power spectrum estimation', show_legend=True, savefig=None,
-             filename='psd'):
+def plot_psd(
+    frame,
+    idx="all",
+    to_show="filtered",
+    welch_params=None,
+    ax=None,
+    title="Power spectrum estimation",
+    show_legend=True,
+    savefig=None,
+    filename="psd",
+):
     """
     Plot the estimated power spectrum of a scanline using Welch's method.
 
@@ -261,21 +307,21 @@ def plot_psd(frame, idx='all', to_show='filtered', welch_params=None, ax=None,
         welch_params = {}
 
     if savefig is None:
-        savefig = conf['savefig']
+        savefig = conf["savefig"]
 
-    if isinstance(idx, str) and idx == 'all':
+    if isinstance(idx, str) and idx == "all":
         idx = slice(None)
 
     fs = 1 / frame.time.step
 
     to_show = to_show.lower()
-    if to_show == 'both':
+    if to_show == "both":
         show_raw = True
         show_filtered = True
-    elif to_show == 'raw':
+    elif to_show == "raw":
         show_raw = True
         show_filtered = False
-    elif to_show == 'filtered':
+    elif to_show == "filtered":
         show_raw = False
         show_filtered = True
     else:
@@ -288,17 +334,17 @@ def plot_psd(frame, idx='all', to_show='filtered', welch_params=None, ax=None,
         freq, pxx = scipy.signal.welch(x, fs, **welch_params)
         if pxx.ndim == 2:
             pxx = np.mean(pxx, axis=0)
-        line = ax.plot(freq, pxx, label='raw'.format(idx=idx))
-        lines['raw'] = line
+        line = ax.plot(freq, pxx, label="raw".format(idx=idx))
+        lines["raw"] = line
     if show_filtered:
         x = frame.scanlines[idx].real
         freq, pxx = scipy.signal.welch(x, fs, **welch_params)
         if pxx.ndim == 2:
             pxx = np.mean(pxx, axis=0)
-        line = ax.plot(freq, pxx, label='filtered'.format(idx=idx))
-        lines['filtered'] = line
-    ax.set_xlabel('frequency (MHz)')
-    ax.set_ylabel('power spectrum estimation')
+        line = ax.plot(freq, pxx, label="filtered".format(idx=idx))
+        lines["filtered"] = line
+    ax.set_xlabel("frequency (MHz)")
+    ax.set_ylabel("power spectrum estimation")
     ax.xaxis.set_major_formatter(mega_formatter)
     ax.xaxis.set_minor_formatter(mega_formatter)
 
@@ -306,17 +352,29 @@ def plot_psd(frame, idx='all', to_show='filtered', welch_params=None, ax=None,
         ax.set_title(title)
 
     if show_legend:
-        ax.legend(loc='best')
+        ax.legend(loc="best")
 
     if savefig:
         fig.savefig(filename)
     return ax, lines
 
 
-def plot_oxz(data, grid, ax=None, title=None, clim=None, interpolation='none',
-             draw_cbar=True, cmap=None, figsize=None, savefig=None, patches=None,
-             filename=None, scale='linear', ref_db=None,
-             ):
+def plot_oxz(
+    data,
+    grid,
+    ax=None,
+    title=None,
+    clim=None,
+    interpolation="none",
+    draw_cbar=True,
+    cmap=None,
+    figsize=None,
+    savefig=None,
+    patches=None,
+    filename=None,
+    scale="linear",
+    ref_db=None,
+):
     """
     Plot data in the plane Oxz.
 
@@ -363,13 +421,16 @@ def plot_oxz(data, grid, ax=None, title=None, clim=None, interpolation='none',
 
     """
     if figsize is None:
-        figsize = conf['plot_oxz.figsize']
+        figsize = conf["plot_oxz.figsize"]
     else:
         if ax is not None:
-            warn('figsize is ignored because an axis is provided', ArimWarning,
-                stacklevel=2)
+            warn(
+                "figsize is ignored because an axis is provided",
+                ArimWarning,
+                stacklevel=2,
+            )
     if savefig is None:
-        savefig = conf['savefig']
+        savefig = conf["savefig"]
 
     if ax is None:
         fig, ax = plt.subplots(figsize=figsize)
@@ -378,35 +439,42 @@ def plot_oxz(data, grid, ax=None, title=None, clim=None, interpolation='none',
     if patches is None:
         patches = []
 
-    valid_shapes = [(grid.numx, 1, grid.numz),
-                    (grid.numx, grid.numz),
-                    (grid.numx * grid.numz,)]
+    valid_shapes = [
+        (grid.numx, 1, grid.numz),
+        (grid.numx, grid.numz),
+        (grid.numx * grid.numz,),
+    ]
     if data.shape in valid_shapes:
         data = data.reshape((grid.numx, grid.numz))
     else:
-        msg = 'invalid data shape (got {}, expected {} or {} or {})' \
-            .format(data.shape, *valid_shapes)
+        msg = "invalid data shape (got {}, expected {} or {} or {})".format(
+            data.shape, *valid_shapes
+        )
         raise ValueError(msg)
 
     data = np.rot90(data)
 
     scale = scale.lower()
-    if scale == 'linear':
+    if scale == "linear":
         if ref_db is not None:
             warn("ref_db is ignored for linear plot", ArimWarning, stacklevel=2)
-    elif scale == 'db':
+    elif scale == "db":
         data = ut.decibel(data, ref_db)
     else:
-        raise ValueError('invalid scale: {}'.format(scale))
+        raise ValueError("invalid scale: {}".format(scale))
 
-    image = ax.imshow(data, interpolation=interpolation, origin='lower',
-                      extent=(grid.xmin, grid.xmax, grid.zmax, grid.zmin),
-                      cmap=cmap)
-    if ax.get_xlabel() == '':
+    image = ax.imshow(
+        data,
+        interpolation=interpolation,
+        origin="lower",
+        extent=(grid.xmin, grid.xmax, grid.zmax, grid.zmin),
+        cmap=cmap,
+    )
+    if ax.get_xlabel() == "":
         # avoid overwriting labels
-        ax.set_xlabel('x (mm)')
-    if ax.get_ylabel() == '':
-        ax.set_ylabel('z (mm)')
+        ax.set_xlabel("x (mm)")
+    if ax.get_ylabel() == "":
+        ax.set_ylabel("z (mm)")
     ax.xaxis.set_major_formatter(milli_formatter)
     ax.xaxis.set_minor_formatter(milli_formatter)
     ax.yaxis.set_major_formatter(milli_formatter)
@@ -419,21 +487,33 @@ def plot_oxz(data, grid, ax=None, title=None, clim=None, interpolation='none',
         ax.set_title(title)
     for p in patches:
         ax.add_patch(p)
- 
+
     # Like axis('equal') but mitigates https://github.com/matplotlib/matplotlib/issues/11416
     ax.axis(aspect=1)
     ax.axis([grid.xmin, grid.xmax, grid.zmax, grid.zmin])
     if savefig:
         if filename is None:
-            raise ValueError('filename must be provided when savefig is true')
+            raise ValueError("filename must be provided when savefig is true")
         fig.savefig(filename)
     return ax, image
 
 
-def plot_oxz_many(data_list, grid, nrows, ncols, title_list=None, suptitle=None,
-                  draw_colorbar=True, figsize=None, savefig=None, clim=None,
-                  filename=None,
-                  y_title=1.0, y_suptitle=1.0, **plot_oxz_kwargs):
+def plot_oxz_many(
+    data_list,
+    grid,
+    nrows,
+    ncols,
+    title_list=None,
+    suptitle=None,
+    draw_colorbar=True,
+    figsize=None,
+    savefig=None,
+    clim=None,
+    filename=None,
+    y_title=1.0,
+    y_suptitle=1.0,
+    **plot_oxz_kwargs
+):
     """
     Plot many Oxz plots on the same figure.
 
@@ -469,9 +549,9 @@ def plot_oxz_many(data_list, grid, nrows, ncols, title_list=None, suptitle=None,
 
     """
     if savefig is None:
-        savefig = conf['savefig']
+        savefig = conf["savefig"]
     if figsize is None:
-        figsize = conf['plot_oxz_many.figsize']
+        figsize = conf["plot_oxz_many.figsize"]
 
     if title_list is None:
         title_list = [None] * len(data_list)
@@ -479,19 +559,30 @@ def plot_oxz_many(data_list, grid, nrows, ncols, title_list=None, suptitle=None,
     # must use a common clim (otherwise the figure does not make sense)
     if clim is None:
         clim = (
-            min(np.nanmin(x) for x in data_list), max(np.nanmax(x) for x in data_list))
+            min(np.nanmin(x) for x in data_list),
+            max(np.nanmax(x) for x in data_list),
+        )
 
-    fig, axes = plt.subplots(nrows=nrows, ncols=ncols, sharex=True, sharey=True,
-                             figsize=figsize)
+    fig, axes = plt.subplots(
+        nrows=nrows, ncols=ncols, sharex=True, sharey=True, figsize=figsize
+    )
     images = []
     for data, title, ax in zip(data_list, title_list, axes.ravel()):
         # the current function handles saving fig, drawing the cbar and displaying the title
         # so we prevent plot_oxz to do it.
-        ax, im = plot_oxz(data, grid, ax=ax, clim=clim, draw_cbar=False, savefig=False,
-                          **plot_oxz_kwargs, title=None)
+        ax, im = plot_oxz(
+            data,
+            grid,
+            ax=ax,
+            clim=clim,
+            draw_cbar=False,
+            savefig=False,
+            **plot_oxz_kwargs,
+            title=None
+        )
         images.append(im)
-        ax.set_xlabel('')
-        ax.set_ylabel('')
+        ax.set_xlabel("")
+        ax.set_ylabel("")
         if title is not None:
             ax.set_title(title, y=y_title)
     for ax in axes[-1, :]:
@@ -504,12 +595,12 @@ def plot_oxz_many(data_list, grid, nrows, ncols, title_list=None, suptitle=None,
         fig.colorbar(im, ax=axes.ravel().tolist())
     if savefig:
         if filename is None:
-            raise ValueError('filename must be provided when savefig is true')
+            raise ValueError("filename must be provided when savefig is true")
         fig.savefig(filename)
     return axes, images
 
 
-def plot_tfm(tfm, y=0., func_res=None, interpolation='bilinear', **plot_oxz_kwargs):
+def plot_tfm(tfm, y=0., func_res=None, interpolation="bilinear", **plot_oxz_kwargs):
     """
     Plot a TFM in plane Oxz.
 
@@ -537,7 +628,7 @@ def plot_tfm(tfm, y=0., func_res=None, interpolation='bilinear', **plot_oxz_kwar
     iy = np.argmin(np.abs(grid.y - y))
 
     if tfm.res is None:
-        raise ValueError('No result in this TFM object.')
+        raise ValueError("No result in this TFM object.")
     if func_res is None:
         func_res = lambda x: x
 
@@ -565,17 +656,22 @@ def plot_directivity_finite_width_2d(element_width, wavelength, ax=None, **kwarg
     else:
         fig = ax.figure
 
-    title = kwargs.get('title',
-                       'Directivity of an element (uniform sources along a straight line)')
+    title = kwargs.get(
+        "title", "Directivity of an element (uniform sources along a straight line)"
+    )
 
     ratio = element_width / wavelength
     theta = np.linspace(-np.pi / 2, np.pi / 2, 100)
     directivity = ut.directivity_finite_width_2d(theta, element_width, wavelength)
 
-    ax.plot(np.rad2deg(theta), directivity, label=r'$a/\lambda = {:.2f}$'.format(ratio),
-            **kwargs)
-    ax.set_xlabel(r'Polar angle $\theta$ (deg)')
-    ax.set_ylabel('directivity (1)')
+    ax.plot(
+        np.rad2deg(theta),
+        directivity,
+        label=r"$a/\lambda = {:.2f}$".format(ratio),
+        **kwargs
+    )
+    ax.set_xlabel(r"Polar angle $\theta$ (deg)")
+    ax.set_ylabel("directivity (1)")
     ax.set_title(title)
     ax.set_xlim([-90, 90])
     ax.set_ylim([0, 1.2])
@@ -587,8 +683,9 @@ def plot_directivity_finite_width_2d(element_width, wavelength, ax=None, **kwarg
 
 
 class RayPlotter:
-    def __init__(self, grid, ray, element_index, linestyle='m--',
-                 tolerance_distance=1e-3):
+    def __init__(
+        self, grid, ray, element_index, linestyle="m--", tolerance_distance=1e-3
+    ):
         self.grid = grid
         self.ray = ray
         self.element_index = element_index
@@ -600,15 +697,16 @@ class RayPlotter:
 
     def __call__(self, event):
         logger.debug(
-            'button=%d, x=%d, y=%d, xdata=%f, ydata=%f' % (
-                event.button, event.x, event.y, event.xdata, event.ydata))
+            "button=%d, x=%d, y=%d, xdata=%f, ydata=%f"
+            % (event.button, event.x, event.y, event.xdata, event.ydata)
+        )
         ax = event.canvas.figure.axes[0]
         if event.button == 1:
             self.draw_ray(ax, event.xdata, event.ydata)
         elif event.button == 3:
             self.clear_rays(ax)
         if self.debug:
-            print('show_ray_on_clic() finish with no error')
+            print("show_ray_on_clic() finish with no error")
 
     def draw_ray(self, ax, x, z):
         gridpoints = self.grid.to_1d_points()
@@ -620,12 +718,14 @@ class RayPlotter:
         if distance > self.tolerance_distance:
             logger.warning(
                 "The closest grid point is far from what you want (dist: {:.2f} mm)".format(
-                    distance * 1000))
+                    distance * 1000
+                )
+            )
 
         legs = self.ray.get_coordinates_one(self.element_index, point_index)
         line = ax.plot(legs.x, legs.z, self.linestyle)
         self._lines.extend(line)
-        logger.debug('Draw a ray')
+        logger.debug("Draw a ray")
         ax.figure.canvas.draw_idle()
 
     def clear_rays(self, ax):
@@ -634,15 +734,15 @@ class RayPlotter:
         for line in lines_to_clear:
             ax.lines.remove(line)
             self._lines.remove(line)
-        logger.debug('Clear {} ray(s) on figure'.format(len(lines_to_clear)))
+        logger.debug("Clear {} ray(s) on figure".format(len(lines_to_clear)))
         ax.figure.canvas.draw_idle()
 
     def connect(self, ax):
         """Connect to matplotlib event backend"""
-        ax.figure.canvas.mpl_connect('button_press_event', self)
+        ax.figure.canvas.mpl_connect("button_press_event", self)
 
 
-def draw_rays_on_click(grid, ray, element_index, ax=None, linestyle='m--', ):
+def draw_rays_on_click(grid, ray, element_index, ax=None, linestyle="m--"):
     """
     Dynamic plotting of rays on a plot.
 
@@ -667,16 +767,27 @@ def draw_rays_on_click(grid, ray, element_index, ax=None, linestyle='m--', ):
     """
     if ax is None:
         ax = plt.gca()
-    ray_plotter = RayPlotter(grid=grid, ray=ray, element_index=element_index,
-                             linestyle=linestyle)
+    ray_plotter = RayPlotter(
+        grid=grid, ray=ray, element_index=element_index, linestyle=linestyle
+    )
     ray_plotter.connect(ax)
     return ray_plotter
 
 
-def plot_interfaces(oriented_points_list, ax=None, show_probe=True, show_last=True,
-                    show_orientations=False,
-                    n_arrows=10, title='Interfaces', savefig=None, filename='interfaces',
-                    markers=None, show_legend=True, quiver_kwargs=None):
+def plot_interfaces(
+    oriented_points_list,
+    ax=None,
+    show_probe=True,
+    show_last=True,
+    show_orientations=False,
+    n_arrows=10,
+    title="Interfaces",
+    savefig=None,
+    filename="interfaces",
+    markers=None,
+    show_legend=True,
+    quiver_kwargs=None,
+):
     """
     Plot interfaces on the Oxz plane.
 
@@ -714,7 +825,7 @@ def plot_interfaces(oriented_points_list, ax=None, show_probe=True, show_last=Tr
 
     """
     if savefig is None:
-        savefig = conf['savefig']
+        savefig = conf["savefig"]
 
     if ax is None:
         fig, ax = plt.subplots()
@@ -727,15 +838,16 @@ def plot_interfaces(oriented_points_list, ax=None, show_probe=True, show_last=Tr
     numinterfaces = len(oriented_points_list)
 
     if markers is None:
-        markers = ['.'] + ['.'] * (numinterfaces - 2) + [',k']
+        markers = ["."] + ["."] * (numinterfaces - 2) + [",k"]
 
     for i, (interface, marker) in enumerate(zip(oriented_points_list, markers)):
         if i == 0 and not show_probe:
             continue
         if i == numinterfaces - 1 and not show_last:
             continue
-        line, = ax.plot(interface.points.x, interface.points.z, marker,
-                        label=interface.points.name)
+        line, = ax.plot(
+            interface.points.x, interface.points.z, marker, label=interface.points.name
+        )
 
         if show_orientations:
             # arrow every k points
@@ -743,18 +855,22 @@ def plot_interfaces(oriented_points_list, ax=None, show_probe=True, show_last=Tr
             if k == 0:
                 k = 1
             # import pytest; pytest.set_trace()
-            ax.quiver(interface.points.x[::k],
-                      interface.points.z[::k],
-                      interface.orientations.x[::k, 2],
-                      interface.orientations.z[::k, 2],
-                      color=line.get_color(), units='xy', angles='xy',
-                      **quiver_kwargs)
+            ax.quiver(
+                interface.points.x[::k],
+                interface.points.z[::k],
+                interface.orientations.x[::k, 2],
+                interface.orientations.z[::k, 2],
+                color=line.get_color(),
+                units="xy",
+                angles="xy",
+                **quiver_kwargs
+            )
 
     # set labels only if there is none in the axis yet
-    if ax.get_xlabel() == '':
-        ax.set_xlabel('x (mm)')
-    if ax.get_ylabel() == '':
-        ax.set_ylabel('z (mm)')
+    if ax.get_xlabel() == "":
+        ax.set_xlabel("x (mm)")
+    if ax.get_ylabel() == "":
+        ax.set_ylabel("z (mm)")
 
     ax.xaxis.set_major_formatter(milli_formatter)
     ax.yaxis.set_major_formatter(milli_formatter)
@@ -769,9 +885,9 @@ def plot_interfaces(oriented_points_list, ax=None, show_probe=True, show_last=Tr
         ax.invert_yaxis()
 
     if show_legend:
-        ax.legend(loc='best')
+        ax.legend(loc="best")
 
-    ax.axis('equal')
+    ax.axis("equal")
 
     if savefig:
         fig.savefig(filename)

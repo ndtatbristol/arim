@@ -17,7 +17,7 @@ from .. import geometry as g
 from .. import settings as s
 from ..core import Probe, Time, ExaminationObject, Material, Frame
 
-__all__ = ['load_expdata']
+__all__ = ["load_expdata"]
 
 
 class NotHandledByScipy(Exception):
@@ -61,7 +61,8 @@ def load_expdata(file):
             raise Exception(
                 "Unable to import Matlab file because its file format version is unsupported. "
                 "Try importing the file in Matlab and exporting it with the "
-                "command 'save' and the flag '-v7'. Alternatively, try to install the Python library 'h5py'.")
+                "command 'save' and the flag '-v7'. Alternatively, try to install the Python library 'h5py'."
+            )
         (exp_data, array, filename) = _load_from_hdf5(file)
 
     # As this point exp_data and array are populated either by scipy.io or hdf5:
@@ -75,9 +76,9 @@ def load_expdata(file):
     except Exception as e:
         raise InvalidExpData(e) from e
 
-    frame.metadata['from_brain'] = filename
-    frame.probe.metadata['from_brain'] = filename
-    frame.examination_object.metadata['from_brain'] = filename
+    frame.metadata["from_brain"] = filename
+    frame.probe.metadata["from_brain"] = filename
+    frame.examination_object.metadata["from_brain"] = filename
     return frame
 
 
@@ -86,28 +87,31 @@ def _load_probe(array):
     :param array: dict-like object corresponding to Matlab struct exp_data.array.
     :return: Probe
     """
-    frequency = array['centre_freq'][0, 0]
+    frequency = array["centre_freq"][0, 0]
 
     # dtype = np.result_type(array['el_xc'], array['el_yc'], array['el_zc'])
     dtype = s.FLOAT
 
     # Get locations
-    locations_x = np.squeeze(array['el_xc']).astype(dtype)
-    locations_y = np.squeeze(array['el_yc']).astype(dtype)
-    locations_z = np.squeeze(array['el_zc']).astype(dtype)
+    locations_x = np.squeeze(array["el_xc"]).astype(dtype)
+    locations_y = np.squeeze(array["el_yc"]).astype(dtype)
+    locations_z = np.squeeze(array["el_zc"]).astype(dtype)
 
     locations = g.Points.from_xyz(locations_x, locations_y, locations_z)
 
     # Calculate Probe Dimensions (using el_x1, el_x2 and el_xc etc for each dimension)
     dimensions_x = 2 * np.maximum(
-        np.absolute(np.squeeze(array['el_x1']).astype(dtype) - locations_x),
-        np.absolute(np.squeeze(array['el_x2']).astype(dtype) - locations_x))
+        np.absolute(np.squeeze(array["el_x1"]).astype(dtype) - locations_x),
+        np.absolute(np.squeeze(array["el_x2"]).astype(dtype) - locations_x),
+    )
     dimensions_y = 2 * np.maximum(
-        np.absolute(np.squeeze(array['el_y1']).astype(dtype) - locations_y),
-        np.absolute(np.squeeze(array['el_y2']).astype(dtype) - locations_y))
+        np.absolute(np.squeeze(array["el_y1"]).astype(dtype) - locations_y),
+        np.absolute(np.squeeze(array["el_y2"]).astype(dtype) - locations_y),
+    )
     dimensions_z = 2 * np.maximum(
-        np.absolute(np.squeeze(array['el_z1']).astype(dtype) - locations_z),
-        np.absolute(np.squeeze(array['el_z2']).astype(dtype) - locations_z))
+        np.absolute(np.squeeze(array["el_z1"]).astype(dtype) - locations_z),
+        np.absolute(np.squeeze(array["el_z2"]).astype(dtype) - locations_z),
+    )
     dimensions = g.Points.from_xyz(dimensions_x, dimensions_y, dimensions_z)
 
     return Probe(locations, frequency, dimensions=dimensions)
@@ -115,13 +119,13 @@ def _load_probe(array):
 
 def _load_frame(exp_data, probe):
     # NB: Matlab is 1-indexed, Python is 0-indexed
-    tx = np.squeeze(exp_data['tx'])
-    rx = np.squeeze(exp_data['rx'])
+    tx = np.squeeze(exp_data["tx"])
+    rx = np.squeeze(exp_data["rx"])
     tx = tx.astype(s.UINT) - 1
     rx = rx.astype(s.UINT) - 1
     # Remark: [...] is required to read in the case of HDF5 file
     # (and does nothing if we have a regular array
-    scanlines = np.squeeze(exp_data['time_data'][...])
+    scanlines = np.squeeze(exp_data["time_data"][...])
     scanlines = scanlines.astype(s.FLOAT)
     # exp_data.time_data is such as a two consecutive time samples are stored contiguously, which
     # is what we want. However Matlab saves either in Fortran order (shape: numscanlines x numsamples)
@@ -129,11 +133,11 @@ def _load_frame(exp_data, probe):
     if scanlines.flags.f_contiguous:
         scanlines = scanlines.T
 
-    timevect = np.squeeze(exp_data['time'])
+    timevect = np.squeeze(exp_data["time"])
     timevect = timevect.astype(s.FLOAT)
     time = Time.from_vect(timevect)
 
-    velocity = np.squeeze(exp_data['ph_velocity'])
+    velocity = np.squeeze(exp_data["ph_velocity"])
     velocity = velocity.astype(s.FLOAT)
     material = Material(velocity)
     examination_object = ExaminationObject(material)
@@ -149,6 +153,7 @@ def _load_from_scipy(file):
     :raises: NotHandledByScipy
     """
     import scipy.io as sio
+
     try:
         data = sio.loadmat(file)
     except NotImplementedError as e:
@@ -156,8 +161,8 @@ def _load_from_scipy(file):
 
     # Get data:
     try:
-        exp_data = data['exp_data'][0, 0]
-        array = exp_data['array'][0, 0]
+        exp_data = data["exp_data"][0, 0]
+        array = exp_data["array"][0, 0]
     except IndexError as e:
         raise InvalidExpData(e) from e
 
@@ -174,12 +179,12 @@ def _load_from_hdf5(file):
     import h5py
 
     # This line might raise an OSError:
-    f = h5py.File(file, mode='r')
+    f = h5py.File(file, mode="r")
 
     try:
         # File successfully loaded by HDF5:
-        exp_data = f['exp_data']
-        array = exp_data['array']
+        exp_data = f["exp_data"]
+        array = exp_data["array"]
     except IndexError as e:
         raise InvalidExpData(e) from e
 

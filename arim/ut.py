@@ -96,18 +96,19 @@ def infer_capture_method(tx, rx):
     combinations_hmc1 = set(zip(tx_hmc, rx_hmc))
     combinations_hmc2 = set(zip(rx_hmc, tx_hmc))
 
-    if (len(tx_hmc) == len(tx)) and ((combinations == combinations_hmc1) or
-                                         (combinations == combinations_hmc2)):
-        return 'hmc'
+    if (len(tx_hmc) == len(tx)) and (
+        (combinations == combinations_hmc1) or (combinations == combinations_hmc2)
+    ):
+        return "hmc"
 
     # Could it be a FMC?
     tx_fmc, rx_fmc = fmc(numelements)
     combinations_fmc = set(zip(tx_fmc, rx_fmc))
     if (len(tx_fmc) == len(tx)) and (combinations == combinations_fmc):
-        return 'fmc'
+        return "fmc"
 
     # At this point we are hopeless
-    return 'unsupported'
+    return "unsupported"
 
 
 def default_scanline_weights(tx, rx):
@@ -139,14 +140,15 @@ def default_scanline_weights(tx, rx):
 
     """
     if len(tx) != len(rx):
-        raise ValueError('tx and rx must have the same lengths (numscanlines)')
+        raise ValueError("tx and rx must have the same lengths (numscanlines)")
     numscanlines = len(tx)
 
     # elements_pairs contains (tx[0], rx[0]), (tx[1], rx[1]), etc.
     elements_pairs = {*zip(tx, rx)}
     scanline_weights = np.ones(numscanlines)
-    for this_tx, this_rx, scanline_weight in \
-            zip(tx, rx, np.nditer(scanline_weights, op_flags=['readwrite'])):
+    for this_tx, this_rx, scanline_weight in zip(
+        tx, rx, np.nditer(scanline_weights, op_flags=["readwrite"])
+    ):
         if (this_rx, this_tx) not in elements_pairs:
             scanline_weight[...] = 2.
     return scanline_weights
@@ -194,7 +196,7 @@ def decibel(arr, reference=None, neginf_value=-1000., return_reference=False):
     else:
         assert reference > 0.
 
-    with np.errstate(divide='ignore'):
+    with np.errstate(divide="ignore"):
         arr_db = 20 * np.log10(arr_abs / reference)
 
     if neginf_value is not None:
@@ -235,10 +237,13 @@ def instantaneous_phase_shift(analytic_sig, time_vect, carrier_frequency):
     """
     analytic_sig = np.asarray(analytic_sig)
     dtype = analytic_sig.dtype
-    if dtype.kind != 'c':
-        warnings.warn('Expected an analytic (complex) signal, got {}. Use a Hilbert '
-                      'transform to get the analytic signal.'.format(dtype), UtWarning,
-                      stacklevel=2)
+    if dtype.kind != "c":
+        warnings.warn(
+            "Expected an analytic (complex) signal, got {}. Use a Hilbert "
+            "transform to get the analytic signal.".format(dtype),
+            UtWarning,
+            stacklevel=2,
+        )
     phase_correction = 2 * np.pi * carrier_frequency * time_vect
     phase = wrap_phase(np.angle(analytic_sig) - phase_correction)
     return phase
@@ -283,7 +288,7 @@ def make_timevect(num, step, start=0., dtype=None):
 
     """
     if not isinstance(num, int):
-        raise TypeError('num must be an integer (got {})'.format(type(num)))
+        raise TypeError("num must be an integer (got {})".format(type(num)))
     if num < 0:
         raise ValueError("Number of samples, %s, must be non-negative." % num)
 
@@ -323,19 +328,36 @@ def reciprocal_viewname(viewname):
     'TL-L'
 
     """
-    tx_path, rx_path = viewname.split('-')
-    return rx_path[::-1] + '-' + tx_path[::-1]
+    tx_path, rx_path = viewname.split("-")
+    return rx_path[::-1] + "-" + tx_path[::-1]
 
 
-IMAGING_MODES = ["L-L", "L-T", "T-T",
-                 "LL-L", "LL-T", "LT-L", "LT-T", "TL-L", "TL-T", "TT-L", "TT-T",
-                 "LL-LL", "LL-LT", "LL-TL", "LL-TT",
-                 "LT-LT", "LT-TL", "LT-TT",
-                 "TL-LT", "TL-TT",
-                 "TT-TT"]
-DIRECT_PATHS = ['L', 'T']
-SKIP_PATHS = ['LL', 'LT', 'TL', 'TT']
-DOUBLE_SKIP_PATHS = ['LLL', 'LLT', 'LTL', 'LTT', 'TLL', 'TLT', 'TTL', 'TTT']
+IMAGING_MODES = [
+    "L-L",
+    "L-T",
+    "T-T",
+    "LL-L",
+    "LL-T",
+    "LT-L",
+    "LT-T",
+    "TL-L",
+    "TL-T",
+    "TT-L",
+    "TT-T",
+    "LL-LL",
+    "LL-LT",
+    "LL-TL",
+    "LL-TT",
+    "LT-LT",
+    "LT-TL",
+    "LT-TT",
+    "TL-LT",
+    "TL-TT",
+    "TT-TT",
+]
+DIRECT_PATHS = ["L", "T"]
+SKIP_PATHS = ["LL", "LT", "TL", "TT"]
+DOUBLE_SKIP_PATHS = ["LLL", "LLT", "LTL", "LTT", "TLL", "TLT", "TTL", "TTT"]
 
 
 def default_viewname_order(tx_rx_tuple):
@@ -452,8 +474,9 @@ def rayleigh_vel(longitudinal_vel, transverse_vel):
 
 
     """
-    poisson = ((longitudinal_vel ** 2 - 2 * transverse_vel ** 2)
-               / (2 * (longitudinal_vel ** 2 - transverse_vel ** 2)))
+    poisson = (longitudinal_vel ** 2 - 2 * transverse_vel ** 2) / (
+        2 * (longitudinal_vel ** 2 - transverse_vel ** 2)
+    )
     if poisson <= 0:
         raise ValueError
     return transverse_vel * (0.862 + 1.14 * poisson) / (1 + poisson)

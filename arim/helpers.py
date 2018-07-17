@@ -20,15 +20,15 @@ from .exceptions import ArimWarning, NotAnArray, InvalidDimension, InvalidShape
 def get_name(metadata):
     """Return the name of an object based on the dictionary metadata. By preference: long_name, short_name, 'Unnamed'
     """
-    name = metadata.get('long_name', None)
+    name = metadata.get("long_name", None)
     if name is not None:
         return name
 
-    name = metadata.get('short_name', None)
+    name = metadata.get("short_name", None)
     if name is not None:
         return name
 
-    return 'Unnamed'
+    return "Unnamed"
 
 
 def parse_enum_constant(enum_constant_or_name, enum_type):
@@ -44,11 +44,13 @@ def parse_enum_constant(enum_constant_or_name, enum_type):
         except KeyError:
             raise ValueError(
                 "Expected a constant of enum '{enum_type}', got '{x}' instead".format(
-                    x=enum_constant_or_name, enum_type=enum_type))
+                    x=enum_constant_or_name, enum_type=enum_type
+                )
+            )
 
 
 @contextmanager
-def timeit(name='Computation', logger=None, log_level=logging.INFO):
+def timeit(name="Computation", logger=None, log_level=logging.INFO):
     """
     A context manager for timing some code.
 
@@ -78,7 +80,7 @@ def timeit(name='Computation', logger=None, log_level=logging.INFO):
         >>>     1 + 1
 
     """
-    if sys.platform == 'win32':
+    if sys.platform == "win32":
         # On Windows, the best timer is time.clock
         default_timer = time.clock
     else:
@@ -91,17 +93,17 @@ def timeit(name='Computation', logger=None, log_level=logging.INFO):
 
     if elapsed < 1e-6:
         elapsed = elapsed * 1e9
-        unit = 'ns'
+        unit = "ns"
     elif elapsed < 1e-3:
         elapsed = elapsed * 1e6
-        unit = 'us'
+        unit = "us"
     elif elapsed < 1:
         elapsed = elapsed * 1000
-        unit = 'ms'
+        unit = "ms"
     else:
-        unit = 's'
+        unit = "s"
 
-    msg_format = '{name} performed in {elapsed:.2f} {unit}'
+    msg_format = "{name} performed in {elapsed:.2f} {unit}"
     msg = msg_format.format(name=name, elapsed=elapsed, unit=unit)
 
     if logger is None:
@@ -153,8 +155,11 @@ class Cache(dict):
         super().__setitem__(key, value)
 
     def stat(self):
-        print("{}: {} values cached, {} hits, {} misses"
-              .format(self.__class__.__name__, len(self), self.hits, self.misses))
+        print(
+            "{}: {} values cached, {} hits, {} misses".format(
+                self.__class__.__name__, len(self), self.hits, self.misses
+            )
+        )
         print("\tBest cached: {}".format(self.counter.most_common()))
 
     def get(self, key, default=None):
@@ -189,15 +194,15 @@ def get_git_version(short=True):
     os.chdir(filedir)
 
     if short:
-        cmd = ['git', 'rev-parse', '--short', 'HEAD']
+        cmd = ["git", "rev-parse", "--short", "HEAD"]
     else:
-        cmd = ['git', 'rev-parse', 'HEAD']
+        cmd = ["git", "rev-parse", "HEAD"]
 
     try:
         githash = subprocess.check_output(cmd)
-        githash = githash.decode('ascii').strip()
-    except (FileNotFoundError, subprocess.CalledProcessError)  as e:
-        githash = ''
+        githash = githash.decode("ascii").strip()
+    except (FileNotFoundError, subprocess.CalledProcessError) as e:
+        githash = ""
 
     os.chdir(curdir)
     return githash
@@ -223,14 +228,17 @@ def get_shape_safely(array, array_name, expected_shape=None):
     # Check shape if expected_shape was provided:
     if len(shape) != len(expected_shape):
         raise InvalidDimension.message_auto(array_name, len(expected_shape), len(shape))
-    for (dim, (expected_size, current_size)) in enumerate(zip(expected_shape, shape),
-                                                          start=1):
+    for (dim, (expected_size, current_size)) in enumerate(
+        zip(expected_shape, shape), start=1
+    ):
         if expected_size is None:
             continue
         if expected_size != current_size:
             raise InvalidShape(
-                "Array '{}' must have a size of {} (current: {}) for its dimension {}."
-                    .format(array_name, expected_size, current_size, dim))
+                "Array '{}' must have a size of {} (current: {}) for its dimension {}.".format(
+                    array_name, expected_size, current_size, dim
+                )
+            )
 
     return shape
 
@@ -283,18 +291,19 @@ def smallest_uint_that_fits(max_value):
         allowed_max_value = np.iinfo(dtype).max
         if max_value <= allowed_max_value:
             return dtype
-    return TypeError("Cannot stored '{}' with numpy (max: '{}')"
-                     .format(max_value, allowed_max_value))
+    return TypeError(
+        "Cannot stored '{}' with numpy (max: '{}')".format(max_value, allowed_max_value)
+    )
 
 
-def sizeof_fmt(num, suffix='B'):
+def sizeof_fmt(num, suffix="B"):
     """
     Human-readable memory size.
 
     Adapted from https://stackoverflow.com/a/1094933/2996578
     """
-    for unit in ['', 'Ki', 'Mi', 'Gi', 'Ti', 'Pi', 'Ei', 'Zi']:
+    for unit in ["", "Ki", "Mi", "Gi", "Ti", "Pi", "Ei", "Zi"]:
         if abs(num) < 1024.0:
             return "%3.1f %s%s" % (num, unit, suffix)
         num /= 1024.0
-    return "%.1f %s%s" % (num, 'Yi', suffix)
+    return "%.1f %s%s" % (num, "Yi", suffix)

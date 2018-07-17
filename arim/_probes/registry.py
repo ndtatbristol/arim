@@ -1,7 +1,7 @@
 import collections.abc
 from collections import namedtuple, OrderedDict
 
-ProbeMaker = namedtuple('ProbeMaker', 'make short_name long_name')
+ProbeMaker = namedtuple("ProbeMaker", "make short_name long_name")
 
 
 class ProbeRegistry(collections.abc.Mapping):
@@ -15,7 +15,11 @@ class ProbeRegistry(collections.abc.Mapping):
     def register(self, probe_maker):
         key = probe_maker.short_name
         if key in self:
-            raise KeyError("Key '{}' already exist in registry. Unregister it first to rewrite it".format(key))
+            raise KeyError(
+                "Key '{}' already exist in registry. Unregister it first to rewrite it".format(
+                    key
+                )
+            )
         self._makers[key] = probe_maker
 
     def unregister(self, key):
@@ -31,10 +35,10 @@ class ProbeRegistry(collections.abc.Mapping):
         return self._makers[item].make()
 
     def __str__(self):
-        s = 'Available probes:\n'
-        s += '----------------\n'
+        s = "Available probes:\n"
+        s += "----------------\n"
         for key, maker in self._makers.items():
-            s += '  - {} (id: {})\n'.format(maker.long_name, maker.short_name)
+            s += "  - {} (id: {})\n".format(maker.long_name, maker.short_name)
         return s
 
     def keys(self):

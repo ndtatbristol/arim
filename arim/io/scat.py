@@ -1,11 +1,11 @@
-__all__ = ['load_scat', 'load_scat_from_matlab']
+__all__ = ["load_scat", "load_scat_from_matlab"]
 
 
 class InvalidFileFormat(Exception):
     pass
 
 
-def load_scat(filename, format='auto'):
+def load_scat(filename, format="auto"):
     """
     Load scattering from any supported source.
 
@@ -22,20 +22,20 @@ def load_scat(filename, format='auto'):
 
 
     """
-    formats = ['matlab']
+    formats = ["matlab"]
 
-    if format == 'matlab':
+    if format == "matlab":
         return load_scat_from_matlab(filename)
-    elif format == 'auto':
+    elif format == "auto":
         for format in formats:
             try:
                 return load_scat(filename, format=format)
             except InvalidFileFormat:
                 pass
         # at this point, everything failed
-        raise NotImplementedError('cannot determine the file format')
+        raise NotImplementedError("cannot determine the file format")
     else:
-        raise ValueError('invalid format')
+        raise ValueError("invalid format")
 
 
 def load_scat_from_matlab(filename):
@@ -59,7 +59,7 @@ def load_scat_from_matlab(filename):
     except NotImplementedError as e:
         raise InvalidFileFormat() from e
 
-    frequencies = data['frequencies']
+    frequencies = data["frequencies"]
     numfreq = frequencies.size
     if frequencies.shape not in {(1, numfreq), (numfreq, 1), (numfreq,)}:
         raise ValueError("invalid shape for 'frequencies'")
@@ -69,7 +69,7 @@ def load_scat_from_matlab(filename):
 
     for scat_key in scat.SCAT_KEYS:
         try:
-            matrices[scat_key] = data['scattering_{}'.format(scat_key)]
+            matrices[scat_key] = data["scattering_{}".format(scat_key)]
         except KeyError:
             pass
 

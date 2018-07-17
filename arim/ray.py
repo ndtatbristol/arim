@@ -21,8 +21,9 @@ from .exceptions import InvalidDimension, ArimWarning
 from .helpers import chunk_array
 
 
-def find_minimum_times(time_1, time_2, dtype=None, dtype_indices=None, block_size=None,
-                       numthreads=None):
+def find_minimum_times(
+    time_1, time_2, dtype=None, dtype_indices=None, block_size=None, numthreads=None
+):
     """
     For i=1:n and j=1:p,
 
@@ -62,7 +63,7 @@ def find_minimum_times(time_1, time_2, dtype=None, dtype_indices=None, block_siz
         raise InvalidDimension("time_1 and time_2 must be 2d.")
 
     if m != m_:
-        raise ValueError('Array shapes must be (n, m) and (m, p).')
+        raise ValueError("Array shapes must be (n, m) and (m, p).")
 
     if dtype is None:
         dtype = np.result_type(time_1, time_2)
@@ -93,11 +94,15 @@ def find_minimum_times(time_1, time_2, dtype=None, dtype_indices=None, block_siz
             for chunk2 in chunk_array((m, p), block_size_adj, axis=1):
                 chunk_res = (chunk1[0], chunk2[1])
 
-                futures.append(executor.submit(
-                    _find_minimum_times,
-                    time_1[chunk1], time_2[chunk2],
-                    out_min_times[chunk_res],
-                    out_best_indices[chunk_res]))
+                futures.append(
+                    executor.submit(
+                        _find_minimum_times,
+                        time_1[chunk1],
+                        time_2[chunk2],
+                        out_min_times[chunk_res],
+                        out_best_indices[chunk_res],
+                    )
+                )
     # Raise exceptions that happened, if any:
     for future in futures:
         future.result()
@@ -177,8 +182,9 @@ def ray_tracing(views_list, convert_to_fortran_order=False):
     """
     # Ray tracing:
     paths_set = set(v.tx_path for v in views_list) | set(v.rx_path for v in views_list)
-    return ray_tracing_for_paths(list(paths_set),
-                                 convert_to_fortran_order=convert_to_fortran_order)
+    return ray_tracing_for_paths(
+        list(paths_set), convert_to_fortran_order=convert_to_fortran_order
+    )
 
 
 @numba.jit(nopython=True, nogil=True, parallel=True)
@@ -276,12 +282,15 @@ class Rays:
     def __init__(self, times, interior_indices, fermat_path, order=None):
         assert times.ndim == 2
         assert interior_indices.ndim == 3
-        assert times.shape == interior_indices.shape[1:] == (
-            len(fermat_path.points[0]), len(fermat_path.points[-1]))
+        assert (
+            times.shape
+            == interior_indices.shape[1:]
+            == (len(fermat_path.points[0]), len(fermat_path.points[-1]))
+        )
         assert fermat_path.num_points_sets == interior_indices.shape[0] + 2
 
-        assert interior_indices.dtype.kind == 'i'
-        assert times.dtype.kind == 'f'
+        assert interior_indices.dtype.kind == "i"
+        assert times.dtype.kind == "f"
 
         indices = self.make_indices(interior_indices, order=order)
 
@@ -297,7 +306,8 @@ class Rays:
         """
         if path.num_points_sets != 2:
             raise ValueError(
-                "This constructor works only for path with two interfaces. Use __init__ instead.")
+                "This constructor works only for path with two interfaces. Use __init__ instead."
+            )
         n = len(path.points[0])
         m = len(path.points[1])
 
@@ -341,11 +351,11 @@ class Rays:
 
         if order is None:
             if interior_indices.flags.c_contiguous:
-                order = 'C'
+                order = "C"
             elif interior_indices.flags.fortran:
-                order = 'F'
+                order = "F"
             else:
-                order = 'C'
+                order = "C"
 
         indices = np.zeros((dm2 + 2, n, m), dtype=interior_indices.dtype, order=order)
 
@@ -397,7 +407,7 @@ class Rays:
             x[i] = points.x[j]
             y[i] = points.y[j]
             z[i] = points.z[j]
-        return g.Points.from_xyz(x, y, z, 'Ray')
+        return g.Points.from_xyz(x, y, z, "Ray")
 
     def gone_through_extreme_points(self):
         """
@@ -416,7 +426,7 @@ class Rays:
             Order: same as attribute ``indices``.
 
         """
-        order = 'F' if self.indices.flags.f_contiguous else 'C'
+        order = "F" if self.indices.flags.f_contiguous else "C"
 
         shape = self.indices.shape[1:]
         out = np.full(shape, False, order=order, dtype=np.bool)
@@ -442,9 +452,12 @@ class Rays:
         Rays
 
         """
-        return self.__class__(np.asfortranarray(self.times),
-                              np.asfortranarray(self.interior_indices),
-                              self.fermat_path, 'F')
+        return self.__class__(
+            np.asfortranarray(self.times),
+            np.asfortranarray(self.interior_indices),
+            self.fermat_path,
+            "F",
+        )
 
     @staticmethod
     def expand_rays(interior_indices, indices_new_interface):
@@ -485,7 +498,7 @@ class Rays:
             _expand_rays(interior_indices, indices_new_interface, expanded_indices)
             return expanded_indices
 
-    def reverse(self, order='f'):
+    def reverse(self, order="f"):
         """
         Returns a new Rays object which corresponds to the reversed path.
 
@@ -529,8 +542,9 @@ class FermatPath(tuple):
 
     def __new__(cls, sequence):
         if len(sequence) % 2 == 0 or len(sequence) < 3:
-            raise ValueError('{} expects a sequence of length odd and >= 5)'.format(
-                cls.__name__))
+            raise ValueError(
+                "{} expects a sequence of length odd and >= 5)".format(cls.__name__)
+            )
         return super().__new__(cls, sequence)
 
     @classmethod
@@ -539,7 +553,9 @@ class FermatPath(tuple):
         Create a FermatPath object from a (smarter) Path object.
         """
         path_pieces = []
-        for interface, material, mode in zip(path.interfaces, path.materials, path.modes):
+        for interface, material, mode in zip(
+            path.interfaces, path.materials, path.modes
+        ):
             velocity = material.velocity(mode)
             path_pieces.append(interface.points)
             path_pieces.append(velocity)
@@ -547,7 +563,9 @@ class FermatPath(tuple):
         return cls(path_pieces)
 
     def __repr__(self):
-        return '{}({})'.format(self.__class__.__name__, ', '.join([str(x) for x in self]))
+        return "{}({})".format(
+            self.__class__.__name__, ", ".join([str(x) for x in self])
+        )
 
     def __add__(self, tail):
         if self[-1] != tail[0]:
@@ -681,8 +699,13 @@ class FermatSolver:
         -------
 
         """
-        paths = set((path for v in views_list for path in
-                     (v.tx_path.to_fermat_path(), v.rx_path.to_fermat_path())))
+        paths = set(
+            (
+                path
+                for v in views_list
+                for path in (v.tx_path.to_fermat_path(), v.rx_path.to_fermat_path())
+            )
+        )
         return cls(paths, dtype=dtype, dtype_indices=dtype_indices)
 
     def solve(self):
@@ -740,12 +763,14 @@ class FermatSolver:
 
         self.num_minimization += 1
         logger.debug(
-            "Ray tracing: solve for subpaths {} and {}".format(str(head), str(tail)))
+            "Ray tracing: solve for subpaths {} and {}".format(str(head), str(tail))
+        )
         times, indices_at_interface = find_minimum_times(
             res_head.times,
             res_tail.times,
             dtype=self.dtype,
-            dtype_indices=self.dtype_indices)
+            dtype_indices=self.dtype_indices,
+        )
 
         assert res_tail.fermat_path.num_points_sets == 2
         indices = Rays.expand_rays(res_head.interior_indices, indices_at_interface)
@@ -787,8 +812,11 @@ class FermatSolver:
         return Rays.make_rays_two_interfaces(distance / speed, path, self.dtype_indices)
 
 
-@numba.vectorize(['float64(float64, float64)', 'float32(float32, float32)'],
-                 nopython=True, target='parallel')
+@numba.vectorize(
+    ["float64(float64, float64)", "float32(float32, float32)"],
+    nopython=True,
+    target="parallel",
+)
 def _signed_leg_angle(polar, azimuth):
     pi2 = np.pi / 2
     if -pi2 < azimuth <= polar:
@@ -845,7 +873,7 @@ def _cache_ray_geometry(user_func):
 
         """
         actual_interface_idx = self._interface_indices[interface_idx]
-        key = '{}:{}'.format(user_func.__name__, actual_interface_idx)
+        key = "{}:{}".format(user_func.__name__, actual_interface_idx)
         try:
             # Cache hit
             res = self._cache[key]
@@ -894,8 +922,9 @@ class RayGeometry:
         self.interfaces = interfaces
         self.rays = rays
 
-        assert rays.fermat_path.points == tuple(i.points for i in interfaces), \
-            'Inconsistent rays and interfaces'
+        assert rays.fermat_path.points == tuple(
+            i.points for i in interfaces
+        ), "Inconsistent rays and interfaces"
 
         # self.legs = [] * path.numlegs
         # self.incoming_legs = [None] + [] * path.numlegs
@@ -923,7 +952,7 @@ class RayGeometry:
 
         """
         if path.rays is None:
-            raise ValueError('Rays must be computed first.')
+            raise ValueError("Rays must be computed first.")
         return cls(path.interfaces, path.rays, use_cache=use_cache)
 
     @property
@@ -951,8 +980,11 @@ class RayGeometry:
         >>> ray_geometry.inc_angle(1)  # fetch from cache
         """
         if not self._use_cache:
-            warnings.warn("Caching is not enabled therefore precompute() will not work.",
-                          ArimWarning, stacklevel=2)
+            warnings.warn(
+                "Caching is not enabled therefore precompute() will not work.",
+                ArimWarning,
+                stacklevel=2,
+            )
         yield
         self.clear_intermediate_results()
 
@@ -1070,8 +1102,9 @@ class RayGeometry:
         legs_starts = self.leg_points(interface_idx - 1, is_final=False).coords
         legs_ends = self.leg_points(interface_idx, is_final=False).coords
 
-        orientations = self.orientations_of_legs_points(interface_idx,
-                                                        is_final=False).coords
+        orientations = self.orientations_of_legs_points(
+            interface_idx, is_final=False
+        ).coords
 
         legs_local = g.from_gcs(legs_starts, orientations, legs_ends)
         return g.aspoints(legs_local)
@@ -1159,10 +1192,13 @@ class RayGeometry:
         if interface_idx == 0:
             return None
         are_normals_on_inc_rays_side = self.interfaces[
-            interface_idx].are_normals_on_inc_rays_side
+            interface_idx
+        ].are_normals_on_inc_rays_side
         if are_normals_on_inc_rays_side is None:
-            raise ValueError('Attribute are_normals_on_inc_rays_side must be set for the'
-                             'interface {}.'.format(interface_idx))
+            raise ValueError(
+                "Attribute are_normals_on_inc_rays_side must be set for the"
+                "interface {}.".format(interface_idx)
+            )
         elif are_normals_on_inc_rays_side:
             return self.inc_leg_polar(interface_idx, is_final=False)
         else:
@@ -1201,8 +1237,9 @@ class RayGeometry:
         legs_starts = self.leg_points(interface_idx, is_final=False).coords
         legs_ends = self.leg_points(interface_idx + 1, is_final=False).coords
 
-        orientations = self.orientations_of_legs_points(interface_idx,
-                                                        is_final=False).coords
+        orientations = self.orientations_of_legs_points(
+            interface_idx, is_final=False
+        ).coords
         # Convert legs in the local coordinate systems.
         legs_local = g.from_gcs(legs_ends, orientations, legs_starts)
         return g.aspoints(legs_local)
@@ -1291,10 +1328,13 @@ class RayGeometry:
         if actual_interface_idx == (self.numinterfaces - 1):
             return None
         are_normals_on_out_rays_side = self.interfaces[
-            interface_idx].are_normals_on_out_rays_side
+            interface_idx
+        ].are_normals_on_out_rays_side
         if are_normals_on_out_rays_side is None:
-            raise ValueError('Attribute are_normals_on_out_rays_side must be set for the'
-                             'interface {}.'.format(interface_idx))
+            raise ValueError(
+                "Attribute are_normals_on_out_rays_side must be set for the"
+                "interface {}.".format(interface_idx)
+            )
         elif are_normals_on_out_rays_side:
             return self.out_leg_polar(interface_idx, is_final=False)
         else:

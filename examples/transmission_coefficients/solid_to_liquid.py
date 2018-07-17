@@ -32,9 +32,9 @@ alpha_l = np.asarray(np.linspace(0, np.pi / 2, 50000), dtype=float)
 alpha_fluid = snell_angles(alpha_l, c_l, c_fluid)
 alpha_t = snell_angles(alpha_l, c_l, c_t)
 
-reflection_l, reflection_t, transmission = \
-    solid_l_fluid(alpha_l, rho_fluid, rho_solid, c_fluid, c_l, c_t, alpha_fluid,
-                alpha_t)
+reflection_l, reflection_t, transmission = solid_l_fluid(
+    alpha_l, rho_fluid, rho_solid, c_fluid, c_l, c_t, alpha_fluid, alpha_t
+)
 
 alpha_fluid_deg = np.rad2deg(alpha_fluid.real)
 alpha_l_deg = np.rad2deg(alpha_l.real)
@@ -46,20 +46,20 @@ phase = lambda x: np.angle(x, deg=True)
 
 fig, axes = plt.subplots(nrows=2, sharex=True)
 ax = axes[0]
-ax.plot(alpha_l_deg, np.abs(transmission), label='transmission')
-ax.plot(alpha_l_deg, np.abs(reflection_l), label='reflection L')
-ax.plot(alpha_l_deg, np.abs(reflection_t), label='reflection T')
-ax.set_title('Tranmission and reflection coefficients from solid L to liquid')
-ax.set_ylabel('absolute value')
-ax.legend(loc='best')
+ax.plot(alpha_l_deg, np.abs(transmission), label="transmission")
+ax.plot(alpha_l_deg, np.abs(reflection_l), label="reflection L")
+ax.plot(alpha_l_deg, np.abs(reflection_t), label="reflection T")
+ax.set_title("Tranmission and reflection coefficients from solid L to liquid")
+ax.set_ylabel("absolute value")
+ax.legend(loc="best")
 
 ax = axes[1]
-ax.plot(alpha_l_deg, phase(transmission), label='transmission', linewidth=2)
-ax.plot(alpha_l_deg, phase(reflection_l), label='reflection L')
-ax.plot(alpha_l_deg, phase(reflection_t), label='reflection T')
+ax.plot(alpha_l_deg, phase(transmission), label="transmission", linewidth=2)
+ax.plot(alpha_l_deg, phase(reflection_l), label="reflection L")
+ax.plot(alpha_l_deg, phase(reflection_t), label="reflection T")
 
-ax.set_ylabel('phase (deg)')
-ax.set_xlabel('angle of the incident L wave in solid (deg)')
+ax.set_ylabel("phase (deg)")
+ax.set_xlabel("angle of the incident L wave in solid (deg)")
 
 if SAVEFIG:
     fig.savefig("solid_l_to_liquid_alpha_fluid")
@@ -81,7 +81,9 @@ area_t = np.cos(alpha_t).real
 inc_energy = 0.5 * pres_i ** 2 / (rho_solid * c_l) * area_l
 
 # Outgoing energy
-energy_trans = 0.5 * (np.abs(transmission) * pres_i) ** 2 / (rho_fluid * c_fluid) * area_fluid
+energy_trans = (
+    0.5 * (np.abs(transmission) * pres_i) ** 2 / (rho_fluid * c_fluid) * area_fluid
+)
 energy_refl_l = 0.5 * (np.abs(reflection_l) * pres_i) ** 2 / (rho_solid * c_l) * area_l
 energy_refl_t = 0.5 * (np.abs(reflection_t) * pres_i) ** 2 / (rho_solid * c_t) * area_t
 out_energy = energy_trans + energy_refl_l + energy_refl_t
@@ -97,15 +99,15 @@ if not (np.allclose(ratio_trans + ratio_refl_l + ratio_refl_t, 1.0)):
 # %% Plot energy
 
 fig, ax = plt.subplots()
-ax.plot(alpha_l_deg, ratio_trans, label='transmission')
-ax.plot(alpha_l_deg, ratio_refl_l, label='reflection L')
-ax.plot(alpha_l_deg, ratio_refl_t, label='reflection T')
-ax.plot(alpha_l_deg, ratio_trans + ratio_refl_l + ratio_refl_t, '--', label='total')
-ax.set_title('Repartition of energy: solid to liquid interface')
-ax.set_xlabel('angle of the incident wave in liquid (deg)')
-ax.set_ylabel('normalised energy (1)')
-ax.set_xlabel('angle of the incident L wave in solid (deg)')
+ax.plot(alpha_l_deg, ratio_trans, label="transmission")
+ax.plot(alpha_l_deg, ratio_refl_l, label="reflection L")
+ax.plot(alpha_l_deg, ratio_refl_t, label="reflection T")
+ax.plot(alpha_l_deg, ratio_trans + ratio_refl_l + ratio_refl_t, "--", label="total")
+ax.set_title("Repartition of energy: solid to liquid interface")
+ax.set_xlabel("angle of the incident wave in liquid (deg)")
+ax.set_ylabel("normalised energy (1)")
+ax.set_xlabel("angle of the incident L wave in solid (deg)")
 ax.set_ylim([0, 1.05])
-ax.legend(loc='best')
+ax.legend(loc="best")
 if SAVEFIG:
     fig.savefig("solid_l_to_liquid_energy")

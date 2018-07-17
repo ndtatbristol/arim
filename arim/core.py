@@ -8,9 +8,9 @@ import numpy as np
 from . import geometry as g
 from . import ut, helpers
 
-StateMatter = enum.Enum('StateMatter', 'liquid solid')
+StateMatter = enum.Enum("StateMatter", "liquid solid")
 StateMatter.__doc__ = "Enumerated constants for the states of matter."
-TransmissionReflection = enum.Enum('TransmissionReflection', 'transmission reflection')
+TransmissionReflection = enum.Enum("TransmissionReflection", "transmission reflection")
 TransmissionReflection.__doc__ = "Enumerated constants: transmission or reflection."
 
 
@@ -18,6 +18,7 @@ class CaptureMethod(enum.Enum):
     """
     Capture method: unsupported, fmc, hmc
     """
+
     unsupported = 0
     fmc = 1
     hmc = 2
@@ -63,32 +64,39 @@ class Frame:
 
     """
 
-    def __init__(self, scanlines, time, tx, rx, probe, examination_object, metadata=None):
+    def __init__(
+        self, scanlines, time, tx, rx, probe, examination_object, metadata=None
+    ):
         # Check shape and dimensions
         try:
             time.samples
         except AttributeError:
             raise TypeError(
-                "'time' should be an object 'Time' (current: {}).".format(type(time)))
+                "'time' should be an object 'Time' (current: {}).".format(type(time))
+            )
         numsamples = len(time)
 
         scanlines = np.asarray(scanlines)
         tx = np.asarray(tx)
         rx = np.asarray(rx)
-        if tx.dtype.kind not in ('i', 'u'):
+        if tx.dtype.kind not in ("i", "u"):
             raise TypeError(
-                'transmitters must be integer indices (got {})'.format(tx.dtype))
-        if rx.dtype.kind not in ('i', 'u'):
-            raise TypeError('receivers must be integer indices (got {})'.format(rx.dtype))
+                "transmitters must be integer indices (got {})".format(tx.dtype)
+            )
+        if rx.dtype.kind not in ("i", "u"):
+            raise TypeError(
+                "receivers must be integer indices (got {})".format(rx.dtype)
+            )
 
-        (numscanlines, _) = helpers.get_shape_safely(scanlines, 'scanlines',
-                                                     (None, numsamples))
-        _ = helpers.get_shape_safely(tx, 'tx', (numscanlines,))
-        _ = helpers.get_shape_safely(rx, 'rx', (numscanlines,))
+        (numscanlines, _) = helpers.get_shape_safely(
+            scanlines, "scanlines", (None, numsamples)
+        )
+        _ = helpers.get_shape_safely(tx, "tx", (numscanlines,))
+        _ = helpers.get_shape_safely(rx, "rx", (numscanlines,))
 
         unique_tx_rx_pairs = {(tx_i, rx_i) for tx_i, rx_i in zip(tx, rx)}
         if len(unique_tx_rx_pairs) < numscanlines:
-            raise ValueError('The frame contains duplicate scanlines')
+            raise ValueError("The frame contains duplicate scanlines")
 
         self.scanlines = scanlines
         self.tx = tx
@@ -126,8 +134,15 @@ class Frame:
 
         """
         new_scanlines = filt(self.scanlines)
-        return self.__class__(new_scanlines, self.time, self.tx, self.rx, self.probe,
-                              self.examination_object, self.metadata)
+        return self.__class__(
+            new_scanlines,
+            self.time,
+            self.tx,
+            self.rx,
+            self.probe,
+            self.examination_object,
+            self.metadata,
+        )
 
     def get_scanline(self, tx, rx):
         """
@@ -149,7 +164,7 @@ class Frame:
         if match_scanline.shape[0] == 1:
             return match_scanline[0]
         else:
-            raise IndexError('no scanline')
+            raise IndexError("no scanline")
 
     def expand_frame_assuming_reciprocity(self):
         """
@@ -172,8 +187,9 @@ class Frame:
         reciprocal_pairs = {(rx, tx) for tx, rx in zip(self.tx, self.rx)}
         all_pairs = sorted(orig_pairs | reciprocal_pairs)
 
-        pair_to_scan_idx = {(tx, rx): i for i, (tx, rx) in
-                            enumerate(zip(self.tx, self.rx))}
+        pair_to_scan_idx = {
+            (tx, rx): i for i, (tx, rx) in enumerate(zip(self.tx, self.rx))
+        }
 
         new_scanlines = np.empty((len(all_pairs), len(self.time)), self.scanlines.dtype)
 
@@ -188,8 +204,15 @@ class Frame:
 
             new_scanlines[new_scan_idx] = self.scanlines[old_scan_idx]
 
-        return self.__class__(new_scanlines, self.time, new_tx, new_rx, self.probe,
-                              self.examination_object, self.metadata)
+        return self.__class__(
+            new_scanlines,
+            self.time,
+            new_tx,
+            new_rx,
+            self.probe,
+            self.examination_object,
+            self.metadata,
+        )
 
     def is_complete_assuming_reciprocity(self):
         """
@@ -210,6 +233,7 @@ class ElementShape(enum.IntEnum):
     The values are compliant with the specifications of MFMC format
     (field ``ELEMENT_SHAPE``).
     """
+
     ellipse = 0
     rectangular = 1
     other = 2
@@ -272,21 +296,30 @@ class Probe:
 
     """
 
-    __slots__ = ['locations', 'frequency', 'dimensions', 'orientations', 'dead_elements',
-                 'shapes', 'bandwidth',
-                 'metadata', 'numelements', 'pcs']
+    __slots__ = [
+        "locations",
+        "frequency",
+        "dimensions",
+        "orientations",
+        "dead_elements",
+        "shapes",
+        "bandwidth",
+        "metadata",
+        "numelements",
+        "pcs",
+    ]
 
     def __init__(
-            self,
-            locations,
-            frequency,
-            dimensions=None,
-            orientations=None,
-            shapes=None,
-            dead_elements=None,
-            bandwidth=None,
-            pcs=None,
-            metadata=None,
+        self,
+        locations,
+        frequency,
+        dimensions=None,
+        orientations=None,
+        shapes=None,
+        dead_elements=None,
+        bandwidth=None,
+        pcs=None,
+        metadata=None,
     ):
         # Check shape and dimensions
         locations = g.aspoints(locations)
@@ -295,14 +328,17 @@ class Probe:
         if dimensions is not None:
             dimensions = g.aspoints(dimensions)
             if dimensions.shape == ():
-                dimensions = g.Points(np.resize(dimensions.coords, (numelements, 3)),
-                                      name=dimensions.name)
+                dimensions = g.Points(
+                    np.resize(dimensions.coords, (numelements, 3)), name=dimensions.name
+                )
             assert dimensions.shape == (numelements,)
         if orientations is not None:
             orientations = g.aspoints(orientations)
             if orientations.shape == ():
-                orientations = g.Points(np.resize(orientations.coords, (numelements, 3)),
-                                        name=orientations.name)
+                orientations = g.Points(
+                    np.resize(orientations.coords, (numelements, 3)),
+                    name=orientations.name,
+                )
             assert orientations.shape == (numelements,)
         if shapes is not None:
             # force dtype=object in the case we got a IntEnum (which would be convert to int otherwise)
@@ -338,18 +374,18 @@ class Probe:
 
     def __str__(self):
         return "{} - {} elements, {:.1f} MHz".format(
-            helpers.get_name(self.metadata),
-            self.numelements,
-            self.frequency / 1e6)
+            helpers.get_name(self.metadata), self.numelements, self.frequency / 1e6
+        )
 
     def __repr__(self):
         return "<{}: {} at {}>".format(
-            self.__class__.__name__,
-            str(self),
-            hex(id(self)))
+            self.__class__.__name__, str(self), hex(id(self))
+        )
 
     @classmethod
-    def make_matrix_probe(cls, numx, pitch_x, numy, pitch_y, frequency, *args, **kwargs):
+    def make_matrix_probe(
+        cls, numx, pitch_x, numy, pitch_y, frequency, *args, **kwargs
+    ):
         """
         Construct a matrix probe with ``numx × numy`` elements.
         Elements are indexed as follows: (X1, Y1), (X2, Y1), ..., (Xnumx, Y1), (X1, Y2), ...
@@ -374,7 +410,9 @@ class Probe:
         numy = int(numy)
 
         if (numx < 1) or (numy < 1):
-            raise ValueError("Number of elements along x or y must be strictly positive.")
+            raise ValueError(
+                "Number of elements along x or y must be strictly positive."
+            )
 
         # the pitch in one row (or one column) is meaning
         if numx == 1:
@@ -407,21 +445,21 @@ class Probe:
         probe = cls(locations, frequency, *args, **kwargs)
 
         # Populate metadata dict:
-        if probe.metadata.get('probe_type', None) is None:
+        if probe.metadata.get("probe_type", None) is None:
             if (numx == 1) and (numy == 1):
-                probe.metadata['probe_type'] = 'single'
+                probe.metadata["probe_type"] = "single"
             elif (numx == 1) or (numy == 1):
-                probe.metadata['probe_type'] = 'linear'
+                probe.metadata["probe_type"] = "linear"
             else:
-                probe.metadata['probe_type'] = 'matrix'
-        if probe.metadata.get('numx', None) is None:
-            probe.metadata['numx'] = numx
-        if probe.metadata.get('numy', None) is None:
-            probe.metadata['numy'] = numy
-        if probe.metadata.get('pitch_x', None) is None:
-            probe.metadata['pitch_x'] = pitch_x
-        if probe.metadata.get('pitch_y', None) is None:
-            probe.metadata['pitch_y'] = pitch_y
+                probe.metadata["probe_type"] = "matrix"
+        if probe.metadata.get("numx", None) is None:
+            probe.metadata["numx"] = numx
+        if probe.metadata.get("numy", None) is None:
+            probe.metadata["numy"] = numy
+        if probe.metadata.get("pitch_x", None) is None:
+            probe.metadata["pitch_x"] = pitch_x
+        if probe.metadata.get("pitch_y", None) is None:
+            probe.metadata["pitch_y"] = pitch_y
 
         return probe
 
@@ -524,7 +562,7 @@ class Probe:
         rot = g.rotation_matrix_z(np.pi)
         self.rotate(rot)
 
-    def set_reference_element(self, reference_element='first'):
+    def set_reference_element(self, reference_element="first"):
         """
         Change the origin of the PCS to a given element.
 
@@ -539,11 +577,11 @@ class Probe:
 
         """
 
-        if reference_element == 'first':
+        if reference_element == "first":
             new_origin = self.locations[0]
-        elif reference_element == 'last':
+        elif reference_element == "last":
             new_origin = self.locations[-1]
-        elif reference_element == 'mean':
+        elif reference_element == "mean":
             new_origin = self.locations.coords.mean(axis=0)
         else:
             new_origin = self.locations[reference_element]
@@ -563,8 +601,9 @@ class Probe:
         self.translate_to_point_O()
 
         # inverse rotation:
-        rotation_matrix = np.stack((self.pcs.i_hat, self.pcs.j_hat, self.pcs.k_hat),
-                                   axis=0)
+        rotation_matrix = np.stack(
+            (self.pcs.i_hat, self.pcs.j_hat, self.pcs.k_hat), axis=0
+        )
 
         self.rotate(rotation_matrix)
 
@@ -583,6 +622,7 @@ class Probe:
 
 class Mode(enum.Enum):
     """Enumerated constants for the modes: L or T."""
+
     longitudinal = 0
     transverse = 1
     L = 0
@@ -606,9 +646,9 @@ class Mode(enum.Enum):
 
         """
         if self is self.longitudinal:
-            return 'L'
+            return "L"
         elif self is self.transverse:
-            return 'T'
+            return "T"
         else:
             raise RuntimeError
 
@@ -616,6 +656,7 @@ class Mode(enum.Enum):
 @enum.unique
 class InterfaceKind(enum.Enum):
     """Enumerated constants for the interface kinds."""
+
     fluid_solid = 0
     solid_fluid = 1
 
@@ -632,7 +673,7 @@ class InterfaceKind(enum.Enum):
         elif self is self.solid_fluid:
             return self.fluid_solid
         else:
-            raise RuntimeError('invalid case')
+            raise RuntimeError("invalid case")
 
 
 class Interface:
@@ -689,35 +730,50 @@ class Interface:
         If not relevant (no outgoing rays): None.
     """
 
-    def __init__(self, points, orientations, kind=None, transmission_reflection=None,
-                 reflection_against=None,
-                 are_normals_on_inc_rays_side=None, are_normals_on_out_rays_side=None):
+    def __init__(
+        self,
+        points,
+        orientations,
+        kind=None,
+        transmission_reflection=None,
+        reflection_against=None,
+        are_normals_on_inc_rays_side=None,
+        are_normals_on_out_rays_side=None,
+    ):
         assert are_normals_on_inc_rays_side is None or isinstance(
-            are_normals_on_inc_rays_side, bool)
+            are_normals_on_inc_rays_side, bool
+        )
         assert are_normals_on_out_rays_side is None or isinstance(
-            are_normals_on_out_rays_side, bool)
+            are_normals_on_out_rays_side, bool
+        )
 
         if transmission_reflection is not None:
-            transmission_reflection = helpers.parse_enum_constant(transmission_reflection,
-                                                                  TransmissionReflection)
+            transmission_reflection = helpers.parse_enum_constant(
+                transmission_reflection, TransmissionReflection
+            )
         if kind is not None:
             kind = helpers.parse_enum_constant(kind, InterfaceKind)
 
         if (reflection_against is not None) and (
-                    transmission_reflection is not TransmissionReflection.reflection):
+            transmission_reflection is not TransmissionReflection.reflection
+        ):
             raise ValueError(
-                "Parameter 'reflection_against' must be None for anything but a reflection")
+                "Parameter 'reflection_against' must be None for anything but a reflection"
+            )
         if (reflection_against is None) and (
-                    transmission_reflection is TransmissionReflection.reflection):
+            transmission_reflection is TransmissionReflection.reflection
+        ):
             raise ValueError(
-                "Parameter 'reflection_against' must be defined for a reflection")
+                "Parameter 'reflection_against' must be defined for a reflection"
+            )
 
         points = g.aspoints(points)
         orientations = g.aspoints(orientations)
         if orientations.shape == (3,):
             # only one value has been given, assume it is the same for every point:
-            orientations = g.Points(np.resize(orientations.coords, (*points.shape, 3, 3)),
-                                    orientations.name)
+            orientations = g.Points(
+                np.resize(orientations.coords, (*points.shape, 3, 3)), orientations.name
+            )
         if orientations.shape != (*points.shape, 3):
             raise ValueError("inconsistent shapes for points and orientations")
 
@@ -741,18 +797,23 @@ class Interface:
             infos.append("Interface kind: {}".format(self.kind.name))
 
         infos.append("Orientations: {}".format(self.orientations))
-        infos.append("Normals are on INC.. rays side: {}".format(
-            self.are_normals_on_inc_rays_side))
         infos.append(
-            "Normals are on OUT. rays side: {}".format(self.are_normals_on_out_rays_side))
+            "Normals are on INC.. rays side: {}".format(
+                self.are_normals_on_inc_rays_side
+            )
+        )
+        infos.append(
+            "Normals are on OUT. rays side: {}".format(
+                self.are_normals_on_out_rays_side
+            )
+        )
         infos_str = "\n".join(["    " + x if i > 0 else x for i, x in enumerate(infos)])
         return infos_str
 
     def __repr__(self):
         return "<{} for {} at {}>".format(
-            self.__class__.__name__,
-            str(self.points),
-            hex(id(self)))
+            self.__class__.__name__, str(self.points), hex(id(self))
+        )
 
     def reverse(self):
         """
@@ -778,12 +839,15 @@ class Interface:
             else:
                 raise RuntimeError
 
-        return cls(self.points, self.orientations, kind=rev_kind,
-                   transmission_reflection=self.transmission_reflection,
-                   reflection_against=self.reflection_against,
-                   are_normals_on_inc_rays_side=self.are_normals_on_out_rays_side,
-                   are_normals_on_out_rays_side=self.are_normals_on_inc_rays_side,
-                   )
+        return cls(
+            self.points,
+            self.orientations,
+            kind=rev_kind,
+            transmission_reflection=self.transmission_reflection,
+            reflection_against=self.reflection_against,
+            are_normals_on_inc_rays_side=self.are_normals_on_out_rays_side,
+            are_normals_on_out_rays_side=self.are_normals_on_inc_rays_side,
+        )
 
 
 class Path:
@@ -862,7 +926,9 @@ class Path:
     @property
     def velocities(self):
         return tuple(
-            material.velocity(mode) for material, mode in zip(self.materials, self.modes))
+            material.velocity(mode)
+            for material, mode in zip(self.materials, self.modes)
+        )
 
     def to_fermat_path(self):
         """
@@ -874,6 +940,7 @@ class Path:
         """
         # lazy import
         from .ray import FermatPath
+
         return FermatPath.from_path(self)
 
     def reverse(self):
@@ -894,8 +961,11 @@ class Path:
         return rev_path
 
 
-class Material(namedtuple('Material',
-                          'longitudinal_vel transverse_vel density state_of_matter metadata')):
+class Material(
+    namedtuple(
+        "Material", "longitudinal_vel transverse_vel density state_of_matter metadata"
+    )
+):
     """Material(longitudinal_vel, transverse_vel=None, density=None, state_of_matter=None, metadata=None)
 
     Attributes
@@ -912,8 +982,14 @@ class Material(namedtuple('Material',
         >>> water = Material(1480., None, 1000., 'liquid', {'long_name': 'Water'})
     """
 
-    def __new__(cls, longitudinal_vel, transverse_vel=None, density=None,
-                state_of_matter=None, metadata=None):
+    def __new__(
+        cls,
+        longitudinal_vel,
+        transverse_vel=None,
+        density=None,
+        state_of_matter=None,
+        metadata=None,
+    ):
         longitudinal_vel = longitudinal_vel * 1.
 
         if transverse_vel is not None:
@@ -928,25 +1004,21 @@ class Material(namedtuple('Material',
         if metadata is None:
             metadata = {}
 
-        return super().__new__(cls, longitudinal_vel, transverse_vel, density,
-                               state_of_matter, metadata)
+        return super().__new__(
+            cls, longitudinal_vel, transverse_vel, density, state_of_matter, metadata
+        )
 
     def __str__(self):
         name = helpers.get_name(self.metadata)
 
         return "{} (v_l: {} m/s, v_t: {} m/s)".format(
-            name,
-            self.longitudinal_vel,
-            self.transverse_vel,
-            hex(id(self)))
+            name, self.longitudinal_vel, self.transverse_vel, hex(id(self))
+        )
 
     def __repr__(self):
         name = helpers.get_name(self.metadata)
 
-        return "<{}: {} at {}>".format(
-            self.__class__.__name__,
-            name,
-            hex(id(self)))
+        return "<{}: {} at {}>".format(self.__class__.__name__, name, hex(id(self)))
 
     def velocity(self, mode):
         """
@@ -1005,8 +1077,9 @@ class BlockInImmersion(ExaminationObject):
 
     """
 
-    def __init__(self, block_material, couplant_material, frontwall,
-                 backwall=None, metadata=None):
+    def __init__(
+        self, block_material, couplant_material, frontwall, backwall=None, metadata=None
+    ):
         self.block_material = block_material
         self.material = block_material  # alias
         self.couplant_material = couplant_material
@@ -1045,7 +1118,8 @@ class Time:
     Use len() to get the number of samples.
 
     """
-    __slots__ = ['_samples', '_step']
+
+    __slots__ = ["_samples", "_step"]
 
     def __init__(self, start, step, num, dtype=None):
         step = step * 1.
@@ -1075,12 +1149,17 @@ class Time:
         return len(self._samples)
 
     def __str__(self):
-        r = '{} from {:.1f} to {:.1f} µs ({} samples, step={:.2f} µs)'
-        return r.format(self.__class__.__qualname__, self.start * 1e6, self.end * 1e6,
-                        len(self), self.step * 1e6)
+        r = "{} from {:.1f} to {:.1f} µs ({} samples, step={:.2f} µs)"
+        return r.format(
+            self.__class__.__qualname__,
+            self.start * 1e6,
+            self.end * 1e6,
+            len(self),
+            self.step * 1e6,
+        )
 
     def __repr__(self):
-        return '<{} at {}>'.format(str(self), hex(id(self)))
+        return "<{} at {}>".format(str(self), hex(id(self)))
 
     @classmethod
     def from_vect(cls, timevect, rtol=1e-2):
@@ -1100,7 +1179,7 @@ class Time:
         ValueError
 
         """
-        (num,) = helpers.get_shape_safely(timevect, 'timevect', (None,))
+        (num,) = helpers.get_shape_safely(timevect, "timevect", (None,))
 
         start = timevect[0]
         steps = np.diff(timevect)
@@ -1119,17 +1198,17 @@ class Time:
             imin = None
         else:
             if endpoint_left:
-                side = 'left'
+                side = "left"
             else:
-                side = 'right'
+                side = "right"
             imin = np.searchsorted(self.samples, tmin, side=side)
         if tmax is None:
             imax = None
         else:
             if endpoint_right:
-                side = 'right'
+                side = "right"
             else:
-                side = 'left'
+                side = "left"
             imax = np.searchsorted(self.samples, tmax, side=side)
         return slice(imin, imax)
 
@@ -1137,10 +1216,11 @@ class Time:
         return np.argmin(np.abs(self.samples - time))
 
 
-class View(namedtuple('View', ['tx_path', 'rx_path', 'name'])):
+class View(namedtuple("View", ["tx_path", "rx_path", "name"])):
     """
     View(tx_path, rx_path, name)
     """
+
     __slots__ = []
 
     def __repr__(self):
@@ -1156,4 +1236,3 @@ class View(namedtuple('View', ['tx_path', 'rx_path', 'name'])):
 
         """
         return self.tx_path.modes[-1].key() + self.rx_path.modes[-1].key()
-

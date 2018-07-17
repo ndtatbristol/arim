@@ -43,9 +43,9 @@ alpha_fluid = np.asarray(np.linspace(0, np.pi / 2, 50000), dtype=complex)
 alpha_l = snell_angles(alpha_fluid, c_fluid, c_l)
 alpha_t = snell_angles(alpha_fluid, c_fluid, c_t)
 
-reflection, transmission_l, transmission_t = \
-    fluid_solid(alpha_fluid, rho_fluid, rho_solid, c_fluid, c_l, c_t, alpha_l,
-                alpha_t)
+reflection, transmission_l, transmission_t = fluid_solid(
+    alpha_fluid, rho_fluid, rho_solid, c_fluid, c_l, c_t, alpha_l, alpha_t
+)
 
 alpha_fluid_deg = np.rad2deg(alpha_fluid.real)
 alpha_l_deg = np.rad2deg(alpha_l.real)
@@ -59,24 +59,28 @@ if NULL_TRANSMISSION_ABOVE_CRIT_ANGLES:
 
 fig, axes = plt.subplots(nrows=2, sharex=True)
 ax = axes[0]
-ax.plot(alpha_fluid_deg, np.abs(reflection), label='reflection')
-ax.plot(alpha_fluid_deg, np.abs(transmission_l), label='transmission L')
-ax.plot(alpha_fluid_deg, np.abs(transmission_t), label='transmission T')
-ax.set_title('Tranmission and reflection coefficients from liquid to solid')
-ax.axvline(x=np.rad2deg(critical_l), color='k', linestyle='--', label='critical angle L')
-ax.axvline(x=np.rad2deg(critical_t), color='k', linestyle='-', label='critical angle T')
-ax.set_ylabel('absolute value')
-ax.legend(loc='best')
+ax.plot(alpha_fluid_deg, np.abs(reflection), label="reflection")
+ax.plot(alpha_fluid_deg, np.abs(transmission_l), label="transmission L")
+ax.plot(alpha_fluid_deg, np.abs(transmission_t), label="transmission T")
+ax.set_title("Tranmission and reflection coefficients from liquid to solid")
+ax.axvline(
+    x=np.rad2deg(critical_l), color="k", linestyle="--", label="critical angle L"
+)
+ax.axvline(x=np.rad2deg(critical_t), color="k", linestyle="-", label="critical angle T")
+ax.set_ylabel("absolute value")
+ax.legend(loc="best")
 
 ax = axes[1]
-ax.plot(alpha_fluid_deg, np.angle(reflection, True), label='reflection')
-ax.plot(alpha_fluid_deg, np.angle(transmission_l, True), label='transmission L')
-ax.plot(alpha_fluid_deg, np.angle(transmission_t, True), label='transmission T')
-ax.axvline(x=np.rad2deg(critical_l), color='k', linestyle='--', label='critical angle L')
-ax.axvline(x=np.rad2deg(critical_t), color='k', linestyle='-', label='critical angle T')
+ax.plot(alpha_fluid_deg, np.angle(reflection, True), label="reflection")
+ax.plot(alpha_fluid_deg, np.angle(transmission_l, True), label="transmission L")
+ax.plot(alpha_fluid_deg, np.angle(transmission_t, True), label="transmission T")
+ax.axvline(
+    x=np.rad2deg(critical_l), color="k", linestyle="--", label="critical angle L"
+)
+ax.axvline(x=np.rad2deg(critical_t), color="k", linestyle="-", label="critical angle T")
 
-ax.set_ylabel('phase (deg)')
-ax.set_xlabel('angle of the incident wave in liquid (deg)')
+ax.set_ylabel("phase (deg)")
+ax.set_xlabel("angle of the incident wave in liquid (deg)")
 
 if SAVEFIG:
     fig.savefig("liquid_to_solid_alpha_fluid")
@@ -85,20 +89,20 @@ if SAVEFIG:
 
 fig, axes = plt.subplots(nrows=2, sharex=True)
 ax = axes[0]
-ax.plot(alpha_t_deg, np.abs(reflection), label='reflection')
-ax.plot(alpha_t_deg, np.abs(transmission_l), label='transmission L')
-ax.plot(alpha_t_deg, np.abs(transmission_t), label='transmission T')
-ax.set_title('Tranmission and reflection coefficients from liquid to solid')
-ax.set_ylabel('absolute value')
-ax.legend(loc='best')
+ax.plot(alpha_t_deg, np.abs(reflection), label="reflection")
+ax.plot(alpha_t_deg, np.abs(transmission_l), label="transmission L")
+ax.plot(alpha_t_deg, np.abs(transmission_t), label="transmission T")
+ax.set_title("Tranmission and reflection coefficients from liquid to solid")
+ax.set_ylabel("absolute value")
+ax.legend(loc="best")
 
 ax = axes[1]
-ax.plot(alpha_t_deg, np.angle(reflection, True), label='reflection')
-ax.plot(alpha_t_deg, np.angle(transmission_l, True), label='transmission L')
-ax.plot(alpha_t_deg, np.angle(transmission_t, True), label='transmission T')
+ax.plot(alpha_t_deg, np.angle(reflection, True), label="reflection")
+ax.plot(alpha_t_deg, np.angle(transmission_l, True), label="transmission L")
+ax.plot(alpha_t_deg, np.angle(transmission_t, True), label="transmission T")
 
-ax.set_ylabel('phase (deg)')
-ax.set_xlabel('angle of the transmitted wave T (deg)')
+ax.set_ylabel("phase (deg)")
+ax.set_xlabel("angle of the transmitted wave T (deg)")
 
 if SAVEFIG:
     fig.savefig("liquid_to_solid_alpha_t")
@@ -107,20 +111,20 @@ if SAVEFIG:
 
 fig, axes = plt.subplots(nrows=2, sharex=True)
 ax = axes[0]
-ax.plot(alpha_l_deg, np.abs(reflection), label='reflection')
-ax.plot(alpha_l_deg, np.abs(transmission_l), label='transmission L')
-ax.plot(alpha_l_deg, np.abs(transmission_t), label='transmission T')
-ax.set_title('Tranmission and reflection coefficients from liquid to solid')
-ax.set_ylabel('absolute value')
-ax.legend(loc='best')
+ax.plot(alpha_l_deg, np.abs(reflection), label="reflection")
+ax.plot(alpha_l_deg, np.abs(transmission_l), label="transmission L")
+ax.plot(alpha_l_deg, np.abs(transmission_t), label="transmission T")
+ax.set_title("Tranmission and reflection coefficients from liquid to solid")
+ax.set_ylabel("absolute value")
+ax.legend(loc="best")
 
 ax = axes[1]
-ax.plot(alpha_l_deg, np.angle(reflection, True), label='reflection')
-ax.plot(alpha_l_deg, np.angle(transmission_l, True), label='transmission L')
-ax.plot(alpha_l_deg, np.angle(transmission_t, True), label='transmission T')
+ax.plot(alpha_l_deg, np.angle(reflection, True), label="reflection")
+ax.plot(alpha_l_deg, np.angle(transmission_l, True), label="transmission L")
+ax.plot(alpha_l_deg, np.angle(transmission_t, True), label="transmission T")
 
-ax.set_ylabel('phase (deg)')
-ax.set_xlabel('angle of the transmitted wave L (deg)')
+ax.set_ylabel("phase (deg)")
+ax.set_xlabel("angle of the transmitted wave L (deg)")
 
 if SAVEFIG:
     fig.savefig("liquid_to_solid_alpha_l")
@@ -142,12 +146,12 @@ area_t = np.cos(alpha_t).real
 # which propagate after the critical angle.
 
 # Incoming energy
-inc_energy = (0.5 * pres_i ** 2 / (rho_fluid * c_fluid) * area_r)
+inc_energy = 0.5 * pres_i ** 2 / (rho_fluid * c_fluid) * area_r
 
 # Outgoing energy
-energy_refl = (0.5 * (np.abs(reflection) * pres_i) ** 2 / (rho_fluid * c_fluid) * area_r)
-energy_l = (0.5 * (np.abs(transmission_l) * pres_i) ** 2 / (rho_solid * c_l) * area_l)
-energy_t = (0.5 * (np.abs(transmission_t) * pres_i) ** 2 / (rho_solid * c_t) * area_t)
+energy_refl = 0.5 * (np.abs(reflection) * pres_i) ** 2 / (rho_fluid * c_fluid) * area_r
+energy_l = 0.5 * (np.abs(transmission_l) * pres_i) ** 2 / (rho_solid * c_l) * area_l
+energy_t = 0.5 * (np.abs(transmission_t) * pres_i) ** 2 / (rho_solid * c_t) * area_t
 out_energy = energy_refl + energy_l + energy_t
 
 ratio_refl = energy_refl / inc_energy
@@ -161,16 +165,18 @@ if not (np.allclose(ratio_refl + ratio_l + ratio_t, 1.0)):
 # %% Plot energy
 
 fig, ax = plt.subplots()
-ax.plot(alpha_fluid_deg, ratio_refl, label='reflection')
-ax.plot(alpha_fluid_deg, ratio_l, label='transmission L')
-ax.plot(alpha_fluid_deg, ratio_t, label='transmission T')
-ax.plot(alpha_fluid_deg, ratio_refl + ratio_l + ratio_t, '--', label='total')
-ax.axvline(x=np.rad2deg(critical_l), color='k', linestyle='--', label='critical angle L')
-ax.axvline(x=np.rad2deg(critical_t), color='k', linestyle='-', label='critical angle T')
-ax.set_title('Repartition of energy of the bulk waves: liquid to solid interface')
-ax.set_xlabel('angle of the incident wave in liquid (deg)')
-ax.set_ylabel('normalised energy (1)')
+ax.plot(alpha_fluid_deg, ratio_refl, label="reflection")
+ax.plot(alpha_fluid_deg, ratio_l, label="transmission L")
+ax.plot(alpha_fluid_deg, ratio_t, label="transmission T")
+ax.plot(alpha_fluid_deg, ratio_refl + ratio_l + ratio_t, "--", label="total")
+ax.axvline(
+    x=np.rad2deg(critical_l), color="k", linestyle="--", label="critical angle L"
+)
+ax.axvline(x=np.rad2deg(critical_t), color="k", linestyle="-", label="critical angle T")
+ax.set_title("Repartition of energy of the bulk waves: liquid to solid interface")
+ax.set_xlabel("angle of the incident wave in liquid (deg)")
+ax.set_ylabel("normalised energy (1)")
 # ylim([0, 1.05])
-ax.legend(loc='best')
+ax.legend(loc="best")
 if SAVEFIG:
     fig.savefig("liquid_to_solid_energy")

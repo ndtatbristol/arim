@@ -41,7 +41,7 @@ from scipy import interpolate
 
 from . import _scat, exceptions, _scat_crack, ut
 
-SCAT_KEYS = frozenset(('LL', 'LT', 'TL', 'TT'))
+SCAT_KEYS = frozenset(("LL", "LT", "TL", "TT"))
 
 
 def make_angles(numpoints):
@@ -53,7 +53,7 @@ def make_angles_grid(numpoints):
     """Return angles for scattering matrices as a grid of incident and outgoing angles.
     """
     theta = make_angles(numpoints)
-    inc_theta, out_theta = np.meshgrid(theta, theta, indexing='xy')
+    inc_theta, out_theta = np.meshgrid(theta, theta, indexing="xy")
     return inc_theta, out_theta
 
 
@@ -75,8 +75,9 @@ def interpolate_matrix(scattering_matrix):
     assert scattering_matrix.ndim == 2
     assert scattering_matrix.shape[0] == scattering_matrix.shape[1]
 
-    return functools.partial(_scat._interpolate_scattering_matrix_ufunc,
-                             scattering_matrix)
+    return functools.partial(
+        _scat._interpolate_scattering_matrix_ufunc, scattering_matrix
+    )
 
 
 def interpolate_matrices(scattering_matrices):
@@ -92,12 +93,20 @@ def interpolate_matrices(scattering_matrices):
     -------
     dict[str, function]
     """
-    return {key: interpolate_matrix(mat) for key, mat
-            in scattering_matrices.items()}
+    return {key: interpolate_matrix(mat) for key, mat in scattering_matrices.items()}
 
 
-def sdh_2d_scat(inc_theta, out_theta, frequency, radius, longitudinal_vel,
-                transverse_vel, min_terms=10, term_factor=4, to_compute=SCAT_KEYS):
+def sdh_2d_scat(
+    inc_theta,
+    out_theta,
+    frequency,
+    radius,
+    longitudinal_vel,
+    transverse_vel,
+    min_terms=10,
+    term_factor=4,
+    to_compute=SCAT_KEYS,
+):
     """
     Scattering coefficients for a side-drilled hole in 2D
 
@@ -164,8 +173,9 @@ def sdh_2d_scat(inc_theta, out_theta, frequency, radius, longitudinal_vel,
     theta = out_theta - inc_theta
 
     if not SCAT_KEYS.issuperset(to_compute):
-        raise ValueError("Valid 'to_compute' arguments are {} (got {})".format(SCAT_KEYS,
-                                                                               to_compute))
+        raise ValueError(
+            "Valid 'to_compute' arguments are {} (got {})".format(SCAT_KEYS, to_compute)
+        )
 
     # wavenumber
 
@@ -179,8 +189,9 @@ def sdh_2d_scat(inc_theta, out_theta, frequency, radius, longitudinal_vel,
 
     # sum from n=0 to n=maxn (inclusive)
     # The larger maxn, the better the axppromixation
-    maxn = max([int(min_terms),
-                math.ceil(term_factor * alpha), math.ceil(term_factor * beta)])
+    maxn = max(
+        [int(min_terms), math.ceil(term_factor * alpha), math.ceil(term_factor * beta)]
+    )
     n = np.arange(0, maxn + 1)
     n2 = n * n
 
@@ -207,7 +218,7 @@ def sdh_2d_scat(inc_theta, out_theta, frequency, radius, longitudinal_vel,
     phi = theta + pi
 
     # n_phi[i1, ..., id, j] := phi[i1, ..., id] * n[j]
-    n_phi = np.einsum('...,j->...j', phi, n)
+    n_phi = np.einsum("...,j->...j", phi, n)
     cos_n_phi = cos(n_phi)
     sin_n_phi = sin(n_phi)
     del n_phi
@@ -216,11 +227,17 @@ def sdh_2d_scat(inc_theta, out_theta, frequency, radius, longitudinal_vel,
 
     # NB: sqrt(2j/(pi * k)) = sqrt(i) / pi
 
-    if 'LL' in to_compute:
+    if "LL" in to_compute:
         # Lopez-Sanchez eq (29)
-        A_n = 1j / (2 * alpha) * (
-                1 + (c2_alpha * c1_beta - d2_alpha * d1_beta) /
-                (c1_alpha * c1_beta - d1_alpha * d1_beta))
+        A_n = (
+            1j
+            / (2 * alpha)
+            * (
+                1
+                + (c2_alpha * c1_beta - d2_alpha * d1_beta)
+                / (c1_alpha * c1_beta - d1_alpha * d1_beta)
+            )
+        )
 
         # Brind (2.9) without:
         #   - u0, the amplitude of the incident wave,
@@ -235,52 +252,80 @@ def sdh_2d_scat(inc_theta, out_theta, frequency, radius, longitudinal_vel,
         #   out = np.einsum('...j,j->...', n_phi, coeff)
         # gives the result:
         #   out[i1, ..., id] = sum_j (n_phi[i1, ..., id, j] * coeff[j])
-        r = (np.sqrt(1j) / pi * alpha) * \
-            np.einsum('...j,j->...', cos_n_phi, epsilon * A_n)
+        r = (np.sqrt(1j) / pi * alpha) * np.einsum(
+            "...j,j->...", cos_n_phi, epsilon * A_n
+        )
 
-        result['LL'] = r
+        result["LL"] = r
 
-    if 'LT' in to_compute:
+    if "LT" in to_compute:
         # Lopez-Sanchez eq (30)
-        B_n = 2 * n / (pi * alpha) * ((n2 - beta2 / 2 - 1) /
-                                      (c1_alpha * c1_beta - d1_alpha * d1_beta))
+        B_n = (
+            2
+            * n
+            / (pi * alpha)
+            * ((n2 - beta2 / 2 - 1) / (c1_alpha * c1_beta - d1_alpha * d1_beta))
+        )
 
         # Lopez-Sanchez (34)
         # Warning: there is a minus sign in Brind (2.10). We trust LS here.
         # See also comments for result['LL']
-        r = (np.sqrt(1j) / pi * beta) * \
-            np.einsum('...j,j->...', sin_n_phi, epsilon * B_n)
-        result['LT'] = r
+        r = (np.sqrt(1j) / pi * beta) * np.einsum(
+            "...j,j->...", sin_n_phi, epsilon * B_n
+        )
+        result["LT"] = r
 
-    if 'TL' in to_compute:
+    if "TL" in to_compute:
         # Lopez-Sanchez eq (41)
-        A_n = 2 * n / (pi * beta) * (n2 - beta2 / 2 - 1) / (
-                c1_alpha * c1_beta - d1_alpha * d1_beta)
+        A_n = (
+            2
+            * n
+            / (pi * beta)
+            * (n2 - beta2 / 2 - 1)
+            / (c1_alpha * c1_beta - d1_alpha * d1_beta)
+        )
 
         # Lopez-Sanchez eq (39)
         # See also comments for result['LL']
-        r = (np.sqrt(1j) / pi * alpha) * \
-            np.einsum('...j,j->...', sin_n_phi, epsilon * A_n)
-        result['TL'] = r
+        r = (np.sqrt(1j) / pi * alpha) * np.einsum(
+            "...j,j->...", sin_n_phi, epsilon * A_n
+        )
+        result["TL"] = r
 
-    if 'TT' in to_compute:
+    if "TT" in to_compute:
         # Lopez-Sanchez eq (42)
-        B_n = 1j / (2 * beta) * (1 + (c2_beta * c1_alpha - d2_beta * d1_alpha) /
-                                 (c1_alpha * c1_beta - d1_alpha * d1_beta))
+        B_n = (
+            1j
+            / (2 * beta)
+            * (
+                1
+                + (c2_beta * c1_alpha - d2_beta * d1_alpha)
+                / (c1_alpha * c1_beta - d1_alpha * d1_beta)
+            )
+        )
 
         # Lopez-Sanchez eq (40)
         # See also comments for result['LL']
-        r = (np.sqrt(1j) / pi * beta) * \
-            np.einsum('...j,j->...', cos_n_phi, epsilon * B_n)
-        result['TT'] = r
+        r = (np.sqrt(1j) / pi * beta) * np.einsum(
+            "...j,j->...", cos_n_phi, epsilon * B_n
+        )
+        result["TT"] = r
 
     return result
 
 
-def crack_2d_scat(inc_theta, out_theta, frequency, crack_length, longitudinal_vel,
-                  transverse_vel, density, nodes_per_wavelength=20,
-                  assume_safe_for_opt=False,
-                  to_compute={'LL', 'LT', 'TL', 'TT'}):
+def crack_2d_scat(
+    inc_theta,
+    out_theta,
+    frequency,
+    crack_length,
+    longitudinal_vel,
+    transverse_vel,
+    density,
+    nodes_per_wavelength=20,
+    assume_safe_for_opt=False,
+    to_compute={"LL", "LT", "TL", "TT"},
+):
     """
     Scattering matrix of the centre of a crack.
 
@@ -326,11 +371,12 @@ def crack_2d_scat(inc_theta, out_theta, frequency, crack_length, longitudinal_ve
     Unpublished work from Alexander Velichko
 
     """
-    valid_keys = {'LL', 'LT', 'TL', 'TT'}
+    valid_keys = {"LL", "LT", "TL", "TT"}
 
     if not valid_keys.issuperset(to_compute):
         raise ValueError(
-            f"Valid 'to_compute' arguments are {valid_keys} (got {to_compute})")
+            f"Valid 'to_compute' arguments are {valid_keys} (got {to_compute})"
+        )
 
     final_broadcast = np.broadcast(inc_theta, out_theta)
     if final_broadcast.ndim > 2:
@@ -342,8 +388,8 @@ def crack_2d_scat(inc_theta, out_theta, frequency, crack_length, longitudinal_ve
 
     v_L = longitudinal_vel
     v_T = transverse_vel
-    use_incident_L = 'LL' in to_compute or 'LT' in to_compute
-    use_incident_T = 'TL' in to_compute or 'TT' in to_compute
+    use_incident_L = "LL" in to_compute or "LT" in to_compute
+    use_incident_T = "TL" in to_compute or "TT" in to_compute
 
     lambda_L = v_L / frequency
     xi2 = 2 * pi * frequency / v_T
@@ -353,42 +399,73 @@ def crack_2d_scat(inc_theta, out_theta, frequency, crack_length, longitudinal_ve
     num_nodes = int(np.ceil(crack_length / lambda_L * nodes_per_wavelength))
     p = 0.1133407986  # magic constant
     h_nodes = crack_length / (num_nodes + 2 * p)
-    x_nodes = np.arange(num_nodes) * h_nodes + (h_nodes * (1 / 2 + p) - crack_length / 2)
+    x_nodes = np.arange(num_nodes) * h_nodes + (
+        h_nodes * (1 / 2 + p) - crack_length / 2
+    )
 
     # get matrices for the linear system
     A_x = _scat_crack.A_x(xi, xi2, h_nodes, num_nodes)
     A_z = _scat_crack.A_z(xi, xi2, h_nodes, num_nodes)
 
     # init output (always in 2D)
-    S_LL = np.zeros(comp_broadcast.shape, np.complex128, order='F')
-    S_LT = np.zeros(comp_broadcast.shape, np.complex128, order='F')
-    S_TL = np.zeros(comp_broadcast.shape, np.complex128, order='F')
-    S_TT = np.zeros(comp_broadcast.shape, np.complex128, order='F')
+    S_LL = np.zeros(comp_broadcast.shape, np.complex128, order="F")
+    S_LT = np.zeros(comp_broadcast.shape, np.complex128, order="F")
+    S_TL = np.zeros(comp_broadcast.shape, np.complex128, order="F")
+    S_TT = np.zeros(comp_broadcast.shape, np.complex128, order="F")
 
     if assume_safe_for_opt:
         inc_theta_vect = inc_theta[0]
         matrices = _scat_crack.crack_2d_scat_matrix(
-            inc_theta_vect, out_theta, v_L, v_T, density, frequency,
-            use_incident_L, use_incident_T, x_nodes, h_nodes, A_x,
-            A_z, S_LL, S_LT, S_TL, S_TT)
+            inc_theta_vect,
+            out_theta,
+            v_L,
+            v_T,
+            density,
+            frequency,
+            use_incident_L,
+            use_incident_T,
+            x_nodes,
+            h_nodes,
+            A_x,
+            A_z,
+            S_LL,
+            S_LT,
+            S_TL,
+            S_TT,
+        )
     else:
         matrices = _scat_crack.crack_2d_scat_general(
-            inc_theta, out_theta, v_L, v_T, density, frequency,
-            use_incident_L, use_incident_T, x_nodes, h_nodes, A_x,
-            A_z, S_LL, S_LT, S_TL, S_TT)
+            inc_theta,
+            out_theta,
+            v_L,
+            v_T,
+            density,
+            frequency,
+            use_incident_L,
+            use_incident_T,
+            x_nodes,
+            h_nodes,
+            A_x,
+            A_z,
+            S_LL,
+            S_LT,
+            S_TL,
+            S_TT,
+        )
 
     # reshape output to the requested shape
     final_matrices = [m.reshape(final_broadcast.shape) for m in matrices]
 
-    return dict(zip(('LL', 'LT', 'TL', 'TT'), final_matrices))
+    return dict(zip(("LL", "LT", "TL", "TT"), final_matrices))
 
 
 @numba.cfunc("f8(f8, voidptr)", cache=True)
 def _crack_tip_integrand(x, data):
     alpha, k_p, k_s = numba.carray(data, 3, dtype=numba.float64)
     return -math.atan(
-        (4 * x ** 2 * math.sqrt(x ** 2 - k_p ** 2) * math.sqrt(k_s ** 2 - x ** 2)) /
-        (2 * x ** 2 - k_s ** 2) ** 2) / ((x + alpha) * math.pi)
+        (4 * x ** 2 * math.sqrt(x ** 2 - k_p ** 2) * math.sqrt(k_s ** 2 - x ** 2))
+        / (2 * x ** 2 - k_s ** 2) ** 2
+    ) / ((x + alpha) * math.pi)
 
 
 def _crack_tip_k_plus_integral(alpha, k_p, k_s, eps=1e-3, **quad_kwargs):
@@ -396,7 +473,9 @@ def _crack_tip_k_plus_integral(alpha, k_p, k_s, eps=1e-3, **quad_kwargs):
     # includes the -1/pi factor
     integrand_params = np.array([alpha, k_p, k_s])
     integrand_params_ptr = ctypes.cast(integrand_params.ctypes, ctypes.c_void_p)
-    integrand_c = scipy.LowLevelCallable(_crack_tip_integrand.ctypes, integrand_params_ptr)
+    integrand_c = scipy.LowLevelCallable(
+        _crack_tip_integrand.ctypes, integrand_params_ptr
+    )
 
     # singularity at x = -alpha = beta
     beta = -alpha
@@ -413,8 +492,12 @@ def _crack_tip_k_plus_integral(alpha, k_p, k_s, eps=1e-3, **quad_kwargs):
             # overwrite eps if too big
             eps = max_allowable_eps / 2
 
-        integral_left, error_left = scipy.integrate.quad(integrand_c, k_p, beta - eps / 2, **quad_kwargs)
-        integral_right, error_right = scipy.integrate.quad(integrand_c, beta + eps / 2, k_s, **quad_kwargs)
+        integral_left, error_left = scipy.integrate.quad(
+            integrand_c, k_p, beta - eps / 2, **quad_kwargs
+        )
+        integral_right, error_right = scipy.integrate.quad(
+            integrand_c, beta + eps / 2, k_s, **quad_kwargs
+        )
 
         integral = integral_left + integral_right
         error = np.sqrt(error_left ** 2 + error_right ** 2)
@@ -426,7 +509,7 @@ def _crack_tip_k_plus_integral(alpha, k_p, k_s, eps=1e-3, **quad_kwargs):
 
 def _crack_tip_k_plus_integral_arr(alpha_arr, k_p, k_s, **quad_kwargs):
     out = np.empty_like(alpha_arr, np.float)
-    it = np.nditer([alpha_arr, out], op_flags=(['readonly'], ['writeonly', 'allocate']))
+    it = np.nditer([alpha_arr, out], op_flags=(["readonly"], ["writeonly", "allocate"]))
     for alpha, res in it:
         res[...] = _crack_tip_k_plus_integral(alpha, k_p, k_s, **quad_kwargs)[0]
     return it.operands[1]
@@ -436,8 +519,15 @@ def _crack_tip_k_plus(alpha_arr, k_p, k_s, **quad_kwargs):
     return np.exp(_crack_tip_k_plus_integral_arr(alpha_arr, k_p, k_s, **quad_kwargs))
 
 
-def crack_tip_2d(inc_theta, out_theta, longitudinal_vel,
-                 transverse_vel, rayleigh_vel=None, to_compute=('LL', 'LT', 'TL', 'TT'), **quad_kwargs):
+def crack_tip_2d(
+    inc_theta,
+    out_theta,
+    longitudinal_vel,
+    transverse_vel,
+    rayleigh_vel=None,
+    to_compute=("LL", "LT", "TL", "TT"),
+    **quad_kwargs,
+):
     """
     Analytical model of the diffraction of elastic waves by a crack tip. The crack length is infinite.
 
@@ -490,72 +580,149 @@ def crack_tip_2d(inc_theta, out_theta, longitudinal_vel,
     cos_theta = cos(theta)
     cos_beta = cos(beta)
 
-    if 'LT' in to_compute or 'TT' in to_compute:
-        k_plus_ks_cos_theta = _crack_tip_k_plus(-k_s * cos_theta, k_p, k_s, **quad_kwargs)
+    if "LT" in to_compute or "TT" in to_compute:
+        k_plus_ks_cos_theta = _crack_tip_k_plus(
+            -k_s * cos_theta, k_p, k_s, **quad_kwargs
+        )
     else:
         k_plus_ks_cos_theta = None
-    if 'LL' in to_compute or 'TL' in to_compute:
-        k_plus_kp_cos_theta = _crack_tip_k_plus(-k_p * cos_theta, k_p, k_s, **quad_kwargs)
+    if "LL" in to_compute or "TL" in to_compute:
+        k_plus_kp_cos_theta = _crack_tip_k_plus(
+            -k_p * cos_theta, k_p, k_s, **quad_kwargs
+        )
     else:
         k_plus_kp_cos_theta = None
-    if 'TL' in to_compute or 'TT' in to_compute:
+    if "TL" in to_compute or "TT" in to_compute:
         k_plus_ks_cos_beta = _crack_tip_k_plus(-k_s * cos_beta, k_p, k_s, **quad_kwargs)
     else:
         k_plus_ks_cos_beta = None
-    if 'LL' in to_compute or 'LT' in to_compute:
+    if "LL" in to_compute or "LT" in to_compute:
         k_plus_kp_cos_beta = _crack_tip_k_plus(-k_p * cos_beta, k_p, k_s, **quad_kwargs)
     else:
         k_plus_kp_cos_beta = None
 
-    if 'LL' in to_compute:
+    if "LL" in to_compute:
         # Gp(theta, beta)
-        res['LL'] = (
-                e_ipi4 * sin(beta / 2) * (
+        res["LL"] = (
+            e_ipi4
+            * sin(beta / 2)
+            * (
                 sin(theta / 2)
                 * (2 * k_p2 * cos_beta ** 2 - k_s2)
                 * (2 * k_p2 * cos_theta ** 2 - k_s2)
-                + 2 * k_p ** 3 * cos(beta / 2) * cos_beta * sin(2 * theta)
-                * sqrt(k_s - k_p * cos_theta) * sqrt(k_s - k_p * cos_beta))
-                / (2 * pi * (k_s2 - k_p2) * (cos_theta + cos_beta)
-                   * (k_0 - k_p * cos_theta) * (k_0 - k_p * cos_beta)
-                   * k_plus_kp_cos_theta * k_plus_kp_cos_beta)
+                + 2
+                * k_p ** 3
+                * cos(beta / 2)
+                * cos_beta
+                * sin(2 * theta)
+                * sqrt(k_s - k_p * cos_theta)
+                * sqrt(k_s - k_p * cos_beta)
+            )
+            / (
+                2
+                * pi
+                * (k_s2 - k_p2)
+                * (cos_theta + cos_beta)
+                * (k_0 - k_p * cos_theta)
+                * (k_0 - k_p * cos_beta)
+                * k_plus_kp_cos_theta
+                * k_plus_kp_cos_beta
+            )
         )
-    if 'LT' in to_compute:
+    if "LT" in to_compute:
         # G_s(theta, beta)
-        res['LT'] = (e_ipi4 * sqrt(k_p / k_s) * (
-                k_s2 * sin(beta / 2)
+        res["LT"] = (
+            e_ipi4
+            * sqrt(k_p / k_s)
+            * (
+                k_s2
+                * sin(beta / 2)
                 * (
-                        sqrt(2 * k_p) * (2 * k_p2 * cos_beta ** 2 - k_s2)
-                        * sin(2 * theta) * sqrt((k_p - k_s * cos_theta).astype(np.complex))
-                        - 4 * k_p2 * sqrt(2 * k_s) * cos(beta / 2) * cos_beta
-                        * sin(theta / 2) * cos(2 * theta)
-                        * sqrt(k_s - k_p * cos_beta))
-        ) / (4 * pi * (k_s2 - k_p2) * (k_s * cos_theta + k_p * cos_beta)
-             * (k_0 - k_s * cos_theta) * (k_0 - k_p * cos_beta)
-             * k_plus_ks_cos_theta * k_plus_kp_cos_beta))
-    if 'TL' in to_compute:
+                    sqrt(2 * k_p)
+                    * (2 * k_p2 * cos_beta ** 2 - k_s2)
+                    * sin(2 * theta)
+                    * sqrt((k_p - k_s * cos_theta).astype(np.complex))
+                    - 4
+                    * k_p2
+                    * sqrt(2 * k_s)
+                    * cos(beta / 2)
+                    * cos_beta
+                    * sin(theta / 2)
+                    * cos(2 * theta)
+                    * sqrt(k_s - k_p * cos_beta)
+                )
+            )
+            / (
+                4
+                * pi
+                * (k_s2 - k_p2)
+                * (k_s * cos_theta + k_p * cos_beta)
+                * (k_0 - k_s * cos_theta)
+                * (k_0 - k_p * cos_beta)
+                * k_plus_ks_cos_theta
+                * k_plus_kp_cos_beta
+            )
+        )
+    if "TL" in to_compute:
         # F_p(theta, beta)
-        res['TL'] = (e_ipi4 * sqrt(k_s / k_p) * (k_s2 * sin(beta / 2) * (
-                -k_p2 * sqrt(2 * k_s) * cos(2 * beta) * sin(2 * theta)
-                * sqrt(k_s - k_p * cos(theta))
-                + 4 * sqrt(2 * k_p) * cos(beta / 2) * cos(beta) * sin(theta / 2)
-                * (2 * k_p2 * cos_theta ** 2 - k_s2)
-                * sqrt((k_p - k_s * cos_beta).astype(np.complex))
-        )) / (4 * pi * (k_s2 - k_p2)
-              * (k_p * cos_theta + k_s * cos_beta)
-              * (k_0 - k_p * cos_theta) * (k_0 - k_s * cos_beta)
-              * k_plus_kp_cos_theta * k_plus_ks_cos_beta))
-    if 'TT' in to_compute:
+        res["TL"] = (
+            e_ipi4
+            * sqrt(k_s / k_p)
+            * (
+                k_s2
+                * sin(beta / 2)
+                * (
+                    -k_p2
+                    * sqrt(2 * k_s)
+                    * cos(2 * beta)
+                    * sin(2 * theta)
+                    * sqrt(k_s - k_p * cos(theta))
+                    + 4
+                    * sqrt(2 * k_p)
+                    * cos(beta / 2)
+                    * cos(beta)
+                    * sin(theta / 2)
+                    * (2 * k_p2 * cos_theta ** 2 - k_s2)
+                    * sqrt((k_p - k_s * cos_beta).astype(np.complex))
+                )
+            )
+            / (
+                4
+                * pi
+                * (k_s2 - k_p2)
+                * (k_p * cos_theta + k_s * cos_beta)
+                * (k_0 - k_p * cos_theta)
+                * (k_0 - k_s * cos_beta)
+                * k_plus_kp_cos_theta
+                * k_plus_ks_cos_beta
+            )
+        )
+    if "TT" in to_compute:
         # F_s(theta, beta)
-        res['TT'] = (e_ipi4 * k_s ** 3 * sin(beta / 2) * (
+        res["TT"] = (
+            e_ipi4
+            * k_s ** 3
+            * sin(beta / 2)
+            * (
                 k_s * cos(2 * beta) * cos(2 * theta) * sin(theta / 2)
-                + 2 * cos(beta / 2) * cos(beta) * sin(2 * theta)
+                + 2
+                * cos(beta / 2)
+                * cos(beta)
+                * sin(2 * theta)
                 * sqrt((k_p - k_s * cos_theta).astype(np.complex))
                 * sqrt((k_p - k_s * cos_beta).astype(np.complex))
-        ) / (2 * pi * (k_s2 - k_p2) * (cos_theta + cos_beta)
-             * (k_0 - k_s * cos_theta) * (k_0 - k_s * cos_beta)
-             * k_plus_ks_cos_theta * k_plus_ks_cos_beta
-             ))
+            )
+            / (
+                2
+                * pi
+                * (k_s2 - k_p2)
+                * (cos_theta + cos_beta)
+                * (k_0 - k_s * cos_theta)
+                * (k_0 - k_s * cos_beta)
+                * k_plus_ks_cos_theta
+                * k_plus_ks_cos_beta
+            )
+        )
 
     return res
 
@@ -586,7 +753,7 @@ def rotate_matrix(scat_matrix, phi):
 
     freq = np.fft.fftfreq(n, 2 * np.pi / n)
 
-    freq_x, freq_y = np.meshgrid(freq, freq, indexing='ij')
+    freq_x, freq_y = np.meshgrid(freq, freq, indexing="ij")
 
     freqshift = np.exp(-2j * np.pi * (freq_x + freq_y) * phi)
     scat_matrix_f = np.fft.fft2(scat_matrix)
@@ -607,8 +774,10 @@ def rotate_matrices(scat_matrices, phi):
     dict
 
     """
-    return {scat_key: rotate_matrix(scat_matrix, phi)
-            for scat_key, scat_matrix in scat_matrices.items()}
+    return {
+        scat_key: rotate_matrix(scat_matrix, phi)
+        for scat_key, scat_matrix in scat_matrices.items()
+    }
 
 
 def _partial_one_scat_key(scat_func, scat_key, *args, **kwargs):
@@ -667,21 +836,33 @@ def scat_factory(kind, material, *args, **kwargs):
 
     """
     kind = kind.lower()  # ignore case
-    if kind == 'file':
+    if kind == "file":
         from . import io
+
         return io.scat.load_scat(*args, **kwargs)
-    elif kind == 'crack_centre':
-        return CrackCentreScat(*args, longitudinal_vel=material.longitudinal_vel,
-                               transverse_vel=material.transverse_vel,
-                               density=material.density, **kwargs)
-    elif kind == 'crack_tip':
-        return CrackTipScat(material.longitudinal_vel, material.transverse_vel, *args, **kwargs)
-    elif kind == 'sdh':
-        return SdhScat(*args, longitudinal_vel=material.longitudinal_vel,
-                       transverse_vel=material.transverse_vel, **kwargs)
-    elif kind == 'point':
-        return PointSourceScat(material.longitudinal_vel, material.transverse_vel, *args,
-                               **kwargs)
+    elif kind == "crack_centre":
+        return CrackCentreScat(
+            *args,
+            longitudinal_vel=material.longitudinal_vel,
+            transverse_vel=material.transverse_vel,
+            density=material.density,
+            **kwargs,
+        )
+    elif kind == "crack_tip":
+        return CrackTipScat(
+            material.longitudinal_vel, material.transverse_vel, *args, **kwargs
+        )
+    elif kind == "sdh":
+        return SdhScat(
+            *args,
+            longitudinal_vel=material.longitudinal_vel,
+            transverse_vel=material.transverse_vel,
+            **kwargs,
+        )
+    elif kind == "point":
+        return PointSourceScat(
+            material.longitudinal_vel, material.transverse_vel, *args, **kwargs
+        )
     else:
         raise NotImplementedError("no strategy for kind='{}'".format(kind))
 
@@ -773,8 +954,9 @@ class Scattering2d(abc.ABC):
         scat_funcs = {}
 
         for scat_key in SCAT_KEYS:
-            scat_funcs[scat_key] = _partial_one_scat_key(self, scat_key,
-                                                         frequency=frequency)
+            scat_funcs[scat_key] = _partial_one_scat_key(
+                self, scat_key, frequency=frequency
+            )
         return scat_funcs
 
     def as_multi_freq_matrices(self, frequencies, numangles, to_compute=SCAT_KEYS):
@@ -803,9 +985,13 @@ class Scattering2d(abc.ABC):
             matrices = self(inc_theta, out_theta, frequency, to_compute)
             if out is None:
                 # Late initialisation for getting the datatype of matrices
-                out = {scat_key: np.zeros((len(frequencies), numangles, numangles),
-                                          matrices[scat_key].dtype)
-                       for scat_key in to_compute}
+                out = {
+                    scat_key: np.zeros(
+                        (len(frequencies), numangles, numangles),
+                        matrices[scat_key].dtype,
+                    )
+                    for scat_key in to_compute
+                }
             for scat_key in to_compute:
                 out[scat_key][i] = matrices[scat_key]
         return out
@@ -863,6 +1049,7 @@ class Scattering2dFromFunc(Scattering2d):
 
     This class is abstract.
     """
+
     _scat_kwargs = None  # placeholder
 
     @staticmethod
@@ -872,29 +1059,37 @@ class Scattering2dFromFunc(Scattering2d):
         raise NotImplementedError
 
     def __call__(self, inc_theta, out_theta, frequency, to_compute=SCAT_KEYS):
-        return self._scat_func(inc_theta, out_theta, frequency,
-                               to_compute=to_compute, **self._scat_kwargs)
+        return self._scat_func(
+            inc_theta, out_theta, frequency, to_compute=to_compute, **self._scat_kwargs
+        )
 
     def __repr__(self):
         # Returns something like 'Scattering(x=1, y=2)'
-        arg_str = ", ".join(['{}={}'.format(key, val)
-                             for key, val in self._scat_kwargs.items()])
-        return self.__class__.__qualname__ + '(' + arg_str + ')'
+        arg_str = ", ".join(
+            ["{}={}".format(key, val) for key, val in self._scat_kwargs.items()]
+        )
+        return self.__class__.__qualname__ + "(" + arg_str + ")"
 
 
 class SdhScat(Scattering2dFromFunc):
-    '''
+    """
     Scattering for side-drilled hole
 
     This class provides the :class:`Scattering2d` interface for :func:`sdh_2d_scat`.
-    '''
+    """
+
     _scat_func = staticmethod(sdh_2d_scat)
 
-    def __init__(self, radius, longitudinal_vel, transverse_vel, min_terms=10,
-                 term_factor=4):
-        self._scat_kwargs = dict(radius=radius, longitudinal_vel=longitudinal_vel,
-                                 transverse_vel=transverse_vel,
-                                 min_terms=min_terms, term_factor=term_factor)
+    def __init__(
+        self, radius, longitudinal_vel, transverse_vel, min_terms=10, term_factor=4
+    ):
+        self._scat_kwargs = dict(
+            radius=radius,
+            longitudinal_vel=longitudinal_vel,
+            transverse_vel=transverse_vel,
+            min_terms=min_terms,
+            term_factor=term_factor,
+        )
 
 
 class CrackCentreScat(Scattering2dFromFunc):
@@ -904,22 +1099,35 @@ class CrackCentreScat(Scattering2dFromFunc):
     This class provides the :class:`Scattering2d` interface for :func:`crack_2d_scat`.
 
     """
+
     _scat_func = staticmethod(crack_2d_scat)
 
-    def __init__(self, crack_length, longitudinal_vel,
-                 transverse_vel, density, nodes_per_wavelength=20):
-        self._scat_kwargs = dict(crack_length=crack_length,
-                                 longitudinal_vel=longitudinal_vel,
-                                 transverse_vel=transverse_vel,
-                                 density=density,
-                                 nodes_per_wavelength=nodes_per_wavelength)
+    def __init__(
+        self,
+        crack_length,
+        longitudinal_vel,
+        transverse_vel,
+        density,
+        nodes_per_wavelength=20,
+    ):
+        self._scat_kwargs = dict(
+            crack_length=crack_length,
+            longitudinal_vel=longitudinal_vel,
+            transverse_vel=transverse_vel,
+            density=density,
+            nodes_per_wavelength=nodes_per_wavelength,
+        )
         self._in_matrix_calculation = False
 
     def __call__(self, inc_theta, out_theta, frequency, to_compute=SCAT_KEYS):
-        return self._scat_func(inc_theta, out_theta, frequency,
-                               to_compute=to_compute,
-                               assume_safe_for_opt=self._in_matrix_calculation,
-                               **self._scat_kwargs)
+        return self._scat_func(
+            inc_theta,
+            out_theta,
+            frequency,
+            to_compute=to_compute,
+            assume_safe_for_opt=self._in_matrix_calculation,
+            **self._scat_kwargs,
+        )
 
     @contextlib.contextmanager
     def _scat_matrix_calculation(self):
@@ -941,7 +1149,7 @@ class CrackCentreScat(Scattering2dFromFunc):
 
 
 class PointSourceScat(Scattering2dFromFunc):
-    '''
+    """
     Scattering of an unphysical point source. For debug only.
 
     For any incident and scattered angles, the scattering is defined as::
@@ -962,30 +1170,37 @@ class PointSourceScat(Scattering2dFromFunc):
     Therefore drawing quantitative conclusions from a model using this function must be
     done with care.
 
-    '''
+    """
 
     @staticmethod
-    def _scat_func(phi_in, phi_out, frequency, longitudinal_vel, transverse_vel,
-                   to_compute=SCAT_KEYS):
+    def _scat_func(
+        phi_in,
+        phi_out,
+        frequency,
+        longitudinal_vel,
+        transverse_vel,
+        to_compute=SCAT_KEYS,
+    ):
         shape = np.broadcast(phi_in, phi_out).shape
 
         v_L = longitudinal_vel
         v_T = transverse_vel
 
         out = dict()
-        if 'LL' in to_compute:
-            out['LL'] = np.full(shape, 1.)
-        if 'LT' in to_compute:
-            out['LT'] = np.full(shape, v_L / v_T)
-        if 'TL' in to_compute:
-            out['TL'] = np.full(shape, -v_T / v_L)
-        if 'TT' in to_compute:
-            out['TT'] = np.full(shape, 1.)
+        if "LL" in to_compute:
+            out["LL"] = np.full(shape, 1.)
+        if "LT" in to_compute:
+            out["LT"] = np.full(shape, v_L / v_T)
+        if "TL" in to_compute:
+            out["TL"] = np.full(shape, -v_T / v_L)
+        if "TT" in to_compute:
+            out["TT"] = np.full(shape, 1.)
         return out
 
     def __init__(self, longitudinal_vel, transverse_vel):
-        self._scat_kwargs = dict(longitudinal_vel=longitudinal_vel,
-                                 transverse_vel=transverse_vel)
+        self._scat_kwargs = dict(
+            longitudinal_vel=longitudinal_vel, transverse_vel=transverse_vel
+        )
 
 
 class CrackTipScat(Scattering2dFromFunc):
@@ -994,15 +1209,24 @@ class CrackTipScat(Scattering2dFromFunc):
 
     Wrapper for :func:`crack_tip_2d`
     """
+
     _scat_func = staticmethod(crack_tip_2d)
 
     def __call__(self, inc_theta, out_theta, frequency, to_compute=SCAT_KEYS):
         # drop frequency argument
-        return self._scat_func(inc_theta, out_theta, to_compute=to_compute, **self._scat_kwargs)
+        return self._scat_func(
+            inc_theta, out_theta, to_compute=to_compute, **self._scat_kwargs
+        )
 
-    def __init__(self, longitudinal_vel, transverse_vel, rayleigh_vel=None, **quad_args):
-        self._scat_kwargs = dict(longitudinal_vel=longitudinal_vel,
-                                 transverse_vel=transverse_vel, rayleigh_vel=rayleigh_vel, **quad_args)
+    def __init__(
+        self, longitudinal_vel, transverse_vel, rayleigh_vel=None, **quad_args
+    ):
+        self._scat_kwargs = dict(
+            longitudinal_vel=longitudinal_vel,
+            transverse_vel=transverse_vel,
+            rayleigh_vel=rayleigh_vel,
+            **quad_args,
+        )
 
 
 class ScatFromData(Scattering2d):
@@ -1037,8 +1261,14 @@ class ScatFromData(Scattering2d):
 
     """
 
-    def __init__(self, frequencies, scat_matrix_LL=None, scat_matrix_LT=None,
-                 scat_matrix_TL=None, scat_matrix_TT=None):
+    def __init__(
+        self,
+        frequencies,
+        scat_matrix_LL=None,
+        scat_matrix_LT=None,
+        scat_matrix_TL=None,
+        scat_matrix_TT=None,
+    ):
         frequencies = np.asarray(frequencies)
         if frequencies.ndim == 0:
             frequencies = np.array([frequencies])
@@ -1050,17 +1280,19 @@ class ScatFromData(Scattering2d):
             np.shape(scat_matrix_LL) if scat_matrix_LL is not None else None,
             np.shape(scat_matrix_LT) if scat_matrix_LT is not None else None,
             np.shape(scat_matrix_TL) if scat_matrix_TL is not None else None,
-            np.shape(scat_matrix_TT) if scat_matrix_TT is not None else None
+            np.shape(scat_matrix_TT) if scat_matrix_TT is not None else None,
         }
         shapes.discard(None)
 
         if len(shapes) == 0:
-            raise ValueError('at least one scattering matrix must be passed')
+            raise ValueError("at least one scattering matrix must be passed")
         elif len(shapes) > 1:
-            raise ValueError('scattering matrices must have the same shape')
+            raise ValueError("scattering matrices must have the same shape")
 
         shape = shapes.pop()
-        wrong_shape_err = "Scattering matrices' shape must be (numfreq, numangles, numangles)"
+        wrong_shape_err = (
+            "Scattering matrices' shape must be (numfreq, numangles, numangles)"
+        )
         if len(shape) != 3:
             raise ValueError(wrong_shape_err)
         if shape[1] != shape[2]:
@@ -1074,15 +1306,15 @@ class ScatFromData(Scattering2d):
 
         self.orig_matrices = dict()
         if scat_matrix_LL is not None:
-            self.orig_matrices['LL'] = np.ascontiguousarray(scat_matrix_LL)
+            self.orig_matrices["LL"] = np.ascontiguousarray(scat_matrix_LL)
         if scat_matrix_LT is not None:
-            self.orig_matrices['LT'] = np.ascontiguousarray(scat_matrix_LT)
+            self.orig_matrices["LT"] = np.ascontiguousarray(scat_matrix_LT)
         if scat_matrix_TL is not None:
-            self.orig_matrices['TL'] = np.ascontiguousarray(scat_matrix_TL)
+            self.orig_matrices["TL"] = np.ascontiguousarray(scat_matrix_TL)
         if scat_matrix_TT is not None:
-            self.orig_matrices['TT'] = np.ascontiguousarray(scat_matrix_TT)
+            self.orig_matrices["TT"] = np.ascontiguousarray(scat_matrix_TT)
 
-        self.interp_freq_kwargs = dict(bounds_error=False, fill_value='extrapolate')
+        self.interp_freq_kwargs = dict(bounds_error=False, fill_value="extrapolate")
 
     @classmethod
     def from_dict(cls, frequencies, scat_matrix_dict):
@@ -1100,12 +1332,13 @@ class ScatFromData(Scattering2d):
         obj : ScatFromData
 
         """
-        scat_matrix_LL = scat_matrix_dict.get('LL')
-        scat_matrix_LT = scat_matrix_dict.get('LT')
-        scat_matrix_TL = scat_matrix_dict.get('TL')
-        scat_matrix_TT = scat_matrix_dict.get('TT')
-        return cls(frequencies, scat_matrix_LL, scat_matrix_LT, scat_matrix_TL,
-                   scat_matrix_TT)
+        scat_matrix_LL = scat_matrix_dict.get("LL")
+        scat_matrix_LT = scat_matrix_dict.get("LT")
+        scat_matrix_TL = scat_matrix_dict.get("TL")
+        scat_matrix_TT = scat_matrix_dict.get("TT")
+        return cls(
+            frequencies, scat_matrix_LL, scat_matrix_LT, scat_matrix_TL, scat_matrix_TT
+        )
 
     def __call__(self, inc_theta, out_theta, frequency, to_compute=SCAT_KEYS):
         # Compute first the scattering matrices at the desired frequency.
@@ -1114,20 +1347,23 @@ class ScatFromData(Scattering2d):
         # in one step instead of two. This would required extending interpolate_matrix.
 
         # perform frequency interpolation:
-        matrices = self.freq_interp_matrices(self.frequencies, frequency,
-                                             self.orig_matrices,
-                                             **self.interp_freq_kwargs)
+        matrices = self.freq_interp_matrices(
+            self.frequencies, frequency, self.orig_matrices, **self.interp_freq_kwargs
+        )
 
         # create angle interpolators:
         interpolators = interpolate_matrices(matrices)
 
         # perform angle interpolation:
-        return {scat_key: interpolator(inc_theta, out_theta) for scat_key, interpolator
-                in interpolators.items()}
+        return {
+            scat_key: interpolator(inc_theta, out_theta)
+            for scat_key, interpolator in interpolators.items()
+        }
 
     @staticmethod
-    def freq_interp_matrices(frequencies, new_freq, multi_freq_matrices,
-                             **interp_freq_kwargs):
+    def freq_interp_matrices(
+        frequencies, new_freq, multi_freq_matrices, **interp_freq_kwargs
+    ):
         """
         Return the single-frequency scattering matrices from multi-frequency scattering
         matrices by interpolating at the desired frequency.
@@ -1153,9 +1389,12 @@ class ScatFromData(Scattering2d):
         if not interpolation_is_needed:
             # only one frequency, return the only scattering matrices
             if new_freq != frequencies[0]:
-                warnings.warn("No available scattering data at f={}, use f={} instead".
-                              format(new_freq, frequencies[0]),
-                              exceptions.ArimWarning)
+                warnings.warn(
+                    "No available scattering data at f={}, use f={} instead".format(
+                        new_freq, frequencies[0]
+                    ),
+                    exceptions.ArimWarning,
+                )
 
         for key in SCAT_KEYS:
             try:
@@ -1164,8 +1403,9 @@ class ScatFromData(Scattering2d):
                 continue
             else:
                 if interpolation_is_needed:
-                    out[key] = interpolate.interp1d(frequencies, matrix, axis=0,
-                                                    **interp_freq_kwargs)(new_freq)
+                    out[key] = interpolate.interp1d(
+                        frequencies, matrix, axis=0, **interp_freq_kwargs
+                    )(new_freq)
                 else:
                     out[key] = matrix[0]
         return out

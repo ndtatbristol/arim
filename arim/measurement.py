@@ -9,7 +9,7 @@ import numpy as np
 
 from . import geometry as g
 
-_IsometryOxy = namedtuple('_IsometryOxy', 'z_o theta phi')
+_IsometryOxy = namedtuple("_IsometryOxy", "z_o theta phi")
 
 logger = logging.getLogger(__name__)
 
@@ -67,13 +67,14 @@ def find_probe_loc_from_frontwall(frame, couplant, tmin=None, tmax=None):
 
     # Move probe:
     distance_to_surface = time_to_surface * couplant.longitudinal_vel / 2
-    frame, iso = move_probe_over_flat_surface(frame, distance_to_surface,
-                                              full_output=True)
+    frame, iso = move_probe_over_flat_surface(
+        frame, distance_to_surface, full_output=True
+    )
 
     probe_standoff = iso.z_o
     probe_angle = iso.theta
-    logger.info('Probe orientation: {:.2f}°'.format(np.rad2deg(iso.theta)))
-    logger.info('Probe standoff: {:.2f} mm'.format(-1e3 * iso.z_o))
+    logger.info("Probe orientation: {:.2f}°".format(np.rad2deg(iso.theta)))
+    logger.info("Probe standoff: {:.2f} mm".format(-1e3 * iso.z_o))
 
     return probe_standoff, probe_angle, time_to_surface
 
@@ -131,7 +132,7 @@ def move_probe_over_flat_surface(frame, distance_to_surface, full_output=False):
     O = np.array([0., 0., 0.])
 
     if not frame.probe.pcs.isclose(g.GCS):
-        raise ValueError('This function requires that PCS and the GCS are the same.')
+        raise ValueError("This function requires that PCS and the GCS are the same.")
 
     # I/ keep only pulse echo scanlines
     # ---------------------------------
@@ -139,14 +140,14 @@ def move_probe_over_flat_surface(frame, distance_to_surface, full_output=False):
     # Consider only pulse-echo data:
     pulse_echo = frame.tx == frame.rx
     if sum(pulse_echo) < 2:
-        raise ValueError('The frame must have at least 2 pulse echo scanlines.')
+        raise ValueError("The frame must have at least 2 pulse echo scanlines.")
 
     distance_to_surface = distance_to_surface[pulse_echo]
     all_locations = frame.probe.locations_pcs
     numelements = frame.probe.numelements
 
     if np.any(distance_to_surface < 0):
-        raise ValueError('Negative distance.')
+        raise ValueError("Negative distance.")
 
     # II/ Check the element are all on Ox
     # -----------------------------------------
@@ -154,8 +155,10 @@ def move_probe_over_flat_surface(frame, distance_to_surface, full_output=False):
     on_Ox = np.isclose(np.abs(all_locations.x), all_locations.norm2())
     if not np.all(on_Ox):
         raise NotImplementedError(
-            'This function works only with linear points1. The following elements are not on axis Ox: {}'
-                .format(np.arange(numelements)[on_Ox == False]))
+            "This function works only with linear points1. The following elements are not on axis Ox: {}".format(
+                np.arange(numelements)[on_Ox == False]
+            )
+        )
 
     # Let us call A the first element, and B the last element.
     locations_x = all_locations.x[frame.tx[pulse_echo]]
@@ -180,12 +183,13 @@ def move_probe_over_flat_surface(frame, distance_to_surface, full_output=False):
     # Cf 2016-03-10 Find flat surface.pdf:
 
     z_o = -p[0]
-    with np.errstate(all='raise'):
+    with np.errstate(all="raise"):
         try:
             theta = np.arcsin(p[1])
         except Exception as e:
             raise RuntimeError(
-                'There is no solution: it is likely one circle is in another.') from e
+                "There is no solution: it is likely one circle is in another."
+            ) from e
 
     # V/ Move the points1:
     # -----------------------------------------

@@ -84,7 +84,7 @@ from . import settings as s
 from .exceptions import ArimWarning, InvalidDimension, InvalidShape
 
 
-class SphericalCoordinates(namedtuple('SphericalCoordinates', 'r theta phi')):
+class SphericalCoordinates(namedtuple("SphericalCoordinates", "r theta phi")):
     """
     Spherical coordinates as usually defined in physics
 
@@ -167,7 +167,8 @@ class Points:
         Total number of points.
 
     """
-    __slots__ = ('coords', 'name')
+
+    __slots__ = ("coords", "name")
 
     def __init__(self, coords, name=None):
         coords = np.asarray(coords)
@@ -205,15 +206,16 @@ class Points:
         return self.size
 
     def __str__(self):
-        return 'P:{}'.format(self.name)
+        return "P:{}".format(self.name)
 
     def __repr__(self):
         classname = self.__class__.__qualname__
         if self.name is None:
-            return '<{}{} at {}>'.format(classname, self.shape, hex(id(self)))
+            return "<{}{} at {}>".format(classname, self.shape, hex(id(self)))
         else:
-            return '<{}{}: {} at {}>'.format(classname, self.shape, self.name,
-                                             hex(id(self)))
+            return "<{}{}: {} at {}>".format(
+                classname, self.shape, self.name, hex(id(self))
+            )
 
     @property
     def x(self):
@@ -348,8 +350,9 @@ class Points:
         for idx in np.ndindex(self.shape):
             yield idx, self.coords[idx]
 
-    def points_in_rectbox(self, xmin=None, xmax=None, ymin=None, ymax=None, zmin=None,
-                          zmax=None):
+    def points_in_rectbox(
+        self, xmin=None, xmax=None, ymin=None, ymax=None, zmin=None, zmax=None
+    ):
         """
         Returns points in the rectangular box.
 
@@ -358,8 +361,9 @@ class Points:
         points_in_rectbox
 
         """
-        return points_in_rectbox(self.x, self.y, self.z, xmin, xmax, ymin, ymax, zmin,
-                                 zmax)
+        return points_in_rectbox(
+            self.x, self.y, self.z, xmin, xmax, ymin, ymax, zmin, zmax
+        )
 
     def to_1d_points(self):
         """
@@ -373,7 +377,7 @@ class Points:
         return Points(self.coords.reshape((self.size, 3)), self.name)
 
 
-OrientedPoints = namedtuple('OrientedPoints', 'points orientations')
+OrientedPoints = namedtuple("OrientedPoints", "points orientations")
 
 
 class CoordinateSystem:
@@ -395,7 +399,8 @@ class CoordinateSystem:
         i_hat, j_hat and k_hat stored in columns ('matrice de passage' de la base locale vers GCS).
         TODO: different convention as stated in header of the file
     """
-    __slots__ = ['_origin', '_i_hat', '_j_hat']
+
+    __slots__ = ["_origin", "_i_hat", "_j_hat"]
 
     def __init__(self, origin, i_hat, j_hat):
         # init values
@@ -569,7 +574,8 @@ class CoordinateSystem:
             New coordinate system.
         """
         old_basis = np.stack(
-            (self.origin, self.origin + self.i_hat, self.origin + self.j_hat), axis=0)
+            (self.origin, self.origin + self.i_hat, self.origin + self.j_hat), axis=0
+        )
         new_basis = Points(old_basis).rotate(rotation_matrix, centre).coords
 
         origin = new_basis[0, :]
@@ -582,9 +588,10 @@ class CoordinateSystem:
         Compare two coordinate system.
         """
         return (
-                np.allclose(self.origin, other.origin, rtol=rtol, atol=atol) and
-                np.allclose(self.i_hat, other.i_hat, rtol=rtol, atol=atol) and
-                np.allclose(self.j_hat, other.j_hat, rtol=rtol, atol=atol))
+            np.allclose(self.origin, other.origin, rtol=rtol, atol=atol)
+            and np.allclose(self.i_hat, other.i_hat, rtol=rtol, atol=atol)
+            and np.allclose(self.j_hat, other.j_hat, rtol=rtol, atol=atol)
+        )
 
     @property
     def basis_matrix(self):
@@ -630,7 +637,7 @@ class Grid(Points):
 
     """
 
-    __slots__ = ('coords', 'name', 'xvect', 'yvect', 'zvect')
+    __slots__ = ("coords", "name", "xvect", "yvect", "zvect")
 
     def __init__(self, xmin, xmax, ymin, ymax, zmin, zmax, pixel_size):
         try:
@@ -645,30 +652,38 @@ class Grid(Points):
         else:
             if xmin > xmax:
                 warn("xmin > xmax in grid", ArimWarning)
-            x = np.linspace(xmin, xmax, round((abs(xmax - xmin) + dx) / dx), dtype=s.FLOAT)
+            x = np.linspace(
+                xmin, xmax, round((abs(xmax - xmin) + dx) / dx), dtype=s.FLOAT
+            )
 
         if ymin == ymax:
             y = np.array([ymin], dtype=s.FLOAT)
         else:
             if ymin > ymax:
                 warn("ymin > ymax in grid", ArimWarning)
-            y = np.linspace(ymin, ymax, round((abs(ymax - ymin) + dy) / dy), dtype=s.FLOAT)
+            y = np.linspace(
+                ymin, ymax, round((abs(ymax - ymin) + dy) / dy), dtype=s.FLOAT
+            )
 
         if zmin == zmax:
             z = np.array([zmin], dtype=s.FLOAT)
         else:
             if zmin > zmax:
                 warn("zmin > zmax in grid", ArimWarning)
-            z = np.linspace(zmin, zmax, round((abs(zmax - zmin) + dz) / dz), dtype=s.FLOAT)
+            z = np.linspace(
+                zmin, zmax, round((abs(zmax - zmin) + dz) / dz), dtype=s.FLOAT
+            )
 
-        all_coords = np.stack(np.meshgrid(x, y, z, indexing='ij'), axis=-1)
-        super().__init__(all_coords, 'Grid')
+        all_coords = np.stack(np.meshgrid(x, y, z, indexing="ij"), axis=-1)
+        super().__init__(all_coords, "Grid")
         self.xvect = x
         self.yvect = y
         self.zvect = z
 
     @classmethod
-    def grid_centred_at_point(cls, centre_x, centre_y, centre_z, size_x, size_y, size_z, pixel_size):
+    def grid_centred_at_point(
+        cls, centre_x, centre_y, centre_z, size_x, size_y, size_z, pixel_size
+    ):
         """
         Create a regularly spaced 3d grid centred around a point.
 
@@ -724,7 +739,8 @@ class Grid(Points):
             centre_y + size_y / 2,
             centre_z - size_z / 2,
             centre_z + size_z / 2,
-            (dx, dy, dz))
+            (dx, dy, dz),
+        )
 
     def resample(self, new_pixel_size):
         """
@@ -739,7 +755,15 @@ class Grid(Points):
         Grid
 
         """
-        return self.__class__(self.xmin, self.xmax, self.ymin, self.ymax, self.zmin, self.zmax, new_pixel_size)
+        return self.__class__(
+            self.xmin,
+            self.xmax,
+            self.ymin,
+            self.ymax,
+            self.zmin,
+            self.zmax,
+            new_pixel_size,
+        )
 
     @property
     def xmin(self):
@@ -803,7 +827,7 @@ class Grid(Points):
         """
         Returns the grid points as Points object of dimension 1 (flatten the grid points).
         """
-        warn(DeprecationWarning('use method to_1d_points() instead'))
+        warn(DeprecationWarning("use method to_1d_points() instead"))
         return self.to_1d_points()
 
     def to_oriented_points(self):
@@ -872,39 +896,44 @@ class GeometryHelper:
         return self._pcs
 
     def is_valid(self, probe, points):
-        return (probe is self._points1_gcs)
+        return probe is self._points1_gcs
 
     def distance_pairwise(self):
-        out = self._cache.get('distance_pairwise', None)
+        out = self._cache.get("distance_pairwise", None)
         if out is None:
-            out = distance_pairwise(self._points2_gcs, self._points1_gcs,
-                                    **self.distance_pairwise_kwargs)
-            self._cache['distance_pairwise'] = out
+            out = distance_pairwise(
+                self._points2_gcs, self._points1_gcs, **self.distance_pairwise_kwargs
+            )
+            self._cache["distance_pairwise"] = out
         return out
 
     def points2_to_pcs_pairwise(self):
-        out = self._cache.get('points2_to_pcs_pairwise', None)
+        out = self._cache.get("points2_to_pcs_pairwise", None)
         if out is None:
-            out = self._pcs.convert_from_gcs_pairwise(self._points2_gcs, self.points1_pcs)
-            self._cache['points2_to_pcs_pairwise'] = out
+            out = self._pcs.convert_from_gcs_pairwise(
+                self._points2_gcs, self.points1_pcs
+            )
+            self._cache["points2_to_pcs_pairwise"] = out
         return out
 
     def points2_to_pcs_pairwise_spherical(self):
-        out = self._cache.get('points2_to_pcs_pairwise_spherical', None)
+        out = self._cache.get("points2_to_pcs_pairwise_spherical", None)
         if out is None:
             points_pcs = self.points2_to_pcs_pairwise()
             dist = self.distance_pairwise()
-            out = spherical_coordinates(points_pcs[0], points_pcs[1], points_pcs[2], dist)
-            self._cache['points2_to_pcs_pairwise_spherical'] = out
+            out = spherical_coordinates(
+                points_pcs[0], points_pcs[1], points_pcs[2], dist
+            )
+            self._cache["points2_to_pcs_pairwise_spherical"] = out
         return out
 
     def clear(self):
         self._cache.clear()
 
     def __str__(self):
-        return '{} between {} and {}'.format(self.__class__.__name__,
-                                             str(self._points1_gcs),
-                                             str(self._points2_gcs))
+        return "{} between {} and {}".format(
+            self.__class__.__name__, str(self._points1_gcs), str(self._points2_gcs)
+        )
 
 
 def spherical_coordinates_r(x, y, z, out=None):
@@ -963,25 +992,19 @@ def spherical_coordinates(x, y, z, r=None):
 def rotation_matrix_x(theta):
     s = np.sin(theta)
     c = np.cos(theta)
-    return np.array(((1, 0, 0),
-                     (0, c, -s),
-                     (0, s, c)), dtype=np.float)
+    return np.array(((1, 0, 0), (0, c, -s), (0, s, c)), dtype=np.float)
 
 
 def rotation_matrix_y(theta):
     s = np.sin(theta)
     c = np.cos(theta)
-    return np.array(((c, 0, s),
-                     (0, 1, 0),
-                     (-s, 0, c)), dtype=np.float)
+    return np.array(((c, 0, s), (0, 1, 0), (-s, 0, c)), dtype=np.float)
 
 
 def rotation_matrix_z(theta):
     s = np.sin(theta)
     c = np.cos(theta)
-    return np.array(((c, -s, 0),
-                     (s, c, 0),
-                     (0, 0, 1)), dtype=np.float)
+    return np.array(((c, -s, 0), (s, c, 0), (0, 0, 1)), dtype=np.float)
 
 
 def rotate(coords, rotation_matrix, centre=None):
@@ -1015,11 +1038,13 @@ def rotate(coords, rotation_matrix, centre=None):
 
     if centre is None:
         # Out[..., j] = Sum_i Rotation[...,j, i].In[...,i]
-        rotated = np.einsum('...ji,...i->...j', rotation_matrix, coords)
+        rotated = np.einsum("...ji,...i->...j", rotation_matrix, coords)
     else:
         centre = np.asarray(centre)
         assert centre.shape[-1] == 3
-        rotated = np.einsum('...ji,...i->...j', rotation_matrix, coords - centre) + centre
+        rotated = (
+            np.einsum("...ji,...i->...j", rotation_matrix, coords - centre) + centre
+        )
     return rotated
 
 
@@ -1048,7 +1073,7 @@ def to_gcs(coords_cs, bases, origins):
         Shape: (\*shape_points, 3)
     """
     # OM' = Origin + OM_x * i_hat + OM_y * j_hat + OM_z * k_hat
-    return np.einsum('...ij,...i->...j', bases, coords_cs) + origins
+    return np.einsum("...ij,...i->...j", bases, coords_cs) + origins
 
 
 def from_gcs(points_gcs, bases, origins):
@@ -1075,7 +1100,7 @@ def from_gcs(points_gcs, bases, origins):
     coords_gcs : ndarray
         Shape: (\*shape_points, 3)
     """
-    return np.einsum('...ji,...i->...j', bases, points_gcs - origins)
+    return np.einsum("...ji,...i->...j", bases, points_gcs - origins)
 
 
 def rotation_matrix_ypr(yaw, pitch, roll):
@@ -1107,9 +1132,9 @@ def are_points_close(points1, points2, atol=1e-8, rtol=0.):
     -------
     bool
     """
-    return (
-            len(points1.shape) == len(points2.shape) and
-            np.allclose(points1.coords, points2.coords, rtol=rtol, atol=atol))
+    return len(points1.shape) == len(points2.shape) and np.allclose(
+        points1.coords, points2.coords, rtol=rtol, atol=atol
+    )
 
 
 def are_points_aligned(points, rtol=0., atol=1e-08):
@@ -1141,8 +1166,9 @@ def are_points_aligned(points, rtol=0., atol=1e-08):
     AM = points[1:, :] - points[0, :]
 
     AB = AM[0, :]
-    assert not np.allclose(AB, np.zeros(
-        3)), 'this function does not work if the two first points are the same'
+    assert not np.allclose(
+        AB, np.zeros(3)
+    ), "this function does not work if the two first points are the same"
 
     # Cross product AC ^ AB, AD ^ AB, AE ^ AB...
     cross = np.cross(AM[1:, :], AB)
@@ -1312,8 +1338,9 @@ def direct_isometry_3d(A, i_hat, j_hat, B, u_hat, v_hat):
     return M, P
 
 
-def distance_pairwise(points1, points2, out=None, dtype=None, block_size=None,
-                      numthreads=None):
+def distance_pairwise(
+    points1, points2, out=None, dtype=None, block_size=None, numthreads=None
+):
     """
     Compute the Euclidean distances of flight between two sets of points.
 
@@ -1352,13 +1379,17 @@ def distance_pairwise(points1, points2, out=None, dtype=None, block_size=None,
         (num1,) = points1.x.shape
         (num2,) = points2.x.shape
     except ValueError:
-        raise InvalidDimension("The dimension of the coordinates of points must be one.")
+        raise InvalidDimension(
+            "The dimension of the coordinates of points must be one."
+        )
     if not (points1.x.shape == points1.y.shape == points1.z.shape):
         raise InvalidShape(
-            "Must have: points1.x.shape == points1.y.shape == points1.z.shape")
+            "Must have: points1.x.shape == points1.y.shape == points1.z.shape"
+        )
     if not (points2.x.shape == points2.y.shape == points2.z.shape):
         raise InvalidShape(
-            "Must have: points2.x.shape == points2.y.shape == points2.z.shape")
+            "Must have: points2.x.shape == points2.y.shape == points2.z.shape"
+        )
 
     if out is None:
         if dtype is None:
@@ -1382,11 +1413,18 @@ def distance_pairwise(points1, points2, out=None, dtype=None, block_size=None,
             for chunk2 in chunk_array((num2,), chunk_size):
                 chunk_tof = (chunk1[0], chunk2[0])
 
-                futures.append(executor.submit(
-                    _distance_pairwise,
-                    points1.x[chunk1], points1.y[chunk1], points1.z[chunk1],
-                    points2.x[chunk2], points2.y[chunk2], points2.z[chunk2],
-                    distance[chunk_tof]))
+                futures.append(
+                    executor.submit(
+                        _distance_pairwise,
+                        points1.x[chunk1],
+                        points1.y[chunk1],
+                        points1.z[chunk1],
+                        points2.x[chunk2],
+                        points2.y[chunk2],
+                        points2.z[chunk2],
+                        distance[chunk_tof],
+                    )
+                )
     # Raise exceptions that happened, if any:
     for future in futures:
         future.result()
@@ -1395,8 +1433,9 @@ def distance_pairwise(points1, points2, out=None, dtype=None, block_size=None,
 
 def is_orthonormal(basis):
     assert basis.shape == (3, 3)
-    return (basis.dtype.kind == 'f'  # must be real
-            and np.allclose(basis.T, np.linalg.inv(basis)))
+    return basis.dtype.kind == "f" and np.allclose(  # must be real
+        basis.T, np.linalg.inv(basis)
+    )
 
 
 def is_orthonormal_direct(basis):
@@ -1410,8 +1449,9 @@ def is_orthonormal_direct(basis):
     -------
 
     """
-    return is_orthonormal(basis) and np.allclose(np.cross(basis[0, :], basis[1, :]),
-                                                 basis[2, :])
+    return is_orthonormal(basis) and np.allclose(
+        np.cross(basis[0, :], basis[1, :]), basis[2, :]
+    )
 
 
 @numba.jit(nopython=True, nogil=True, cache=True)
@@ -1434,8 +1474,9 @@ def _distance_pairwise(x1, y1, z1, x2, y2, z2, distance):
     return
 
 
-def points_in_rectbox(x, y, z, xmin=None, xmax=None, ymin=None, ymax=None, zmin=None,
-                      zmax=None):
+def points_in_rectbox(
+    x, y, z, xmin=None, xmax=None, ymin=None, ymax=None, zmin=None, zmax=None
+):
     """
     Returns points in the rectangular box.
 
@@ -1490,9 +1531,11 @@ def points_in_rectbox(x, y, z, xmin=None, xmax=None, ymin=None, ymax=None, zmin=
     return out
 
 
-GCS = CoordinateSystem(origin=np.array((0., 0., 0.)),
-                       i_hat=np.array((1., 0., 0.)),
-                       j_hat=np.array((0., 1., 0.)))
+GCS = CoordinateSystem(
+    origin=np.array((0., 0., 0.)),
+    i_hat=np.array((1., 0., 0.)),
+    j_hat=np.array((0., 1., 0.)),
+)
 
 
 def points_1d_wall_z(xmin, xmax, z, numpoints, y=0., name=None, dtype=None):
@@ -1553,8 +1596,9 @@ def default_orientations(points):
     """
     # No need to create a full array because all values are the same: we cheat
     # using a broadcast array. This saves memory space and reduces access time.
-    orientations_arr = np.broadcast_to(np.identity(3, dtype=points.dtype),
-                                       (*points.shape, 3, 3))
+    orientations_arr = np.broadcast_to(
+        np.identity(3, dtype=points.dtype), (*points.shape, 3, 3)
+    )
     orientations = Points(orientations_arr)
     return orientations
 
@@ -1575,7 +1619,7 @@ def default_oriented_points(points):
     return OrientedPoints(points, default_orientations(points))
 
 
-def points_from_probe(probe, name='Probe'):
+def points_from_probe(probe, name="Probe"):
     """
     Probe object to OrientedPoints (points and orientations).
 

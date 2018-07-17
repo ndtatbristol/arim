@@ -23,8 +23,9 @@ from . import core as c, _scat, helpers, _scat
 logger = logging.getLogger(__name__)
 
 
-def make_toneburst(num_cycles, centre_freq, dt, num_samples=None, wrap=False,
-                   analytical=False):
+def make_toneburst(
+    num_cycles, centre_freq, dt, num_samples=None, wrap=False, analytical=False
+):
     """
     Returns a toneburst defined by centre frequency and a number of cycles.
 
@@ -57,13 +58,13 @@ def make_toneburst(num_cycles, centre_freq, dt, num_samples=None, wrap=False,
 
     """
     if dt <= 0.:
-        raise ValueError('negative time step')
+        raise ValueError("negative time step")
     if centre_freq <= 0.:
-        raise ValueError('negative centre frequency')
+        raise ValueError("negative centre frequency")
     if num_cycles <= 0:
-        raise ValueError('negative number of cycles')
+        raise ValueError("negative number of cycles")
     if num_samples is not None and num_samples <= 0:
-        raise ValueError('negative number of time samples')
+        raise ValueError("negative number of time samples")
 
     len_pulse = int(np.ceil(num_cycles / centre_freq / dt))
     # force an odd length for pulse symmetry
@@ -74,7 +75,7 @@ def make_toneburst(num_cycles, centre_freq, dt, num_samples=None, wrap=False,
     if num_samples is None:
         num_samples = len_pulse
     if len_pulse > num_samples:
-        raise ValueError('time vector is too short for this pulse')
+        raise ValueError("time vector is too short for this pulse")
 
     t = np.arange(len_pulse)
     if analytical:
@@ -153,16 +154,18 @@ def directivity_2d_rectangular_in_fluid(theta, element_width, wavelength):
 
     """
     if element_width < 0:
-        raise ValueError('Negative width')
+        raise ValueError("Negative width")
     if wavelength < 0:
-        raise ValueError('Negative wavelength')
+        raise ValueError("Negative wavelength")
 
     # /!\ numpy.sinc defines sinc(x) := sin(pi * x)/(pi * x)
     x = (element_width / wavelength) * np.sin(theta)
     return np.sinc(x)
 
 
-def directivity_2d_rectangular_in_fluid_for_path(ray_geometry, element_width, wavelength):
+def directivity_2d_rectangular_in_fluid_for_path(
+    ray_geometry, element_width, wavelength
+):
     """
     Wrapper for :func:`directivity_2d_rectangular_in_fluid` that uses a
     :class:`RayGeometry` object.
@@ -178,8 +181,9 @@ def directivity_2d_rectangular_in_fluid_for_path(ray_geometry, element_width, wa
     directivity : ndarray
         Signed directivity for each angle.
     """
-    return directivity_2d_rectangular_in_fluid(ray_geometry.conventional_out_angle(0),
-                                               element_width, wavelength)
+    return directivity_2d_rectangular_in_fluid(
+        ray_geometry.conventional_out_angle(0), element_width, wavelength
+    )
 
 
 def snell_angles(incidents_angles, c_incident, c_refracted):
@@ -197,8 +201,9 @@ def snell_angles(incidents_angles, c_incident, c_refracted):
     return np.arcsin(c_refracted / c_incident * sin(incidents_angles))
 
 
-def fluid_solid(alpha_fluid, rho_fluid, rho_solid, c_fluid, c_l, c_t, alpha_l=None,
-                alpha_t=None):
+def fluid_solid(
+    alpha_fluid, rho_fluid, rho_solid, c_fluid, c_l, c_t, alpha_l=None, alpha_t=None
+):
     """
     Returns the transmission and reflection coefficients for an incident wave at a fluid-to-solid interface.
 
@@ -250,19 +255,19 @@ def fluid_solid(alpha_fluid, rho_fluid, rho_solid, c_fluid, c_l, c_t, alpha_l=No
     if alpha_t is None:
         alpha_t = snell_angles(alpha_fluid, c_fluid, c_t)
 
-    N = _fluid_solid_n(alpha_fluid, alpha_l, alpha_t, rho_fluid, rho_solid, c_fluid, c_l,
-                       c_t)
+    N = _fluid_solid_n(
+        alpha_fluid, alpha_l, alpha_t, rho_fluid, rho_solid, c_fluid, c_l, c_t
+    )
 
     # Eq A.7
     ct_cl2 = (c_t * c_t) / (c_l * c_l)
     cos_2_alpha_t = cos(2 * alpha_t)
 
     reflection = (
-                         ct_cl2 * sin(2 * alpha_l) * sin(2 * alpha_t)
-                         + cos_2_alpha_t * cos_2_alpha_t
-                         - (rho_fluid * c_fluid * cos(alpha_l)) /
-                         (rho_solid * c_l * cos(alpha_fluid))
-                 ) / N
+        ct_cl2 * sin(2 * alpha_l) * sin(2 * alpha_t)
+        + cos_2_alpha_t * cos_2_alpha_t
+        - (rho_fluid * c_fluid * cos(alpha_l)) / (rho_solid * c_l * cos(alpha_fluid))
+    ) / N
 
     # Eq A.8
     transmission_l = 2. * cos_2_alpha_t / N
@@ -273,21 +278,25 @@ def fluid_solid(alpha_fluid, rho_fluid, rho_solid, c_fluid, c_l, c_t, alpha_l=No
     return reflection, transmission_l, transmission_t
 
 
-def _fluid_solid_n(alpha_fluid, alpha_l, alpha_t, rho_fluid, rho_solid, c_fluid, c_l,
-                   c_t):
+def _fluid_solid_n(
+    alpha_fluid, alpha_l, alpha_t, rho_fluid, rho_solid, c_fluid, c_l, c_t
+):
     """
     Coefficient N defined by Krautkrämer in equation (A8).
     """
     ct_cl2 = (c_t * c_t) / (c_l * c_l)
     cos_2_alpha_t = cos(2 * alpha_t)
-    N = (ct_cl2 * sin(2 * alpha_l) * sin(2 * alpha_t)
-         + cos_2_alpha_t * cos_2_alpha_t
-         + rho_fluid * c_fluid / (rho_solid * c_l) * cos(alpha_l) / cos(alpha_fluid))
+    N = (
+        ct_cl2 * sin(2 * alpha_l) * sin(2 * alpha_t)
+        + cos_2_alpha_t * cos_2_alpha_t
+        + rho_fluid * c_fluid / (rho_solid * c_l) * cos(alpha_l) / cos(alpha_fluid)
+    )
     return N
 
 
-def solid_l_fluid(alpha_l, rho_fluid, rho_solid, c_fluid, c_l, c_t, alpha_fluid=None,
-                  alpha_t=None):
+def solid_l_fluid(
+    alpha_l, rho_fluid, rho_solid, c_fluid, c_l, c_t, alpha_fluid=None, alpha_t=None
+):
     """
     Returns the transmission and reflection coefficients for an incident longitudinal wave at a solid-to-fluid interface.
 
@@ -337,29 +346,38 @@ def solid_l_fluid(alpha_l, rho_fluid, rho_solid, c_fluid, c_l, c_t, alpha_fluid=
     if alpha_t is None:
         alpha_t = snell_angles(alpha_l, c_l, c_t)
 
-    N = _fluid_solid_n(alpha_fluid, alpha_l, alpha_t, rho_fluid, rho_solid, c_fluid, c_l,
-                       c_t)
+    N = _fluid_solid_n(
+        alpha_fluid, alpha_l, alpha_t, rho_fluid, rho_solid, c_fluid, c_l, c_t
+    )
 
     # Eq A.10
     ct_cl2 = (c_t * c_t) / (c_l * c_l)
     cos_2_alpha_t = cos(2 * alpha_t)
-    reflection_l = (ct_cl2 * sin(2 * alpha_l) * sin(2 * alpha_t)
-                    - cos_2_alpha_t * cos_2_alpha_t
-                    + rho_fluid * c_fluid / (rho_solid * c_l) * cos(alpha_l) / cos(
-                alpha_fluid)) / N
+    reflection_l = (
+        ct_cl2 * sin(2 * alpha_l) * sin(2 * alpha_t)
+        - cos_2_alpha_t * cos_2_alpha_t
+        + rho_fluid * c_fluid / (rho_solid * c_l) * cos(alpha_l) / cos(alpha_fluid)
+    ) / N
 
     # Eq A.11
     reflection_t = (2 * ct_cl2 * sin(2 * alpha_l) * cos(2 * alpha_t)) / N
 
     # Eq A.12
-    transmission = 2 * rho_fluid * c_fluid * cos(alpha_l) * cos(2 * alpha_t) / (
-            N * rho_solid * c_l * cos(alpha_fluid))
+    transmission = (
+        2
+        * rho_fluid
+        * c_fluid
+        * cos(alpha_l)
+        * cos(2 * alpha_t)
+        / (N * rho_solid * c_l * cos(alpha_fluid))
+    )
 
     return reflection_l, reflection_t, transmission
 
 
-def solid_t_fluid(alpha_t, rho_fluid, rho_solid, c_fluid, c_l, c_t, alpha_fluid=None,
-                  alpha_l=None):
+def solid_t_fluid(
+    alpha_t, rho_fluid, rho_solid, c_fluid, c_l, c_t, alpha_fluid=None, alpha_l=None
+):
     """
     Returns the transmission and reflection coefficients for an incident transverse wave at a solid-to-fluid interface.
 
@@ -408,8 +426,9 @@ def solid_t_fluid(alpha_t, rho_fluid, rho_solid, c_fluid, c_l, c_t, alpha_fluid=
     if alpha_l is None:
         alpha_l = snell_angles(alpha_t, c_t, c_l)
 
-    N = _fluid_solid_n(alpha_fluid, alpha_l, alpha_t, rho_fluid, rho_solid, c_fluid, c_l,
-                       c_t)
+    N = _fluid_solid_n(
+        alpha_fluid, alpha_l, alpha_t, rho_fluid, rho_solid, c_fluid, c_l, c_t
+    )
 
     # Eq A.14
     reflection_l = -sin(4 * alpha_t) / N
@@ -417,23 +436,37 @@ def solid_t_fluid(alpha_t, rho_fluid, rho_solid, c_fluid, c_l, c_t, alpha_fluid=
     # Eq A.13
     ct_cl2 = (c_t * c_t) / (c_l * c_l)
     cos_2_alpha_t = cos(2 * alpha_t)
-    reflection_t = (ct_cl2 * sin(2 * alpha_l) * sin(2 * alpha_t)
-                    - cos_2_alpha_t * cos_2_alpha_t
-                    - rho_fluid * c_fluid / (rho_solid * c_l)
-                    * cos(alpha_l) / cos(alpha_fluid)) / N
+    reflection_t = (
+        ct_cl2 * sin(2 * alpha_l) * sin(2 * alpha_t)
+        - cos_2_alpha_t * cos_2_alpha_t
+        - rho_fluid * c_fluid / (rho_solid * c_l) * cos(alpha_l) / cos(alpha_fluid)
+    ) / N
 
     # Eq A.15
-    transmission = 2 * rho_fluid * c_fluid * cos(alpha_l) * sin(2 * alpha_t) / (
-            N * rho_solid * c_l * cos(alpha_fluid))
+    transmission = (
+        2
+        * rho_fluid
+        * c_fluid
+        * cos(alpha_l)
+        * sin(2 * alpha_t)
+        / (N * rho_solid * c_l * cos(alpha_fluid))
+    )
 
     # TODO: Rose in "Ultrasonic guided waves in solid media" gives the oppositeof these
     # coefficients. Fix this?
     return reflection_l, reflection_t, transmission
 
 
-def transmission_at_interface(interface_kind, material_inc, material_out, mode_inc,
-                              mode_out, angles_inc,
-                              force_complex=True, unit='stress'):
+def transmission_at_interface(
+    interface_kind,
+    material_inc,
+    material_out,
+    mode_inc,
+    mode_out,
+    angles_inc,
+    force_complex=True,
+    unit="stress",
+):
     """
     Compute the transmission coefficients for an interface.
 
@@ -471,9 +504,9 @@ def transmission_at_interface(interface_kind, material_inc, material_out, mode_i
     """
     if force_complex:
         angles_inc = np.asarray(angles_inc, dtype=complex)
-    if unit.lower() == 'stress':
+    if unit.lower() == "stress":
         convert_to_displacement = False
-    elif unit.lower() == 'displacement':
+    elif unit.lower() == "displacement":
         convert_to_displacement = True
     else:
         raise ValueError("Argument 'unit' must be 'stress' or 'displacement'")
@@ -490,9 +523,12 @@ def transmission_at_interface(interface_kind, material_inc, material_out, mode_i
         assert fluid.state_of_matter.name != c.StateMatter.solid
 
         alpha_fluid = angles_inc
-        alpha_l = snell_angles(alpha_fluid, fluid.longitudinal_vel,
-                               solid.longitudinal_vel)
-        alpha_t = snell_angles(alpha_fluid, fluid.longitudinal_vel, solid.transverse_vel)
+        alpha_l = snell_angles(
+            alpha_fluid, fluid.longitudinal_vel, solid.longitudinal_vel
+        )
+        alpha_t = snell_angles(
+            alpha_fluid, fluid.longitudinal_vel, solid.transverse_vel
+        )
 
         params = dict(
             alpha_fluid=alpha_fluid,
@@ -502,13 +538,15 @@ def transmission_at_interface(interface_kind, material_inc, material_out, mode_i
             rho_solid=solid.density,
             c_fluid=fluid.longitudinal_vel,
             c_l=solid.longitudinal_vel,
-            c_t=solid.transverse_vel)
+            c_t=solid.transverse_vel,
+        )
 
         refl, trans_l, trans_t = fluid_solid(**params)
         if convert_to_displacement:
             # u2/u1 = z tau2 / tau1 = -z tau2 / p1
-            z = ((material_inc.density * material_inc.velocity(mode_inc)) /
-                 (material_out.density * material_out.velocity(mode_out)))
+            z = (material_inc.density * material_inc.velocity(mode_inc)) / (
+                material_out.density * material_out.velocity(mode_out)
+            )
             trans_l *= z
             trans_t *= z
         if mode_out is c.Mode.L:
@@ -533,7 +571,8 @@ def transmission_at_interface(interface_kind, material_inc, material_out, mode_i
             rho_solid=solid.density,
             c_fluid=fluid.longitudinal_vel,
             c_l=solid.longitudinal_vel,
-            c_t=solid.transverse_vel)
+            c_t=solid.transverse_vel,
+        )
 
         if mode_inc is c.Mode.L:
             alpha_l = angles_inc
@@ -545,17 +584,25 @@ def transmission_at_interface(interface_kind, material_inc, material_out, mode_i
             raise RuntimeError
         if convert_to_displacement:
             # u2/u1 = z tau2 / tau1 = -z tau2 / p1
-            z = ((material_inc.density * material_inc.velocity(mode_inc)) /
-                 (material_out.density * material_out.velocity(mode_out)))
+            z = (material_inc.density * material_inc.velocity(mode_inc)) / (
+                material_out.density * material_out.velocity(mode_out)
+            )
             transmission *= z
         return transmission
     else:
         raise NotImplementedError
 
 
-def reflection_at_interface(interface_kind, material_inc, material_against, mode_inc,
-                            mode_out, angles_inc,
-                            force_complex=True, unit='stress'):
+def reflection_at_interface(
+    interface_kind,
+    material_inc,
+    material_against,
+    mode_inc,
+    mode_out,
+    angles_inc,
+    force_complex=True,
+    unit="stress",
+):
     """
     Compute the reflection coefficients for an interface.
 
@@ -594,9 +641,9 @@ def reflection_at_interface(interface_kind, material_inc, material_against, mode
     """
     if force_complex:
         angles_inc = np.asarray(angles_inc, dtype=complex)
-    if unit.lower() == 'stress':
+    if unit.lower() == "stress":
         convert_to_displacement = False
-    elif unit.lower() == 'displacement':
+    elif unit.lower() == "displacement":
         convert_to_displacement = True
     else:
         raise ValueError("Argument 'unit' must be 'stress' or 'displacement'")
@@ -629,8 +676,9 @@ def reflection_at_interface(interface_kind, material_inc, material_against, mode
             rho_solid=solid.density,
             c_fluid=fluid.longitudinal_vel,
             c_l=solid.longitudinal_vel,
-            c_t=solid.transverse_vel)
-        with np.errstate(invalid='ignore'):
+            c_t=solid.transverse_vel,
+        )
+        with np.errstate(invalid="ignore"):
             refl_l, refl_t, trans = solid_fluid(**params)
 
         z = material_inc.velocity(mode_inc) / material_inc.velocity(mode_out)
@@ -665,8 +713,9 @@ def reflection_at_interface(interface_kind, material_inc, material_against, mode
             rho_solid=solid.density,
             c_fluid=fluid.longitudinal_vel,
             c_l=solid.longitudinal_vel,
-            c_t=solid.transverse_vel)
-        with np.errstate(invalid='ignore'):
+            c_t=solid.transverse_vel,
+        )
+        with np.errstate(invalid="ignore"):
             reflection, transmission_l, transmission_t = fluid_solid(**params)
 
         z = material_inc.velocity(mode_inc) / material_inc.velocity(mode_out)
@@ -678,8 +727,9 @@ def reflection_at_interface(interface_kind, material_inc, material_against, mode
         raise NotImplementedError
 
 
-def transmission_reflection_for_path(path, ray_geometry, force_complex=True,
-                                     unit='stress'):
+def transmission_reflection_for_path(
+    path, ray_geometry, force_complex=True, unit="stress"
+):
     """
     Return the transmission-reflection coefficients for a given path.
 
@@ -724,15 +774,17 @@ def transmission_reflection_for_path(path, ray_geometry, force_complex=True,
             unit=unit,
         )
 
-        logger.debug("compute {} coefficients at interface {}".format(
-            interface.transmission_reflection.name,
-            interface.points))
+        logger.debug(
+            "compute {} coefficients at interface {}".format(
+                interface.transmission_reflection.name, interface.points
+            )
+        )
 
         if interface.transmission_reflection is c.TransmissionReflection.transmission:
-            params['material_out'] = path.materials[i]
+            params["material_out"] = path.materials[i]
             tmp = transmission_at_interface(**params)
         elif interface.transmission_reflection is c.TransmissionReflection.reflection:
-            params['material_against'] = interface.reflection_against
+            params["material_against"] = interface.reflection_against
             tmp = reflection_at_interface(**params)
         else:
             raise RuntimeError
@@ -746,8 +798,9 @@ def transmission_reflection_for_path(path, ray_geometry, force_complex=True,
     return transrefl
 
 
-def reverse_transmission_reflection_for_path(path, ray_geometry, force_complex=True,
-                                             unit='stress'):
+def reverse_transmission_reflection_for_path(
+    path, ray_geometry, force_complex=True, unit="stress"
+):
     """
     Return the transmission-reflection coefficients of the reverse path.
 
@@ -792,24 +845,28 @@ def reverse_transmission_reflection_for_path(path, ray_geometry, force_complex=T
 
         if interface.transmission_reflection is c.TransmissionReflection.transmission:
             material_out = path.materials[i - 1]
-            params['material_out'] = material_out
-            params['interface_kind'] = interface.kind.reverse()
+            params["material_out"] = material_out
+            params["interface_kind"] = interface.kind.reverse()
 
             # Compute the incident angles in the reverse path from the incident angles in the
             # direct path using Snell laws.
             if force_complex:
                 trans_or_refl_angles = np.asarray(trans_or_refl_angles, complex)
-            params['angles_inc'] = snell_angles(trans_or_refl_angles,
-                                                material_out.velocity(mode_out),
-                                                material_inc.velocity(mode_inc))
+            params["angles_inc"] = snell_angles(
+                trans_or_refl_angles,
+                material_out.velocity(mode_out),
+                material_inc.velocity(mode_inc),
+            )
             tmp = transmission_at_interface(**params)
 
         elif interface.transmission_reflection is c.TransmissionReflection.reflection:
-            params['material_against'] = interface.reflection_against
-            params['interface_kind'] = interface.kind
-            params['angles_inc'] = snell_angles(trans_or_refl_angles,
-                                                material_inc.velocity(mode_out),
-                                                material_inc.velocity(mode_inc))
+            params["material_against"] = interface.reflection_against
+            params["interface_kind"] = interface.kind
+            params["angles_inc"] = snell_angles(
+                trans_or_refl_angles,
+                material_inc.velocity(mode_out),
+                material_inc.velocity(mode_inc),
+            )
             tmp = reflection_at_interface(**params)
 
         else:
@@ -878,8 +935,9 @@ def beamspread_2d_for_path(ray_geometry):
         nu = velocities[k - 1] / velocities[k]
         sin_theta = np.sin(theta_inc)
         cos_theta = np.cos(theta_inc)
-        gamma_list.append((nu * nu - sin_theta * sin_theta)
-                          / (nu * cos_theta * cos_theta))
+        gamma_list.append(
+            (nu * nu - sin_theta * sin_theta) / (nu * cos_theta * cos_theta)
+        )
 
     # Between the probe and the first interface, beamspread of an unbounded medium.
     # Use a copy because the original may be a cached value and we don'ray want
@@ -940,8 +998,9 @@ def reverse_beamspread_2d_for_path(ray_geometry):
         sin_theta = np.sin(theta_out)
         cos_theta = np.cos(theta_out)
         # gamma expressed with theta_out instead of theta_in
-        gamma_list.append((nu * cos_theta * cos_theta)
-                          / (1 - nu * nu * sin_theta * sin_theta))
+        gamma_list.append(
+            (nu * cos_theta * cos_theta) / (1 - nu * nu * sin_theta * sin_theta)
+        )
 
     # Between the probe and the first interface, beamspread of an unbounded medium.
     # Use a copy because the original may be a cached value and we don'ray want
@@ -976,9 +1035,18 @@ def _nested_dict_to_flat_list(dictlike):
         return all_values
 
 
-class RayWeights(namedtuple('RayWeights', [
-    'tx_ray_weights_dict', 'rx_ray_weights_dict',
-    'tx_ray_weights_debug_dict', 'rx_ray_weights_debug_dict', 'scattering_angles_dict'])):
+class RayWeights(
+    namedtuple(
+        "RayWeights",
+        [
+            "tx_ray_weights_dict",
+            "rx_ray_weights_dict",
+            "tx_ray_weights_debug_dict",
+            "rx_ray_weights_debug_dict",
+            "scattering_angles_dict",
+        ],
+    )
+):
     """
     Data container for ray weights.
 
@@ -1075,8 +1143,12 @@ def model_amplitudes_factory(tx, rx, view, ray_weights, scattering, scat_angle=0
     assert tx_scattering_angles.flags.f_contiguous
     assert rx_scattering_angles.flags.f_contiguous
 
-    assert (tx_ray_weights.shape == rx_ray_weights.shape ==
-            tx_scattering_angles.shape == rx_scattering_angles.shape)
+    assert (
+        tx_ray_weights.shape
+        == rx_ray_weights.shape
+        == tx_scattering_angles.shape
+        == rx_scattering_angles.shape
+    )
 
     # the great transposition
     tx_ray_weights = tx_ray_weights.T
@@ -1085,17 +1157,27 @@ def model_amplitudes_factory(tx, rx, view, ray_weights, scattering, scat_angle=0
     rx_scattering_angles = rx_scattering_angles.T
 
     if is_scattering_func:
-        return _ModelAmplitudesWithScatFunction(tx, rx, scattering_obj,
-                                                tx_ray_weights, rx_ray_weights,
-                                                tx_scattering_angles,
-                                                rx_scattering_angles,
-                                                scat_angle)
+        return _ModelAmplitudesWithScatFunction(
+            tx,
+            rx,
+            scattering_obj,
+            tx_ray_weights,
+            rx_ray_weights,
+            tx_scattering_angles,
+            rx_scattering_angles,
+            scat_angle,
+        )
     else:
-        return _ModelAmplitudesWithScatMatrix(tx, rx, scattering_obj,
-                                              tx_ray_weights, rx_ray_weights,
-                                              tx_scattering_angles,
-                                              rx_scattering_angles,
-                                              scat_angle)
+        return _ModelAmplitudesWithScatMatrix(
+            tx,
+            rx,
+            scattering_obj,
+            tx_ray_weights,
+            rx_ray_weights,
+            tx_scattering_angles,
+            rx_scattering_angles,
+            scat_angle,
+        )
 
 
 class ModelAmplitudes(abc.ABC):
@@ -1161,9 +1243,17 @@ class ModelAmplitudes(abc.ABC):
 
 
 class _ModelAmplitudesWithScatFunction(ModelAmplitudes):
-    def __init__(self, tx, rx, scattering_fn,
-                 tx_ray_weights, rx_ray_weights,
-                 tx_scattering_angles, rx_scattering_angles, scat_angle=0.):
+    def __init__(
+        self,
+        tx,
+        rx,
+        scattering_fn,
+        tx_ray_weights,
+        rx_ray_weights,
+        tx_scattering_angles,
+        rx_scattering_angles,
+        scat_angle=0.,
+    ):
         self.tx = tx
         self.rx = rx
         self.scattering_fn = scattering_fn
@@ -1180,25 +1270,41 @@ class _ModelAmplitudesWithScatFunction(ModelAmplitudes):
         # Nota bene: arrays' shape is (numpoints, numscanline), i.e. the transpose
         # of RayWeights. They are contiguous.
         if np.empty(self.numpoints)[grid_slice].ndim > 1:
-            raise IndexError('Only the first dimension of the object is indexable.')
+            raise IndexError("Only the first dimension of the object is indexable.")
 
         scat_angle = self.scat_angle
         scattering_amplitudes = self.scattering_fn(
-            np.take(self.tx_scattering_angles[grid_slice], self.tx, axis=-1) - scat_angle,
-            np.take(self.rx_scattering_angles[grid_slice], self.rx, axis=-1) - scat_angle)
+            np.take(self.tx_scattering_angles[grid_slice], self.tx, axis=-1)
+            - scat_angle,
+            np.take(self.rx_scattering_angles[grid_slice], self.rx, axis=-1)
+            - scat_angle,
+        )
 
-        model_amplitudes = (scattering_amplitudes
-                            * np.take(self.tx_ray_weights[grid_slice], self.tx, axis=-1)
-                            * np.take(self.rx_ray_weights[grid_slice], self.rx, axis=-1))
+        model_amplitudes = (
+            scattering_amplitudes
+            * np.take(self.tx_ray_weights[grid_slice], self.tx, axis=-1)
+            * np.take(self.rx_ray_weights[grid_slice], self.rx, axis=-1)
+        )
         return model_amplitudes
 
 
 @numba.guvectorize(
-    'void(int32[:], int32[:], complex128[:,:], complex128[:], complex128[:], float64[:], float64[:], float64[:], complex128[:])',
-    '(n),(n),(s,s),(e),(e),(e),(e),()->(n)', nopython=True, target='parallel')
-def _model_amplitudes_with_scat_matrix(tx, rx, scattering_matrix, tx_ray_weights,
-                                       rx_ray_weights, tx_scattering_angles,
-                                       rx_scattering_angles, scat_angle, res):
+    "void(int32[:], int32[:], complex128[:,:], complex128[:], complex128[:], float64[:], float64[:], float64[:], complex128[:])",
+    "(n),(n),(s,s),(e),(e),(e),(e),()->(n)",
+    nopython=True,
+    target="parallel",
+)
+def _model_amplitudes_with_scat_matrix(
+    tx,
+    rx,
+    scattering_matrix,
+    tx_ray_weights,
+    rx_ray_weights,
+    tx_scattering_angles,
+    rx_scattering_angles,
+    scat_angle,
+    res,
+):
     # This is a kernel on a grid point.
     numscanlines = tx.shape[0]
     # assert res.shape[0] == tx_ray_weights.shape[0]
@@ -1207,17 +1313,24 @@ def _model_amplitudes_with_scat_matrix(tx, rx, scattering_matrix, tx_ray_weights
         inc_theta = tx_scattering_angles[tx[scan]] - scat_angle[0]
         out_theta = rx_scattering_angles[rx[scan]] - scat_angle[0]
 
-        scattering_amp = _scat._interpolate_scattering_matrix_kernel(scattering_matrix,
-                                                                     inc_theta, out_theta)
-        res[scan] = (scattering_amp
-                     * tx_ray_weights[tx[scan]]
-                     * rx_ray_weights[rx[scan]])
+        scattering_amp = _scat._interpolate_scattering_matrix_kernel(
+            scattering_matrix, inc_theta, out_theta
+        )
+        res[scan] = scattering_amp * tx_ray_weights[tx[scan]] * rx_ray_weights[rx[scan]]
 
 
 class _ModelAmplitudesWithScatMatrix(ModelAmplitudes):
-    def __init__(self, tx, rx, scattering_mat,
-                 tx_ray_weights, rx_ray_weights,
-                 tx_scattering_angles, rx_scattering_angles, scat_angle=0.):
+    def __init__(
+        self,
+        tx,
+        rx,
+        scattering_mat,
+        tx_ray_weights,
+        rx_ray_weights,
+        tx_scattering_angles,
+        rx_scattering_angles,
+        scat_angle=0.,
+    ):
         self.tx = tx
         self.rx = rx
         self.scattering_mat = scattering_mat
@@ -1234,11 +1347,15 @@ class _ModelAmplitudesWithScatMatrix(ModelAmplitudes):
         # Nota bene: arrays' shape is (numpoints, numscanline), i.e. the transpose
         # of RayWeights. They are contiguous.
         return _model_amplitudes_with_scat_matrix(
-            self.tx, self.rx, self.scattering_mat,
+            self.tx,
+            self.rx,
+            self.scattering_mat,
             self.tx_ray_weights[grid_slice],
             self.rx_ray_weights[grid_slice],
             self.tx_scattering_angles[grid_slice],
-            self.rx_scattering_angles[grid_slice], self.scat_angle)
+            self.rx_scattering_angles[grid_slice],
+            self.scat_angle,
+        )
 
 
 def sensitivity_uniform_tfm(model_amplitudes, scanline_weights, block_size=4000):
