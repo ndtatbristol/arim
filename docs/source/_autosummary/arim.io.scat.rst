@@ -1,5 +1,5 @@
-arim\.io\.scat
-==============
+arim.io.scat
+============
 
 .. automodule:: arim.io.scat
 

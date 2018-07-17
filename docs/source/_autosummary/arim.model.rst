@@ -1,5 +1,5 @@
-arim\.model
-===========
+arim.model
+==========
 
 .. automodule:: arim.model
 
@@ -15,9 +15,6 @@ arim\.model
       fluid_solid
       make_toneburst
       model_amplitudes_factory
-      radiation_2d_cylinder_in_fluid
-      radiation_2d_rectangular_in_fluid
-      radiation_2d_rectangular_in_fluid_for_path
       reflection_at_interface
       reverse_beamspread_2d_for_path
       reverse_transmission_reflection_for_path

@@ -1,5 +1,5 @@
-arim\.im\.tfm
-=============
+arim.im.tfm
+===========
 
 .. automodule:: arim.im.tfm
 

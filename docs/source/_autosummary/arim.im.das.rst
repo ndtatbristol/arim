@@ -1,5 +1,5 @@
-arim\.im\.das
-=============
+arim.im.das
+===========
 
 .. automodule:: arim.im.das
 

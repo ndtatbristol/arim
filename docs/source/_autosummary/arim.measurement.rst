@@ -1,5 +1,5 @@
-arim\.measurement
-=================
+arim.measurement
+================
 
 .. automodule:: arim.measurement
 

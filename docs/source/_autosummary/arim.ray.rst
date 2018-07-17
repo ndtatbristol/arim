@@ -1,5 +1,5 @@
-arim\.ray
-=========
+arim.ray
+========
 
 .. automodule:: arim.ray
 

@@ -1,5 +1,5 @@
-arim\.settings
-==============
+arim.settings
+=============
 
 .. automodule:: arim.settings
 

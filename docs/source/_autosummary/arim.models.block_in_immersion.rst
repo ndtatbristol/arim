@@ -1,5 +1,5 @@
-arim\.models\.block\_in\_immersion
-==================================
+arim.models.block\_in\_immersion
+================================
 
 .. automodule:: arim.models.block_in_immersion
 
@@ -9,6 +9,7 @@ arim\.models\.block\_in\_immersion
 
    .. autosummary::
    
+      backwall_paths
       frontwall_path
       make_interfaces
       make_paths

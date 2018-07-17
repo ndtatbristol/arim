@@ -1,5 +1,5 @@
-arim\.io\.brain
-===============
+arim.io.brain
+=============
 
 .. automodule:: arim.io.brain
 

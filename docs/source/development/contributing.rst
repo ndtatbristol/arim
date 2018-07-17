@@ -11,9 +11,9 @@ How to contribute
 Code style
 ==========
 
-As a general rule, the code style described in `PEP 8 <pep8>`_  must be followed.
+The code must be formatted with Black_ formatter.
 
-.. _pep8: https://www.python.org/dev/peps/pep-0008/
+.. _Black: https://github.com/ambv/black
 
 Version control system
 ======================

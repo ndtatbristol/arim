@@ -1,5 +1,5 @@
-arim\.core
-==========
+arim.core
+=========
 
 .. automodule:: arim.core
 

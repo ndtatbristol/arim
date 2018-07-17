@@ -1,5 +1,5 @@
-arim\.models
-============
+arim.models
+===========
 
 .. automodule:: arim.models
 

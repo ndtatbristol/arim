@@ -1,5 +1,5 @@
-arim\.ut
-========
+arim.ut
+=======
 
 .. automodule:: arim.ut
 

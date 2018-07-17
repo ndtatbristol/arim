@@ -1,5 +1,5 @@
-arim\.cli
-=========
+arim.cli
+========
 
 .. automodule:: arim.cli
 

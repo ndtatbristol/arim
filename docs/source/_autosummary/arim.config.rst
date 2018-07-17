@@ -1,5 +1,5 @@
-arim\.config
-============
+arim.config
+===========
 
 .. automodule:: arim.config
 

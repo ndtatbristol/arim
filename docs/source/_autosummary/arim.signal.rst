@@ -1,5 +1,5 @@
-arim\.signal
-============
+arim.signal
+===========
 
 .. automodule:: arim.signal
 
