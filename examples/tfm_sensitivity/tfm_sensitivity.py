@@ -1,210 +1,187 @@
-#!/usr/bin/env python3
-# encoding: utf-8
 """
 TFM sensitivity in immersion inspection using a single-frequency LTI model.
 
 The sensitivity on a point is defined as the TFM intensity that a defect centered
 on this point would have.
 
-Input: configuration files (conf.yaml, dryrun.yaml, debug.yaml).
-Output: figures.
+Input
+-----
+conf.yaml, conf.d/*.yaml
+    Configuration files
 
-To see usage: call this script with '--help'
-(in Spyder: Run > Configure > Command line options)
-        
+Output
+------
+sensitivity_images.pickle
+    Sensitivity images in binary format
+    
+sensitivity.png
+    Sensitivity images in image format
+
 """
-import logging
-import yaml
-from collections import OrderedDict
-import argparse
 
-import matplotlib as mpl
-import matplotlib.pyplot as plt
+import logging
+import pickle
+import time
+
 import numpy as np
+import matplotlib.pyplot as plt
 
 import arim
-import arim.model, arim.ray, arim.scat
-import arim.plot as aplt
+import arim.io
+import arim.ray
+import arim.im
 import arim.models.block_in_immersion as bim
-
-# warnings.simplefilter("once", DeprecationWarning)
-
-# %% Load configuration
+import arim.scat
+import arim.plot as aplt
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
-logger.info("Start script")
-logging.getLogger("arim").setLevel(logging.INFO)
-
-parser = argparse.ArgumentParser(description=__doc__)
-parser.add_argument("-d", "--debug", action="store_true", help="use debug conf file")
-parser.add_argument("-n", "--dryrun", action="store_true", help="use dry-run conf file")
-parser.add_argument(
-    "-s", "--save", action="store_true", default=False, help="save results"
-)
-args = parser.parse_args()
 
 
-def load_configuration(debug=False, dryrun=False, **kwargs):
-    with open("conf.yaml", "rb") as f:
-        conf = arim.config.Config(yaml.load(f))
+def compute_sensitivity(dataset_name, save):
+    conf = arim.io.load_conf(dataset_name)
+    result_dir = conf["result_dir"]
 
-    if dryrun:
-        try:
-            with open("dryrun.yaml", "rb") as f:
-                conf.merge(yaml.load(f))
-        except FileNotFoundError:
-            logger.warning("Dry-run configuration not found")
-    if debug:
-        try:
-            with open("debug.yaml", "rb") as f:
-                conf.merge(yaml.load(f))
-        except FileNotFoundError:
-            logger.warning("Debug configuration not found")
-    try:
-        module_conf = conf["arim.plot"]
-    except KeyError:
-        pass
-    else:
-        aplt.conf.merge(module_conf)
+    probe = arim.io.probe_from_conf(conf)
+    examination_object = arim.io.block_in_immersion_from_conf(conf)
+    tx, rx = arim.ut.fmc(probe.numelements)
+    numscanlines = len(tx)
 
-    return conf
-
-
-conf = load_configuration(**vars(args))
-# print(yaml.dump(dict(conf), default_flow_style=False))
-
-aplt.conf["savefig"] = args.save
-
-mpl.rcParams["savefig.dpi"] = 300
-
-# %% Load probe
-
-probe = arim.Probe.make_matrix_probe(**conf["probe"])
-
-# Set probe reference point to first element
-# put the first element in O(0,0,0), then it will be in (0,0,z) later.
-probe.set_reference_element("first")
-probe.translate_to_point_O()
-probe.rotate(arim.geometry.rotation_matrix_y(np.deg2rad(conf["probe.angle"])))
-probe.translate_to_point_O()
-probe.translate([0, 0, conf["probe.standoff"]])
-
-# %% Set-up examination object and geometry
-
-couplant = arim.Material(**conf["material.couplant"])
-block = arim.Material(**conf["material.block"])
-frontwall = arim.geometry.points_1d_wall_z(
-    **conf["interfaces.frontwall"], name="Frontwall"
-)
-backwall = arim.geometry.points_1d_wall_z(
-    **conf["interfaces.backwall"], name="Backwall"
-)
-exam_obj = arim.BlockInImmersion(block, couplant, frontwall, backwall)
-
-probe_p = probe.to_oriented_points()
-grid = arim.geometry.Grid(**conf["interfaces.grid"], ymin=0., ymax=0.)
-grid_p = grid.to_oriented_points()
-
-all_interfaces = [probe_p, frontwall, backwall, grid_p]
-
-if conf["plot.interfaces"]:
-    aplt.plot_interfaces(all_interfaces, show_orientations=True, show_last=False)
-
-# %% Make views
-
-views = bim.make_views(exam_obj, probe_p, grid_p, **conf["views"])
-if conf["views_to_use"] != "all":
-    views = OrderedDict(
-        [
-            (viewname, view)
-            for viewname, view in views.items()
-            if viewname in conf["views_to_use"]
-        ]
+    model_options = dict(
+        frequency=probe.frequency, probe_element_width=probe.dimensions.x[0]
     )
 
-# %% Perform ray tracing
-
-with arim.helpers.timeit("Ray tracing"):
-    arim.ray.ray_tracing(views.values())
-
-# %% Compute scattering matrices
-
-scat_params = conf["scatterer"].copy()
-scat_angle = np.deg2rad(scat_params.pop("scat_angle_deg"))
-with arim.helpers.timeit("Computation of scattering matrices"):
-    scat_obj = arim.scat.scat_factory(material=block, **scat_params)
-    try:
-        numangles = scat_obj.numangles  # if loaded from data, use all angles
-    except AttributeError:
-        numangles = conf["scattering.numangles"]
-    scat_matrices = scat_obj.as_single_freq_matrices(probe.frequency, numangles)
-
-# %% Compute ray weights
-
-tx, rx = arim.ut.fmc(probe.numelements)
-scanline_weights = arim.ut.default_scanline_weights(tx, rx)
-
-model_options = dict(
-    frequency=probe.frequency,
-    probe_element_width=probe.dimensions.x[0],
-    use_beamspread=conf["model.use_beamspread"],
-    use_directivity=conf["model.use_directivity"],
-    use_transrefl=conf["model.use_transrefl"],
-)
-
-with arim.helpers.timeit("Ray weights for all paths", logger=logger):
-    ray_weights = bim.ray_weights_for_views(views, **model_options)
-logger.info(
-    "Memory footprint of ray weights: {}".format(
-        arim.helpers.sizeof_fmt(ray_weights.nbytes)
+    tic = time.time()
+    grid = arim.io.grid_from_conf(conf)
+    grid_p = grid.to_oriented_points()
+    logger.info(f"grid numpoints: {grid.numpoints}")
+    probe_p = probe.to_oriented_points()
+    views = bim.make_views(
+        examination_object,
+        probe_p,
+        grid_p,
+        max_number_of_reflection=1,
+        tfm_unique_only=True,
     )
-)
 
-# %% Compute sensitivity
-sensitivity_dict = OrderedDict()
-for viewname, view in views.items():
-    with arim.helpers.timeit(f"Computation of sensitivity for view {viewname}"):
-        # These amplitudes are not actually computed here, otherwise we could run out
-        # of memory.
-        # model_amps[p][k] is the model amplitude of point p and scanline k.
-        model_amps = arim.model.model_amplitudes_factory(
-            tx, rx, view, ray_weights, scat_matrices, scat_angle
+    aplt.plot_interfaces(
+        [probe_p, examination_object.frontwall, examination_object.backwall, grid_p],
+        show_orientations=False,
+        show_last=True,
+        # markers=[".", "-", "-"],
+        filename=str(result_dir / "interfaces"),
+        savefig=save,
+    )
+
+    arim.ray.ray_tracing(views.values(), convert_to_fortran_order=True)
+
+    scat_obj = arim.scat.scat_factory(
+        **conf["scatterer"]["specs"], material=examination_object.block_material
+    )
+    scat_angle = np.deg2rad(conf["scatterer"]["angle_deg"])
+    with arim.helpers.timeit("Scattering matrices", logger=logger):
+        scat_mat = scat_obj.as_single_freq_matrices(
+            model_options["frequency"], 180
+        )  # use precomputation
+
+    with arim.helpers.timeit("Computation of ray weights for all paths", logger=logger):
+        ray_weights = bim.ray_weights_for_views(views, **model_options)
+
+    sensitivity_images_dict = dict()
+    scanline_weights = np.ones(numscanlines)
+
+    for viewname, view in views.items():
+        model_coefficients = arim.model.model_amplitudes_factory(
+            tx.astype(int),
+            rx.astype(int),
+            view,
+            ray_weights,
+            scat_mat,
+            scat_angle=scat_angle,
         )
 
-        # Step 4: compute sensitivitiy
-        sensitivity_dict[viewname] = np.abs(
-            model_amps.sensitivity_uniform_tfm(scanline_weights)
+        sensitivity_images_dict[viewname] = model_coefficients.sensitivity_uniform_tfm(
+            scanline_weights
         )
 
-ref_db = max(np.nanmax(np.abs(v)) for v in sensitivity_dict.values())
-
-# %% Plot sensitivity
-if conf["plot.sensitivity.all_in_one"]:
-    ref_db = max(np.nanmax(np.abs(v)) for v in sensitivity_dict.values())
-    aplt.plot_oxz_many(
-        sensitivity_dict.values(),
-        grid,
-        7,
-        4,
-        title_list=sensitivity_dict.keys(),
-        suptitle="Sensitivity of TFM for {} (dB)".format(scat_params["kind"]),
-        scale="db",
-        ref_db=ref_db,
-        filename="sensitivity",
-        clim=[-40, 0],
+    toc = time.time()
+    elapsed = toc - tic
+    logger.info(
+        f"Total time for sensitivity images: {elapsed:.2f} s ({grid.numpoints} points)"
     )
 
-# %% Plot sensitivity
-if conf["plot.sensitivity"]:
-    for i, (viewname, view) in enumerate(views.items()):
-        aplt.plot_oxz(
-            sensitivity_dict[viewname],
+    # %%
+    out = {"images": sensitivity_images_dict, "grid": grid}
+    with open(result_dir / "sensitivity_images.pickle", "wb") as f:
+        pickle.dump(out, f, pickle.HIGHEST_PROTOCOL)
+
+    return sensitivity_images_dict
+
+
+def plot_sensitivity(dataset_name, save):
+    conf = arim.io.load_conf(dataset_name)
+    result_dir = conf["result_dir"]
+    with open(result_dir / "sensitivity_images.pickle", "rb") as f:
+        loaded = pickle.load(f)
+
+    grid = loaded["grid"]
+
+    ncols = 3
+    nrows = 7
+    fig, axes = plt.subplots(
+        ncols=ncols, nrows=nrows, figsize=(7.4, 8), sharex=False, sharey=False
+    )
+
+    xmin = grid.xmin
+    xmax = grid.xmax
+    zmin = conf["frontwall"]["z"]
+    zmax = conf["backwall"]["z"]
+
+    ref_db = max(np.nanmax(np.abs(data)) for data in loaded["images"].values())
+
+    for (viewname, data), ax in zip(loaded["images"].items(), axes.ravel()):
+        clim = [-40, 0.]
+        ax, im = aplt.plot_oxz(
+            data,
             grid,
-            title="Sensitivity of view {} (dB)".format(viewname),
+            ax=ax,
             scale="db",
             ref_db=ref_db,
-            filename=f"{i:02}_sensitivity_{viewname}",
-            clim=[-40, 0],
+            clim=clim,
+            interpolation="none",
+            savefig=False,
+            draw_cbar=False,
         )
+        ax.set_title(viewname, y=.9, size="small")
+        ax.set_adjustable("box")
+        ax.axis([xmin, xmax, zmax, zmin])
+
+        if ax in axes[-1, :]:
+            ax.set_xlabel("x (mm)")
+            ax.set_xticks([xmin, xmax, np.round((xmin + xmax) / 2, decimals=3)])
+        else:
+            ax.set_xlabel("")
+            ax.set_xticks([])
+        if ax in axes[:, 0]:
+            ax.set_ylabel("z (mm)")
+            ax.set_yticks([zmax, zmin, np.round((zmin + zmax) / 2, decimals=3)])
+        else:
+            ax.set_ylabel("")
+            ax.set_yticks([])
+
+    cbar = fig.colorbar(
+        im, ax=axes.ravel().tolist(), location="top", fraction=0.05, aspect=40, pad=0.03
+    )
+    cbar.ax.set_ylabel("dB")
+
+    if save:
+        fig.savefig(str(result_dir / "sensitivity"))
+
+
+if __name__ == "__main__":
+    dataset_name = "."  # current directory
+    save = False
+    compute_sensitivity(dataset_name, save)
+    plot_sensitivity(dataset_name, save)
+

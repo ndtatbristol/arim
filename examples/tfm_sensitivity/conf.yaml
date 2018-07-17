@@ -1,30 +1,11 @@
-# Configuration file.
+probe_key: ima_50_MHz_128_1d
 
-# ---------------------------
-# Yaml reference: https://learnxinyminutes.com/docs/yaml/
-#
-# Warning: for scientific notations, the point "." is mandatory:
-#   3.e-3           # this is a float
-#   3e-3            # this is a string
-#   !!float 3e-3    # this is a float
+probe_location:
+  ref_element: first
+  standoff: -10.e-3 # m
+  angle_deg: 10. # degrees
 
-probe:
-  frequency: 5.e6
-  numx: 128
-  pitch_x: 0.3e-3
-  numy: 1
-  pitch_y: .nan
-  dimensions: [0.2e-3, 15.e-3, .nan]
-  metadata:
-    short_name: ima_50_MHz_128_1d
-    long_name: Imasonic 5.0 MHz 128 elts linear array probe
-    probe_type: linear
-    serial: 7186 A101
-
-probe.standoff: -10.e-3
-probe.angle: 10. # degrees
-
-material.couplant:
+couplant_material:
   metadata:
     long_name: Water
     source: Krautkrämer 1990
@@ -32,7 +13,7 @@ material.couplant:
   density: 1000.
   state_of_matter: liquid
 
-material.block:
+block_material:
   metadata:
     long_name: Aluminium
     source: Krautkrämer 1990
@@ -41,70 +22,44 @@ material.block:
   density: 2700.
   state_of_matter: solid
 
-interfaces.frontwall:
+frontwall:
   numpoints: 1000
   xmin: -1.e-3
   xmax: 80.e-3
   z: 0.
 
-interfaces.backwall:
+backwall:
   numpoints: 1000
   xmin: -1.e-3
   xmax: 80.e-3
   z: 40.18e-3
 
-interfaces.grid:
-  xmin: -5.e-3
+grid:
+  xmin: 0.e-3
   xmax: 100.e-3
   zmin: 1.e-5     # avoid overlapping frontwall
   zmax: 40.17e-3  # avoid overlapping backwall
-  pixel_size: 1.e-3
-
-# scatterer:
-#   kind: 'file'
-#   filename: 'some_data.mat'
-#   scat_angle_deg: 0.
+  pixel_size: .5e-3
 
 scatterer:
-  kind: 'crack_centre'
-  crack_length: 1.e-3
-  scat_angle_deg: 0.
+  specs:
+    kind: 'sdh'
+    radius: 500.e-6
+  angle_deg: 90.
 
 # scatterer:
-#   kind: 'sdh'
-#   radius: 500.e-6
-#   scat_angle_deg: 0.
+#   specs:
+#     kind: crack_centre
+#     crack_length: 3.e-3
+#   angle_deg: 90.
 
-# point:  # debug only, unphysical
-#   kind: 'point'
-#   scat_angle_deg: 0.
+# scatterer:
+#   specs:
+#     kind: file
+#     filename: 'scat_data.mat'
+#   angle_deg: 90.
 
-scattering.numangles: 180
-
-point_of_interest:
-  x: 50.e-3
-  z: 20.e-3
-
-model.use_directivity: true
-model.use_transrefl: true
-model.use_beamspread: true
-model.use_scattering: true
-
-# either a list (example: [L-L, L-T]) or 'all'
-views:
-  max_number_of_reflection: 1
-  tfm_unique_only: true
-views_to_use: 'all'
-# views_to_use: [L-L, L-T, T-T, LL-L, LL-T, LT-L, LT-T, TL-L, TL-T, TT-L, TT-T,
-#   LL-LL, LL-LT, LL-TL, LL-TT, LT-LT, LT-TL, LT-TT, TL-LT, TL-TT, TT-TT, LLL-L, LLL-T]
-
-
-# Figures to show
-plot.interfaces: true
-plot.sensitivity.all_in_one: true
-plot.sensitivity: false
-
-arim.plot:
-  plot_oxz.figsize: [12, 3]
-  plot_oxz_many.figsize: [20, 10]
-
+# scatterer:
+#   specs:
+#     kind: point # debug only, unphysical
+#   angle_deg: 90.
