@@ -1,3 +1,7 @@
+"""
+Utilities for loading an arim configuration formatted in YAML.
+"""
+
 import pathlib
 import copy
 import yaml
@@ -9,6 +13,7 @@ from .. import core, _probes, geometry, config
 __all__ = [
     "load_conf",
     "load_conf_file",
+    "load_conf_from_str",
     "probe_from_conf",
     "examination_object_from_conf",
     "block_in_immersion_from_conf",
@@ -20,35 +25,34 @@ class InvalidConf(Exception):
     pass
 
 
-class _ConfigLoader(yaml.Loader):
+def load_conf_from_str(stream):
+    """Load a single configuration file from a stream or string formatted in YAML.
+    
+    Parameters
+    ----------
+    stream : stream, str
+    
+    Returns
+    -------
+    arim.config.Config
     """
-    Yaml loader with "!include ext_file.yaml" directive
-
-    Adapted from https://stackoverflow.com/a/9577670/2996578
-    """
-
-    def __init__(self, stream):
-        if isinstance(stream, str):
-            self._root = "."
-        else:
-            self._root = os.path.split(stream.name)[0]
-
-        super(_ConfigLoader, self).__init__(stream)
-
-    def include(self, node):
-        filename = os.path.join(self._root, self.construct_scalar(node))
-
-        with open(filename, "r") as f:
-            return yaml.load(f, _ConfigLoader)
-
-
-_ConfigLoader.add_constructor("!include", _ConfigLoader.include)
+    return config.Config(yaml.load(stream))
 
 
 def load_conf_file(filename):
-    """Load a single configuration file"""
+    """Load a single configuration file
+    
+    Parameters
+    ----------
+    filename : str
+        Filename
+    
+    Returns
+    -------
+    arim.config.Config
+    """
     with open(filename, "r") as f:
-        return config.Config(yaml.load(f, _ConfigLoader))
+        return load_conf_from_str(f)
 
 
 def load_conf(dirname, filepath_keys={"filename", "datafile"}):
