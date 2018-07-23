@@ -975,8 +975,8 @@ def reverse_beamspread_2d_for_path(ray_geometry):
     Returns
     -------
     rev_beamspread : ndarray
-        Shape: (ray_geometry.interfaces[0].numpoints,
-        ray_geometry.interfaces[-1].numpoints)
+        Shape: (numelements, numgridpoints)
+
 
     """
     velocities = ray_geometry.rays.fermat_path.velocities
@@ -1016,6 +1016,42 @@ def reverse_beamspread_2d_for_path(ray_geometry):
         virtual_distance += r / gamma
 
     return np.reciprocal(np.sqrt(virtual_distance))
+
+
+def material_attenuation_for_path(path, ray_geometry, frequency):
+    """
+    Return material attenuation for each ray (between 0 and 1)
+
+    .. math::
+
+        M(\omega) = \exp(- \sum_i a_i(\omega) d_i)
+
+    If no attenuation is provided, ignore silently.
+
+    Reference: Schmerr chapter 9
+
+    Parameters
+    ----------
+    path : Path
+    ray_geometry : arim.ray.RayGeometry
+
+    Returns
+    -------
+    attenuation : ndarray
+        Shape: (numelements, numgridpoints)
+    """
+    log_att = np.zeros(
+        ((path.interfaces[0].points.numpoints, path.interfaces[-1].points.numpoints))
+    )
+
+    for k, (material, mode) in enumerate(zip(path.materials, path.modes), start=1):
+        att_obj = material.attenuation(mode)
+        if att_obj is None:
+            continue
+        else:
+            att_coeff = att_obj(frequency)
+            log_att -= att_coeff * ray_geometry.inc_leg_size(k)
+    return np.exp(log_att)
 
 
 def _nested_dict_to_flat_list(dictlike):

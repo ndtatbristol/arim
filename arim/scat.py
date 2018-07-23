@@ -818,7 +818,7 @@ def scat_factory(kind, material, *args, **kwargs):
 
     Examples
     --------
-    >>> material = arim.Material(6300., 3120., 2700., 'solid', {'long_name': 'Aluminium'})
+    >>> material = arim.Material(6300., 3120., 2700., 'solid', metadata={'long_name': 'Aluminium'})
 
     Creating the scattering object:
 
@@ -873,7 +873,7 @@ class Scattering2d(abc.ABC):
 
     Examples
     --------
-    >>> material = arim.Material(6300., 3120., 2700., 'solid', {'long_name': 'Aluminium'})
+    >>> material = arim.Material(6300., 3120., 2700., 'solid', metadata={'long_name': 'Aluminium'})
     >>> scat_obj = scat_factory('sdh', material, radius=0.5e-3)
 
     A :class:`Scattering2d` can be used a function of the incident angles, the scattered

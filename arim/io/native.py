@@ -17,6 +17,8 @@ __all__ = [
     "probe_from_conf",
     "examination_object_from_conf",
     "block_in_immersion_from_conf",
+    "material_from_conf",
+    "material_attenuation_from_conf",
     "grid_from_conf",
 ]
 
@@ -207,6 +209,54 @@ def examination_object_from_conf(conf):
         raise NotImplementedError
 
 
+def material_attenuation_from_conf(conf):
+    """
+    Parameters
+    ----------
+    conf : dict
+
+    Returns
+    -------
+    arim.core.MaterialAttenuation
+    """
+    if isinstance(conf, float):
+        return core.ConstantMaterialAttenuation(attenuation=conf)
+    else:
+        # at this stage, conf should be a dict
+        kind = conf["kind"]
+        if kind == "constant":
+            return core.ConstantMaterialAttenuation(attenuation=conf["value"])
+        else:
+            raise InvalidConf
+
+
+def _material_from_conf(conf_or_none):
+    if conf_or_none is None:
+        return None
+    else:
+        return material_attenuation_from_conf(conf_or_none)
+
+
+def material_from_conf(conf):
+    """
+    Parameters
+    ----------
+    conf : dict
+
+    Returns
+    -------
+    arim.core.Material
+    """
+    material_kwargs = copy.deepcopy(conf)
+    material_kwargs["longitudinal_att"] = _material_from_conf(
+        material_kwargs.get("longitudinal_att")
+    )
+    material_kwargs["transverse_att"] = _material_from_conf(
+        material_kwargs.get("transverse_att")
+    )
+    return core.Material(**material_kwargs)
+
+
 def block_in_immersion_from_conf(conf):
     """
     load block in immersion from conf
@@ -220,8 +270,8 @@ def block_in_immersion_from_conf(conf):
     arim.BlockInImmersion
 
     """
-    couplant = core.Material(**conf["couplant_material"])
-    block = core.Material(**conf["block_material"])
+    couplant = material_from_conf(conf["couplant_material"])
+    block = material_from_conf(conf["block_material"])
     frontwall = geometry.points_1d_wall_z(**conf["frontwall"], name="Frontwall")
     backwall = geometry.points_1d_wall_z(**conf["backwall"], name="Backwall")
     return core.BlockInImmersion(block, couplant, frontwall, backwall)

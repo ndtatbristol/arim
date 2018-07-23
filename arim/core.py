@@ -2,6 +2,7 @@
 Defines core objects of arim.
 """
 from collections import namedtuple
+import abc
 import enum
 import numpy as np
 
@@ -12,6 +13,60 @@ StateMatter = enum.Enum("StateMatter", "liquid solid")
 StateMatter.__doc__ = "Enumerated constants for the states of matter."
 TransmissionReflection = enum.Enum("TransmissionReflection", "transmission reflection")
 TransmissionReflection.__doc__ = "Enumerated constants: transmission or reflection."
+
+
+class MaterialAttenuation(abc.ABC):
+    """
+    Material attenuation coefficient
+
+    When called, this object returns a frequency-dependent attenuation coefficient
+    in Nepers per meter (Np/m).
+
+    Example
+    -------
+    >>> material_attenuation(frequency)
+    # return a float.
+
+    """
+
+    @abc.abstractmethod
+    def __call__(self, frequency):
+        """
+        Parameters
+        ----------
+        frequency : float
+
+        Returns
+        -------
+        attenuation : float
+        """
+
+
+class ConstantMaterialAttenuation(MaterialAttenuation):
+    """
+    Frequency-independent material attenuation coefficient.    
+
+    Parameters
+    ----------
+    attenuation : float
+        In Np/m
+
+    Returns
+    -------
+    attenuation : float
+        In Np/m
+
+    See Also
+    --------
+    :class:`MaterialAttenuation`
+
+    """
+
+    def __init__(self, attenuation):
+        self.attenuation = attenuation
+
+    def __call__(self, frequency):
+        return self.attenuation
 
 
 class CaptureMethod(enum.Enum):
@@ -963,10 +1018,11 @@ class Path:
 
 class Material(
     namedtuple(
-        "Material", "longitudinal_vel transverse_vel density state_of_matter metadata"
+        "Material",
+        "longitudinal_vel transverse_vel density state_of_matter longitudinal_att transverse_att metadata",
     )
 ):
-    """Material(longitudinal_vel, transverse_vel=None, density=None, state_of_matter=None, metadata=None)
+    """Material(longitudinal_vel, transverse_vel=None, density=None, state_of_matter=None, longitudinal_att=None, transverse_att=None, metadata=None)
 
     Attributes
     ----------
@@ -974,12 +1030,14 @@ class Material(
     transverse_vel : float or None
     density : float or None
     state_of_matter : StateMatter or None
+    longitudinal_att : MaterialAttenuation or None
+    transverse_att : MaterialAttenuation or None
     metadata : dict or None
 
     Examples
     --------
-        >>> alu = Material(6300., 3120., 2700., 'solid', {'long_name': 'Aluminium'})
-        >>> water = Material(1480., None, 1000., 'liquid', {'long_name': 'Water'})
+        >>> alu = Material(6300., 3120., 2700., 'solid', metadata={'long_name': 'Aluminium'})
+        >>> water = Material(1480., None, 1000., 'liquid', metadata={'long_name': 'Water'})
     """
 
     def __new__(
@@ -988,6 +1046,8 @@ class Material(
         transverse_vel=None,
         density=None,
         state_of_matter=None,
+        longitudinal_att=None,
+        transverse_att=None,
         metadata=None,
     ):
         longitudinal_vel = longitudinal_vel * 1.
@@ -1005,7 +1065,14 @@ class Material(
             metadata = {}
 
         return super().__new__(
-            cls, longitudinal_vel, transverse_vel, density, state_of_matter, metadata
+            cls,
+            longitudinal_vel,
+            transverse_vel,
+            density,
+            state_of_matter,
+            longitudinal_att,
+            transverse_att,
+            metadata,
         )
 
     def __str__(self):
@@ -1043,6 +1110,31 @@ class Material(
             return self.longitudinal_vel
         elif mode is Mode.transverse:
             return self.transverse_vel
+        else:
+            raise ValueError("Don'ray know what to do with mode '{}'".format(mode))
+
+    def attenuation(self, mode):
+        """
+        Returns the material attenuation function for the mode 'mode'.
+
+        Parameters
+        ----------
+        mode : Mode or str
+
+        Returns
+        -------
+        attenuation: MaterialAttenuation or None
+
+        Examples
+        --------
+        >>> material.attenuation('L')
+
+        """
+        mode = helpers.parse_enum_constant(mode, Mode)
+        if mode is Mode.longitudinal:
+            return self.longitudinal_att
+        elif mode is Mode.transverse:
+            return self.transverse_att
         else:
             raise ValueError("Don'ray know what to do with mode '{}'".format(mode))
 

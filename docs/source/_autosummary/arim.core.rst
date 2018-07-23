@@ -15,12 +15,14 @@ arim.core
    
       BlockInImmersion
       CaptureMethod
+      ConstantMaterialAttenuation
       ElementShape
       ExaminationObject
       Frame
       Interface
       InterfaceKind
       Material
+      MaterialAttenuation
       Mode
       Path
       Probe

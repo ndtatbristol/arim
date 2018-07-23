@@ -25,12 +25,22 @@ probe_location:
   angle_deg: 12.5 # degrees
 """
 
+ATT_1 = "longitudinal_att: 777."
+
+ATT_2 = """
+longitudinal_att:
+    kind: constant
+    value: 777.
+"""
+
+
 BLOCK_IN_IMMERSION = """
 couplant_material:
   metadata:
     long_name: Water
   longitudinal_vel: 1480.
   density: 1000.
+  longitudinal_att: 0.1
   state_of_matter: liquid
 
 block_material:
@@ -69,3 +79,10 @@ def test_block_in_immersion_from_conf():
     examination_object = arim.io.block_in_immersion_from_conf(conf)
     assert isinstance(examination_object, arim.BlockInImmersion)
 
+
+def test_material_attenuation_from_conf():
+    for conf_str in (ATT_1, ATT_2):
+        conf = arim.io.load_conf_from_str(conf_str)
+        att = arim.io.material_attenuation_from_conf(conf["longitudinal_att"])
+        assert isinstance(att, arim.MaterialAttenuation)
+        assert att(10) == 777.

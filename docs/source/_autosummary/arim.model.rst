@@ -14,6 +14,7 @@ arim.model
       directivity_2d_rectangular_in_fluid_for_path
       fluid_solid
       make_toneburst
+      material_attenuation_for_path
       model_amplitudes_factory
       reflection_at_interface
       reverse_beamspread_2d_for_path

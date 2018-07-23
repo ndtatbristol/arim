@@ -230,7 +230,7 @@ def make_scat_data_single_freq():
 
 
 def test_scat_factory():
-    material = arim.Material(6300., 3120., 2700., 'solid', {'long_name': 'Aluminium'})
+    material = arim.Material(6300., 3120., 2700., 'solid', metadata={'long_name': 'Aluminium'})
 
     fname = tests.helpers.get_data_filename("scat/scat_matlab.mat")
     scat_obj = scat.scat_factory('file', material, fname)

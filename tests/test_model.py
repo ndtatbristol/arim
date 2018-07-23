@@ -15,7 +15,7 @@ from numpy import array
 from arim import model
 
 
-def make_context():
+def make_context(couplant_att=None, block_l_att=None, block_t_att=None):
     """
     2D case, immersion
 
@@ -31,10 +31,20 @@ def make_context():
         x=50, z=20
 
     """
-    couplant = arim.Material(longitudinal_vel=1480., density=1000.,
-                             state_of_matter='liquid')
-    block = arim.Material(longitudinal_vel=6320., transverse_vel=3130., density=2700.,
-                          state_of_matter='solid')
+    couplant = arim.Material(
+        longitudinal_vel=1480.,
+        density=1000.,
+        state_of_matter="liquid",
+        longitudinal_att=couplant_att,
+    )
+    block = arim.Material(
+        longitudinal_vel=6320.,
+        transverse_vel=3130.,
+        density=2700.,
+        state_of_matter="solid",
+        longitudinal_att=block_l_att,
+        transverse_att=block_t_att,
+    )
 
     probe_points = arim.Points([[0., 0., -10e-3]], 'Probe')
     probe_orientations = arim.geometry.default_orientations(probe_points)
@@ -762,6 +772,60 @@ def test_transmission_reflection_reverse_stokes():
 
     np.testing.assert_allclose(transrefl_stokes, magic_coefficient * transrefl_rev,
                                err_msg=pathname)
+
+def test_material_attenuation():
+    # no att
+    context = make_context()
+    paths = context["paths"]
+    """:type : dict[str, arim.Path]"""
+    rev_paths = context["rev_paths"]
+    """:type : dict[str, arim.Path]"""
+    ray_geometry_dict = context["ray_geometry_dict"]
+    """:type : dict[str, arim.path.RayGeometry]"""
+    rev_ray_geometry_dict = context["rev_ray_geometry_dict"]
+    """:type : dict[str, arim.path.RayGeometry]"""
+    frequency = context["freq"]
+
+    for path, ray_geometry, rev_path, rev_ray_geometry in zip(
+        paths.values(),
+        ray_geometry_dict.values(),
+        rev_paths.values(),
+        rev_ray_geometry_dict.values(),
+    ):
+        att = model.material_attenuation_for_path(path, ray_geometry, frequency)
+        rev_att = model.material_attenuation_for_path(
+            rev_path, rev_ray_geometry, frequency
+        )
+
+        np.testing.assert_allclose(att, 1.)
+        np.testing.assert_allclose(rev_att, 1.)
+
+    # add attenuation
+    context = make_context(couplant_att=arim.ConstantMaterialAttenuation(7.))
+    paths = context["paths"]
+    """:type : dict[str, arim.Path]"""
+    rev_paths = context["rev_paths"]
+    """:type : dict[str, arim.Path]"""
+    ray_geometry_dict = context["ray_geometry_dict"]
+    """:type : dict[str, arim.path.RayGeometry]"""
+    rev_ray_geometry_dict = context["rev_ray_geometry_dict"]
+    """:type : dict[str, arim.path.RayGeometry]"""
+    frequency = context["freq"]
+
+    for path, ray_geometry, rev_path, rev_ray_geometry in zip(
+        paths.values(),
+        ray_geometry_dict.values(),
+        rev_paths.values(),
+        rev_ray_geometry_dict.values(),
+    ):
+        att = model.material_attenuation_for_path(path, ray_geometry, frequency)
+        rev_att = model.material_attenuation_for_path(
+            rev_path, rev_ray_geometry, frequency
+        )
+
+        np.testing.assert_allclose(att, rev_att.T)
+        np.testing.assert_array_equal(att > 0., True)
+        np.testing.assert_array_equal(att < 1., True)
 
 
 def bak_test_sensitivity():

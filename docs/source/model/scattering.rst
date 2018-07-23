@@ -22,7 +22,7 @@ Scattering object
 
 The easiest way to use scattering is to call :func:`scat_factory`. Examples::
 
-    material = arim.Material(6300., 3120., 2700., 'solid', {'long_name': 'Aluminium'})
+    material = arim.Material(6300., 3120., 2700., 'solid', metadata={'long_name': 'Aluminium'})
     scat_obj = scat_factory('file', material, 'scattering_data.mat')
     
     scat_obj = scat_factory('crack_centre', material, crack_length=2.0e-3)

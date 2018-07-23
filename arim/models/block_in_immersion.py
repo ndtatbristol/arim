@@ -96,6 +96,7 @@ def tx_ray_weights(
     use_directivity=True,
     use_beamspread=True,
     use_transrefl=True,
+    use_attenuation=True,
 ):
     """
     Coefficients Q_i(r, omega) in forward model.
@@ -113,13 +114,15 @@ def tx_ray_weights(
         Default True
     use_transrefl : bool
         Default: True
+    use_attenuation : bool
+        Default: True
 
     Returns
     -------
     weights : ndarray
         Shape (numelements, numgridpoints)
     weights_dict : dict[str, ndarray]
-        Components of the ray weights: beamspread, directivity, transmission-reflection
+        Components of the ray weights: beamspread, directivity, transmission-reflection, attenuation
     """
     d = _init_ray_weights(path, frequency, probe_element_width, use_directivity)
 
@@ -144,11 +147,18 @@ def tx_ray_weights(
         weights_dict["beamspread"] = model.beamspread_2d_for_path(ray_geometry)
     else:
         weights_dict["beamspread"] = one
+    if use_attenuation:
+        weights_dict["attenuation"] = model.material_attenuation_for_path(
+            path, ray_geometry, frequency
+        )
+    else:
+        weights_dict["attenuation"] = one
 
     weights = (
         weights_dict["directivity"]
         * weights_dict["transrefl"]
         * weights_dict["beamspread"]
+        * weights_dict["attenuation"]
     )
     return weights, weights_dict
 
@@ -161,6 +171,7 @@ def rx_ray_weights(
     use_directivity=True,
     use_beamspread=True,
     use_transrefl=True,
+    use_attenuation=True,
 ):
     """
     Coefficients Q'_i(r, omega) in forward model.
@@ -178,13 +189,15 @@ def rx_ray_weights(
         Default True
     use_transrefl : bool
         Default: True
+    use_attenuation : bool
+        Default: True
 
     Returns
     -------
     weights : ndarray
         Shape (numelements, numgridpoints)
     weights_dict : dict[str, ndarray]
-        Components of the ray weights: beamspread, directivity, transmission-reflection
+        Components of the ray weights: beamspread, directivity, transmission-reflection, attenuation
     """
     d = _init_ray_weights(path, frequency, probe_element_width, use_directivity)
 
@@ -209,6 +222,12 @@ def rx_ray_weights(
         weights_dict["beamspread"] = model.reverse_beamspread_2d_for_path(ray_geometry)
     else:
         weights_dict["beamspread"] = one
+    if use_attenuation:
+        weights_dict["attenuation"] = model.material_attenuation_for_path(
+            path, ray_geometry, frequency
+        )
+    else:
+        weights_dict["attenuation"] = one
 
     # the coefficient accounts for the normalisation convention of the scattering in Bristol's literature
     scat_normalisation = np.sqrt(d.wavelengths_in_block[path.modes[-1]])
@@ -217,6 +236,7 @@ def rx_ray_weights(
         weights_dict["directivity"]
         * weights_dict["transrefl"]
         * weights_dict["beamspread"]
+        * weights_dict["attenuation"]
     )
     weights *= scat_normalisation
     return weights, weights_dict
@@ -229,6 +249,7 @@ def ray_weights_for_views(
     use_directivity=True,
     use_beamspread=True,
     use_transrefl=True,
+    use_attenuation=True,
     save_debug=False,
 ):
     """
@@ -240,13 +261,14 @@ def ray_weights_for_views(
 
     Parameters
     ----------
-    views
-    frequency
-    probe_element_width
-    use_directivity
-    use_beamspread
-    use_transrefl
-    save_debug
+    views : dict[Views]
+    frequency : float
+    probe_element_width : float
+    use_directivity : bool
+    use_beamspread : bool
+    use_transrefl : bool
+    use_attenuation : bool
+    save_debug : bool
 
     Returns
     -------
@@ -272,6 +294,7 @@ def ray_weights_for_views(
         use_beamspread=use_beamspread,
         use_directivity=use_directivity,
         use_transrefl=use_transrefl,
+        use_attenuation=use_attenuation,
     )
 
     # By proceeding this way, geometrical computations can be reused for both
@@ -444,6 +467,7 @@ def ray_weights_for_wall(
     use_directivity=True,
     use_beamspread=True,
     use_transrefl=True,
+    use_attenuation=True,
 ):
     """
     Parameters
@@ -454,13 +478,14 @@ def ray_weights_for_wall(
     use_directivity
     use_beamspread
     use_transrefl
+    use_attenuation
 
     Returns
     -------
     weights : ndarray
         Shape (numelements, numelements)
     weights_dict : dict[str, ndarray]
-        Components of the ray weights: beamspread, directivity, transmission-reflection
+        Components of the ray weights: beamspread, directivity, transmission-reflection, attenuation
 
     """
     # perform ray tracing if needed
@@ -492,11 +517,18 @@ def ray_weights_for_wall(
         weights_dict["beamspread"] = model.beamspread_2d_for_path(ray_geometry)
     else:
         weights_dict["beamspread"] = one
+    if use_attenuation:
+        weights_dict["attenuation"] = model.material_attenuation_for_path(
+            path, ray_geometry, frequency
+        )
+    else:
+        weights_dict["attenuation"] = one
 
     weights = (
         weights_dict["directivity"]
         * weights_dict["transrefl"]
         * weights_dict["beamspread"]
+        * weights_dict["attenuation"]
     )
     return weights, weights_dict
 

@@ -19,7 +19,8 @@ def test_ray_weights():
                          probe_element_width=context['element_width'],
                          use_beamspread=True,
                          use_directivity=True,
-                         use_transrefl=True)
+                         use_transrefl=True,
+                         use_attenuation=True)
 
     for pathname, path in paths.items():
         # Direct
@@ -30,6 +31,7 @@ def test_ray_weights():
         assert 'beamspread' in weights_dict
         assert 'directivity' in weights_dict
         assert 'transrefl' in weights_dict
+        assert 'attenuation' in weights_dict
         np.testing.assert_allclose(weights, weights2)
 
         # Reverse
@@ -40,6 +42,7 @@ def test_ray_weights():
         assert 'beamspread' in weights_dict
         assert 'directivity' in weights_dict
         assert 'transrefl' in weights_dict
+        assert 'attenuation' in weights_dict
         np.testing.assert_allclose(weights, weights2)
 
 
@@ -196,9 +199,13 @@ SCATTERERS_SPECS = [
 @pytest.mark.parametrize("scat_specs", SCATTERERS_SPECS)
 def test_model(scat_specs, show_plots):
     couplant = arim.Material(longitudinal_vel=1480., density=1000.,
-                             state_of_matter='liquid')
+                             state_of_matter='liquid',
+                             longitudinal_att=arim.ConstantMaterialAttenuation(1.),)
     block = arim.Material(longitudinal_vel=6320., transverse_vel=3130., density=2700.,
-                          state_of_matter='solid')
+                          state_of_matter='solid',
+                          longitudinal_att=arim.ConstantMaterialAttenuation(2.),
+                          transverse_att=arim.ConstantMaterialAttenuation(3.),
+)
 
     probe = arim.Probe.make_matrix_probe(5, 1e-3, 1, np.nan, 5e6)
     probe_element_width = 0.8e-3
