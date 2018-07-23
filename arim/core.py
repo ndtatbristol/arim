@@ -1016,13 +1016,9 @@ class Path:
         return rev_path
 
 
-class Material(
-    namedtuple(
-        "Material",
-        "longitudinal_vel transverse_vel density state_of_matter longitudinal_att transverse_att metadata",
-    )
-):
-    """Material(longitudinal_vel, transverse_vel=None, density=None, state_of_matter=None, longitudinal_att=None, transverse_att=None, metadata=None)
+class Material:
+    """
+    Material contains the material properties.
 
     Attributes
     ----------
@@ -1040,8 +1036,8 @@ class Material(
         >>> water = Material(1480., None, 1000., 'liquid', metadata={'long_name': 'Water'})
     """
 
-    def __new__(
-        cls,
+    def __init__(
+        self,
         longitudinal_vel,
         transverse_vel=None,
         density=None,
@@ -1064,22 +1060,19 @@ class Material(
         if metadata is None:
             metadata = {}
 
-        return super().__new__(
-            cls,
-            longitudinal_vel,
-            transverse_vel,
-            density,
-            state_of_matter,
-            longitudinal_att,
-            transverse_att,
-            metadata,
-        )
+        self.longitudinal_vel = longitudinal_vel
+        self.transverse_vel = transverse_vel
+        self.density = density
+        self.state_of_matter = state_of_matter
+        self.longitudinal_att = longitudinal_att
+        self.transverse_att = transverse_att
+        self.metadata = metadata
 
     def __str__(self):
         name = helpers.get_name(self.metadata)
 
         return "{} (v_l: {} m/s, v_t: {} m/s)".format(
-            name, self.longitudinal_vel, self.transverse_vel, hex(id(self))
+            name, self.longitudinal_vel, self.transverse_vel
         )
 
     def __repr__(self):
