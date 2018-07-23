@@ -35,7 +35,9 @@ def test_find_probe_loc_from_frontwall_ideal(A, B, dA, dB):
 
     frame = Frame(scanlines, time, tx, rx, probe, ExaminationObject(Material(1.0)))
 
-    frame, iso = reg.move_probe_over_flat_surface(frame, distance_to_surface, full_output=True)
+    frame, iso = reg.move_probe_over_flat_surface(
+        frame, distance_to_surface, full_output=True
+    )
     new_locations = frame.probe.locations
 
     # Are the locations in PCS unchanged?
@@ -60,8 +62,10 @@ def test_find_probe_loc_from_frontwall_ideal(A, B, dA, dB):
     # Is the returned theta right?
     # Remark: (dB-dB)/(xB-xA) has the sign of theta, then
     # (zA-zB)/(xB-xA) has the sign of -theta because zA=-dA and zB=-dB
-    theta = -np.arctan((new_locations.z[1] - new_locations.z[0]) /
-                       (new_locations.x[1] - new_locations.x[0]))
+    theta = -np.arctan(
+        (new_locations.z[1] - new_locations.z[0])
+        / (new_locations.x[1] - new_locations.x[0])
+    )
     assert np.isclose(theta, iso.theta)
 
 

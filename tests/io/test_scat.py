@@ -14,11 +14,11 @@ def test_load_scat_from_matlab():
     assert isinstance(scat_obj, scat.ScatFromData)
     assert scat_obj.numfreq == 2
     assert scat_obj.numangles == 11
-    assert 'LL' in scat_obj.orig_matrices
-    assert 'TL' in scat_obj.orig_matrices
+    assert "LL" in scat_obj.orig_matrices
+    assert "TL" in scat_obj.orig_matrices
 
-    np.testing.assert_allclose(scat_obj.orig_matrices['LL'][0, 0], 10j)
-    np.testing.assert_allclose(scat_obj.orig_matrices['TL'][1, 0], 20j)
+    np.testing.assert_allclose(scat_obj.orig_matrices["LL"][0, 0], 10j)
+    np.testing.assert_allclose(scat_obj.orig_matrices["TL"][1, 0], 20j)
 
 
 def test_load_scat():
@@ -27,5 +27,5 @@ def test_load_scat():
     scat_obj = io.scat.load_scat(fname)
     assert scat_obj.numfreq == 2
     assert scat_obj.numangles == 11
-    assert 'LL' in scat_obj.orig_matrices
-    assert 'TL' in scat_obj.orig_matrices
+    assert "LL" in scat_obj.orig_matrices
+    assert "TL" in scat_obj.orig_matrices

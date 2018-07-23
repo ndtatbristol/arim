@@ -1,5 +1,6 @@
 import os
 
+
 def get_data_filename(filename):
     """
     Returns absolute path of the data file 'filename'.
@@ -11,8 +12,5 @@ def get_data_filename(filename):
 
 
     """
-    basedir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data')
+    basedir = os.path.join(os.path.dirname(os.path.realpath(__file__)), "data")
     return os.path.join(basedir, filename)
-
-
-

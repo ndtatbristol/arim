@@ -2,6 +2,7 @@ import arim
 
 probes = arim.probes
 
+
 def test_probes():
     probes.keys()
     repr(probes)
@@ -11,7 +12,7 @@ def test_probes():
 
     for (probe_key, probe) in probes.items():
         assert isinstance(probe, arim.Probe)
-        assert probe_key == probe.metadata['short_name']
+        assert probe_key == probe.metadata["short_name"]
 
     key = tuple(probes.keys())[0]
     probe1 = probes[key]
@@ -22,6 +23,5 @@ def test_probes():
 def test_probes_makers():
     for (probe_key, maker) in probes._makers.items():
         probe = maker.make()
-        assert probe_key == maker.short_name == probe.metadata['short_name']
-        assert maker.long_name == probe.metadata['long_name']
-
+        assert probe_key == maker.short_name == probe.metadata["short_name"]
+        assert maker.long_name == probe.metadata["long_name"]

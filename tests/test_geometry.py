@@ -9,16 +9,19 @@ import arim.geometry as g
 
 DATASET_1 = dict(
     # set1:
-    points1=g.Points.from_xyz(np.array([0, 1, 1], dtype=np.float),
-                              np.array([0, 0, 0], dtype=np.float),
-                              np.array([1, 0, 2], dtype=np.float),
-                              'Points1'),
-
+    points1=g.Points.from_xyz(
+        np.array([0, 1, 1], dtype=np.float),
+        np.array([0, 0, 0], dtype=np.float),
+        np.array([1, 0, 2], dtype=np.float),
+        "Points1",
+    ),
     # set 2:
-    points2=g.Points.from_xyz(np.array([0, 1, 2], dtype=np.float),
-                              np.array([0, -1, -2], dtype=np.float),
-                              np.array([0, 0, 1], dtype=np.float),
-                              'Points2'),
+    points2=g.Points.from_xyz(
+        np.array([0, 1, 2], dtype=np.float),
+        np.array([0, -1, -2], dtype=np.float),
+        np.array([0, 0, 1], dtype=np.float),
+        "Points2",
+    ),
 )
 
 
@@ -29,7 +32,9 @@ def test_are_points_aligned():
     theta = np.deg2rad(30)
 
     def make_points():
-        p = g.Points.from_xyz(z * np.cos(theta), z * np.sin(theta), np.zeros((n,), dtype=np.float64))
+        p = g.Points.from_xyz(
+            z * np.cos(theta), z * np.sin(theta), np.zeros((n,), dtype=np.float64)
+        )
         return p
 
     points = make_points()
@@ -63,9 +68,11 @@ def test_rotations():
     identity = np.identity(3)
 
     # Check that rotations in one side and on the other side give the identity
-    (rot_x, rot_y, rot_z) = (g.rotation_matrix_x,
-                             g.rotation_matrix_y,
-                             g.rotation_matrix_z)
+    (rot_x, rot_y, rot_z) = (
+        g.rotation_matrix_x,
+        g.rotation_matrix_y,
+        g.rotation_matrix_z,
+    )
     for rot in (rot_x, rot_y, rot_z):
         assert np.allclose(identity, rot(theta) @ rot(-theta))
         assert np.allclose(identity, rot(-theta) @ rot(theta))
@@ -104,15 +111,11 @@ def test_is_orthonormal():
     assert not (g.is_orthonormal(2. * np.identity(3)))
     assert not (g.is_orthonormal_direct(2. * np.identity(3)))
 
-    a = np.array([[0., 0., 1.],
-                  [1., 0., 0.],
-                  [0., 1., 0.]])
+    a = np.array([[0., 0., 1.], [1., 0., 0.], [0., 1., 0.]])
     assert g.is_orthonormal(a)
     assert g.is_orthonormal_direct(a)
 
-    a = np.array([[0., 0., 1.],
-                  [1., 0., 0.],
-                  [0., -1., 0.]])
+    a = np.array([[0., 0., 1.], [1., 0., 0.], [0., -1., 0.]])
     assert g.is_orthonormal(a)
     assert not (g.is_orthonormal_direct(a))
 
@@ -140,8 +143,18 @@ def test_norm2_2d(shape):
 
 _ISOMETRY_2D_DATA = [
     (np.array([0., 0.]), np.array([0., 1.]), np.array([2., 0.]), np.array([2., 1.])),
-    (np.array([66., 0.]), np.array([66., 1.]), np.array([77., 0.]), np.array([77 + np.cos(30), np.sin(30)])),
-    (np.array([66., 0.]), np.array([66., 1.]), np.array([77., 0.]), np.array([77 + np.cos(-30), np.sin(-30)])),
+    (
+        np.array([66., 0.]),
+        np.array([66., 1.]),
+        np.array([77., 0.]),
+        np.array([77 + np.cos(30), np.sin(30)]),
+    ),
+    (
+        np.array([66., 0.]),
+        np.array([66., 1.]),
+        np.array([77., 0.]),
+        np.array([77 + np.cos(-30), np.sin(-30)]),
+    ),
 ]
 
 
@@ -167,15 +180,30 @@ def test_direct_isometry_2d(points):
 
 
 _ISOMETRY_3D_DATA = [
-    (np.asarray((10., 0., 0.)), np.asarray((1., 0., 0)), np.asarray((0., 1., 0.)),
-     np.asarray((0., 0., 66.)), np.asarray((np.cos(0.3), np.sin(0.3), 0)), np.asarray((-np.sin(0.3), np.cos(0.3), 0))),
-
-    (np.asarray((10., 0., 0.)), np.asarray((1., 0., 0)), np.asarray((0., 0., 1.)),
-     np.asarray((0., 0., 66.)), np.asarray((np.cos(0.3), np.sin(0.3), 0)), np.asarray((-np.sin(0.3), np.cos(0.3), 0))),
-
-    (np.asarray((10., 11., 12.)), np.asarray((0., 1., 0)), np.asarray((0., 0., 1.)),
-     np.asarray((22., 21., 20.)), np.asarray((np.cos(0.3), np.sin(0.3), 0)),
-     np.asarray((-np.sin(0.3), np.cos(0.3), 0))),
+    (
+        np.asarray((10., 0., 0.)),
+        np.asarray((1., 0., 0)),
+        np.asarray((0., 1., 0.)),
+        np.asarray((0., 0., 66.)),
+        np.asarray((np.cos(0.3), np.sin(0.3), 0)),
+        np.asarray((-np.sin(0.3), np.cos(0.3), 0)),
+    ),
+    (
+        np.asarray((10., 0., 0.)),
+        np.asarray((1., 0., 0)),
+        np.asarray((0., 0., 1.)),
+        np.asarray((0., 0., 66.)),
+        np.asarray((np.cos(0.3), np.sin(0.3), 0)),
+        np.asarray((-np.sin(0.3), np.cos(0.3), 0)),
+    ),
+    (
+        np.asarray((10., 11., 12.)),
+        np.asarray((0., 1., 0)),
+        np.asarray((0., 0., 1.)),
+        np.asarray((22., 21., 20.)),
+        np.asarray((np.cos(0.3), np.sin(0.3), 0)),
+        np.asarray((-np.sin(0.3), np.cos(0.3), 0)),
+    ),
 ]
 
 
@@ -259,8 +287,9 @@ def test_grid_centred(pixel_size):
     size_y = 0.
     size_z = 10.
 
-    grid = g.Grid.grid_centred_at_point(centre_x, centre_y, centre_z,
-                                        size_x, size_y, size_z, pixel_size)
+    grid = g.Grid.grid_centred_at_point(
+        centre_x, centre_y, centre_z, size_x, size_y, size_z, pixel_size
+    )
     np.testing.assert_allclose(grid.xmin, 12.5)
     np.testing.assert_allclose(grid.xmax, 17.5)
     np.testing.assert_allclose(grid.yvect, [0.])
@@ -273,7 +302,8 @@ def test_grid_centred(pixel_size):
     idx = grid.closest_point(centre_x, centre_y, centre_z)
     np.testing.assert_allclose(
         [grid.x.flat[idx], grid.y.flat[idx], grid.z.flat[idx]],
-        [centre_x, centre_y, centre_z])
+        [centre_x, centre_y, centre_z],
+    )
 
 
 @pytest.mark.parametrize("pixel_size", [0.5, 0.6, 0.7, 0.8, 0.9, 1.])
@@ -289,8 +319,14 @@ def test_grid_clone(pixel_size):
 
     orig_grid = g.Grid(xmin, xmax, ymin, ymax, zmin, zmax, pixel_size)
     grid = g.Grid(
-        orig_grid.xmin, orig_grid.xmax, orig_grid.ymin, orig_grid.ymax, orig_grid.zmin, orig_grid.zmax,
-        (orig_grid.dx, orig_grid.dy, orig_grid.dz))
+        orig_grid.xmin,
+        orig_grid.xmax,
+        orig_grid.ymin,
+        orig_grid.ymax,
+        orig_grid.zmin,
+        orig_grid.zmax,
+        (orig_grid.dx, orig_grid.dy, orig_grid.dz),
+    )
     assert orig_grid.numx == grid.numx
     assert orig_grid.numy == grid.numy
     assert orig_grid.numz == grid.numz
@@ -298,9 +334,9 @@ def test_grid_clone(pixel_size):
 
 # shape, name, size
 points_parameters = [
-    ((), 'TestPoints', 1),
-    ((5,), 'TestPoints', 5),
-    ((5, 6), 'TestPoints', 30),
+    ((), "TestPoints", 1),
+    ((5,), "TestPoints", 5),
+    ((5, 6), "TestPoints", 30),
     ((), None, 1),
     ((5,), None, 5),
     ((5, 6), None, 30),
@@ -339,7 +375,9 @@ class TestPoints:
         points = g.Points(coords, name)
         return points, raw_coords
 
-    @pytest.mark.parametrize("shape, name, size", points_parameters, ids=points_parameters_ids)
+    @pytest.mark.parametrize(
+        "shape, name, size", points_parameters, ids=points_parameters_ids
+    )
     def test_points_basics(self, shape, name, size):
         """
         Test basics attributes/properties of Points.
@@ -369,7 +407,9 @@ class TestPoints:
             np.testing.assert_allclose(p, (points.x[idx], points.y[idx], points.z[idx]))
 
             # test __getitem__:
-            np.testing.assert_allclose(points[idx], (points.x[idx], points.y[idx], points.z[idx]))
+            np.testing.assert_allclose(
+                points[idx], (points.x[idx], points.y[idx], points.z[idx])
+            )
 
         # test iterator
         for idx, p in zip(np.ndindex(shape), points):
@@ -377,13 +417,15 @@ class TestPoints:
         assert len(list(iter(points))) == size
 
         # Test hashability
-        d = {points: 'toto'}
+        d = {points: "toto"}
 
         # Test str/rep
         str(points)
         repr(points)
 
-    @pytest.mark.parametrize("shape, name, size", points_parameters, ids=points_parameters_ids)
+    @pytest.mark.parametrize(
+        "shape, name, size", points_parameters, ids=points_parameters_ids
+    )
     def test_points_from_xyz(self, shape, name, size):
         points, raw_coords = self.make_points(shape, name, size)
 
@@ -398,28 +440,39 @@ class TestPoints:
         Cf. https://commons.wikimedia.org/wiki/File:3D_Spherical.svg on 2016-03-16
         """
         # x, y, z
-        points = g.Points(np.array([[5., 0., 0.],
-                                    [-5., 0., 0.],
-                                    [0., 6., 0.],
-                                    [0., -6., 0.],
-                                    [0., 0., 7.],
-                                    [0., 0., -7.]]))
+        points = g.Points(
+            np.array(
+                [
+                    [5., 0., 0.],
+                    [-5., 0., 0.],
+                    [0., 6., 0.],
+                    [0., -6., 0.],
+                    [0., 0., 7.],
+                    [0., 0., -7.],
+                ]
+            )
+        )
         out = points.spherical_coordinates()
 
         # r, theta, phi
-        expected = np.array([[5., np.pi / 2, 0.],
-                             [5., np.pi / 2, np.pi],
-                             [6., np.pi / 2, np.pi / 2],
-                             [6., np.pi / 2, -np.pi / 2],
-                             [7., 0., 0.],
-                             [7., np.pi, .0],
-                             ])
+        expected = np.array(
+            [
+                [5., np.pi / 2, 0.],
+                [5., np.pi / 2, np.pi],
+                [6., np.pi / 2, np.pi / 2],
+                [6., np.pi / 2, -np.pi / 2],
+                [7., 0., 0.],
+                [7., np.pi, .0],
+            ]
+        )
 
         assert np.allclose(out.r, expected[:, 0])
         assert np.allclose(out.theta, expected[:, 1])
         assert np.allclose(out.phi, expected[:, 2])
 
-    @pytest.mark.parametrize("shape, name, size", points_parameters, ids=points_parameters_ids)
+    @pytest.mark.parametrize(
+        "shape, name, size", points_parameters, ids=points_parameters_ids
+    )
     def test_are_points_close(self, shape, name, size):
         """test geometry.are_points.close for different shapes"""
         points, raw_coords = self.make_points(shape, name, size)
@@ -438,13 +491,11 @@ class TestPoints:
         # use different shape
         assert not (g.are_points_close(points, g.Points([1, 2, 3])))
 
-    @pytest.mark.parametrize("shape, shape_directions", [
-        [(), ()],
-        [(5,), ()],
-        [(5,), (5,)],
-        [(5, 6), ()],
-        [(5, 6), (5, 6)],
-    ], ids=["one_one", "vect_one", "vect_vect", "mat_one", "mat_mat"])
+    @pytest.mark.parametrize(
+        "shape, shape_directions",
+        [[(), ()], [(5,), ()], [(5,), (5,)], [(5, 6), ()], [(5, 6), (5, 6)]],
+        ids=["one_one", "vect_one", "vect_vect", "mat_one", "mat_mat"],
+    )
     def test_points_translate(self, shape, shape_directions):
         """
         Test Points.translate for different shapes of Points and directions.
@@ -461,19 +512,26 @@ class TestPoints:
         assert isinstance(out_points, g.Points)
 
         idx_set = set()
-        for ((idx, in_p), out_p, idx_direction) in itertools.zip_longest(points.enumerate(), out_points,
-                                                                         np.ndindex(shape_directions), fillvalue=()):
+        for ((idx, in_p), out_p, idx_direction) in itertools.zip_longest(
+            points.enumerate(), out_points, np.ndindex(shape_directions), fillvalue=()
+        ):
             idx_set.add(idx)
             assert in_p.shape == out_p.shape == directions[idx_direction].shape == (3,)
             expected = in_p + directions[idx_direction]
-            np.testing.assert_allclose(out_p, expected,
-                                       err_msg="translation failed for idx={} and idx_direction={}".format(idx,
-                                                                                                           idx_direction))
+            np.testing.assert_allclose(
+                out_p,
+                expected,
+                err_msg="translation failed for idx={} and idx_direction={}".format(
+                    idx, idx_direction
+                ),
+            )
         assert len(idx_set) == points.size, "The test does not check all points"
 
         # this should be let all points invariant:
         out_points = points.translate(np.array((0., 0., 0.)))
-        assert g.are_points_close(points, out_points), "all points must be invariant (no translation)"
+        assert g.are_points_close(
+            points, out_points
+        ), "all points must be invariant (no translation)"
 
     def test_norm2(self, points):
         """test Points.norm2"""
@@ -494,7 +552,9 @@ class TestPoints:
 
         for ((idx, p_in), p_out) in zip(points.enumerate(), out_points):
             expected = rot @ p_in
-            np.testing.assert_allclose(p_out, expected, err_msg="rotation failed for idx={}".format(idx))
+            np.testing.assert_allclose(
+                p_out, expected, err_msg="rotation failed for idx={}".format(idx)
+            )
 
         # Case 1b: centre is [0., 0., 0.] (should give the same answers)
         out_points_b = points.rotate(rot, centre=np.array((0., 0., 0.)))
@@ -507,7 +567,9 @@ class TestPoints:
 
         for ((idx, p_in), p_out) in zip(points.enumerate(), out_points):
             expected = rot @ (p_in - centre) + centre
-            np.testing.assert_allclose(p_out, expected, err_msg="rotation failed for idx={}".format(idx))
+            np.testing.assert_allclose(
+                p_out, expected, err_msg="rotation failed for idx={}".format(idx)
+            )
 
     def test_rotate_multiple_rotations(self, points):
         """Test Points.rotate() with as many rotations as points
@@ -518,7 +580,9 @@ class TestPoints:
         rot_shape = (*points.shape, 3, 3)
         rot = np.zeros(rot_shape, dtype=points.dtype)
         for idx in np.ndindex(points.shape):
-            rot[idx] = g.rotation_matrix_ypr(*np.random.uniform(-2 * np.pi, 2 * np.pi, size=(3,)))
+            rot[idx] = g.rotation_matrix_ypr(
+                *np.random.uniform(-2 * np.pi, 2 * np.pi, size=(3,))
+            )
 
         # Case 1a: centre is None
         out_points = points.rotate(rot, centre=None)
@@ -526,7 +590,9 @@ class TestPoints:
 
         for ((idx, p_in), p_out) in zip(points.enumerate(), out_points):
             expected = rot[idx] @ p_in
-            np.testing.assert_allclose(p_out, expected, err_msg="rotation failed for idx={}".format(idx))
+            np.testing.assert_allclose(
+                p_out, expected, err_msg="rotation failed for idx={}".format(idx)
+            )
 
         # Case 1b: centre is [0., 0., 0.] (should give the same answers)
         out_points_b = points.rotate(rot, centre=np.array((0., 0., 0.)))
@@ -540,21 +606,38 @@ class TestPoints:
         # Check point per point:
         for ((idx, p_in), p_out) in zip(points.enumerate(), out_points):
             expected = rot[idx] @ (p_in - centre[idx]) + centre[idx]
-            np.testing.assert_allclose(p_out, expected, err_msg="rotation failed for idx={}".format(idx))
+            np.testing.assert_allclose(
+                p_out, expected, err_msg="rotation failed for idx={}".format(idx)
+            )
 
-    @pytest.mark.parametrize(("points_shape, bases_shape, origins_shape"), [
-        [(), (), ()],
-        [(5,), (), ()],
-        [(5,), (), (5,)],
-        [(5,), (5,), ()],
-        [(5,), (5,), (5,)],
-        [(5, 6), (), ()],
-        [(5, 6), (), (5, 6)],
-        [(5, 6), (5, 6), ()],
-        [(5, 6), (5, 6), (5, 6)],
-    ], ids=["one_one_one", "vect_one_one", "vect_one_vect", "vect_vect_one", "vect_vect_vect",
-            "mat_one_one", "mat_one_mat", "mat_mat_one", "mat_mat_mat"])
-    def test_convert_coordinates_one_basis(self, points_shape, bases_shape, origins_shape):
+    @pytest.mark.parametrize(
+        ("points_shape, bases_shape, origins_shape"),
+        [
+            [(), (), ()],
+            [(5,), (), ()],
+            [(5,), (), (5,)],
+            [(5,), (5,), ()],
+            [(5,), (5,), (5,)],
+            [(5, 6), (), ()],
+            [(5, 6), (), (5, 6)],
+            [(5, 6), (5, 6), ()],
+            [(5, 6), (5, 6), (5, 6)],
+        ],
+        ids=[
+            "one_one_one",
+            "vect_one_one",
+            "vect_one_vect",
+            "vect_vect_one",
+            "vect_vect_vect",
+            "mat_one_one",
+            "mat_one_mat",
+            "mat_mat_one",
+            "mat_mat_mat",
+        ],
+    )
+    def test_convert_coordinates_one_basis(
+        self, points_shape, bases_shape, origins_shape
+    ):
         """
         Test the function to_gcs and from_gcs using various combinations of points, basis and origins.
         """
@@ -564,7 +647,9 @@ class TestPoints:
         # Generate bases:
         bases = np.zeros((*bases_shape, 3, 3))
         for idx in np.ndindex(bases_shape):
-            bases[idx] = g.rotation_matrix_ypr(*np.random.uniform(-2 * np.pi, 2 * np.pi, size=(3,)))
+            bases[idx] = g.rotation_matrix_ypr(
+                *np.random.uniform(-2 * np.pi, 2 * np.pi, size=(3,))
+            )
             assert g.is_orthonormal_direct(bases[idx])
 
         # Generate origins:
@@ -601,21 +686,28 @@ class TestPoints:
             j_hat = basis[1, :]
             k_hat = basis[2, :]
             x, y, z = p_cs
-            np.testing.assert_allclose(p_gcs, origin + x * i_hat + y * j_hat + z * k_hat)
+            np.testing.assert_allclose(
+                p_gcs, origin + x * i_hat + y * j_hat + z * k_hat
+            )
 
     def test_points_in_rectbox(self):
         # 5 points, first col: x, second col: y, third col: z
-        coords = np.array([[0., 1., 2.],
-                           [3., 4., 5.],
-                           [6., 7., 8.],
-                           [9., 10., 11.],
-                           [12., 13., 14.]])
+        coords = np.array(
+            [[0., 1., 2.], [3., 4., 5.], [6., 7., 8.], [9., 10., 11.], [12., 13., 14.]]
+        )
         points = g.Points(coords)
 
-        np.testing.assert_equal(points.points_in_rectbox(), [True, ] * 5)
-        np.testing.assert_equal(points.points_in_rectbox(xmin=3.), [False, True, True, True, True])
-        np.testing.assert_equal(points.points_in_rectbox(xmin=3., xmax=11), [False, True, True, True, False])
-        np.testing.assert_equal(points.points_in_rectbox(xmin=3., zmax=8.), [False, True, True, False, False])
+        np.testing.assert_equal(points.points_in_rectbox(), [True] * 5)
+        np.testing.assert_equal(
+            points.points_in_rectbox(xmin=3.), [False, True, True, True, True]
+        )
+        np.testing.assert_equal(
+            points.points_in_rectbox(xmin=3., xmax=11), [False, True, True, True, False]
+        )
+        np.testing.assert_equal(
+            points.points_in_rectbox(xmin=3., zmax=8.),
+            [False, True, True, False, False],
+        )
 
     def test_aspoints(self, points):
         assert g.aspoints(points) is points
@@ -671,7 +763,9 @@ class TestCoordinateSystem:
 
         # Second case, with centre O:
         rot = g.rotation_matrix_z(np.pi)
-        cs_expect = g.CoordinateSystem([-cs.origin[0], -cs.origin[1], +cs.origin[2]], -cs.i_hat, -cs.j_hat)
+        cs_expect = g.CoordinateSystem(
+            [-cs.origin[0], -cs.origin[1], +cs.origin[2]], -cs.i_hat, -cs.j_hat
+        )
         cs_out = cs.rotate(rot, centre=None)
         assert cs_expect.isclose(cs_out)
 
@@ -705,9 +799,9 @@ class TestCoordinateSystem:
 
     def test_from_gcs_pairwise(self, cs):
         assert isinstance(cs, g.CoordinateSystem)
-        origins = g.Points.from_xyz(np.array([0., 0., 0.]),
-                                    np.array([0., 1., 2.]),
-                                    np.array([0., 3., 4.]))
+        origins = g.Points.from_xyz(
+            np.array([0., 0., 0.]), np.array([0., 1., 2.]), np.array([0., 3., 4.])
+        )
         points_gcs = g.Points(np.random.uniform(size=(10, 3)))
 
         # This is the tested function.
@@ -718,7 +812,9 @@ class TestCoordinateSystem:
         # Check the result are the same as if we convert the points "by hand".
         for (j, origin) in enumerate(origins):
             # Points in the j-th derived CS, computed by 'convert_from_gcs_pairwise':
-            out_points = g.Points.from_xyz(x[..., j].copy(), y[..., j].copy(), z[..., j].copy())
+            out_points = g.Points.from_xyz(
+                x[..., j].copy(), y[..., j].copy(), z[..., j].copy()
+            )
 
             # Points in the j-th derived CS, computed by the regular 'convert_from_gcs':
             origin_gcs = cs.convert_to_gcs(g.Points(origin))[()]
@@ -751,10 +847,15 @@ class TestCoordinateSystem:
 EUCLIDEAN_DISTANCE_1 = None  # used for cache
 
 
-@pytest.fixture(scope="module", params=[dict(block_size=None, numthreads=None),
-                                        dict(block_size=1, numthreads=1),
-                                        dict(block_size=1, numthreads=4),
-                                        dict(block_size=10, numthreads=4), ])
+@pytest.fixture(
+    scope="module",
+    params=[
+        dict(block_size=None, numthreads=None),
+        dict(block_size=1, numthreads=1),
+        dict(block_size=1, numthreads=4),
+        dict(block_size=10, numthreads=4),
+    ],
+)
 def distance(request):
     """
     Compute the Euclidean distance using our package. Check that multithreading has no
@@ -776,9 +877,13 @@ def mock_euclidean_distance(points1, points2):
         distance = np.full((len(points1), len(points2)), 0, dtype=np.float)
         for i in range(len(points1)):
             for j in range(len(points2)):
-                distance[i, j] = math.sqrt(((points1.x[i] - points2.x[j]) ** 2 +
-                                            (points1.y[i] - points2.y[j]) ** 2 +
-                                            (points1.z[i] - points2.z[j]) ** 2))
+                distance[i, j] = math.sqrt(
+                    (
+                        (points1.x[i] - points2.x[j]) ** 2
+                        + (points1.y[i] - points2.y[j]) ** 2
+                        + (points1.z[i] - points2.z[j]) ** 2
+                    )
+                )
         EUCLIDEAN_DISTANCE_1 = distance
     return EUCLIDEAN_DISTANCE_1
 
@@ -798,7 +903,9 @@ def test_euclidean_distance_advanced():
     assert distance.dtype == dtype
     assert np.allclose(np.real(distance), mock_distance)
 
-    distance = np.full((len(DATASET_1['points1']), len(DATASET_1['points2'])), 0.0, dtype=np.float)
+    distance = np.full(
+        (len(DATASET_1["points1"]), len(DATASET_1["points2"])), 0.0, dtype=np.float
+    )
     g.distance_pairwise(**DATASET_1, out=distance)  # write inplace
     assert np.allclose(distance, mock_distance)
 
@@ -808,10 +915,12 @@ class TestGeometryHelper:
 
     @pytest.fixture
     def points1_pcs(self):
-        return g.Points.from_xyz(x=np.arange(16, dtype=np.float),
-                                 y=np.zeros(16, dtype=np.float),
-                                 z=np.zeros(16, dtype=np.float),
-                                 name='Probe PCS')
+        return g.Points.from_xyz(
+            x=np.arange(16, dtype=np.float),
+            y=np.zeros(16, dtype=np.float),
+            z=np.zeros(16, dtype=np.float),
+            name="Probe PCS",
+        )
 
     @pytest.fixture
     def pcs(self):
@@ -824,10 +933,12 @@ class TestGeometryHelper:
 
     @pytest.fixture
     def points2_gcs(self):
-        return g.Points.from_xyz(x=np.linspace(-10., 10., 21),
-                                 y=np.zeros(21, dtype=np.float),
-                                 z=np.zeros(21, dtype=np.float),
-                                 name='Probe PCS')
+        return g.Points.from_xyz(
+            x=np.linspace(-10., 10., 21),
+            y=np.zeros(21, dtype=np.float),
+            z=np.zeros(21, dtype=np.float),
+            name="Probe PCS",
+        )
 
     @pytest.fixture
     def geometry_helper_cache(self, points1_gcs, points2_gcs, pcs):
@@ -855,7 +966,7 @@ class TestGeometryHelper:
         assert dist is not dist3
 
         out = geom.points2_to_pcs_pairwise()
-        with np.errstate(invalid='ignore'):
+        with np.errstate(invalid="ignore"):
             # for some reason we get a warning here, ignore it
             out = geom.points2_to_pcs_pairwise_spherical()
 
@@ -863,13 +974,13 @@ class TestGeometryHelper:
 
 
 def test_points_1d_wall_z():
-    args = dict(xmin=10, xmax=20, numpoints=6, y=1, z=2, name='toto')
+    args = dict(xmin=10, xmax=20, numpoints=6, y=1, z=2, name="toto")
     points, orientations = g.points_1d_wall_z(**args)
     assert points.shape == (6,)
     assert orientations.shape == (6, 3)
 
     np.testing.assert_allclose(points.x, [10, 12, 14, 16, 18, 20])
-    np.testing.assert_allclose(points.y, args['y'])
-    np.testing.assert_allclose(points.z, args['z'])
+    np.testing.assert_allclose(points.y, args["y"])
+    np.testing.assert_allclose(points.z, args["z"])
     for i in range(6):
         np.testing.assert_allclose(orientations[i], np.eye(3))

@@ -135,11 +135,11 @@ def test_make_matrix_probe():
 
     locations = np.zeros((numx * numy, 3))
     locations[:, 0] = [-2, -1, 0, 1, 2]
-    assert probe.metadata['probe_type'] == 'linear'
-    assert probe.metadata['numx'] == numx
-    assert probe.metadata['numy'] == numy
-    assert probe.metadata['pitch_x'] == pitch_x
-    assert np.isnan(probe.metadata['pitch_y'])
+    assert probe.metadata["probe_type"] == "linear"
+    assert probe.metadata["numx"] == numx
+    assert probe.metadata["numy"] == numy
+    assert probe.metadata["pitch_x"] == pitch_x
+    assert np.isnan(probe.metadata["pitch_y"])
     assert np.allclose(probe.locations, locations)
     assert probe.frequency == frequency
 
@@ -155,11 +155,11 @@ def test_make_matrix_probe():
 
     locations = np.zeros((numx * numy, 3))
     locations[:, 1] = [2, 1, 0, -1, -2]
-    assert probe.metadata['probe_type'] == 'linear'
-    assert probe.metadata['numx'] == numx
-    assert probe.metadata['numy'] == numy
-    assert np.isnan(probe.metadata['pitch_x'])
-    assert probe.metadata['pitch_y'] == pitch_y
+    assert probe.metadata["probe_type"] == "linear"
+    assert probe.metadata["numx"] == numx
+    assert probe.metadata["numy"] == numy
+    assert np.isnan(probe.metadata["pitch_x"])
+    assert probe.metadata["pitch_y"] == pitch_y
     assert np.allclose(probe.locations, locations)
     assert probe.frequency == frequency
 
@@ -175,11 +175,11 @@ def test_make_matrix_probe():
 
     locations = np.zeros((numx * numy, 3))
 
-    assert probe.metadata['probe_type'] == 'single'
-    assert probe.metadata['numx'] == numx
-    assert probe.metadata['numy'] == numy
-    assert np.isnan(probe.metadata['pitch_x'])
-    assert np.isnan(probe.metadata['pitch_y'])
+    assert probe.metadata["probe_type"] == "single"
+    assert probe.metadata["numx"] == numx
+    assert probe.metadata["numy"] == numy
+    assert np.isnan(probe.metadata["pitch_x"])
+    assert np.isnan(probe.metadata["pitch_y"])
     assert np.allclose(probe.locations, locations)
     assert probe.frequency == frequency
 
@@ -197,16 +197,16 @@ def test_make_matrix_probe():
     locations[:, 0] = [0.5, -0.5, 0.5, -0.5, 0.5, -0.5]
     locations[:, 1] = [-2, -2, 0, 0, 2, 2]
 
-    assert probe.metadata['probe_type'] == 'matrix'
-    assert probe.metadata['numx'] == numx
-    assert probe.metadata['numy'] == numy
-    assert probe.metadata['pitch_x'] == pitch_x
-    assert probe.metadata['pitch_y'] == pitch_y
+    assert probe.metadata["probe_type"] == "matrix"
+    assert probe.metadata["numx"] == numx
+    assert probe.metadata["numy"] == numy
+    assert probe.metadata["pitch_x"] == pitch_x
+    assert probe.metadata["pitch_y"] == pitch_y
     assert np.allclose(probe.locations, locations)
     assert probe.frequency == frequency
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope="module")
 def probe():
     numelements = 4
     locx = np.arange(numelements, dtype=np.float) * 0.1e-3
@@ -218,20 +218,21 @@ def probe():
 
     frequency = 1e6
 
-    metadata = dict(short_name='test_linear16', version=0)
+    metadata = dict(short_name="test_linear16", version=0)
     return c.Probe(locations, frequency, metadata=metadata)
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope="module")
 def examination_object():
-    material = c.Material(6300, 3100, 2700, metadata=dict(long_name='Aluminium'))
+    material = c.Material(6300, 3100, 2700, metadata=dict(long_name="Aluminium"))
     return c.ExaminationObject(material)
 
 
 @pytest.fixture(scope="module")
 def water():
-    return c.Material(1400., density=1000., state_of_matter='liquid',
-                      metadata={'long_name': 'Water'})
+    return c.Material(
+        1400., density=1000., state_of_matter="liquid", metadata={"long_name": "Water"}
+    )
 
 
 @pytest.fixture(scope="module")
@@ -239,11 +240,16 @@ def aluminium():
     v_longi = 6320.
     v_transverse = 3130.
 
-    return c.Material(v_longi, v_transverse, density=2700., state_of_matter='solid',
-                      metadata={'long_name': 'Aluminium'})
+    return c.Material(
+        v_longi,
+        v_transverse,
+        density=2700.,
+        state_of_matter="solid",
+        metadata={"long_name": "Aluminium"},
+    )
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope="module")
 def frame(probe, examination_object):
     tx, rx = ut.hmc(probe.numelements)
     metadata = dict(capture_method=c.CaptureMethod.fmc)
@@ -253,7 +259,9 @@ def frame(probe, examination_object):
     scanlines = np.zeros((len(tx), len(time)))
     scanlines[...] = (tx * 1000 + rx)[..., np.newaxis]
 
-    return c.Frame(scanlines, time, tx, rx, probe, examination_object, metadata=metadata)
+    return c.Frame(
+        scanlines, time, tx, rx, probe, examination_object, metadata=metadata
+    )
 
 
 class TestFrame:
@@ -307,7 +315,9 @@ class TestProbe:
         assert isinstance(probe.orientations, g.Points) or probe.orientations is None
         assert isinstance(probe.dimensions, g.Points) or probe.dimensions is None
         assert isinstance(probe.shapes, np.ndarray) or probe.shapes is None
-        assert isinstance(probe.dead_elements, np.ndarray) or probe.dead_elements is None
+        assert (
+            isinstance(probe.dead_elements, np.ndarray) or probe.dead_elements is None
+        )
 
     def test_linear_probe(self):
         linear_probe = self.linear_probe()
@@ -320,12 +330,16 @@ class TestProbe:
         locations = probe_bak.locations.coords.copy()
 
         # that's lists:
-        orientations = [probe_bak.orientations.x[0],
-                        probe_bak.orientations.y[0],
-                        probe_bak.orientations.z[0]]
-        dimensions = [probe_bak.dimensions.x[0],
-                      probe_bak.dimensions.y[0],
-                      probe_bak.dimensions.z[0]]
+        orientations = [
+            probe_bak.orientations.x[0],
+            probe_bak.orientations.y[0],
+            probe_bak.orientations.z[0],
+        ]
+        dimensions = [
+            probe_bak.dimensions.x[0],
+            probe_bak.dimensions.y[0],
+            probe_bak.dimensions.z[0],
+        ]
 
         # that's just one value:
         shapes = c.ElementShape.rectangular
@@ -337,8 +351,16 @@ class TestProbe:
         pcs = probe_bak.pcs.copy()
 
         # I love my new API:
-        probe = c.Probe(locations, frequency, dimensions, orientations, shapes,
-                        dead_elements, bandwidth, pcs=pcs)
+        probe = c.Probe(
+            locations,
+            frequency,
+            dimensions,
+            orientations,
+            shapes,
+            dead_elements,
+            bandwidth,
+            pcs=pcs,
+        )
 
         self.test_probe(probe)
         self.assert_probe_equal_in_gcs(probe, probe_bak)
@@ -347,42 +369,63 @@ class TestProbe:
         probe_bak = self.linear_probe()
 
         # that's lists:
-        orientations = [probe_bak.orientations.x[0],
-                        probe_bak.orientations.y[0],
-                        probe_bak.orientations.z[0]]
-        dimensions = [probe_bak.dimensions.x[0],
-                      probe_bak.dimensions.y[0],
-                      probe_bak.dimensions.z[0]]
+        orientations = [
+            probe_bak.orientations.x[0],
+            probe_bak.orientations.y[0],
+            probe_bak.orientations.z[0],
+        ]
+        dimensions = [
+            probe_bak.dimensions.x[0],
+            probe_bak.dimensions.y[0],
+            probe_bak.dimensions.z[0],
+        ]
 
         # that's just one value:
         shapes = c.ElementShape.rectangular
         dead_elements = False
 
-        probe = c.Probe.make_matrix_probe(pitch_x=1e-3, numx=10, pitch_y=np.nan, numy=1,
-                                          frequency=1e6, shapes=shapes,
-                                          orientations=orientations,
-                                          dimensions=dimensions, bandwidth=0.5e6,
-                                          dead_elements=dead_elements)
+        probe = c.Probe.make_matrix_probe(
+            pitch_x=1e-3,
+            numx=10,
+            pitch_y=np.nan,
+            numy=1,
+            frequency=1e6,
+            shapes=shapes,
+            orientations=orientations,
+            dimensions=dimensions,
+            bandwidth=0.5e6,
+            dead_elements=dead_elements,
+        )
         self.test_probe(probe)
         self.assert_probe_equal_in_gcs(probe, probe_bak)
 
     def linear_probe(self):
         numelements = 10
 
-        dimensions = g.Points.from_xyz(np.full(numelements, 0.8e-3),
-                                       np.full(numelements, 30e-3),
-                                       np.zeros(numelements, dtype=np.float))
-        orientations = g.Points.from_xyz(np.zeros(numelements, dtype=np.float),
-                                         np.zeros(numelements, dtype=np.float),
-                                         np.ones(numelements, dtype=np.float))
-        shapes = np.array(numelements * [c.ElementShape.rectangular], dtype='O')
+        dimensions = g.Points.from_xyz(
+            np.full(numelements, 0.8e-3),
+            np.full(numelements, 30e-3),
+            np.zeros(numelements, dtype=np.float),
+        )
+        orientations = g.Points.from_xyz(
+            np.zeros(numelements, dtype=np.float),
+            np.zeros(numelements, dtype=np.float),
+            np.ones(numelements, dtype=np.float),
+        )
+        shapes = np.array(numelements * [c.ElementShape.rectangular], dtype="O")
         dead_elements = np.zeros((numelements,), dtype=np.bool)
-        probe = c.Probe.make_matrix_probe(pitch_x=1e-3, numx=numelements, pitch_y=np.nan,
-                                          numy=1,
-                                          frequency=1e6, shapes=shapes,
-                                          orientations=orientations,
-                                          dimensions=dimensions, bandwidth=0.5e6,
-                                          dead_elements=dead_elements)
+        probe = c.Probe.make_matrix_probe(
+            pitch_x=1e-3,
+            numx=numelements,
+            pitch_y=np.nan,
+            numy=1,
+            frequency=1e6,
+            shapes=shapes,
+            orientations=orientations,
+            dimensions=dimensions,
+            bandwidth=0.5e6,
+            dead_elements=dead_elements,
+        )
         return probe
 
     def test_move_probe(self):
@@ -438,7 +481,7 @@ class TestProbe:
         """
         allclose_kwargs = dict(rtol=0, atol=1e-9)
         probe = self.linear_probe()
-        probe.set_reference_element('first')
+        probe.set_reference_element("first")
         probe.translate_to_point_O()
         np.testing.assert_allclose(probe.locations.y, 0, **allclose_kwargs)
         np.testing.assert_allclose(probe.locations.z, 0, **allclose_kwargs)
@@ -446,7 +489,7 @@ class TestProbe:
         np.testing.assert_allclose(probe.locations[-1], (9e-3, 0, 0), **allclose_kwargs)
 
         probe = self.linear_probe()
-        probe.set_reference_element('last')
+        probe.set_reference_element("last")
         probe.translate_to_point_O()
         np.testing.assert_allclose(probe.locations.y, 0., **allclose_kwargs)
         np.testing.assert_allclose(probe.locations.z, 0., **allclose_kwargs)
@@ -454,7 +497,7 @@ class TestProbe:
         np.testing.assert_allclose(probe.locations[-1], (0., 0., 0.), **allclose_kwargs)
 
         probe = self.linear_probe()
-        probe.set_reference_element('last')
+        probe.set_reference_element("last")
         probe.flip_probe_around_axis_Oz()
         probe.translate_to_point_O()
         np.testing.assert_allclose(probe.locations.y, 0., **allclose_kwargs)
@@ -463,20 +506,24 @@ class TestProbe:
         np.testing.assert_allclose(probe.locations[-1], (0., 0., 0.), **allclose_kwargs)
 
         probe = self.linear_probe()
-        probe.set_reference_element('mean')
+        probe.set_reference_element("mean")
         probe.translate_to_point_O()
         np.testing.assert_allclose(probe.locations.z, 0., **allclose_kwargs)
         np.testing.assert_allclose(probe.locations.y, 0., **allclose_kwargs)
-        np.testing.assert_allclose(probe.locations[0], (-4.5e-3, 0., 0.),
-                                   **allclose_kwargs)
-        np.testing.assert_allclose(probe.locations[-1], (+4.5e-3, 0, 0),
-                                   **allclose_kwargs)
+        np.testing.assert_allclose(
+            probe.locations[0], (-4.5e-3, 0., 0.), **allclose_kwargs
+        )
+        np.testing.assert_allclose(
+            probe.locations[-1], (+4.5e-3, 0, 0), **allclose_kwargs
+        )
 
         probe.flip_probe_around_axis_Oz()
-        np.testing.assert_allclose(probe.locations[0], (+4.5e-3, 0., 0.),
-                                   **allclose_kwargs)
-        np.testing.assert_allclose(probe.locations[-1], (-4.5e-3, 0, 0),
-                                   **allclose_kwargs)
+        np.testing.assert_allclose(
+            probe.locations[0], (+4.5e-3, 0., 0.), **allclose_kwargs
+        )
+        np.testing.assert_allclose(
+            probe.locations[-1], (-4.5e-3, 0, 0), **allclose_kwargs
+        )
 
     @staticmethod
     def assert_probe_equal_in_pcs(probe1, probe2):
@@ -500,25 +547,30 @@ def test_material():
     mat = c.Material(1)
     str(mat)
 
-    mat = c.Material(1, 2, 3, metadata={'short_name': 'test_material'})
+    mat = c.Material(1, 2, 3, metadata={"short_name": "test_material"})
     str(mat)
     assert math.isclose(mat.longitudinal_vel, 1)
     assert math.isclose(mat.transverse_vel, 2)
     assert math.isclose(mat.density, 3)
     assert mat.state_of_matter is None
-    assert mat.metadata['short_name'] == 'test_material'
+    assert mat.metadata["short_name"] == "test_material"
 
-    mat = c.Material(1, 2, state_of_matter=c.StateMatter.liquid,
-                     metadata={'short_name': 'test_material'})
+    mat = c.Material(
+        1,
+        2,
+        state_of_matter=c.StateMatter.liquid,
+        metadata={"short_name": "test_material"},
+    )
     assert mat.state_of_matter is c.StateMatter.liquid
-    mat = c.Material(1, 2, state_of_matter='liquid',
-                     metadata={'short_name': 'test_material'})
+    mat = c.Material(
+        1, 2, state_of_matter="liquid", metadata={"short_name": "test_material"}
+    )
     assert mat.state_of_matter is c.StateMatter.liquid
 
     # test method 'velocity':
-    assert math.isclose(mat.velocity('longitudinal'), mat.longitudinal_vel)
+    assert math.isclose(mat.velocity("longitudinal"), mat.longitudinal_vel)
     assert math.isclose(mat.velocity(c.Mode.L), mat.longitudinal_vel)
-    assert math.isclose(mat.velocity('transverse'), mat.transverse_vel)
+    assert math.isclose(mat.velocity("transverse"), mat.transverse_vel)
     assert math.isclose(mat.velocity(c.Mode.T), mat.transverse_vel)
 
 
@@ -528,41 +580,55 @@ def test_mode():
     assert c.Mode.L.reverse() is c.Mode.T
     assert c.Mode.T.reverse() is c.Mode.L
 
-    assert c.Mode.L.key() == 'L'
-    assert c.Mode.T.key() == 'T'
+    assert c.Mode.L.key() == "L"
+    assert c.Mode.T.key() == "T"
 
 
 class TestInterface:
     def test_interface_probe(self):
         n = 10
         points = g.Points(np.random.uniform(size=(n, 3)))
-        orientations = g.Points(np.eye(3), 'coordinate system')
+        orientations = g.Points(np.eye(3), "coordinate system")
 
-        interface = c.Interface(points, orientations, are_normals_on_inc_rays_side=None,
-                                are_normals_on_out_rays_side=True)
+        interface = c.Interface(
+            points,
+            orientations,
+            are_normals_on_inc_rays_side=None,
+            are_normals_on_out_rays_side=True,
+        )
 
         assert interface.points is points
-        assert np.allclose(interface.orientations[np.newaxis, ...],
-                           interface.orientations[...])
+        assert np.allclose(
+            interface.orientations[np.newaxis, ...], interface.orientations[...]
+        )
         str(interface)
         repr(interface)
 
     def test_interface_grid(self):
         n = 10
         points = g.Points(np.random.uniform(size=(n, 3)))
-        orientations = g.Points(np.eye(3), 'coordinate system')
+        orientations = g.Points(np.eye(3), "coordinate system")
 
-        interface = c.Interface(points, orientations, are_normals_on_inc_rays_side=True,
-                                are_normals_on_out_rays_side=None)
+        interface = c.Interface(
+            points,
+            orientations,
+            are_normals_on_inc_rays_side=True,
+            are_normals_on_out_rays_side=None,
+        )
 
         with pytest.raises(ValueError):
-            c.Interface(points, orientations, are_normals_on_inc_rays_side=True,
-                        are_normals_on_out_rays_side=None,
-                        reflection_against=water)
+            c.Interface(
+                points,
+                orientations,
+                are_normals_on_inc_rays_side=True,
+                are_normals_on_out_rays_side=None,
+                reflection_against=water,
+            )
 
         assert interface.points is points
-        assert np.allclose(interface.orientations[np.newaxis, ...],
-                           interface.orientations[...])
+        assert np.allclose(
+            interface.orientations[np.newaxis, ...], interface.orientations[...]
+        )
         assert interface.transmission_reflection is None
         str(interface)
         repr(interface)
@@ -570,49 +636,68 @@ class TestInterface:
     def test_interface_transmission(self, water):
         n = 10
         points = g.Points(np.random.uniform(size=(n, 3)))
-        orientations = g.Points(np.eye(3), 'coordinate system')
+        orientations = g.Points(np.eye(3), "coordinate system")
 
-        interface = c.Interface(points, orientations,
-                                transmission_reflection='transmission',
-                                kind='fluid_solid',
-                                are_normals_on_inc_rays_side=True,
-                                are_normals_on_out_rays_side=None)
+        interface = c.Interface(
+            points,
+            orientations,
+            transmission_reflection="transmission",
+            kind="fluid_solid",
+            are_normals_on_inc_rays_side=True,
+            are_normals_on_out_rays_side=None,
+        )
 
         with pytest.raises(ValueError):
-            c.Interface(points, orientations, transmission_reflection='transmission',
-                        kind='fluid_solid',
-                        are_normals_on_inc_rays_side=True,
-                        are_normals_on_out_rays_side=None,
-                        reflection_against=water)
+            c.Interface(
+                points,
+                orientations,
+                transmission_reflection="transmission",
+                kind="fluid_solid",
+                are_normals_on_inc_rays_side=True,
+                are_normals_on_out_rays_side=None,
+                reflection_against=water,
+            )
 
         assert interface.points is points
-        assert np.allclose(interface.orientations[np.newaxis, ...],
-                           interface.orientations[...])
-        assert interface.transmission_reflection is c.TransmissionReflection.transmission
+        assert np.allclose(
+            interface.orientations[np.newaxis, ...], interface.orientations[...]
+        )
+        assert (
+            interface.transmission_reflection is c.TransmissionReflection.transmission
+        )
         str(interface)
         repr(interface)
 
     def test_interface_reflection(self):
         n = 10
         points = g.Points(np.random.uniform(size=(n, 3)))
-        orientations = g.Points(np.eye(3), 'coordinate system')
+        orientations = g.Points(np.eye(3), "coordinate system")
 
-        interface = c.Interface(points, orientations,
-                                transmission_reflection='reflection', kind='fluid_solid',
-                                are_normals_on_inc_rays_side=True,
-                                are_normals_on_out_rays_side=None,
-                                reflection_against=water)
+        interface = c.Interface(
+            points,
+            orientations,
+            transmission_reflection="reflection",
+            kind="fluid_solid",
+            are_normals_on_inc_rays_side=True,
+            are_normals_on_out_rays_side=None,
+            reflection_against=water,
+        )
 
         with pytest.raises(ValueError):
-            c.Interface(points, orientations, transmission_reflection='reflection',
-                        kind='fluid_solid',
-                        are_normals_on_inc_rays_side=True,
-                        are_normals_on_out_rays_side=None,
-                        reflection_against=None)
+            c.Interface(
+                points,
+                orientations,
+                transmission_reflection="reflection",
+                kind="fluid_solid",
+                are_normals_on_inc_rays_side=True,
+                are_normals_on_out_rays_side=None,
+                reflection_against=None,
+            )
 
         assert interface.points is points
-        assert np.allclose(interface.orientations[np.newaxis, ...],
-                           interface.orientations[...])
+        assert np.allclose(
+            interface.orientations[np.newaxis, ...], interface.orientations[...]
+        )
         assert interface.transmission_reflection is c.TransmissionReflection.reflection
         assert interface.reflection_against is water
         str(interface)
@@ -627,13 +712,21 @@ class TestPath:
         grid_interface = mock.Mock()
         path = c.Path(
             interfaces=(
-                probe_interface, frontwall_interface, backwall_interface, grid_interface),
+                probe_interface,
+                frontwall_interface,
+                backwall_interface,
+                grid_interface,
+            ),
             materials=(water, aluminium, aluminium),
-            modes=('L', 'L', 'T'),
-            name='LT')
+            modes=("L", "L", "T"),
+            name="LT",
+        )
 
         assert path.velocities == (
-            water.longitudinal_vel, aluminium.longitudinal_vel, aluminium.transverse_vel)
+            water.longitudinal_vel,
+            aluminium.longitudinal_vel,
+            aluminium.transverse_vel,
+        )
 
 
 def test_interface_kind():

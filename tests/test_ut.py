@@ -23,20 +23,20 @@ def test_decibel():
     assert np.isclose(ref, 10.)
 
     arr = np.array([0.01, 0.1, 1., 10., np.nan])
-    with np.errstate(all='raise'):
+    with np.errstate(all="raise"):
         db = ut.decibel(arr)
     assert np.isnan(db[-1])
     assert np.allclose(db[:-1], [-60., -40., -20., 0.])
 
     # Check argument neginf_values:
     arr = np.array([0., 0.01, 0.1, 1., 10., np.nan])
-    with np.errstate(all='raise'):
+    with np.errstate(all="raise"):
         db = ut.decibel(arr, neginf_value=-666.)
     assert np.isnan(db[-1])
     assert np.allclose(db[:-1], [-666., -60., -40., -20., 0.])
 
     arr = np.array([0., 0.01, 0.1, 1., 10., np.nan])
-    with np.errstate(all='raise'):
+    with np.errstate(all="raise"):
         db = ut.decibel(arr, neginf_value=None)
     assert np.isnan(db[-1])
     assert np.isneginf(db[0])
@@ -77,22 +77,22 @@ def test_infer_capture_method():
     # Valid HMC
     tx = [0, 0, 0, 1, 1, 2]
     rx = [0, 1, 2, 1, 2, 2]
-    assert ut.infer_capture_method(tx, rx) == 'hmc'
+    assert ut.infer_capture_method(tx, rx) == "hmc"
 
     # HMC with duplicate signals
     tx = [0, 0, 0, 1, 1, 2, 1]
     rx = [0, 1, 2, 1, 2, 2, 1]
-    assert ut.infer_capture_method(tx, rx) == 'unsupported'
+    assert ut.infer_capture_method(tx, rx) == "unsupported"
 
     # HMC with missing signals
     tx = [0, 0, 0, 2, 1]
     rx = [0, 1, 2, 2, 1]
-    assert ut.infer_capture_method(tx, rx) == 'unsupported'
+    assert ut.infer_capture_method(tx, rx) == "unsupported"
 
     # Valid HMC
     tx = [0, 1, 2, 1, 2, 2]
     rx = [0, 0, 0, 1, 1, 2]
-    assert ut.infer_capture_method(tx, rx) == 'hmc'
+    assert ut.infer_capture_method(tx, rx) == "hmc"
 
     # Something weird
     tx = [0, 1, 2, 1, 2, 2]
@@ -103,27 +103,27 @@ def test_infer_capture_method():
     # Valid FMC
     tx = [0, 0, 0, 1, 1, 1, 2, 2, 2]
     rx = [0, 1, 2, 0, 1, 2, 0, 1, 2]
-    assert ut.infer_capture_method(tx, rx) == 'fmc'
+    assert ut.infer_capture_method(tx, rx) == "fmc"
 
     # FMC with duplicate signals
     tx = [0, 0, 0, 1, 1, 1, 2, 2, 2, 0]
     rx = [0, 1, 2, 0, 1, 2, 0, 1, 2, 0]
-    assert ut.infer_capture_method(tx, rx) == 'unsupported'
+    assert ut.infer_capture_method(tx, rx) == "unsupported"
 
     # FMC with missing signals
     tx = [0, 0, 0, 1, 1, 1, 2, 2]
     rx = [0, 1, 2, 0, 1, 2, 0, 1]
-    assert ut.infer_capture_method(tx, rx) == 'unsupported'
+    assert ut.infer_capture_method(tx, rx) == "unsupported"
 
     # Negative values
     tx = [0, -1]
     rx = [0, 1]
-    assert ut.infer_capture_method(tx, rx) == 'unsupported'
+    assert ut.infer_capture_method(tx, rx) == "unsupported"
 
     # Weird
     tx = [0, 5]
     rx = [0, 1]
-    assert ut.infer_capture_method(tx, rx) == 'unsupported'
+    assert ut.infer_capture_method(tx, rx) == "unsupported"
 
 
 def test_default_scanline_weights():
@@ -148,7 +148,7 @@ def test_default_scanline_weights():
     # HMC with dead-element 1
     tx = [0, 0, 2]
     rx = [0, 2, 2]
-    expected = [1., 2., 1., ]
+    expected = [1., 2., 1.]
     np.testing.assert_almost_equal(ut.default_scanline_weights(tx, rx), expected)
 
     # HMC again
@@ -215,60 +215,81 @@ def test_make_timevect():
 
 
 def test_filter_unique_views():
-    unique_views = arim.ut.filter_unique_views([('AB', 'CD'), ('DC', 'BA'), ('X', 'YZ'),
-                                                ('ZY', 'X')])
-    assert unique_views == [('AB', 'CD'), ('X', 'YZ')]
+    unique_views = arim.ut.filter_unique_views(
+        [("AB", "CD"), ("DC", "BA"), ("X", "YZ"), ("ZY", "X")]
+    )
+    assert unique_views == [("AB", "CD"), ("X", "YZ")]
 
 
 def test_make_viewnames():
-    L = 'L'
-    T = 'T'
-    LL = 'LL'
+    L = "L"
+    T = "T"
+    LL = "LL"
 
-    viewnames = arim.ut.make_viewnames(['L', 'T'], tfm_unique_only=False)
+    viewnames = arim.ut.make_viewnames(["L", "T"], tfm_unique_only=False)
     assert viewnames == [(L, L), (L, T), (T, L), (T, T)]
 
-    viewnames = arim.ut.make_viewnames(['L', 'T'], tfm_unique_only=True)
+    viewnames = arim.ut.make_viewnames(["L", "T"], tfm_unique_only=True)
     assert viewnames == [(L, L), (L, T), (T, T)]
 
-    viewnames = arim.ut.make_viewnames(['L', 'T'], tfm_unique_only=True)
+    viewnames = arim.ut.make_viewnames(["L", "T"], tfm_unique_only=True)
     assert viewnames == [(L, L), (L, T), (T, T)]
 
     # legacy IMAGING_MODES
-    legacy_imaging_views = ["L-L", "L-T", "T-T",
-                            "LL-L", "LL-T", "LT-L", "LT-T", "TL-L", "TL-T", "TT-L",
-                            "TT-T",
-                            "LL-LL", "LL-LT", "LL-TL", "LL-TT",
-                            "LT-LT", "LT-TL", "LT-TT",
-                            "TL-LT", "TL-TT",
-                            "TT-TT"]
-    legacy_imaging_views = [tuple(view.split('-')) for view in legacy_imaging_views]
+    legacy_imaging_views = [
+        "L-L",
+        "L-T",
+        "T-T",
+        "LL-L",
+        "LL-T",
+        "LT-L",
+        "LT-T",
+        "TL-L",
+        "TL-T",
+        "TT-L",
+        "TT-T",
+        "LL-LL",
+        "LL-LT",
+        "LL-TL",
+        "LL-TT",
+        "LT-LT",
+        "LT-TL",
+        "LT-TT",
+        "TL-LT",
+        "TL-TT",
+        "TT-TT",
+    ]
+    legacy_imaging_views = [tuple(view.split("-")) for view in legacy_imaging_views]
 
-    viewnames = arim.ut.make_viewnames(['L', 'T', 'LL', 'LT', 'TL', 'TT'],
-                                       tfm_unique_only=True)
+    viewnames = arim.ut.make_viewnames(
+        ["L", "T", "LL", "LT", "TL", "TT"], tfm_unique_only=True
+    )
     assert viewnames == legacy_imaging_views
 
-    viewnames = arim.ut.make_viewnames(arim.ut.DIRECT_PATHS + arim.ut.SKIP_PATHS,
-                                       tfm_unique_only=True)
+    viewnames = arim.ut.make_viewnames(
+        arim.ut.DIRECT_PATHS + arim.ut.SKIP_PATHS, tfm_unique_only=True
+    )
     assert viewnames == legacy_imaging_views
 
     viewnames = arim.ut.make_viewnames(
         arim.ut.DIRECT_PATHS + arim.ut.SKIP_PATHS + arim.ut.DOUBLE_SKIP_PATHS,
-        tfm_unique_only=True)
+        tfm_unique_only=True,
+    )
     assert viewnames[:21] == legacy_imaging_views
     assert len(viewnames) == 105
 
     viewnames = arim.ut.make_viewnames(
         arim.ut.DIRECT_PATHS + arim.ut.SKIP_PATHS + arim.ut.DOUBLE_SKIP_PATHS,
-        tfm_unique_only=False)
+        tfm_unique_only=False,
+    )
     assert len(viewnames) == 14 * 14
 
-    viewnames = arim.ut.make_viewnames(['L', 'T', 'LL'], tfm_unique_only=True)
+    viewnames = arim.ut.make_viewnames(["L", "T", "LL"], tfm_unique_only=True)
     assert viewnames == [(L, L), (L, T), (T, T), (LL, L), (LL, T), (LL, LL)]
 
 
 def test_reciprocal_viewname():
-    assert ut.reciprocal_viewname('L-LT') == 'TL-L'
+    assert ut.reciprocal_viewname("L-LT") == "TL-L"
 
 
 def test_rayleigh_wave():

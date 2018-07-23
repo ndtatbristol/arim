@@ -184,4 +184,3 @@ if __name__ == "__main__":
     save = False
     compute_sensitivity(dataset_name, save)
     plot_sensitivity(dataset_name, save)
-
