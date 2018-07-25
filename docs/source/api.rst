@@ -40,6 +40,7 @@ arim reference
    :toctree: _autosummary
 
    io
+   io.native
    io.brain
    io.scat
    ut

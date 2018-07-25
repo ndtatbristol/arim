@@ -1,5 +1,27 @@
 """
-Utilities for loading an arim configuration formatted in YAML.
+Load .arim file format
+
+An .arim file is a directory which contains:
+
+- a conf.yaml file (base configuration file)
+- a conf.d directory which contains additional configuration files (optional)
+- intermediary and final results (optional).
+
+The recommended way to load the configuration is to use :func:`load_conf`.
+The configuration is loaded according to the following pseudo-code:
+
+.. code-block:: none
+
+    conf := read(conf.yaml)
+    For each file in conf.d:
+        tmp_conf := read(file)
+        conf := merge(conf, tmp_conf)
+    Return conf
+
+The files are conf.d are read in alphabetical order.
+If a configuration entry is present in two files, only the entry from the file
+read the latest will be kept.
+
 """
 
 import pathlib
@@ -9,6 +31,7 @@ import os
 import numpy as np
 
 from .. import core, _probes, geometry, config
+from . import brain
 
 __all__ = [
     "load_conf",
@@ -20,6 +43,7 @@ __all__ = [
     "material_from_conf",
     "material_attenuation_from_conf",
     "grid_from_conf",
+    "frame_from_conf",
 ]
 
 
@@ -145,11 +169,12 @@ def _resolve_filenames(d, root_dir, target_keys):
 
 def probe_from_conf(conf, apply_probe_location=True):
     """
-    load probe from conf
+    Load probe
 
     Parameters
     ----------
     conf : dict
+        Root conf
     apply_probe_location: bool
 
     Returns
@@ -192,6 +217,7 @@ def examination_object_from_conf(conf):
     Parameters
     ----------
     conf : dict
+        Root conf
 
     Returns
     -------
@@ -211,9 +237,12 @@ def examination_object_from_conf(conf):
 
 def material_attenuation_from_conf(conf):
     """
+    Load material attenuation
+
     Parameters
     ----------
     conf : dict
+        Material attenuation conf
 
     Returns
     -------
@@ -239,9 +268,12 @@ def _material_from_conf(conf_or_none):
 
 def material_from_conf(conf):
     """
+    Load material
+
     Parameters
     ----------
     conf : dict
+        Material conf
 
     Returns
     -------
@@ -259,11 +291,12 @@ def material_from_conf(conf):
 
 def block_in_immersion_from_conf(conf):
     """
-    load block in immersion from conf
+    Load block in immersion (examination object)
 
     Parameters
     ----------
     conf : dict
+        Root conf
 
     Returns
     -------
@@ -279,11 +312,12 @@ def block_in_immersion_from_conf(conf):
 
 def grid_from_conf(conf):
     """
-    load grid from conf
+    Load grid
 
     Parameters
     ----------
     conf : dict
+        Root conf
 
     Returns
     -------
@@ -296,3 +330,49 @@ def grid_from_conf(conf):
     if "ymax" not in conf_grid:
         conf_grid["ymax"] = 0.
     return geometry.Grid(**conf_grid)
+
+
+def frame_from_conf(
+    conf, use_probe_from_conf=True, use_examination_object_from_conf=True
+):
+    """
+    Load a Frame.
+
+    Current limitation: read only from Brain (relies on :func:`arim.io.brain.load_expdata`).
+
+
+    Parameters
+    ----------
+    conf : dict or Conf
+        Root configuration
+    use_probe_from_conf : bool
+        If True, load probe from conf (ignores the one defined in datafile)
+    use_examination_object_from_conf : bool
+        If True, load examination from conf (ignores the one defined in datafile)
+
+    Returns
+    -------
+    Frame
+
+    """
+    frame_conf = conf["frame"]
+    frame = brain.load_expdata(frame_conf["datafile"])
+
+    instrument_delay = None
+    try:
+        instrument_delay = frame_conf["instrument_delay"]
+    except KeyError:
+        pass
+
+    if instrument_delay is not None:
+        # Adjust time vector
+        frame.time = core.Time(
+            frame.time.start - instrument_delay, frame.time.step, len(frame.time)
+        )
+
+    if use_probe_from_conf:
+        frame.probe = probe_from_conf(conf)
+    if use_examination_object_from_conf:
+        frame.examination_object = examination_object_from_conf(conf)
+
+    return frame
