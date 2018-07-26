@@ -15,13 +15,13 @@ arim.models.block\_in\_immersion
       make_paths
       make_views
       make_views_from_paths
-      multifreq_scat_transfer_function
       multifreq_scat_transfer_functions
+      multifreq_wall_transfer_functions
       ray_weights_for_views
       ray_weights_for_wall
       rx_ray_weights
-      singlefreq_scat_transfer_function
       singlefreq_scat_transfer_functions
+      singlefreq_wall_transfer_functions
       tx_ray_weights
    
    

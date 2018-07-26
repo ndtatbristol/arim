@@ -31,30 +31,28 @@ block_material:
   density: 2700.
   state_of_matter: solid
 
-# scatterer:
-  # kind: 'file'
-  # filename: 'scattering_rounded_notch.mat'
-  # filename: 'scattering_notch.mat'
-
-# scatterer:
-#   kind: 'crack_centre'
-#   crack_length: 2.e-3
-
-# scatterer:
-#   kind: 'crack_tip'
-
 scatterer:
-  kind: 'sdh'
-  radius: 500.e-6
-
-# scatterer:
-#   kind: 'point'
-
-scatterer_angle_deg: -90.
-
-scatterers:
-  - x: 20.e-3
+  angle_deg: 0.
+  location:
+    x: 20.e-3
+    y: 0.0
     z: 15.e-3
+
+  # Uncomment and edit the desired specs
+  specs:
+    kind: sdh
+    radius: .5e-3
+
+  # specs:
+  #   kind: crack_centre
+  #   crack_length: 2.e-3
+
+  # specs:
+  #   kind: file
+  #   filename: scattering.mat
+
+  # specs:
+  #   kind: point  # unphysical, debug only
 
 frontwall:
   numpoints: 3000
@@ -70,8 +68,8 @@ backwall:
 
 # for imaging:
 grid:
-  xmin: 15.e-3
-  xmax: 25.e-3
-  zmin: 10.e-3
-  zmax: 20.e-3
-  pixel_size: .125e-3
+  xmin: 0.e-3
+  xmax: 60.e-3
+  zmin: 1.e-3
+  zmax: 39.e-3
+  pixel_size: .5e-3

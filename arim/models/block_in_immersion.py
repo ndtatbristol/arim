@@ -255,6 +255,7 @@ def ray_weights_for_views(
     """
     Compute coefficients Q_i(r, omega) and Q'_j(r, omega) from the forward model for
     all views.
+
     NB: do not compute the scattering.
 
     Internally use :func:`tx_ray_weights` and :func:`rx_way_weights`.
@@ -412,7 +413,7 @@ def backwall_paths(
         "fluid_solid",
         "transmission",
         are_normals_on_inc_rays_side=False,
-        are_normals_on_out_rays_side=True
+        are_normals_on_out_rays_side=True,
     )
 
     backwall_refl = c.Interface(
@@ -421,7 +422,7 @@ def backwall_paths(
         "reflection",
         reflection_against=couplant_material,
         are_normals_on_inc_rays_side=False,
-        are_normals_on_out_rays_side=False
+        are_normals_on_out_rays_side=False,
     )
 
     frontwall_block_to_couplant = c.Interface(
@@ -429,7 +430,7 @@ def backwall_paths(
         "solid_fluid",
         "transmission",
         are_normals_on_inc_rays_side=True,
-        are_normals_on_out_rays_side=False
+        are_normals_on_out_rays_side=False,
     )
 
     probe_end = c.Interface(*probe_oriented_points, are_normals_on_inc_rays_side=True)
@@ -470,6 +471,8 @@ def ray_weights_for_wall(
     use_attenuation=True,
 ):
     """
+    Compute model coefficients for wall echoes.
+
     Parameters
     ----------
     path
@@ -570,7 +573,7 @@ def make_interfaces(
         "fluid_solid",
         "transmission",
         are_normals_on_inc_rays_side=False,
-        are_normals_on_out_rays_side=True
+        are_normals_on_out_rays_side=True,
     )
     if backwall is not None:
         interface_dict["backwall_refl"] = c.Interface(
@@ -579,7 +582,7 @@ def make_interfaces(
             "reflection",
             reflection_against=couplant_material,
             are_normals_on_inc_rays_side=False,
-            are_normals_on_out_rays_side=False
+            are_normals_on_out_rays_side=False,
         )
     interface_dict["grid"] = c.Interface(
         *grid_oriented_points, are_normals_on_inc_rays_side=True
@@ -590,7 +593,7 @@ def make_interfaces(
         "reflection",
         reflection_against=couplant_material,
         are_normals_on_inc_rays_side=True,
-        are_normals_on_out_rays_side=True
+        are_normals_on_out_rays_side=True,
     )
 
     return interface_dict
@@ -838,11 +841,12 @@ def singlefreq_scat_transfer_functions(
     use_directivity=True,
     use_beamspread=True,
     use_transrefl=True,
+    use_attenuation=True,
     scat_angle=0.,
     numangles_for_scat_precomp=0,
 ):
     """
-    Transfer function for all views, returned view per view.
+    Compute transfer functions for scatterer echoes (single-frequency model).
 
     Parameters
     ----------
@@ -859,6 +863,7 @@ def singlefreq_scat_transfer_functions(
     use_directivity : bool
     use_beamspread : bool
     use_transrefl : bool
+    use_attenuation : bool
     scat_angle : float
     numangles_for_scat_precomp : int
         Number of angles in [-pi, pi] for scattering precomputation.
@@ -866,7 +871,7 @@ def singlefreq_scat_transfer_functions(
 
     Yields
     ------
-    viewname
+    viewname : str
         Key of `views`
     partial_transfer_function_f : ndarray
         Shape: (numscanlines, numfreq). Complex. Contribution for one view.
@@ -898,6 +903,7 @@ def singlefreq_scat_transfer_functions(
         use_beamspread=use_beamspread,
         use_directivity=use_directivity,
         use_transrefl=use_transrefl,
+        use_attenuation=use_attenuation,
     )
 
     for viewname, view in views.items():
@@ -927,65 +933,69 @@ def singlefreq_scat_transfer_functions(
         yield viewname, partial_transfer_function_f
 
 
-def singlefreq_scat_transfer_function(
-    views,
+def singlefreq_wall_transfer_functions(
+    wall_paths,
     tx,
     rx,
     frequency,
     freq_array,
-    scat_obj,
     probe_element_width=None,
     use_directivity=True,
     use_beamspread=True,
     use_transrefl=True,
-    scat_angle=0.,
-    numangles_for_scat_precomp=0,
+    use_attenuation=True,
 ):
     """
-    Transfer function for all views.
-
+    Compute transfer functions for wall echoes (single-frequency model).
+ 
     Parameters
     ----------
-    views : dict[Views]
+    wall_paths : Dict[Path]
     tx : ndarray
         Shape: (numscanlines, )
     rx : ndarray
         Shape: (numscanlines, )
     frequency : float
+        Frequency at which the model runs.
     freq_array : ndarray
-        Shape: (numfreq, )
-    scat_obj : arim.scat.Scattering2d
+        Shape: (numfreq, ). First freq is assumed to be zero.
     probe_element_width : float or None
     use_directivity : bool
     use_beamspread : bool
     use_transrefl : bool
-    scat_angle : float
-    numangles_for_scat_precomp : int
-        Number of angles in [-pi, pi] for scattering precomputation.
-        0 to disable. See module documentation.
+    use_attenuation : bool
 
-    Returns
-    -------
+    Yields
+    ------
+    pathname : str
+        Key of `wall_paths`
     partial_transfer_function_f : ndarray
-        Shape: (numscanlines, numfreq). Complex. Total for all views
+        Shape: (numscanlines, numfreq). Complex. Contribution for one path.
 
     """
-    return sum(
-        singlefreq_scat_transfer_functions(
-            views,
-            tx,
-            rx,
-            frequency,
-            freq_array,
-            scat_obj,
-            probe_element_width,
-            use_directivity,
-            use_beamspread,
-            use_transrefl,
-            scat_angle,
-            numangles_for_scat_precomp,
-        )[1]
-    )
+    for pathname, path in wall_paths.items():
+        logger.info(f"Transfer function for wall {pathname}")
+
+        partial_transfer_function_f = np.zeros((len(tx), len(freq_array)), np.complex_)
+        ray_weights, _ = ray_weights_for_wall(
+            path,
+            frequency=frequency,
+            probe_element_width=probe_element_width,
+            use_beamspread=use_beamspread,
+            use_directivity=use_directivity,
+            use_transrefl=use_transrefl,
+            use_attenuation=use_attenuation,
+        )
+        # shape (numelements, numelements)
+
+        for scan_idx, (tx_, rx_) in enumerate(zip(tx, rx)):
+            delay = path.rays.times[tx_, rx_]
+            ray_weight = ray_weights[tx_, rx_].conj()
+            partial_transfer_function_f[scan_idx, 1:] = (
+                np.exp(-2j * np.pi * freq_array[1:] * delay) * ray_weight
+            )
+
+        yield pathname, partial_transfer_function_f
 
 
 def multifreq_scat_transfer_functions(
@@ -998,11 +1008,12 @@ def multifreq_scat_transfer_functions(
     use_directivity=True,
     use_beamspread=True,
     use_transrefl=True,
+    use_attenuation=True,
     scat_angle=0.,
     numangles_for_scat_precomp=0,
 ):
     """
-    Transfer function for all views, returned view per view.
+    Compute transfer functions for scatterer echoes (multi-frequency model).
 
     Parameters
     ----------
@@ -1018,6 +1029,7 @@ def multifreq_scat_transfer_functions(
     use_directivity : bool
     use_beamspread : bool
     use_transrefl : bool
+    use_attenuation : bool
     scat_angle : float
     numangles_for_scat_precomp : int
         Number of angles in [-pi, pi] for scattering precomputation.
@@ -1025,7 +1037,7 @@ def multifreq_scat_transfer_functions(
 
     Yields
     ------
-    viewname
+    viewname : str
         Key of `views`
     partial_transfer_function_f : ndarray
         Shape: (numscanlines, numfreq). Complex. Contribution for one view.
@@ -1048,6 +1060,7 @@ def multifreq_scat_transfer_functions(
                 use_beamspread=use_beamspread,
                 use_directivity=use_directivity,
                 use_transrefl=use_transrefl,
+                use_attenuation=use_attenuation,
             )
             ray_weights_allfreq.append(ray_weights)
 
@@ -1107,59 +1120,67 @@ def multifreq_scat_transfer_functions(
         yield viewname, partial_transfer_function_f
 
 
-def multifreq_scat_transfer_function(
-    views,
+def multifreq_wall_transfer_functions(
+    wall_paths,
     tx,
     rx,
     freq_array,
-    scat_obj,
     probe_element_width=None,
     use_directivity=True,
     use_beamspread=True,
     use_transrefl=True,
-    scat_angle=0.,
-    numangles_for_scat_precomp=0,
+    use_attenuation=True,
 ):
     """
-    Transfer function for all views.
+    Compute transfer functions for scatterer echoes (multi-frequency model).
 
     Parameters
     ----------
-    views : dict[Views]
+    wall_paths : Dict[Path]
     tx : ndarray
         Shape: (numscanlines, )
     rx : ndarray
         Shape: (numscanlines, )
     freq_array : ndarray
-        Shape: (numfreq, )
-    scat_obj : arim.scat.Scattering2d
+        Shape: (numfreq, ). First freq is assumed to be zero.
     probe_element_width : float or None
     use_directivity : bool
     use_beamspread : bool
     use_transrefl : bool
-    scat_angle : float
-    numangles_for_scat_precomp : int
-        Number of angles in [-pi, pi] for scattering precomputation.
-        0 to disable. See module documentation.
+    use_attenuation : bool
 
-    Returns
-    -------
+    Yields
+    ------
+    pathname : str
+        Key of `wall_paths`
     partial_transfer_function_f : ndarray
-        Shape: (numscanlines, numfreq). Complex. Total for all views
+        Shape: (numscanlines, numfreq). Complex. Contribution for one path.
+
 
     """
-    return sum(
-        multifreq_scat_transfer_functions(
-            views,
-            tx,
-            rx,
-            freq_array,
-            scat_obj,
-            probe_element_width,
-            use_directivity,
-            use_beamspread,
-            use_transrefl,
-            scat_angle,
-            numangles_for_scat_precomp,
-        )[1]
-    )
+    for pathname, path in wall_paths.items():
+        logger.info(f"Transfer function for wall {pathname}")
+
+        partial_transfer_function_f = np.zeros((len(tx), len(freq_array)), np.complex_)
+
+        for freq_idx, frequency in enumerate(freq_array[1:], start=1):
+            # ignores first frequency which is assumed to be 0
+            ray_weights, _ = ray_weights_for_wall(
+                path,
+                frequency=frequency,
+                probe_element_width=probe_element_width,
+                use_beamspread=use_beamspread,
+                use_directivity=use_directivity,
+                use_transrefl=use_transrefl,
+                use_attenuation=use_attenuation,
+            )
+            # shape: (numelements, numelements)
+
+            for scan_idx, (tx_, rx_) in enumerate(zip(tx, rx)):
+                delay = path.rays.times[tx_, rx_]
+                ray_weight = ray_weights[tx_, rx_].conj()
+                partial_transfer_function_f[scan_idx, freq_idx] = (
+                    np.exp(-2j * np.pi * frequency * delay) * ray_weight
+                )
+
+        yield pathname, partial_transfer_function_f
