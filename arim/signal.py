@@ -200,6 +200,7 @@ class Abs(Filter):
     def __str__(self):
         return "Absolute value"
 
+
 class Gaussian(Filter):
     """ 
     Gaussian Filter - As applied in BRAIN **BUT** default is zero outside of filter region, BRAIN is not.
@@ -213,30 +214,38 @@ class Gaussian(Filter):
 
     """
 
-    def __init__(self, nsamples,centre_freq, half_bandwidth, time, force_zero=True, db_down=40.0):
-        
-        fract=np.power(10,-db_down/20.0)
-        max_freq=1.0/(time.step)
-        peak_pos_fract=centre_freq/max_freq
-        half_width_fract=half_bandwidth/max_freq
-        r=np.arange(nsamples)/(nsamples-1)-peak_pos_fract
-        r1=half_width_fract/(np.sqrt(-np.log(fract)))
-        self.samples=nsamples
-        self.centre_freq=centre_freq
-        self.half_bandwidth=half_bandwidth
-        self.max_freq=max_freq
-        self.filter_window=np.exp(-np.power(r/r1,2))  
-        #print('Gaussian')
+    def __init__(
+        self, nsamples, centre_freq, half_bandwidth, time, force_zero=True, db_down=40.0
+    ):
+
+        fract = np.power(10, -db_down / 20.0)
+        max_freq = 1.0 / (time.step)
+        peak_pos_fract = centre_freq / max_freq
+        half_width_fract = half_bandwidth / max_freq
+        r = np.arange(nsamples) / (nsamples - 1) - peak_pos_fract
+        r1 = half_width_fract / (np.sqrt(-np.log(fract)))
+        self.samples = nsamples
+        self.centre_freq = centre_freq
+        self.half_bandwidth = half_bandwidth
+        self.max_freq = max_freq
+        self.filter_window = np.exp(-np.power(r / r1, 2))
+        # print('Gaussian')
         if force_zero:
-            self.filter_window[self.filter_window < fract]=0
+            self.filter_window[self.filter_window < fract] = 0
 
     def __str__(self):
-        return '{} [{:.1f}, {:.1f}] MHz order {}'.format(self.__class__.__qualname__,
-                                                         self.max_freq * 1e-6, self.half_bandwidth * 1e-6, self.max_freq * 1e-6)
+        return "{} [{:.1f}, {:.1f}] MHz order {}".format(
+            self.__class__.__qualname__,
+            self.max_freq * 1e-6,
+            self.half_bandwidth * 1e-6,
+            self.max_freq * 1e-6,
+        )
 
     def __call__(self, arr):
-        return np.fft.ifft(np.fft.fft(arr)*sp.sparse.spdiags(self.filter_window,0,self.samples,self.samples))
- 
+        return np.fft.ifft(
+            np.fft.fft(arr)
+            * sp.sparse.spdiags(self.filter_window, 0, self.samples, self.samples)
+        )
 
 
 def rfft_to_hilbert(xf, n, axis=-1):

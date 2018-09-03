@@ -460,8 +460,14 @@ def backwall_paths(
 
     return paths
 
+
 def backwall_paths2(
-    couplant_material, block_material, probe_oriented_points, frontwall, backwall, max_backwall_refl=1
+    couplant_material,
+    block_material,
+    probe_oriented_points,
+    frontwall,
+    backwall,
+    max_backwall_refl=1,
 ):
     """
     Make backwall paths
@@ -499,11 +505,11 @@ def backwall_paths2(
         (additional, ...refl=3) left to user to work out...
 
     """
-    
+
     if max_backwall_refl > 3:
         msg = "The maximum number of backwall reflections exceeds coding limit (3)"
         raise ValueError(msg)
-    
+
     probe_start = c.Interface(*probe_oriented_points, are_normals_on_out_rays_side=True)
 
     frontwall_couplant_to_block = c.Interface(
@@ -530,7 +536,7 @@ def backwall_paths2(
         are_normals_on_inc_rays_side=True,
         are_normals_on_out_rays_side=False,
     )
-    
+
     frontwall_refl = c.Interface(
         *frontwall,
         "solid_fluid",
@@ -563,16 +569,16 @@ def backwall_paths2(
                 ),
                 modes=(c.Mode.L, mode1, mode2, c.Mode.L),
                 name="Backwall " + key,
-            ) 
+            )
 
     if max_backwall_refl == 1:
         return paths
-        
+
     for mode1 in (c.Mode.L, c.Mode.T):
         for mode2 in (c.Mode.L, c.Mode.T):
             for mode3 in (c.Mode.L, c.Mode.T):
                 for mode4 in (c.Mode.L, c.Mode.T):
-                    key = mode1.key() + mode2.key()+ mode3.key()+ mode4.key()
+                    key = mode1.key() + mode2.key() + mode3.key() + mode4.key()
                     paths[key] = c.Path(
                         interfaces=(
                             probe_start,
@@ -591,9 +597,9 @@ def backwall_paths2(
                             block_material,
                             couplant_material,
                         ),
-                        modes=(c.Mode.L, mode1, mode2, mode3,mode4,c.Mode.L),
+                        modes=(c.Mode.L, mode1, mode2, mode3, mode4, c.Mode.L),
                         name="Backwall " + key,
-                    )            
+                    )
 
     if max_backwall_refl == 2:
         return paths
@@ -604,7 +610,14 @@ def backwall_paths2(
                 for mode4 in (c.Mode.L, c.Mode.T):
                     for mode5 in (c.Mode.L, c.Mode.T):
                         for mode6 in (c.Mode.L, c.Mode.T):
-                            key = mode1.key() + mode2.key()+ mode3.key()+ mode4.key()+ mode5.key()+ mode6.key()
+                            key = (
+                                mode1.key()
+                                + mode2.key()
+                                + mode3.key()
+                                + mode4.key()
+                                + mode5.key()
+                                + mode6.key()
+                            )
                             paths[key] = c.Path(
                                 interfaces=(
                                     probe_start,
@@ -627,11 +640,21 @@ def backwall_paths2(
                                     block_material,
                                     couplant_material,
                                 ),
-                                modes=(c.Mode.L, mode1, mode2, mode3,mode4, mode5,mode6,c.Mode.L),
+                                modes=(
+                                    c.Mode.L,
+                                    mode1,
+                                    mode2,
+                                    mode3,
+                                    mode4,
+                                    mode5,
+                                    mode6,
+                                    c.Mode.L,
+                                ),
                                 name="Backwall " + key,
-                            )  
+                            )
 
     return paths
+
 
 def ray_weights_for_wall(
     path,
