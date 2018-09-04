@@ -15,58 +15,55 @@ TransmissionReflection = enum.Enum("TransmissionReflection", "transmission refle
 TransmissionReflection.__doc__ = "Enumerated constants: transmission or reflection."
 
 
-class MaterialAttenuation(abc.ABC):
+def _constant_mat_att(value):
+    def attenuation(frequency):
+        return np.full_like(frequency, value)
+
+    return attenuation
+
+
+def _polynomial_mat_att(coeffs):
+    return np.polynomial.Polynomial(coeffs)
+
+
+def material_attenuation_factory(kind, *args, **kwargs):
     """
-    Material attenuation coefficient
+    Material attenuation coefficient in Np/m
 
     When called, this object returns a frequency-dependent attenuation coefficient
     in Nepers per meter (Np/m).
 
-    Example
-    -------
-    >>> material_attenuation(frequency)
-    # return a float.
-
-    """
-
-    @abc.abstractmethod
-    def __call__(self, frequency):
-        """
-        Parameters
-        ----------
-        frequency : float
-
-        Returns
-        -------
-        attenuation : float
-        """
-
-
-class ConstantMaterialAttenuation(MaterialAttenuation):
-    """
-    Frequency-independent material attenuation coefficient.    
-
     Parameters
     ----------
-    attenuation : float
-        In Np/m
+    kind : str
+        Method
+    args, kwargs
+        Extra arguments. See examples
 
     Returns
     -------
-    attenuation : float
-        In Np/m
+    mat_att_func : function
+        Function that takes the frequency array as an input and returns the attenuation in Np/m as an output. 
 
-    See Also
+    Examples
     --------
-    :class:`MaterialAttenuation`
+    Constant material attenuation:
+    >>> mat_att_func = material_attenuation_factory("constant", 15.)
 
+    Polynomial material attenuation ``(1 + 2*frequency + 3*frequency**2)``:
+    >>> mat_att_func = material_attenuation_factory("polynomial", (1, 2, 3)
+
+    To use:
+    >>> frequency = 5e6
+    >>> mat_att_func(frequency)
+    
     """
-
-    def __init__(self, attenuation):
-        self.attenuation = attenuation
-
-    def __call__(self, frequency):
-        return self.attenuation
+    if kind == "constant":
+        return _constant_mat_att(*args, **kwargs)
+    elif kind == "polynomial":
+        return _polynomial_mat_att(*args, **kwargs)
+    else:
+        raise ValueError(f"unknown material attenuation method '{kind}'")
 
 
 class CaptureMethod(enum.Enum):

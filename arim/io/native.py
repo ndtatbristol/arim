@@ -235,28 +235,28 @@ def examination_object_from_conf(conf):
         raise NotImplementedError
 
 
-def material_attenuation_from_conf(conf):
+def material_attenuation_from_conf(mat_att_conf):
     """
     Load material attenuation
 
     Parameters
     ----------
-    conf : dict
+    mat_att_conf : dict
         Material attenuation conf
 
     Returns
     -------
-    arim.core.MaterialAttenuation
+    func
+
+    See Also
+    --------
+    :func:`arim.core.material_attenuation_factory`
     """
-    if isinstance(conf, float):
-        return core.ConstantMaterialAttenuation(attenuation=conf)
+    if isinstance(mat_att_conf, float):
+        return core.material_attenuation_factory("constant", mat_att_conf)
     else:
-        # at this stage, conf should be a dict
-        kind = conf["kind"]
-        if kind == "constant":
-            return core.ConstantMaterialAttenuation(attenuation=conf["value"])
-        else:
-            raise InvalidConf
+        # at this stage, assume we have a dict
+        return core.material_attenuation_factory(**mat_att_conf)
 
 
 def _material_from_conf(conf_or_none):

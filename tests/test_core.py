@@ -732,3 +732,20 @@ class TestPath:
 def test_interface_kind():
     a = c.InterfaceKind.fluid_solid
     assert a.reverse() is c.InterfaceKind.solid_fluid
+
+
+@pytest.mark.parametrize(
+    "mat_att_args,expected",
+    [(("constant", 777.), 777.), (("polynomial", (777., 0., 0.02)), 779.)],
+)
+def test_material_attenuation_factory(mat_att_args, expected):
+    mat_att_func = c.material_attenuation_factory(*mat_att_args)
+    frequency = 10.
+    fval = mat_att_func(frequency)
+    np.testing.assert_allclose(fval, expected)
+
+    # test 1d arrays are accepted:
+    frequencies = np.linspace(0., 10.)
+    fval = mat_att_func(frequencies)
+    assert fval.shape == frequencies.shape
+    np.testing.assert_allclose(fval[-1], expected)

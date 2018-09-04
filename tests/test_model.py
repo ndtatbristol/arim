@@ -933,7 +933,9 @@ def test_material_attenuation():
         np.testing.assert_allclose(rev_att, 1.)
 
     # add attenuation
-    context = make_context(couplant_att=arim.ConstantMaterialAttenuation(7.))
+    context = make_context(
+        couplant_att=arim.material_attenuation_factory("constant", 7.)
+    )
     paths = context["paths"]
     """:type : dict[str, arim.Path]"""
     rev_paths = context["rev_paths"]

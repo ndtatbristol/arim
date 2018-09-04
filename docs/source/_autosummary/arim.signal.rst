@@ -23,6 +23,7 @@ arim.signal
       ButterworthBandpass
       ComposedFilter
       Filter
+      Gaussian
       Hilbert
       NoFilter
    

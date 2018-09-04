@@ -84,5 +84,4 @@ def test_material_attenuation_from_conf():
     for conf_str in (ATT_1, ATT_2):
         conf = arim.io.load_conf_from_str(conf_str)
         att = arim.io.material_attenuation_from_conf(conf["longitudinal_att"])
-        assert isinstance(att, arim.MaterialAttenuation)
         assert att(10) == 777.

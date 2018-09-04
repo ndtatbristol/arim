@@ -10,6 +10,7 @@ arim.models.block\_in\_immersion
    .. autosummary::
    
       backwall_paths
+      backwall_paths2
       frontwall_path
       make_interfaces
       make_paths

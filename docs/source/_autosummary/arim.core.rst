@@ -5,6 +5,12 @@ arim.core
 
    
    
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      material_attenuation_factory
+   
    
 
    
@@ -15,14 +21,12 @@ arim.core
    
       BlockInImmersion
       CaptureMethod
-      ConstantMaterialAttenuation
       ElementShape
       ExaminationObject
       Frame
       Interface
       InterfaceKind
       Material
-      MaterialAttenuation
       Mode
       Path
       Probe

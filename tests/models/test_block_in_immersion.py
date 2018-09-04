@@ -248,15 +248,15 @@ def test_model(scat_specs, show_plots):
         longitudinal_vel=1480.,
         density=1000.,
         state_of_matter="liquid",
-        longitudinal_att=arim.ConstantMaterialAttenuation(1.),
+        longitudinal_att=arim.material_attenuation_factory("constant", 1.),
     )
     block = arim.Material(
         longitudinal_vel=6320.,
         transverse_vel=3130.,
         density=2700.,
         state_of_matter="solid",
-        longitudinal_att=arim.ConstantMaterialAttenuation(2.),
-        transverse_att=arim.ConstantMaterialAttenuation(3.),
+        longitudinal_att=arim.material_attenuation_factory("constant", 2.),
+        transverse_att=arim.material_attenuation_factory("constant", 3.),
     )
 
     probe = arim.Probe.make_matrix_probe(5, 1e-3, 1, np.nan, 5e6)
