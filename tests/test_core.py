@@ -740,12 +740,12 @@ def test_interface_kind():
 )
 def test_material_attenuation_factory(mat_att_args, expected):
     mat_att_func = c.material_attenuation_factory(*mat_att_args)
-    frequency = 10.
+    frequency = 10e6
     fval = mat_att_func(frequency)
     np.testing.assert_allclose(fval, expected)
 
     # test 1d arrays are accepted:
-    frequencies = np.linspace(0., 10.)
+    frequencies = np.linspace(0., 10e6)
     fval = mat_att_func(frequencies)
     assert fval.shape == frequencies.shape
     np.testing.assert_allclose(fval[-1], expected)

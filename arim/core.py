@@ -23,7 +23,12 @@ def _constant_mat_att(value):
 
 
 def _polynomial_mat_att(coeffs):
-    return np.polynomial.Polynomial(coeffs)
+    p = np.polynomial.Polynomial(coeffs)
+
+    def attenuation(frequency):
+        return p(frequency / 1e6)  # scale to avoid numerical issues
+
+    return attenuation
 
 
 def material_attenuation_factory(kind, *args, **kwargs):
@@ -33,10 +38,12 @@ def material_attenuation_factory(kind, *args, **kwargs):
     When called, this object returns a frequency-dependent attenuation coefficient
     in Nepers per meter (Np/m).
 
+    Warning: in ``kind=polynomial``, the frequency vector in Hz is rescaled to MHz to avoid numerical issues.
+
     Parameters
     ----------
     kind : str
-        Method
+        Available methods: 'constant', 'polynomial'.
     args, kwargs
         Extra arguments. See examples
 
@@ -50,8 +57,8 @@ def material_attenuation_factory(kind, *args, **kwargs):
     Constant material attenuation:
     >>> mat_att_func = material_attenuation_factory("constant", 15.)
 
-    Polynomial material attenuation ``(1 + 2*frequency + 3*frequency**2)``:
-    >>> mat_att_func = material_attenuation_factory("polynomial", (1, 2, 3)
+    Polynomial material attenuation ``(1 + 2*(frequency/1e6) + 3*(frequency/1e6)**2)``
+    >>> mat_att_func = material_attenuation_factory("polynomial", (1, 2, 3))
 
     To use:
     >>> frequency = 5e6
