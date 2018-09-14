@@ -492,7 +492,7 @@ def _delay_and_sum_noamp_linear(
 @numba.jit(nopython=True, cache=True)
 def sinc(x):
     if x == 0:
-        return 0.0
+        return 1.0
     else:
         return math.sin(math.pi * x) / (math.pi * x)
 
