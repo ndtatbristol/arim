@@ -498,21 +498,13 @@ def sinc(x):
 
 
 @numba.jit(nopython=True, cache=True)
-def lanczos_window(x, a):
-    if not (-a < x < a):
-        return 0.
-    else:
-        return sinc(x) * sinc(x / a)
-
-
-@numba.jit(nopython=True, cache=True)
 def lanczos_interpolation(t, x, a):
     i_min = math.floor(t) - a + 1
     i_max = math.floor(t) + a + 1  # +1 because of how range() works
     n = len(x)
     out = 0.
     for i in range(i_min, i_max):
-        out += x[i % n] * lanczos_window(t - i, a)
+        out += x[i % n] * sinc(t - i) * sinc((t - i) / a)
     return out
 
 
