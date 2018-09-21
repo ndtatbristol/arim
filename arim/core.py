@@ -244,6 +244,11 @@ class Frame:
         """
         orig_pairs = {(tx, rx) for tx, rx in zip(self.tx, self.rx)}
         reciprocal_pairs = {(rx, tx) for tx, rx in zip(self.tx, self.rx)}
+
+        if orig_pairs == reciprocal_pairs:
+            # No expansion needed
+            return self
+
         all_pairs = sorted(orig_pairs | reciprocal_pairs)
 
         pair_to_scan_idx = {
