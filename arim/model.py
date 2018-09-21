@@ -1174,10 +1174,6 @@ def model_amplitudes_factory(tx, rx, view, ray_weights, scattering, scat_angle=0
     rx_ray_weights = ray_weights.rx_ray_weights_dict[view.rx_path]
     tx_scattering_angles = ray_weights.scattering_angles_dict[view.tx_path]
     rx_scattering_angles = ray_weights.scattering_angles_dict[view.rx_path]
-    assert tx_ray_weights.flags.f_contiguous
-    assert rx_ray_weights.flags.f_contiguous
-    assert tx_scattering_angles.flags.f_contiguous
-    assert rx_scattering_angles.flags.f_contiguous
 
     assert (
         tx_ray_weights.shape

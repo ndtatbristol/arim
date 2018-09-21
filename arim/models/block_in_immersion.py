@@ -302,14 +302,13 @@ def ray_weights_for_views(
     # tx and rx path.
     for path in all_paths:
         ray_geometry = RayGeometry.from_path(path)
-        scat_angle_dict[path] = np.asfortranarray(ray_geometry.signed_inc_angle(-1))
+        scat_angle_dict[path] = ray_geometry.signed_inc_angle(-1)
         scat_angle_dict[path].flags.writeable = False
 
         if path in all_tx_paths:
             ray_weights, ray_weights_debug = tx_ray_weights(
                 path, ray_geometry, **model_options
             )
-            ray_weights = np.asfortranarray(ray_weights)
             ray_weights.flags.writeable = False
             tx_ray_weights_dict[path] = ray_weights
             if save_debug:
@@ -319,7 +318,6 @@ def ray_weights_for_views(
             ray_weights, ray_weights_debug = rx_ray_weights(
                 path, ray_geometry, **model_options
             )
-            ray_weights = np.asfortranarray(ray_weights)
             ray_weights.flags.writeable = False
             rx_ray_weights_dict[path] = ray_weights
             if save_debug:
