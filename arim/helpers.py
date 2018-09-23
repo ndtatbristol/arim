@@ -80,13 +80,7 @@ def timeit(name="Computation", logger=None, log_level=logging.INFO):
         >>>     1 + 1
 
     """
-    if sys.platform == "win32":
-        # On Windows, the best timer is time.clock
-        default_timer = time.clock
-    else:
-        # On most other platforms the best timer is time.time
-        default_timer = time.time
-
+    default_timer = time.perf_counter
     tic = default_timer()
     yield
     elapsed = default_timer() - tic
