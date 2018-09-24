@@ -1634,3 +1634,33 @@ def test_make_toneburst():
     len_pulse = len(toneburst2)
     np.testing.assert_allclose(toneburst2, toneburst[:len_pulse])
     np.testing.assert_allclose(toneburst_complex2, toneburst_complex[:len_pulse])
+
+
+def test_make_toneburst2():
+    num_cycles = 5
+    dt = 50e-9
+    f0 = 2e6
+
+    # basic checks for analytical signal
+    toneburst_time, toneburst, t0_idx = arim.model.make_toneburst2(
+        num_cycles, f0, dt, analytical=True
+    )
+    assert toneburst_time.samples[t0_idx] == 0.
+    assert toneburst[t0_idx] == complex(1.)
+
+    # basic checks for real signal
+    toneburst_time, toneburst, t0_idx = arim.model.make_toneburst2(
+        num_cycles, f0, dt, analytical=False
+    )
+
+    assert toneburst_time.samples[t0_idx] == 0.
+    assert toneburst[t0_idx] == 1.
+
+    # check consistency between toneburst and make_toneburst2
+    toneburst = arim.model.make_toneburst(num_cycles, f0, dt, analytical=False)
+
+    _, toneburst2, _ = arim.model.make_toneburst2(
+        num_cycles, f0, dt, num_before=0, analytical=False
+    )
+    n = len(toneburst)
+    np.testing.assert_allclose(toneburst2[:n], toneburst)

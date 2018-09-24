@@ -32,6 +32,11 @@ def make_toneburst(
     The signal is windowed by a Hann window (strictly zero outside the window). The
     toneburst is always symmetrical and its maximum is 1.0.
 
+    With ``wrap=False``, the result is made up of (in this order) the toneburst then zeros
+    (controlled by ``num_samples``).
+    With ``wrap=True``, the result is made up of (in this order) the second half of the toneburst,
+    then zeros, then the first half of the toneburst.
+
     Parameters
     ----------
     num_cycles : int
@@ -55,6 +60,10 @@ def make_toneburst(
     -------
     toneburst : ndarray
         Array of length ``num_samples``
+
+    See Also
+    --------
+    :func:`make_toneburst2`
 
     """
     if dt <= 0.:
@@ -103,6 +112,70 @@ def _rotate_array(arr, n):
 
     """
     return np.concatenate([arr[n:], arr[:n]])
+
+
+def make_toneburst2(
+    num_cycles,
+    centre_freq,
+    dt,
+    num_before=2,
+    num_after=1,
+    analytical=False,
+    use_fast_len=True,
+):
+    """
+    Returns a toneburst defined by centre frequency and a number of cycles.
+
+    The result array is made up of (in this order) zeros (number controlled by ``num_before``),
+    then the toneburst, then zeros (number controlled by ``num_after``).
+
+    Parameters
+    ----------
+    num_cycles : int
+        Number of cycles of the toneburst.
+    centre_freq : float
+        Centre frequency
+    dt : float
+        Time step
+    num_before : int, optional
+        Amount of zeros before the toneburst (in toneburst length).
+    num_after : int, optional
+        Amount of zeros after the toneburst (in toneburst length).
+    analytical : bool, optional
+    use_fast_len : bool, optional
+        Use a FFT-friendly length (the default is True).
+
+    Returns
+    -------
+    toneburst_time : arim.core.Time
+    toneburst : ndarray
+    t0_idx : int
+        Index of the time sample ``t=0``.
+
+    See Also
+    --------
+    :func:`make_toneburst`
+    """
+
+    signal = make_toneburst(
+        num_cycles, centre_freq, dt, num_samples=None, wrap=False, analytical=analytical
+    )
+    n = len(signal)
+    m = num_before * n
+    p = num_after * n
+
+    toneburst_len = m + n + p
+    if use_fast_len:
+        import scipy.fftpack
+
+        toneburst_len = scipy.fftpack.next_fast_len(toneburst_len)
+    toneburst = np.zeros(toneburst_len, dtype=signal.dtype)
+    toneburst[m : m + n] = signal
+
+    t0_idx = m + n // 2
+    toneburst_time = c.Time(-t0_idx * dt, dt, len(toneburst))
+
+    return toneburst_time, toneburst, t0_idx
 
 
 def directivity_2d_rectangular_in_fluid(theta, element_width, wavelength):
