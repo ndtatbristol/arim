@@ -43,12 +43,10 @@ computationally efficient.
 """
 import logging
 from collections import namedtuple, OrderedDict
-import cmath
 
 import numpy as np
-import numba
 
-from .. import model, ray, ut, helpers
+from .. import model, ray, ut, helpers, signal
 from .. import core as c, geometry as g
 from ..ray import RayGeometry
 
@@ -978,49 +976,149 @@ def make_views(
     return make_views_from_paths(paths, tfm_unique_only)
 
 
-@numba.jit(nopython=True, parallel=True)
-def _make_transfer_function_singlef(
-    times_tx, times_rx, model_coefficients, freq_array, out
+def scat_unshifted_transfer_functions(
+    views,
+    tx,
+    rx,
+    freq_array,
+    scat_obj,
+    probe_element_width=None,
+    use_directivity=True,
+    use_beamspread=True,
+    use_transrefl=True,
+    use_attenuation=True,
+    scat_angle=0.,
+    numangles_for_scat_precomp=0,
+    first_nonzero_freq_idx=None,
 ):
     """
-    Transfer[Scanline, Frequency] = Sum_Scatterer
-       exp(2j pi delay[Scanline, Scatterer] frequency[Frequency])
-       * model_coefficients[Scanline, Scatterer]
+    Compute unshifted transfer functions for scatterer echoes (multi-frequency model).
+
+    Returns ``H_ij(omega) = Q_i(omega) Q'_j(omega) S(omega, theta_i, theta_j)``
+
+    Output spectra uses the *math* Fourier convention (not the acoustics one).
 
     Parameters
     ----------
-    times_tx :
-        shape: (numscanlines, numscatterers)
-    times_rx
-    model_coefficients :
-        shape: (numscanlines, numscatterers)
-    freq_array
-        shape: numfreq
-    out :
-        Transfer func.
-        shape : (numscanlines, numfreq)
+    views : Dict[Views]
+    tx : ndarray
+        Shape: (numscanlines, )
+    rx : ndarray
+        Shape: (numscanlines, )
+    freq_array : ndarray or float
+        Shape: (numfreq, )
+    scat_obj : arim.scat.Scattering2d
+    probe_element_width : float or None
+    use_directivity : bool
+    use_beamspread : bool
+    use_transrefl : bool
+    use_attenuation : bool
+    scat_angle : float
+    numangles_for_scat_precomp : int
+        Number of angles in [-pi, pi] for scattering precomputation.
+        0 to disable. See module documentation.
+    first_nonzero_freq_idx : int or None
+        Default: assumes first freq is zero, except if only one freq is given.
+    
+    Yields
+    ------
+    partial_transfer_function_f : ndarray
+        Shape: (numscatterers, numscanlines, numfreq). Complex. Contribution for one view.
+    delays : ndarray
+        Shape: (numscatterers, numscanlines). Float. Contribution for one view.
 
-
-    Returns
-    -------
+    See Also
+    --------
+    :func:`arim.signal.timeshift_spectra`
 
     """
-    numscanlines = times_tx.shape[0]
-    numscatterers = times_tx.shape[1]
+    freq_array = np.atleast_1d(freq_array)
+    numfreq = len(freq_array)
 
-    for scan_idx in numba.prange(numscanlines):
-        for freq_idx in range(freq_array.shape[0]):
-            tmp = 0j
-            freq = freq_array[freq_idx]
-            for scat_idx in range(numscatterers):
-                tmp += model_coefficients[scan_idx, scat_idx] * cmath.exp(
-                    -2j
-                    * np.pi
-                    * freq
-                    * (times_tx[scan_idx, scat_idx] + times_rx[scan_idx, scat_idx])
-                )
-            out[scan_idx, freq_idx] = tmp
-    return out
+    if first_nonzero_freq_idx is None:
+        if numfreq == 1:
+            # assume the freq is nonzero
+            first_nonzero_freq_idx = 0
+        else:
+            # assume only the first freq is zero, as returned by fftfreq
+            first_nonzero_freq_idx = 1
+    nonzero_freq_array = freq_array[first_nonzero_freq_idx:]
+
+    # Precompute all ray weights
+    ray_weights_allfreq = []
+    with helpers.timeit("Computation of ray weights", logger):
+        for frequency in nonzero_freq_array:
+            # logger.debug(f'ray weight freq={frequency}')
+            ray_weights = ray_weights_for_views(
+                views,
+                frequency=frequency,
+                probe_element_width=probe_element_width,
+                use_beamspread=use_beamspread,
+                use_directivity=use_directivity,
+                use_transrefl=use_transrefl,
+                use_attenuation=use_attenuation,
+            )
+            ray_weights_allfreq.append(ray_weights)
+
+    # (Pre)compute scattering
+    from ..scat import ScatFromData
+
+    scat_keys_to_compute = set(view.scat_key() for view in views.values())
+    # model_amplitudes_factory is way faster with the scattering is given as matrices instead of functions.
+    # If matrices can be computed cheaply, it's worth it.
+    if isinstance(scat_obj, ScatFromData):
+        with helpers.timeit("Scattering", logger):
+            scat_matrices = scat_obj.as_multi_freq_matrices(
+                nonzero_freq_array, scat_obj.numangles, to_compute=scat_keys_to_compute
+            )
+    elif numangles_for_scat_precomp > 0:
+        with helpers.timeit("Scattering", logger):
+            scat_matrices = scat_obj.as_multi_freq_matrices(
+                nonzero_freq_array,
+                numangles_for_scat_precomp,
+                to_compute=scat_keys_to_compute,
+            )
+    else:
+        scat_matrices = None
+
+    numscanlines = len(tx)
+
+    for view in views.values():
+        logger.info("Transfer function for scatterers in view {}".format(view.name))
+
+        numscatterers = view.tx_path.rays.times.shape[1]
+        partial_transfer_function_f = np.zeros(
+            (numscatterers, numscanlines, numfreq), np.complex_
+        )
+
+        # shape: (numscatterers, numscanlines)
+        delays = np.ascontiguousarray(
+            (
+                np.take(view.tx_path.rays.times, tx, axis=0)
+                + np.take(view.rx_path.rays.times, rx, axis=0)
+            ).T
+        )
+
+        for freq_idx, frequency in enumerate(nonzero_freq_array):
+            freq_idx2 = first_nonzero_freq_idx + freq_idx
+
+            if scat_matrices:
+                scattering = {key: mat[freq_idx] for key, mat in scat_matrices.items()}
+            else:
+                scattering = scat_obj.as_angles_funcs(frequency)
+
+            ray_weights = ray_weights_allfreq[freq_idx]
+
+            # compute Q_i Q'_j S_ij
+            # shape: (numscatterers, numscanlines, )
+            model_coefficients = model.model_amplitudes_factory(
+                tx, rx, view, ray_weights, scattering, scat_angle=scat_angle
+            )[...]
+            np.conj(model_coefficients, out=model_coefficients)
+
+            partial_transfer_function_f[..., freq_idx2] = model_coefficients
+
+        yield partial_transfer_function_f, delays
 
 
 def singlefreq_scat_transfer_functions(
@@ -1040,6 +1138,8 @@ def singlefreq_scat_transfer_functions(
 ):
     """
     Compute transfer functions for scatterer echoes (single-frequency model).
+
+    Output spectra uses the *math* Fourier convention (not the acoustics one).
 
     Parameters
     ----------
@@ -1069,61 +1169,36 @@ def singlefreq_scat_transfer_functions(
     partial_transfer_function_f : ndarray
         Shape: (numscanlines, numfreq). Complex. Contribution for one view.
 
-
+    Notes
+    -----
+    Legacy function, superseeded by :func:`scat_unshifted_transfer_functions`
+    and :func:`arim.signal.timeshift_spectra`.
     """
-    from ..scat import ScatFromData
-
-    scat_keys_to_compute = set(view.scat_key() for view in views.values())
-    # model_amplitudes_factory is way faster with the scattering is given as matrices instead of functions.
-    # If matrices can be computed cheaply, it's worth it.
-    if isinstance(scat_obj, ScatFromData):
-        with helpers.timeit("Scattering", logger):
-            scattering = scat_obj.as_single_freq_matrices(
-                frequency, scat_obj.numangles, to_compute=scat_keys_to_compute
-            )
-    elif numangles_for_scat_precomp > 0:
-        with helpers.timeit("Scattering", logger):
-            scattering = scat_obj.as_single_freq_matrices(
-                frequency, numangles_for_scat_precomp, to_compute=scat_keys_to_compute
-            )
-    else:
-        scattering = scat_obj.as_angles_funcs(frequency)
-
-    ray_weights = ray_weights_for_views(
+    unshifted_tfs = scat_unshifted_transfer_functions(
         views,
-        frequency=frequency,
+        tx,
+        rx,
+        frequency,
+        scat_obj,
         probe_element_width=probe_element_width,
-        use_beamspread=use_beamspread,
         use_directivity=use_directivity,
+        use_beamspread=use_beamspread,
         use_transrefl=use_transrefl,
         use_attenuation=use_attenuation,
+        scat_angle=scat_angle,
+        numangles_for_scat_precomp=numangles_for_scat_precomp,
     )
 
-    for viewname, view in views.items():
-        logger.info("Transfer function for scatterers in view {}".format(viewname))
+    for viewname, (unshifted_tf, delays) in zip(views.keys(), unshifted_tfs):
+        # shape (numscatterers, numscanlines, numfreq)
+        tf = signal.timeshift_spectra(unshifted_tf, delays, freq_array)
 
-        # compute Q_i Q'_j S_ij
-        # shape: (numscanlines, numscatterers)
-        model_coefficients = model.model_amplitudes_factory(
-            tx, rx, view, ray_weights, scattering, scat_angle=scat_angle
-        )[...].T
-        model_coefficients = np.conj(model_coefficients, out=model_coefficients)
-
-        times_tx = np.take(view.tx_path.rays.times, tx, axis=0)
-        times_rx = np.take(view.rx_path.rays.times, rx, axis=0)
-
-        # shape (numscanlines, numfreq)
-        partial_transfer_function_f = np.zeros((len(tx), len(freq_array)), np.complex_)
-
-        _make_transfer_function_singlef(
-            times_tx,
-            times_rx,
-            model_coefficients,
-            freq_array,
-            partial_transfer_function_f,
-        )
-
-        yield viewname, partial_transfer_function_f
+        # lazy tf.sum(axis=0):
+        if tf.shape[0] == 1:
+            tf = tf[0]
+        else:
+            tf = tf.sum(axis=0)
+        yield viewname, tf
 
 
 def singlefreq_wall_transfer_functions(
@@ -1188,7 +1263,7 @@ def singlefreq_wall_transfer_functions(
                 np.exp(-2j * np.pi * freq_array[1:] * delay) * ray_weight
             )
 
-        yield pathname, partial_transfer_function_f
+        yield pathname, partial_transfer_function_f.conj()
 
 
 def multifreq_scat_transfer_functions(
@@ -1207,6 +1282,8 @@ def multifreq_scat_transfer_functions(
 ):
     """
     Compute transfer functions for scatterer echoes (multi-frequency model).
+
+    Output spectra uses the *math* Fourier convention (not the acoustics one).
 
     Parameters
     ----------
@@ -1235,82 +1312,36 @@ def multifreq_scat_transfer_functions(
     partial_transfer_function_f : ndarray
         Shape: (numscanlines, numfreq). Complex. Contribution for one view.
 
-
+    Notes
+    -----
+    Legacy function, superseeded by :func:`scat_unshifted_transfer_functions`
+    and :func:`arim.signal.timeshift_spectra`.
     """
-    nonzero_freq_idx = ~np.isclose(freq_array, 0)
-    nonzero_freq_array = freq_array[nonzero_freq_idx]
-    nonzero_to_all_freq_idx = np.arange(len(freq_array))[nonzero_freq_idx]
+    unshifted_tfs = scat_unshifted_transfer_functions(
+        views,
+        tx,
+        rx,
+        freq_array,
+        scat_obj,
+        probe_element_width=probe_element_width,
+        use_directivity=use_directivity,
+        use_beamspread=use_beamspread,
+        use_transrefl=use_transrefl,
+        use_attenuation=use_attenuation,
+        scat_angle=scat_angle,
+        numangles_for_scat_precomp=numangles_for_scat_precomp,
+    )
 
-    # precompute all ray weights
-    ray_weights_allfreq = []
-    with helpers.timeit("Computation of ray weights", logger):
-        for frequency in nonzero_freq_array:
-            # logger.debug(f'ray weight freq={frequency}')
-            ray_weights = ray_weights_for_views(
-                views,
-                frequency=frequency,
-                probe_element_width=probe_element_width,
-                use_beamspread=use_beamspread,
-                use_directivity=use_directivity,
-                use_transrefl=use_transrefl,
-                use_attenuation=use_attenuation,
-            )
-            ray_weights_allfreq.append(ray_weights)
+    for viewname, (unshifted_tf, delays) in zip(views.keys(), unshifted_tfs):
+        # shape (numscatterers, numscanlines, numfreq)
+        tf = signal.timeshift_spectra(unshifted_tf, delays, freq_array)
 
-    from ..scat import ScatFromData
-
-    scat_keys_to_compute = set(view.scat_key() for view in views.values())
-    # model_amplitudes_factory is way faster with the scattering is given as matrices instead of functions.
-    # If matrices can be computed cheaply, it's worth it.
-    if isinstance(scat_obj, ScatFromData):
-        with helpers.timeit("Scattering", logger):
-            scat_matrices = scat_obj.as_multi_freq_matrices(
-                nonzero_freq_array, scat_obj.numangles, to_compute=scat_keys_to_compute
-            )
-    elif numangles_for_scat_precomp > 0:
-        with helpers.timeit("Scattering", logger):
-            scat_matrices = scat_obj.as_multi_freq_matrices(
-                nonzero_freq_array,
-                numangles_for_scat_precomp,
-                to_compute=scat_keys_to_compute,
-            )
-    else:
-        scat_matrices = None
-
-    for viewname, view in views.items():
-        logger.info("Transfer function for scatterers in view {}".format(viewname))
-
-        partial_transfer_function_f = np.zeros((len(tx), len(freq_array)), np.complex_)
-
-        # shape: (numscanlines, numscatterers)
-        delay = np.take(view.tx_path.rays.times, tx, axis=0) + np.take(
-            view.rx_path.rays.times, rx, axis=0
-        )
-
-        for freq_idx, frequency in enumerate(nonzero_freq_array):
-            all_freq_idx = nonzero_to_all_freq_idx[freq_idx]
-            # logger.debug(f'transfer func freq={frequency}')
-
-            if scat_matrices:
-                scattering = {key: mat[freq_idx] for key, mat in scat_matrices.items()}
-            else:
-                scattering = scat_obj.as_angles_funcs(frequency)
-
-            ray_weights = ray_weights_allfreq[freq_idx]
-
-            # compute Q_i Q'_j S_ij
-            # shape: (numscanlines, numscatterers)
-            model_coefficients = model.model_amplitudes_factory(
-                tx, rx, view, ray_weights, scattering, scat_angle=scat_angle
-            )[...].T
-
-            # Transfer[Scanline, Frequency] = Sum_Scatterer
-            #   exp(2j pi delay[Scanline, Scatterer] frequency[Frequency])
-            #   * model_coefficients[Scanline, Scatterer]
-            partial_transfer_function_f[:, all_freq_idx] = np.sum(
-                model_coefficients * np.exp(2j * np.pi * frequency * delay), axis=-1
-            ).conj()
-        yield viewname, partial_transfer_function_f
+        # lazy tf.sum(axis=0):
+        if tf.shape[0] == 1:
+            tf = tf[0]
+        else:
+            tf = tf.sum(axis=0)
+        yield viewname, tf
 
 
 def multifreq_wall_transfer_functions(

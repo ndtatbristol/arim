@@ -4,6 +4,8 @@ Module for signal processing.
 """
 
 from enum import Enum
+import cmath
+import numba
 
 import numpy as np
 from scipy.signal import butter, filtfilt, hilbert
@@ -19,6 +21,7 @@ __all__ = [
     "Abs",
     "Gaussian",
     "rfft_to_hilbert",
+    "timeshift_spectra"
 ]
 
 
@@ -294,3 +297,77 @@ def rfft_to_hilbert(xf, n, axis=-1):
         ind[axis] = slice(None)
         h = h[ind]
     return scipy.fftpack.ifft(h * xf, n, axis)
+
+
+@numba.guvectorize(
+    [(numba.float64[:], numba.complex128[:], numba.float64[:], numba.complex128[:])],
+    "(),(),(numfreq)->(numfreq)",
+    nopython=True,
+    target="parallel",
+    cache=True,
+)
+def _timeshift_spectra_singlef(
+    delays, unshifted_x, freq_array, out=None
+):
+    for freq_idx in range(freq_array.shape[0]):
+        out[freq_idx] = (
+            cmath.exp(-2j * np.pi * freq_array[freq_idx] * delays[0])
+            * unshifted_x[0]
+        )
+
+
+@numba.guvectorize(
+    [(numba.float64[:], numba.complex128[:], numba.float64[:], numba.complex128[:])],
+    "(),(numfreq),(numfreq)->(numfreq)",
+    nopython=True,
+    target="parallel",
+    cache=True,
+)
+def _timeshift_spectra_multif(
+    delays, unshifted_x, freq_array, out=None
+):
+    for freq_idx in range(freq_array.shape[0]):
+        out[freq_idx] = (
+            cmath.exp(-2j * np.pi * freq_array[freq_idx] * delays[0])
+            * unshifted_x[freq_idx]
+        )
+
+
+def timeshift_spectra(unshifted_x, delays, freq_array):
+    """Time-shift spectra in frequency domain
+
+    Case ``num_x_freq=numfreq``: returns::
+
+        X(omega) exp(-i omega delay)
+
+    Case ``num_x_freq=1``: returns::
+
+        X(omega_0) exp(-i omega delay)
+
+
+    Parameters
+    ----------
+    unshifted_x : ndarray
+        Shape (shape1, num_x_freq)
+    delays : ndarray
+        Shape (shape1)
+    freq_array : ndarray
+        Shape (numfreq)
+
+    Returns
+    -------
+    shifted_x
+        Shape (shape1, numfreq)
+
+    """
+    num_tf_freq = unshifted_x.shape[-1]
+
+    if num_tf_freq == 1:
+        return _timeshift_spectra_singlef(
+            delays, unshifted_x[..., 0], freq_array
+        )
+    else:
+        return _timeshift_spectra_multif(
+            delays, unshifted_x, freq_array
+        )
+

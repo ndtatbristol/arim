@@ -13,6 +13,7 @@ Core functions of the forward models.
 import abc
 import logging
 from collections import namedtuple
+import cmath
 
 import numpy as np
 import numba
@@ -1531,3 +1532,4 @@ def sensitivity_model_assisted_tfm(model_amplitudes, scanline_weights, block_siz
             sensitivity = np.zeros((numpoints,), dtype=tmp.dtype)
         sensitivity[chunk] = tmp
     return sensitivity
+

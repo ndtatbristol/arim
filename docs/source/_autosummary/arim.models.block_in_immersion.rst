@@ -21,6 +21,7 @@ arim.models.block\_in\_immersion
       ray_weights_for_views
       ray_weights_for_wall
       rx_ray_weights
+      scat_unshifted_transfer_functions
       singlefreq_scat_transfer_functions
       singlefreq_wall_transfer_functions
       tx_ray_weights

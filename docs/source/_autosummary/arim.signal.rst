@@ -10,6 +10,7 @@ arim.signal
    .. autosummary::
    
       rfft_to_hilbert
+      timeshift_spectra
    
    
 
