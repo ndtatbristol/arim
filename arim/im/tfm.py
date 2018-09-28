@@ -283,7 +283,7 @@ def contact_tfm(
     assert lookup_times.shape == (grid.numpoints, frame.probe.numelements)
 
     if amplitudes is not None:
-        if not frame.is_complete_assuming_reciprocity():
+        if __debug__ and not frame.is_complete_assuming_reciprocity():
             logger.warning(
                 "Possible erroneous usage of a noncomplete frame in TFM; "
                 "use Frame.expand_frame_assuming_reciprocity()",
