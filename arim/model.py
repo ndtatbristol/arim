@@ -13,13 +13,13 @@ Core functions of the forward models.
 import abc
 import logging
 from collections import namedtuple
-import cmath
+import math
 
 import numpy as np
 import numba
 from numpy.core.umath import sin, cos
 
-from . import core as c, _scat, helpers, _scat
+from . import core as c, _scat, helpers, signal
 
 logger = logging.getLogger(__name__)
 
@@ -1533,3 +1533,91 @@ def sensitivity_model_assisted_tfm(model_amplitudes, scanline_weights, block_siz
         sensitivity[chunk] = tmp
     return sensitivity
 
+
+@numba.njit(parallel=True, nogil=True)
+def _timeshift_timedomain(unshifted_response, delays, dt, t0_idx, out):
+    n = unshifted_response.shape[1]
+    for idx in numba.prange(unshifted_response.shape[0]):
+        delay_idx = math.floor(delays[idx] / dt)
+        out[idx, delay_idx - t0_idx : delay_idx - t0_idx + n] += unshifted_response[idx]
+
+
+def transfer_func_to_scanlines(
+    unshifted_transfer_func,
+    delays,
+    scanlines_time,
+    toneburst_time,
+    toneburst_freq,
+    toneburst_f,
+    toneburst_t0_idx,
+    scanlines=None,
+):
+    """Returns time-domain scanlines from the unshifted transfer function and the toneburst
+
+    Parameters
+    ----------
+    unshifted_transfer_func : ndarray
+        Transfer function to apply, without the "exp(-i omega tau)" term.
+        Shape ``(numscanlines, numfreq)`` or ``(numscatterers, numscanlines, numfreq)``
+    delays : ndarray
+        Delay for each scatterer and scanline.
+        Shape ``(numscanlines,)`` or ``(numscatterers, numscanlines)``
+    scanlines_time : arim.core.Time
+    toneburst_time : arim.core.Time
+    toneburst_freq : ndarray
+        Frequency array of the toneburst, obtained typically with ``np.fft.rfftfreq``
+    toneburst_f : ndarray
+        Spectrum of the toneburst, obtained with ``np.fft.rfft``.
+    toneburst_t0_idx : [type]
+        Index so that ``toneburst_time.samples[t0_idx] = 0.``
+    scanlines : ndarray
+        Optional, write on this array if provided.
+
+    Returns
+    -------
+    scanlines : ndarray
+        scanlines
+
+    """
+    if unshifted_transfer_func.ndim == 2:
+        unshifted_transfer_func = unshifted_transfer_func.reshape(
+            (1, *unshifted_transfer_func.shape)
+        )
+    if unshifted_transfer_func.ndim == 1:
+        delays = delays.reshape((1, *delays.shape))
+    numscatterers, numscanlines, _ = unshifted_transfer_func.shape
+    assert delays.shape == (numscatterers, numscanlines)
+
+    if scanlines_time.step != toneburst_time.step:
+        raise NotImplementedError
+    dt = scanlines_time.step
+
+    if scanlines is None:
+        scanlines = np.zeros((numscanlines, len(scanlines_time)), np.complex_)
+
+    # Account for the scanlines t0
+    delays = delays - scanlines_time.start
+    assert np.all(delays >= 0.)
+
+    # Shift transfer func by the frac of the time step
+    delays_remainder = delays % dt
+    frac_shifted_transfer_func = signal.timeshift_spectra(
+        unshifted_transfer_func, delays_remainder, toneburst_freq
+    )
+
+    # Calculate timedomain response
+    frac_shifted_response = signal.rfft_to_hilbert(
+        frac_shifted_transfer_func * toneburst_f, len(toneburst_time)
+    )
+
+    # Shift timedomain response by a multiple of the time step
+    for scat_idx in range(numscatterers):
+        _timeshift_timedomain(
+            frac_shifted_response[scat_idx],
+            delays[scat_idx],
+            dt,
+            toneburst_t0_idx,
+            scanlines,
+        )
+
+    return scanlines

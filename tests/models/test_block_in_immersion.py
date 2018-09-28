@@ -1,6 +1,7 @@
 import numpy as np
 import pytest
 import collections
+import math
 
 from tests.test_model import make_context
 import arim
@@ -341,3 +342,128 @@ def test_model(scat_specs, show_plots):
                 ax.set_ylabel("imag")
                 plt.show()
             raise e
+
+
+@pytest.mark.parametrize("use_multifreq", [False, True])
+def test_fulltime_model(use_multifreq, show_plots):
+    # Setup
+    couplant = arim.Material(
+        longitudinal_vel=1480., density=1000., state_of_matter="liquid"
+    )
+    block = arim.Material(
+        longitudinal_vel=6320.,
+        transverse_vel=3130.,
+        density=2700.,
+        state_of_matter="solid",
+        longitudinal_att=arim.material_attenuation_factory("constant", 2.),
+        transverse_att=arim.material_attenuation_factory("constant", 20.),
+    )
+
+    probe = arim.Probe.make_matrix_probe(20, 1e-3, 1, np.nan, 5e6)
+    probe_element_width = 0.8e-3
+    probe.set_reference_element("first")
+    probe.reset_position()
+    probe.translate([0., 0., -5e-3])
+    probe.rotate(arim.geometry.rotation_matrix_y(np.deg2rad(10)))
+
+    probe_p = probe.to_oriented_points()
+    frontwall = arim.geometry.points_1d_wall_z(
+        numpoints=1000, xmin=0.e-3, xmax=40.e-3, z=0., name="Frontwall"
+    )
+    backwall = arim.geometry.points_1d_wall_z(
+        numpoints=1000, xmin=0.e-3, xmax=40.e-3, z=30.e-3, name="Backwall"
+    )
+    scatterer_p = arim.geometry.default_oriented_points(
+        arim.Points([[35e-3, 0., 20e-3]])
+    )
+    all_points = [probe_p, frontwall, backwall, scatterer_p]
+
+    # if show_plots:
+    #     import arim.plot as aplt
+    #     aplt.plot_interfaces(
+    #         all_points, markers=["o", "o", "o", "d"], show_orientations=True
+    #     )
+    #     aplt.plt.show()
+
+    exam_obj = arim.BlockInImmersion(block, couplant, frontwall, backwall, scatterer_p)
+    scat_obj = arim.scat.scat_factory(material=block, kind="sdh", radius=0.5e-3)
+    scat_funcs = scat_obj.as_angles_funcs(probe.frequency)
+    scat_angle = 0.
+
+    tx_list, rx_list = arim.ut.fmc(probe.numelements)
+
+    # Toneburst
+    dt = .25 / probe.frequency  # to adjust so that the whole toneburst is sampled
+    toneburst_time, toneburst, toneburst_t0_idx = arim.model.make_toneburst2(
+        5, probe.frequency, dt, num_before=1
+    )
+    toneburst_f = np.fft.rfft(toneburst)
+    toneburst_freq = np.fft.rfftfreq(len(toneburst_time), dt)
+
+    # Allocate a long enough time vector for the scanlines
+    views = bim.make_views(
+        exam_obj,
+        probe_p,
+        scatterer_p,
+        max_number_of_reflection=0,
+        tfm_unique_only=False,
+    )
+    arim.ray.ray_tracing(views.values())
+    max_delay = max(
+        (
+            view.tx_path.rays.times.max() + view.rx_path.rays.times.max()
+            for view in views.values()
+        )
+    )
+    scanlines_time = arim.Time(0., dt, math.ceil(max_delay / dt) + len(toneburst_time))
+    scanlines = None
+
+    # Run model
+    if use_multifreq:
+        model_freq_array = toneburst_freq
+    else:
+        model_freq_array = probe.frequency
+
+    transfer_function_iterator = bim.scat_unshifted_transfer_functions(
+        views,
+        tx_list,
+        rx_list,
+        model_freq_array,
+        scat_obj,
+        probe_element_width=probe_element_width,
+        use_directivity=True,
+        use_beamspread=True,
+        use_transrefl=True,
+        use_attenuation=True,
+        scat_angle=scat_angle,
+        numangles_for_scat_precomp=120,
+    )
+
+    for unshifted_transfer_func, delays in transfer_function_iterator:
+        scanlines = arim.model.transfer_func_to_scanlines(
+            unshifted_transfer_func,
+            delays,
+            scanlines_time,
+            toneburst_time,
+            toneburst_freq,
+            toneburst_f,
+            toneburst_t0_idx,
+            scanlines=scanlines,
+        )
+    frame = arim.Frame(scanlines, scanlines_time, tx_list, rx_list, probe, exam_obj)
+    if show_plots:
+        import matplotlib.pyplot as plt
+        import arim.plot as aplt
+
+        aplt.plot_bscan_pulse_echo(frame)
+        plt.title(f"test_fulltime_model - Bscan - use_multifreq={use_multifreq}")
+
+        tx = 0
+        rx = probe.numelements - 1
+        plt.figure()
+        plt.plot(np.real(frame.get_scanline(tx, rx)), label=f"tx={tx}, rx={rx}")
+        plt.plot(np.real(frame.get_scanline(rx, tx)), label=f"tx={rx}, rx={tx}")
+        plt.title(f"test_fulltime_model - use_multifreq={use_multifreq}")
+        plt.legend()
+        plt.show()
+

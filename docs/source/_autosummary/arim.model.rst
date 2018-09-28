@@ -25,6 +25,7 @@ arim.model
       snell_angles
       solid_l_fluid
       solid_t_fluid
+      transfer_func_to_scanlines
       transmission_at_interface
       transmission_reflection_for_path
    
