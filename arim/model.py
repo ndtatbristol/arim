@@ -1583,7 +1583,7 @@ def transfer_func_to_scanlines(
         unshifted_transfer_func = unshifted_transfer_func.reshape(
             (1, *unshifted_transfer_func.shape)
         )
-    if unshifted_transfer_func.ndim == 1:
+    if delays.ndim == 1:
         delays = delays.reshape((1, *delays.shape))
     numscatterers, numscanlines, _ = unshifted_transfer_func.shape
     assert delays.shape == (numscatterers, numscanlines)
