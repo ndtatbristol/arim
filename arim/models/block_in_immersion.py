@@ -1263,7 +1263,7 @@ def singlefreq_wall_transfer_functions(
                 np.exp(-2j * np.pi * freq_array[1:] * delay) * ray_weight
             )
 
-        yield pathname, partial_transfer_function_f.conj()
+        yield pathname, partial_transfer_function_f
 
 
 def multifreq_scat_transfer_functions(
