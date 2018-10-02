@@ -1,6 +1,18 @@
 """
 Forward model of the inspection of a solid block in immersion
 
+Calculating the frequency-domain **scatterer** responses:
+
+- :func:`scat_unshifted_transfer_functions`: base function, no time-shift
+- :func:`singlefreq_scat_transfer_functions`
+- :func:`multifreq_scat_transfer_functions`
+
+Calculating the frequency-domain **wall** responses:
+
+- :func:`wall_unshifted_transfer_functions`: base function, no time-shift
+- :func:`singlefreq_wall_transfer_functions`
+- :func:`multifreq_wall_transfer_functions`
+
 Boilerplate::
 
     import arim.models.block_in_immersion as bim
@@ -1121,6 +1133,86 @@ def scat_unshifted_transfer_functions(
         yield partial_transfer_function_f, delays
 
 
+def wall_unshifted_transfer_functions(
+    wall_paths,
+    tx,
+    rx,
+    freq_array,
+    probe_element_width=None,
+    use_directivity=True,
+    use_beamspread=True,
+    use_transrefl=True,
+    use_attenuation=True,
+    first_nonzero_freq_idx=None,
+):
+    """Compute unshifted transfer functions for walls echoes.
+
+    Output spectra uses the *math* Fourier convention (not the acoustics one).
+
+    Parameters
+    ----------
+    wall_paths : Dict[arim.Path]
+    tx : ndarray
+        Shape: (numscanlines, )
+    rx : ndarray
+        Shape: (numscanlines, )
+    freq_array : ndarray or float
+        Shape: (numfreq, )
+    probe_element_width : [type], optional
+        [description] (the default is None, which [default_description])
+    probe_element_width : float or None
+    use_directivity : bool
+    use_beamspread : bool
+    use_transrefl : bool
+    use_attenuation : bool
+    first_nonzero_freq_idx : int or None
+        Default: assumes first freq is zero, except if only one freq is given.
+        
+    Yields
+    ------
+    partial_transfer_function_f : ndarray
+        Shape: (numscanlines, numfreq). Complex. Contribution for one wall path.
+    delays : ndarray
+        Shape: (numscanlines). Float. Contribution for wall path.
+    """
+    freq_array = np.atleast_1d(freq_array)
+    numfreq = len(freq_array)
+
+    if first_nonzero_freq_idx is None:
+        if numfreq == 1:
+            # assume the freq is nonzero
+            first_nonzero_freq_idx = 0
+        else:
+            # assume only the first freq is zero, as returned by fftfreq
+            first_nonzero_freq_idx = 1
+    nonzero_freq_array = freq_array[first_nonzero_freq_idx:]
+
+    for pathname, path in wall_paths.items():
+        logger.info(f"Transfer function for wall {pathname}")
+
+        partial_transfer_function_f = np.zeros((len(tx), len(freq_array)), np.complex_)
+
+        for freq_idx, frequency in enumerate(nonzero_freq_array):
+            freq_idx2 = first_nonzero_freq_idx + freq_idx
+
+            # shape: (numelements, numelements)
+            ray_weights, _ = ray_weights_for_wall(
+                path,
+                frequency=frequency,
+                probe_element_width=probe_element_width,
+                use_beamspread=use_beamspread,
+                use_directivity=use_directivity,
+                use_transrefl=use_transrefl,
+                use_attenuation=use_attenuation,
+            )
+
+            # Fancy indexing:
+            partial_transfer_function_f[:, freq_idx2] = ray_weights[tx, rx].conj()
+            delays = path.rays.times[tx, rx]
+
+        yield partial_transfer_function_f, delays
+
+
 def singlefreq_scat_transfer_functions(
     views,
     tx,
@@ -1239,31 +1331,28 @@ def singlefreq_wall_transfer_functions(
         Key of `wall_paths`
     partial_transfer_function_f : ndarray
         Shape: (numscanlines, numfreq). Complex. Contribution for one path.
+    
+    Notes
+    -----
+    Legacy function, superseeded by :func:`wall_unshifted_transfer_functions`
+    and :func:`arim.signal.timeshift_spectra`.
 
     """
-    for pathname, path in wall_paths.items():
-        logger.info(f"Transfer function for wall {pathname}")
+    unshifted_tfs = wall_unshifted_transfer_functions(
+        wall_paths,
+        tx,
+        rx,
+        frequency,
+        probe_element_width=probe_element_width,
+        use_directivity=use_directivity,
+        use_beamspread=use_beamspread,
+        use_transrefl=use_transrefl,
+        use_attenuation=use_attenuation,
+    )
 
-        partial_transfer_function_f = np.zeros((len(tx), len(freq_array)), np.complex_)
-        ray_weights, _ = ray_weights_for_wall(
-            path,
-            frequency=frequency,
-            probe_element_width=probe_element_width,
-            use_beamspread=use_beamspread,
-            use_directivity=use_directivity,
-            use_transrefl=use_transrefl,
-            use_attenuation=use_attenuation,
-        )
-        # shape (numelements, numelements)
-
-        for scan_idx, (tx_, rx_) in enumerate(zip(tx, rx)):
-            delay = path.rays.times[tx_, rx_]
-            ray_weight = ray_weights[tx_, rx_].conj()
-            partial_transfer_function_f[scan_idx, 1:] = (
-                np.exp(-2j * np.pi * freq_array[1:] * delay) * ray_weight
-            )
-
-        yield pathname, partial_transfer_function_f
+    for pathname, (unshifted_tf, delays) in zip(wall_paths.keys(), unshifted_tfs):
+        tf = signal.timeshift_spectra(unshifted_tf, delays, freq_array)
+        yield pathname, tf
 
 
 def multifreq_scat_transfer_functions(
@@ -1380,31 +1469,23 @@ def multifreq_wall_transfer_functions(
     partial_transfer_function_f : ndarray
         Shape: (numscanlines, numfreq). Complex. Contribution for one path.
 
-
+    Notes
+    -----
+    Legacy function, superseeded by :func:`wall_unshifted_transfer_functions`
+    and :func:`arim.signal.timeshift_spectra`.
     """
-    for pathname, path in wall_paths.items():
-        logger.info(f"Transfer function for wall {pathname}")
+    unshifted_tfs = wall_unshifted_transfer_functions(
+        wall_paths,
+        tx,
+        rx,
+        freq_array,
+        probe_element_width=probe_element_width,
+        use_directivity=use_directivity,
+        use_beamspread=use_beamspread,
+        use_transrefl=use_transrefl,
+        use_attenuation=use_attenuation,
+    )
 
-        partial_transfer_function_f = np.zeros((len(tx), len(freq_array)), np.complex_)
-
-        for freq_idx, frequency in enumerate(freq_array[1:], start=1):
-            # ignores first frequency which is assumed to be 0
-            ray_weights, _ = ray_weights_for_wall(
-                path,
-                frequency=frequency,
-                probe_element_width=probe_element_width,
-                use_beamspread=use_beamspread,
-                use_directivity=use_directivity,
-                use_transrefl=use_transrefl,
-                use_attenuation=use_attenuation,
-            )
-            # shape: (numelements, numelements)
-
-            for scan_idx, (tx_, rx_) in enumerate(zip(tx, rx)):
-                delay = path.rays.times[tx_, rx_]
-                ray_weight = ray_weights[tx_, rx_].conj()
-                partial_transfer_function_f[scan_idx, freq_idx] = (
-                    np.exp(-2j * np.pi * frequency * delay) * ray_weight
-                )
-
-        yield pathname, partial_transfer_function_f
+    for pathname, (unshifted_tf, delays) in zip(wall_paths.keys(), unshifted_tfs):
+        tf = signal.timeshift_spectra(unshifted_tf, delays, freq_array)
+        yield pathname, tf
