@@ -295,7 +295,7 @@ def rfft_to_hilbert(xf, n, axis=-1):
     if xf.ndim > 1:
         ind = [np.newaxis] * xf.ndim
         ind[axis] = slice(None)
-        h = h[ind]
+        h = h[tuple(ind)]
     return scipy.fftpack.ifft(h * xf, n, axis)
 
 

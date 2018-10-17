@@ -227,11 +227,11 @@ def test_rotate_matrix():
 
     # rotation of 0°
     rotated_scat_matrix = scat.rotate_matrix(scat_matrix, 0.)
-    np.testing.assert_allclose(scat_matrix, rotated_scat_matrix)
+    np.testing.assert_allclose(scat_matrix, rotated_scat_matrix, rtol=1e-6)
 
     # rotation of 360°
     rotated_scat_matrix = scat.rotate_matrix(scat_matrix, 2 * np.pi)
-    np.testing.assert_allclose(scat_matrix, rotated_scat_matrix, rtol=1e-5)
+    np.testing.assert_allclose(scat_matrix, rotated_scat_matrix, rtol=1e-6)
 
     # rotation of pi/ 6
     # Ensure that S'(theta_1, theta_2) = S(theta_1 - phi, theta_2 - phi)
@@ -272,7 +272,7 @@ def test_rotate_matrix():
 
     # unrotate
     np.testing.assert_allclose(
-        scat.rotate_matrix(rotated_scat_matrix, -phi), scat_matrix
+        scat.rotate_matrix(rotated_scat_matrix, -phi), scat_matrix, rtol=1e-6
     )
 
     # test rotate_matrices
