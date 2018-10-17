@@ -545,6 +545,7 @@ class FermatPath(tuple):
             raise ValueError(
                 "{} expects a sequence of length odd and >= 5)".format(cls.__name__)
             )
+        assert all(np.isfinite(sequence[1::2])), "nonfinite velocity"
         return super().__new__(cls, sequence)
 
     @classmethod
