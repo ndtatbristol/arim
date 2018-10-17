@@ -21,7 +21,7 @@ __all__ = [
     "Abs",
     "Gaussian",
     "rfft_to_hilbert",
-    "timeshift_spectra"
+    "timeshift_spectra",
 ]
 
 
@@ -306,13 +306,10 @@ def rfft_to_hilbert(xf, n, axis=-1):
     target="parallel",
     cache=True,
 )
-def _timeshift_spectra_singlef(
-    delays, unshifted_x, freq_array, out=None
-):
+def _timeshift_spectra_singlef(delays, unshifted_x, freq_array, out=None):
     for freq_idx in range(freq_array.shape[0]):
         out[freq_idx] = (
-            cmath.exp(-2j * np.pi * freq_array[freq_idx] * delays[0])
-            * unshifted_x[0]
+            cmath.exp(-2j * np.pi * freq_array[freq_idx] * delays[0]) * unshifted_x[0]
         )
 
 
@@ -323,9 +320,7 @@ def _timeshift_spectra_singlef(
     target="parallel",
     cache=True,
 )
-def _timeshift_spectra_multif(
-    delays, unshifted_x, freq_array, out=None
-):
+def _timeshift_spectra_multif(delays, unshifted_x, freq_array, out=None):
     for freq_idx in range(freq_array.shape[0]):
         out[freq_idx] = (
             cmath.exp(-2j * np.pi * freq_array[freq_idx] * delays[0])
@@ -363,11 +358,6 @@ def timeshift_spectra(unshifted_x, delays, freq_array):
     num_tf_freq = unshifted_x.shape[-1]
 
     if num_tf_freq == 1:
-        return _timeshift_spectra_singlef(
-            delays, unshifted_x[..., 0], freq_array
-        )
+        return _timeshift_spectra_singlef(delays, unshifted_x[..., 0], freq_array)
     else:
-        return _timeshift_spectra_multif(
-            delays, unshifted_x, freq_array
-        )
-
+        return _timeshift_spectra_multif(delays, unshifted_x, freq_array)

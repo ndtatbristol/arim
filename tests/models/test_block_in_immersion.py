@@ -466,4 +466,3 @@ def test_fulltime_model(use_multifreq, show_plots):
         plt.title(f"test_fulltime_model - use_multifreq={use_multifreq}")
         plt.legend()
         plt.show()
-
