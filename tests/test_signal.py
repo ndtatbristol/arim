@@ -31,6 +31,76 @@ def test_butterworth_bandpass():
     assert np.allclose(x_filt, x_raw, atol=0.001)
 
 
+def test_gaussian_bandpass():
+    dt = 1 / 5e6
+    time = Time(0, dt, 20)
+
+    f0 = 1e6
+
+    # np.random.seed(123)
+    # x = np.cos(2 * np.pi * f0 * time.samples) + np.random.uniform(-1., 1., size=len(time))
+    x = np.array(
+        [
+            1.39293837,
+            -0.11870434,
+            -1.35531409,
+            -0.70638746,
+            0.74795493,
+            0.84621292,
+            1.27054539,
+            -0.43935752,
+            -0.84715319,
+            0.09325203,
+            0.68635603,
+            0.76711641,
+            -0.93187251,
+            -1.6896612,
+            0.10510551,
+            1.47599081,
+            -0.32599954,
+            -1.45811348,
+            -0.74591425,
+            0.37267217,
+        ]
+    )
+
+    half_bandwidth = 0.9
+    filt = signal.Gaussian(len(time), f0, f0 * half_bandwidth, time)
+
+    # This should work without error:
+    str(filt)
+    repr(filt)
+
+    x_filt = filt(x)
+
+    x_filt_ref = np.array(
+        [
+            0.62591615 + 0.16094794j,
+            0.05282459 + 0.63433225j,
+            -0.56150642 + 0.26702298j,
+            -0.4464416 - 0.40377986j,
+            0.17969486 - 0.55062043j,
+            0.55312903 - 0.06575002j,
+            0.27794359 + 0.46086085j,
+            -0.31166247 + 0.42185181j,
+            -0.49724934 - 0.14825403j,
+            -0.00762617 - 0.52544998j,
+            0.52277535 - 0.15681544j,
+            0.30321322 + 0.48852171j,
+            -0.4158227 + 0.43818666j,
+            -0.54502171 - 0.30731385j,
+            0.1758916 - 0.61337811j,
+            0.64375842 + 0.03294709j,
+            0.11810955 + 0.6382037j,
+            -0.5917696 + 0.27483013j,
+            -0.42575264 - 0.49615411j,
+            0.34959627 - 0.55018928j,
+        ]
+    )
+
+    np.testing.assert_allclose(x_filt, x_filt_ref)
+
+
 def test_composed_filters():
     class MultiplyBy2(signal.Filter):
         def __call__(self, arr):
