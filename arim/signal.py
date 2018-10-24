@@ -10,7 +10,6 @@ import numba
 import numpy as np
 from scipy.signal import butter, filtfilt, hilbert
 import scipy.fftpack
-import scipy as sp
 
 __all__ = [
     "Filter",
@@ -207,13 +206,24 @@ class Abs(Filter):
 class Gaussian(Filter):
     """ 
     Gaussian Filter - As applied in BRAIN **BUT** default is zero outside of filter region, BRAIN is not.
+
+    Return the analytical signal
     
     Parameters
     ----------
-
+    nsamples : int
+        ``len(time)``
+    centre_freq : float
+        In Hz
+    half_bandwidth : float
+        In Hz
     time : arim.Time
         Time object. This filter can be used only on data sampled consistently with the attribute
     ``time``.
+    force_zero : bool
+        If True (default), the spectrum amplitudes below ``-db_down`` will be
+        replaced by exactly zero.
+    db_down : float
 
     """
 
@@ -245,10 +255,10 @@ class Gaussian(Filter):
         )
 
     def __call__(self, arr):
-        return np.fft.ifft(
-            np.fft.fft(arr)
-            * sp.sparse.spdiags(self.filter_window, 0, self.samples, self.samples)
-        )
+        arr = np.asarray(arr)
+        # broadcast window to (1, 1, ..., numsamples)
+        window = np.array(self.filter_window, ndmin=arr.ndim)
+        return np.fft.ifft(np.fft.fft(arr) * window)
 
 
 def rfft_to_hilbert(xf, n, axis=-1):

@@ -97,8 +97,10 @@ def test_gaussian_bandpass():
             0.34959627 - 0.55018928j,
         ]
     )
-
     np.testing.assert_allclose(x_filt, x_filt_ref)
+
+    x_filt_2d = filt([x, 2 * x, 3 * x])
+    np.testing.assert_allclose(x_filt_2d, [x_filt_ref, 2 * x_filt_ref, 3 * x_filt_ref])
 
 
 def test_composed_filters():
