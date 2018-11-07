@@ -536,7 +536,7 @@ class TestRayGeometry:
             dst_points, dst_basis, are_normals_on_inc_rays_side=are_normals_zplus
         )
 
-        material = arim.Material(np.nan, metadata=dict(long_name="Dummy"))
+        material = arim.Material(1.0, metadata=dict(long_name="Dummy"))
 
         interfaces = [source_interface, dest_interface]
 
