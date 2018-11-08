@@ -158,6 +158,16 @@ def ray_tracing_for_paths(paths_list, convert_to_fortran_order=False):
     fermat_solver = FermatSolver(fermat_paths_tuple)
     rays_dict = fermat_solver.solve()
 
+    for path, fermat_path in zip(paths_list, fermat_paths_tuple):
+        rays = rays_dict[fermat_path]
+        suspicious_rays = rays.gone_through_extreme_points()
+        num_suspicious_rays = suspicious_rays.sum()
+        if num_suspicious_rays > 0:
+            logger.warning(
+                f"{num_suspicious_rays} rays of path {path.name} go through "
+                "the interface boundaries. Extend boundaries."
+            )
+
     if convert_to_fortran_order:
         old_rays_dict = rays_dict
         rays_dict = {k: v.to_fortran_order() for k, v in old_rays_dict.items()}
@@ -429,7 +439,7 @@ class Rays:
         order = "F" if self.indices.flags.f_contiguous else "C"
 
         shape = self.indices.shape[1:]
-        out = np.full(shape, False, order=order, dtype=np.bool)
+        out = np.zeros(shape, order=order, dtype=np.bool)
 
         interior_indices = self.interior_indices
         middle_points = tuple(self.fermat_path.points)[1:-1]
