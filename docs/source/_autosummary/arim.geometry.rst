@@ -45,7 +45,6 @@ arim.geometry
    .. autosummary::
    
       CoordinateSystem
-      GeometryHelper
       Grid
       OrientedPoints
       Points
