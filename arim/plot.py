@@ -133,7 +133,7 @@ def plot_bscan_pulse_echo(
     if use_dB:
         scanlines = ut.decibel(scanlines)
         if clim is None:
-            clim = [-40., 0.]
+            clim = [-40.0, 0.0]
 
     im = ax.imshow(
         scanlines,
@@ -600,7 +600,7 @@ def plot_oxz_many(
     return axes, images
 
 
-def plot_tfm(tfm, y=0., func_res=None, interpolation="bilinear", **plot_oxz_kwargs):
+def plot_tfm(tfm, y=0.0, func_res=None, interpolation="bilinear", **plot_oxz_kwargs):
     """
     Plot a TFM in plane Oxz.
 
@@ -675,8 +675,8 @@ def plot_directivity_finite_width_2d(element_width, wavelength, ax=None, **kwarg
     ax.set_title(title)
     ax.set_xlim([-90, 90])
     ax.set_ylim([0, 1.2])
-    ax.xaxis.set_major_locator(ticker.MultipleLocator(30.))
-    ax.xaxis.set_minor_locator(ticker.MultipleLocator(15.))
+    ax.xaxis.set_major_locator(ticker.MultipleLocator(30.0))
+    ax.xaxis.set_minor_locator(ticker.MultipleLocator(15.0))
     ax.yaxis.set_minor_locator(ticker.MultipleLocator(0.1))
     ax.legend()
     return ax
@@ -894,7 +894,7 @@ def plot_interfaces(
     return ax
 
 
-def common_dynamic_db_scale(data_list, area=None, db_range=40., ref_db=None):
+def common_dynamic_db_scale(data_list, area=None, db_range=40.0, ref_db=None):
     """
     Scale such as:
       - 0 dB corresponds to the maximum value in the area for all data arrays,

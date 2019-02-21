@@ -59,7 +59,7 @@ def _check_shapes(frame, focal_law):
 
 
 def delay_and_sum_numba(
-    frame, focal_law, fillvalue=0., interpolation="nearest", result=None
+    frame, focal_law, fillvalue=0.0, interpolation="nearest", result=None
 ):
     """
     Delay-and-sum function using Numba compiler.
@@ -200,7 +200,7 @@ def _delay_and_sum_amplitudes_nearest(
     numpoints, numelements = lookup_times_tx.shape
 
     for point in numba.prange(numpoints):
-        res_tmp = 0.
+        res_tmp = 0.0
 
         for scan in range(numscanlines):
             lookup_time = (
@@ -260,7 +260,7 @@ def _delay_and_sum_amplitudes_linear(
     numpoints, numelements = lookup_times_tx.shape
 
     for point in numba.prange(numpoints):
-        res_tmp = 0.
+        res_tmp = 0.0
         for scan in range(numscanlines):
             lookup_time = (
                 lookup_times_tx[point, tx[scan]] + lookup_times_rx[point, rx[scan]]
@@ -325,7 +325,7 @@ def _delay_and_sum_amplitudes_linear(
     numpoints, numelements = lookup_times_tx.shape
 
     for point in numba.prange(numpoints):
-        res_tmp = 0.
+        res_tmp = 0.0
         for scan in range(numscanlines):
             lookup_time = (
                 lookup_times_tx[point, tx[scan]] + lookup_times_rx[point, rx[scan]]
@@ -350,7 +350,7 @@ def _delay_and_sum_amplitudes_linear(
 
 
 def delay_and_sum_numba_noamp(
-    frame, focal_law, fillvalue=0., interpolation="nearest", result=None
+    frame, focal_law, fillvalue=0.0, interpolation="nearest", result=None
 ):
     """
     Delay and sum with uniform amplitudes
@@ -436,7 +436,7 @@ def _delay_and_sum_noamp(
     numpoints, numelements = lookup_times_tx.shape
 
     for point in numba.prange(numpoints):
-        res_tmp = 0.
+        res_tmp = 0.0
 
         for scan in range(numscanlines):
             lookup_time = (
@@ -467,7 +467,7 @@ def _delay_and_sum_noamp_linear(
     numpoints, numelements = lookup_times_tx.shape
 
     for point in numba.prange(numpoints):
-        res_tmp = 0.
+        res_tmp = 0.0
 
         for scan in range(numscanlines):
             lookup_time = (
@@ -502,7 +502,7 @@ def lanczos_interpolation(t, x, a):
     i_min = math.floor(t) - a + 1
     i_max = math.floor(t) + a + 1  # +1 because of how range() works
     n = len(x)
-    out = 0.
+    out = 0.0
     for i in range(i_min, i_max):
         out += x[i % n] * sinc(t - i) * sinc((t - i) / a)
     return out
@@ -530,7 +530,7 @@ def _delay_and_sum_noamp_lanczos(
     numpoints, numelements = lookup_times_tx.shape
 
     for point in numba.prange(numpoints):
-        res_tmp = 0.
+        res_tmp = 0.0
 
         for scan in range(numscanlines):
             lookup_time = (
@@ -676,7 +676,7 @@ def _general_delay_and_sum_linear(
 
 
 def delay_and_sum_naive(
-    frame, focal_law, fillvalue=0., result=None, interpolate_position="nearest"
+    frame, focal_law, fillvalue=0.0, result=None, interpolate_position="nearest"
 ):
     """
     Pure-Python implementation of delay and sum.

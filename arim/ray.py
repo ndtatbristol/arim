@@ -732,10 +732,10 @@ class FermatSolver:
         """
         Compute the rays for all paths and store them in ``self.res``.
         """
-        tic = time.clock()
+        tic = time.perf_counter()
         for path in self.paths:
             self.res[path] = self._solve(path)
-        toc = time.clock()
+        toc = time.perf_counter()
         logger.info("Ray tracing: solved all in {:.3g}s".format(toc - tic))
         return self.res
 

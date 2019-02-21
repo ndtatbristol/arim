@@ -196,8 +196,8 @@ def sdh_2d_scat(
     n2 = n * n
 
     # Brind eq 2.8
-    epsilon = np.full(n.shape, 2.)
-    epsilon[0] = 1.
+    epsilon = np.full(n.shape, 2.0)
+    epsilon[0] = 1.0
 
     # Definition of C_n^(i)(x) and D_n^(i)(x)
     # Brind, eq 31
@@ -397,7 +397,7 @@ def crack_2d_scat(
 
     # mesh definition
     num_nodes = int(np.ceil(crack_length / lambda_L * nodes_per_wavelength))
-    p = 0.1133407986  # magic constant
+    p = 0.113_340_798_6  # magic constant
     h_nodes = crack_length / (num_nodes + 2 * p)
     x_nodes = np.arange(num_nodes) * h_nodes + (
         h_nodes * (1 / 2 + p) - crack_length / 2
@@ -1188,13 +1188,13 @@ class PointSourceScat(Scattering2dFromFunc):
 
         out = dict()
         if "LL" in to_compute:
-            out["LL"] = np.full(shape, 1.)
+            out["LL"] = np.full(shape, 1.0)
         if "LT" in to_compute:
             out["LT"] = np.full(shape, v_L / v_T)
         if "TL" in to_compute:
             out["TL"] = np.full(shape, -v_T / v_L)
         if "TT" in to_compute:
-            out["TT"] = np.full(shape, 1.)
+            out["TT"] = np.full(shape, 1.0)
         return out
 
     def __init__(self, longitudinal_vel, transverse_vel):

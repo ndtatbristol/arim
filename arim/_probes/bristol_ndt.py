@@ -27,7 +27,7 @@ def _make_ima_50_MHz_128_1d():
     dimensions = g.Points.from_xyz(
         np.full(numelements, 0.2e-3),
         np.full(numelements, 15e-3),
-        np.full(numelements, 0.),
+        np.full(numelements, 0.0),
     )
     dead_elements = np.full(numelements, False, dtype=np.bool)
 
@@ -73,7 +73,7 @@ def _make_ima_50_MHz_64_1d():
     dimensions = g.Points.from_xyz(
         np.full(numelements, 0.53e-3),
         np.full(numelements, 15e-3),
-        np.full(numelements, 0.),
+        np.full(numelements, 0.0),
     )
     dead_elements = np.full(numelements, False, dtype=np.bool)
 
@@ -119,7 +119,7 @@ def _make_ima_25_MHz_64_1d():
     dimensions = g.Points.from_xyz(
         np.full(numelements, 0.35e-3),
         np.full(numelements, 15e-3),
-        np.full(numelements, 0.),
+        np.full(numelements, 0.0),
     )
     dead_elements = np.full(numelements, False, dtype=np.bool)
 
@@ -165,7 +165,7 @@ def _make_sonaxis_150_MHz_110_1d():
     dimensions = g.Points.from_xyz(
         np.full(numelements, 0.14e-3),
         np.full(numelements, 3.0e-3),
-        np.full(numelements, 0.),
+        np.full(numelements, 0.0),
     )
     dead_elements = np.full(numelements, False, dtype=np.bool)
 

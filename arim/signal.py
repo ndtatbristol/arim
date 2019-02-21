@@ -292,7 +292,7 @@ def rfft_to_hilbert(xf, n, axis=-1):
     """
     # cf code of https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.hilbert.html
     if xf.ndim == 0:
-        h = 1.
+        h = 1.0
     else:
         h = np.zeros(xf.shape[axis])
         if n % 2 == 0:

@@ -14,7 +14,7 @@ def basis_function(k):
     if abs(k) <= k_00:
         return 1 - 1 / 18 * k ** 2 + 1 / 792 * k ** 4
     else:
-        return 105. / k ** 7 * (k * (k * k - 15) * cos(k) - (6 * k * k - 15) * sin(k))
+        return 105.0 / k ** 7 * (k * (k * k - 15) * cos(k) - (6 * k * k - 15) * sin(k))
 
 
 @numba.njit(cache=True)
@@ -123,7 +123,7 @@ def A_x(xi, xi2, h_nodes, num_nodes):
     # Pack arguments for LowLevelCallable.
     # data is updated at every loop. The main loop is NOT thread-safe. If the main loop
     # becomes parallel some day, make "data" local.
-    data = np.array([xi, xi2, h_nodes, 0.])
+    data = np.array([xi, xi2, h_nodes, 0.0])
     data_ptr = ctypes.cast(data.ctypes, ctypes.c_void_p)
 
     quad_args = dict(limit=200)
@@ -243,7 +243,7 @@ def A_z(xi, xi2, h_nodes, num_nodes):
     # Pack arguments for LowLevelCallable.
     # data is updated at every loop. The main loop is NOT thread-safe. If the main loop
     # becomes parallel some day, make "data" local.
-    data = np.array([xi, xi2, h_nodes, 0.])
+    data = np.array([xi, xi2, h_nodes, 0.0])
     data_ptr = ctypes.cast(data.ctypes, ctypes.c_void_p)
 
     quad_args = dict(limit=200)
@@ -323,7 +323,7 @@ def crack_2d_scat_kernel(
     a_T = -1j * k_T * pi / xi2 ** 2  # incident S wave
 
     # normal vector to the crack
-    nv = np.array([0., 1.], np.complex128)  # force to complex to please numba
+    nv = np.array([0.0, 1.0], np.complex128)  # force to complex to please numba
 
     sv = np.array(
         [-sin(phi_in), -cos(phi_in)], np.complex128

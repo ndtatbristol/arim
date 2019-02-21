@@ -999,7 +999,7 @@ def scat_unshifted_transfer_functions(
     use_beamspread=True,
     use_transrefl=True,
     use_attenuation=True,
-    scat_angle=0.,
+    scat_angle=0.0,
     numangles_for_scat_precomp=0,
     first_nonzero_freq_idx=None,
 ):
@@ -1225,7 +1225,7 @@ def singlefreq_scat_transfer_functions(
     use_beamspread=True,
     use_transrefl=True,
     use_attenuation=True,
-    scat_angle=0.,
+    scat_angle=0.0,
     numangles_for_scat_precomp=0,
 ):
     """
@@ -1366,7 +1366,7 @@ def multifreq_scat_transfer_functions(
     use_beamspread=True,
     use_transrefl=True,
     use_attenuation=True,
-    scat_angle=0.,
+    scat_angle=0.0,
     numangles_for_scat_precomp=0,
 ):
     """

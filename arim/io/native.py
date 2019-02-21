@@ -326,9 +326,9 @@ def grid_from_conf(conf):
     """
     conf_grid = copy.deepcopy(conf["grid"])
     if "ymin" not in conf_grid:
-        conf_grid["ymin"] = 0.
+        conf_grid["ymin"] = 0.0
     if "ymax" not in conf_grid:
-        conf_grid["ymax"] = 0.
+        conf_grid["ymax"] = 0.0
     return geometry.Grid(**conf_grid)
 
 

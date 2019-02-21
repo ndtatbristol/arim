@@ -5,7 +5,7 @@ Helper for configuring scripts
 import pprint
 import re
 import copy
-import collections
+import collections.abc
 
 __all__ = ["Config"]
 
@@ -100,8 +100,8 @@ def recursive_dict_merge(base_dict, top_dict):
     for key, val in list(top_dict.items()):
         if (
             key in base_dict
-            and isinstance(base_dict[key], collections.Mapping)
-            and isinstance(val, collections.Mapping)
+            and isinstance(base_dict[key], collections.abc.Mapping)
+            and isinstance(val, collections.abc.Mapping)
         ):
             recursive_dict_merge(base_dict[key], val)
         else:

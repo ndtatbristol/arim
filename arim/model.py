@@ -67,9 +67,9 @@ def make_toneburst(
     :func:`make_toneburst2`
 
     """
-    if dt <= 0.:
+    if dt <= 0.0:
         raise ValueError("negative time step")
-    if centre_freq <= 0.:
+    if centre_freq <= 0.0:
         raise ValueError("negative centre frequency")
     if num_cycles <= 0:
         raise ValueError("negative number of cycles")
@@ -344,10 +344,10 @@ def fluid_solid(
     ) / N
 
     # Eq A.8
-    transmission_l = 2. * cos_2_alpha_t / N
+    transmission_l = 2.0 * cos_2_alpha_t / N
 
     # Eq A.9
-    transmission_t = -2. * ct_cl2 * sin(2 * alpha_l) / N
+    transmission_t = -2.0 * ct_cl2 * sin(2 * alpha_l) / N
 
     return reflection, transmission_l, transmission_t
 
@@ -1021,7 +1021,7 @@ def beamspread_2d_for_path(ray_geometry):
     for k in range(1, n):
         # distance A_k A_{k+1}:
         r = ray_geometry.inc_leg_size(k + 1)
-        gamma = 1.
+        gamma = 1.0
         for i in range(k):
             gamma *= gamma_list[i]
         virtual_distance += r / gamma
@@ -1084,7 +1084,7 @@ def reverse_beamspread_2d_for_path(ray_geometry):
     for k in range(1, n):
         # distance A_k A_{k+1}:
         r = ray_geometry.inc_leg_size(n - k)
-        gamma = 1.
+        gamma = 1.0
         for i in range(k):
             gamma *= gamma_list[i]
         virtual_distance += r / gamma
@@ -1093,7 +1093,7 @@ def reverse_beamspread_2d_for_path(ray_geometry):
 
 
 def material_attenuation_for_path(path, ray_geometry, frequency):
-    """
+    r"""
     Return material attenuation for each ray (between 0 and 1)
 
     .. math::
@@ -1192,7 +1192,7 @@ class RayWeights(
         return nbytes
 
 
-def model_amplitudes_factory(tx, rx, view, ray_weights, scattering, scat_angle=0.):
+def model_amplitudes_factory(tx, rx, view, ray_weights, scattering, scat_angle=0.0):
     """
     Calculates the model coefficients once the ray weights are known.
 
@@ -1358,7 +1358,7 @@ class _ModelAmplitudesWithScatFunction(ModelAmplitudes):
         rx_ray_weights,
         tx_scattering_angles,
         rx_scattering_angles,
-        scat_angle=0.,
+        scat_angle=0.0,
     ):
         self.tx = tx
         self.rx = rx
@@ -1435,7 +1435,7 @@ class _ModelAmplitudesWithScatMatrix(ModelAmplitudes):
         rx_ray_weights,
         tx_scattering_angles,
         rx_scattering_angles,
-        scat_angle=0.,
+        scat_angle=0.0,
     ):
         self.tx = tx
         self.rx = rx
@@ -1597,7 +1597,7 @@ def transfer_func_to_scanlines(
 
     # Account for the scanlines t0
     delays = delays - scanlines_time.start
-    assert np.all(delays >= 0.)
+    assert np.all(delays >= 0.0)
 
     # Shift transfer func by the frac of the time step
     delays_remainder = delays % dt

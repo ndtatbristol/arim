@@ -129,7 +129,7 @@ def move_probe_over_flat_surface(frame, distance_to_surface, full_output=False):
     # if probe_type not in ('linear'):
     #    raise NotImplementedError("Only linear points1 are supported yet (given: ('{}').".format(probe_type))
 
-    O = np.array([0., 0., 0.])
+    O = np.array([0.0, 0.0, 0.0])
 
     if not frame.probe.pcs.isclose(g.GCS):
         raise ValueError("This function requires that PCS and the GCS are the same.")
@@ -197,7 +197,7 @@ def move_probe_over_flat_surface(frame, distance_to_surface, full_output=False):
     rot = g.rotation_matrix_y(theta)
 
     frame.probe = frame.probe.rotate(rot)
-    frame.probe = frame.probe.translate(np.array((0., 0., z_o)))
+    frame.probe = frame.probe.translate(np.array((0.0, 0.0, z_o)))
 
     if full_output:
         isometry = _IsometryOxy(z_o, theta, phi=np.nan)

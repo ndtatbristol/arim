@@ -150,11 +150,11 @@ def default_scanline_weights(tx, rx):
         tx, rx, np.nditer(scanline_weights, op_flags=["readwrite"])
     ):
         if (this_rx, this_tx) not in elements_pairs:
-            scanline_weight[...] = 2.
+            scanline_weight[...] = 2.0
     return scanline_weights
 
 
-def decibel(arr, reference=None, neginf_value=-1000., return_reference=False):
+def decibel(arr, reference=None, neginf_value=-1000.0, return_reference=False):
     """
     Return 20*log10(abs(arr) / reference)
 
@@ -194,7 +194,7 @@ def decibel(arr, reference=None, neginf_value=-1000., return_reference=False):
     if reference is None:
         reference = np.nanmax(arr_abs)
     else:
-        assert reference > 0.
+        assert reference > 0.0
 
     with np.errstate(divide="ignore"):
         arr_db = 20 * np.log10(arr_abs / reference)
@@ -249,7 +249,7 @@ def instantaneous_phase_shift(analytic_sig, time_vect, carrier_frequency):
     return phase
 
 
-def make_timevect(num, step, start=0., dtype=None):
+def make_timevect(num, step, start=0.0, dtype=None):
     """
     Return a linearly spaced time vector.
 
@@ -293,8 +293,8 @@ def make_timevect(num, step, start=0., dtype=None):
         raise ValueError("Number of samples, %s, must be non-negative." % num)
 
     # Convert float/complex array scalars to float
-    start = start * 1.
-    step = step * 1.
+    start = start * 1.0
+    step = step * 1.0
 
     dt = np.result_type(start, step)
     if dtype is None:

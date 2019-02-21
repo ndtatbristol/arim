@@ -125,7 +125,7 @@ def aspoints(array_like):
 
 
 class Points:
-    """
+    r"""
     Set of points in a 3D space.
 
     The coordinates (x, y, z) are stored contiguously.
@@ -239,7 +239,7 @@ class Points:
         dz = self.z - z
         return np.argmin(dx * dx + dy * dy + dz * dz)
 
-    def allclose(self, other, atol=1e-8, rtol=0.):
+    def allclose(self, other, atol=1e-8, rtol=0.0):
         return are_points_close(self, other, atol=atol, rtol=rtol)
 
     def __len__(self):
@@ -583,7 +583,7 @@ class CoordinateSystem:
         j_hat = new_basis[2, :] - origin
         return self.__class__(origin, i_hat, j_hat)
 
-    def isclose(self, other, atol=1e-8, rtol=0.):
+    def isclose(self, other, atol=1e-8, rtol=0.0):
         """
         Compare two coordinate system.
         """
@@ -710,9 +710,9 @@ class Grid(Points):
         #   D = L/(N-1)
         #   N = L/D + 1
         # The smallest odd integer above x is: math.ceil(x)|1
-        assert size_x >= 0.
-        assert size_y >= 0.
-        assert size_z >= 0.
+        assert size_x >= 0.0
+        assert size_y >= 0.0
+        assert size_z >= 0.0
 
         numpoints_x = math.ceil(size_x / pixel_size + 1) | 1
         numpoints_y = math.ceil(size_y / pixel_size + 1) | 1
@@ -1008,7 +1008,7 @@ def rotation_matrix_z(theta):
 
 
 def rotate(coords, rotation_matrix, centre=None):
-    """
+    r"""
     Rotate these points given a rotation matrix and the centre.
 
     The rotation of a point OM (in column) is given by OM' such as:
@@ -1049,7 +1049,7 @@ def rotate(coords, rotation_matrix, centre=None):
 
 
 def to_gcs(coords_cs, bases, origins):
-    """
+    r"""
     Convert the coordinates of points expressed in the basis/bases given as parameter to coordinates expressed in the
     global coordinate system.
 
@@ -1077,7 +1077,7 @@ def to_gcs(coords_cs, bases, origins):
 
 
 def from_gcs(points_gcs, bases, origins):
-    """
+    r"""
     Convert the coordinates of points expressed in the global coordinate system to coordinates expressed
     in the basis/bases given as parameter.
 
@@ -1114,7 +1114,7 @@ def rotation_matrix_ypr(yaw, pitch, roll):
     return rotation_matrix_z(yaw) @ rotation_matrix_y(pitch) @ rotation_matrix_x(roll)
 
 
-def are_points_close(points1, points2, atol=1e-8, rtol=0.):
+def are_points_close(points1, points2, atol=1e-8, rtol=0.0):
     """
     Return True if and only if the two sets of points have the same shape and coordinates close
     to the given precision.
@@ -1137,7 +1137,7 @@ def are_points_close(points1, points2, atol=1e-8, rtol=0.):
     )
 
 
-def are_points_aligned(points, rtol=0., atol=1e-08):
+def are_points_aligned(points, rtol=0.0, atol=1e-08):
     """
     Are the points aligned? Returns a boolean.
 
@@ -1311,13 +1311,13 @@ def direct_isometry_3d(A, i_hat, j_hat, B, u_hat, v_hat):
     assert i_hat.shape == (3,)
     assert j_hat.shape == (3,)
 
-    assert np.isclose(norm2(*u_hat), 1.)
-    assert np.isclose(norm2(*v_hat), 1.)
-    assert np.isclose(norm2(*i_hat), 1.)
-    assert np.isclose(norm2(*j_hat), 1.)
+    assert np.isclose(norm2(*u_hat), 1.0)
+    assert np.isclose(norm2(*v_hat), 1.0)
+    assert np.isclose(norm2(*i_hat), 1.0)
+    assert np.isclose(norm2(*j_hat), 1.0)
 
-    assert np.allclose(i_hat @ j_hat, 0.)
-    assert np.allclose(u_hat @ v_hat, 0.)
+    assert np.allclose(i_hat @ j_hat, 0.0)
+    assert np.allclose(u_hat @ v_hat, 0.0)
 
     k_hat = np.cross(i_hat, j_hat)
     w_hat = np.cross(u_hat, v_hat)
@@ -1532,13 +1532,13 @@ def points_in_rectbox(
 
 
 GCS = CoordinateSystem(
-    origin=np.array((0., 0., 0.)),
-    i_hat=np.array((1., 0., 0.)),
-    j_hat=np.array((0., 1., 0.)),
+    origin=np.array((0.0, 0.0, 0.0)),
+    i_hat=np.array((1.0, 0.0, 0.0)),
+    j_hat=np.array((0.0, 1.0, 0.0)),
 )
 
 
-def points_1d_wall_z(xmin, xmax, z, numpoints, y=0., name=None, dtype=None):
+def points_1d_wall_z(xmin, xmax, z, numpoints, y=0.0, name=None, dtype=None):
     """
     Returns a set of regularly spaced points between (xmin, y, z) and (xmax, y, z).
 

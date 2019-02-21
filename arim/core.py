@@ -485,8 +485,8 @@ class Probe:
             pitch_y = np.nan
 
         # Force to float:
-        pitch_x *= 1.
-        pitch_y *= 1.
+        pitch_x *= 1.0
+        pitch_y *= 1.0
 
         # Get result datatype
         dtype = np.result_type(pitch_x, pitch_y)
@@ -536,7 +536,7 @@ class Probe:
         if self.orientations is None:
             return None
         # use (O, i_hat, j_hat, k_hat) because the orientation are defined from point O.
-        cs = g.CoordinateSystem((0., 0., 0.), self.pcs.i_hat, self.pcs.j_hat)
+        cs = g.CoordinateSystem((0.0, 0.0, 0.0), self.pcs.i_hat, self.pcs.j_hat)
         return cs.convert_from_gcs(self.orientations)
 
     def rotate(self, rotation_matrix, centre=None):
@@ -610,9 +610,9 @@ class Probe:
         self : returns the modified probe
 
         """
-        size_x = 1. * size_x
-        size_y = 1. * size_y
-        size_z = 1. * size_z
+        size_x = 1.0 * size_x
+        size_y = 1.0 * size_y
+        size_z = 1.0 * size_z
         x = np.repeat(size_x, self.numelements)
         y = np.repeat(size_y, self.numelements)
         z = np.repeat(size_z, self.numelements)
@@ -1055,13 +1055,13 @@ class Material:
         transverse_att=None,
         metadata=None,
     ):
-        longitudinal_vel = longitudinal_vel * 1.
+        longitudinal_vel = longitudinal_vel * 1.0
 
         if transverse_vel is not None:
-            transverse_vel = transverse_vel * 1.
+            transverse_vel = transverse_vel * 1.0
 
         if density is not None:
-            density = density * 1.
+            density = density * 1.0
 
         if state_of_matter is not None:
             state_of_matter = helpers.parse_enum_constant(state_of_matter, StateMatter)
@@ -1216,7 +1216,7 @@ class Time:
     __slots__ = ["_samples", "_step"]
 
     def __init__(self, start, step, num, dtype=None):
-        step = step * 1.
+        step = step * 1.0
         if step < 0:
             raise ValueError("'step' must be positive.")
         samples = ut.make_timevect(num, step, start, dtype)
