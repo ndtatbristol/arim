@@ -165,7 +165,7 @@ def ray_tracing_for_paths(paths_list, convert_to_fortran_order=False):
         if num_suspicious_rays > 0:
             logger.warning(
                 f"{num_suspicious_rays} rays of path {path.name} go through "
-                "the interface boundaries. Extend boundaries."
+                "the interface limits. Extend limits."
             )
 
     if convert_to_fortran_order:
