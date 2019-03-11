@@ -55,6 +55,7 @@ computationally efficient.
 """
 import logging
 from collections import namedtuple, OrderedDict
+import warnings
 
 import numpy as np
 
@@ -393,89 +394,12 @@ def frontwall_path(
 
 
 def backwall_paths(
-    couplant_material, block_material, probe_oriented_points, frontwall, backwall
-):
-    """
-    Make backwall paths
-
-    Probe -> couplant -> frontwall -> block (L or T) -> backwall -> block (L or T) -> frontwall -> couplant -> probe
-
-    Parameters
-    ----------
-    couplant_material : Material
-    block_material : Material
-    probe_oriented_points : OrientedPoints
-    frontwall: OrientedPoints
-    backwall: OrientedPoints
-
-    Returns
-    -------
-    OrderedDict of Path
-        Keys: LL, LT, TL, TT
-
-    """
-    probe_start = c.Interface(*probe_oriented_points, are_normals_on_out_rays_side=True)
-
-    frontwall_couplant_to_block = c.Interface(
-        *frontwall,
-        "fluid_solid",
-        "transmission",
-        are_normals_on_inc_rays_side=False,
-        are_normals_on_out_rays_side=True,
-    )
-
-    backwall_refl = c.Interface(
-        *backwall,
-        "solid_fluid",
-        "reflection",
-        reflection_against=couplant_material,
-        are_normals_on_inc_rays_side=False,
-        are_normals_on_out_rays_side=False,
-    )
-
-    frontwall_block_to_couplant = c.Interface(
-        *frontwall,
-        "solid_fluid",
-        "transmission",
-        are_normals_on_inc_rays_side=True,
-        are_normals_on_out_rays_side=False,
-    )
-
-    probe_end = c.Interface(*probe_oriented_points, are_normals_on_inc_rays_side=True)
-
-    paths = OrderedDict()
-
-    for mode1 in (c.Mode.L, c.Mode.T):
-        for mode2 in (c.Mode.L, c.Mode.T):
-            key = mode1.key() + mode2.key()
-            paths[key] = c.Path(
-                interfaces=(
-                    probe_start,
-                    frontwall_couplant_to_block,
-                    backwall_refl,
-                    frontwall_block_to_couplant,
-                    probe_end,
-                ),
-                materials=(
-                    couplant_material,
-                    block_material,
-                    block_material,
-                    couplant_material,
-                ),
-                modes=(c.Mode.L, mode1, mode2, c.Mode.L),
-                name="Backwall " + key,
-            )
-
-    return paths
-
-
-def backwall_paths2(
     couplant_material,
     block_material,
     probe_oriented_points,
     frontwall,
     backwall,
-    max_backwall_refl=1,
+    max_number_of_reflection=1,
 ):
     """
     Make backwall paths
@@ -503,7 +427,9 @@ def backwall_paths2(
     probe_oriented_points : OrientedPoints
     frontwall: OrientedPoints
     backwall: OrientedPoints
-    max_backwall_refl: (default = 1) Number of potential paths to track
+    max_number_of_reflection : int
+        Number of internal reflections. Default: 1.
+
 
     Returns
     -------
@@ -514,7 +440,7 @@ def backwall_paths2(
 
     """
 
-    if max_backwall_refl > 3:
+    if max_number_of_reflection > 3:
         msg = "The maximum number of backwall reflections exceeds coding limit (3)"
         raise ValueError(msg)
 
@@ -579,7 +505,7 @@ def backwall_paths2(
                 name="Backwall " + key,
             )
 
-    if max_backwall_refl == 1:
+    if max_number_of_reflection == 1:
         return paths
 
     for mode1 in (c.Mode.L, c.Mode.T):
@@ -609,7 +535,7 @@ def backwall_paths2(
                         name="Backwall " + key,
                     )
 
-    if max_backwall_refl == 2:
+    if max_number_of_reflection == 2:
         return paths
 
     for mode1 in (c.Mode.L, c.Mode.T):
@@ -662,6 +588,25 @@ def backwall_paths2(
                             )
 
     return paths
+
+
+def backwall_paths2(
+    couplant_material,
+    block_material,
+    probe_oriented_points,
+    frontwall,
+    backwall,
+    max_backwall_refl=1,
+):
+    warnings.warn("Deprecated, use backwall_paths() instead", DeprecationWarning)
+    return backwall_paths(
+        couplant_material,
+        block_material,
+        probe_oriented_points,
+        frontwall,
+        backwall,
+        max_number_of_reflection=max_backwall_refl,
+    )
 
 
 def ray_weights_for_wall(
