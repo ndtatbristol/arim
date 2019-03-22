@@ -2,7 +2,7 @@
 Defines core objects of arim.
 """
 from collections import namedtuple
-import abc
+import copy
 import enum
 import numpy as np
 
@@ -342,7 +342,7 @@ class Probe:
     locations_pcs : Points
         Locations of the elements centre in the PCS (read-only).
     frequency : float
-    dimensions : Points
+    dimensions : Points or None
         Dimensions of elements in the PCS.
     orientations : Points or None
         Normal vector of elements surfaces in the GCS, towards the front of the probe. Norm: 1. 'None' if unknown.
@@ -351,7 +351,7 @@ class Probe:
     dead_elements : ndarray of bool
         1D array of size `numelements`. For each element, ``True`` if the element is dead (not working), ``False`` if
         the element is working.
-    shapes : ndarray of ElementShape
+    shapes : ndarray of ElementShape or None
     bandwidth : float or None
     pcs : CoordinateSystem
         Probe coordinate system.
@@ -526,6 +526,71 @@ class Probe:
             probe.metadata["pitch_y"] = pitch_y
 
         return probe
+
+    def subprobe(self, elements_idx, save_metadata=False):
+        """Return a new Probe with only a subset of the original elements.
+        
+        Parameters
+        ----------
+        elements_idx : slice or tuple or list or array
+            Index of the elements of the original probe to retain.
+            Any valid numpy index is accepted.
+        save_metadata : bool, optional
+            Whether to retain the original metadata  (the default is False)
+        
+        Returns
+        -------
+        subprobe : Probe
+
+        Notes
+        ----
+        The original PCS is retained and may no longer be at a desirable location
+        in the subprobe; consider using :meth:`Probe.set_reference_element`.
+
+        Examples
+        --------
+
+        >>> probe.subprobe([0, 1, 3])
+        # Returns a subprobe with the first three elements
+
+        >>> probe.subprobe(np.s_[0::2])
+        # Returns a subprobe with every other element, starting from element 0.
+
+            
+        """
+
+        def _index(x):
+            if x is None:
+                return None
+            else:
+                return x[elements_idx]
+
+        # subprobe parameters:
+        locations = _index(self.locations)
+        frequency = self.frequency
+        dimensions = _index(self.dimensions)
+        orientations = _index(self.orientations)
+        shapes = _index(self.shapes)
+        shapes = _index(self.shapes)
+        dead_elements = _index(self.dead_elements)
+        bandwidth = self.bandwidth
+        pcs = copy.deepcopy(self.pcs)
+        if save_metadata:
+            metadata = copy.deepcopy(self.metadata)
+        else:
+            metadata = None
+
+        return self.__class__(
+            locations,
+            frequency,
+            dimensions,
+            orientations,
+            shapes,
+            dead_elements,
+            bandwidth,
+            pcs,
+            metadata,
+        )
 
     @property
     def locations_pcs(self):

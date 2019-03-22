@@ -431,6 +431,18 @@ class TestProbe:
         )
         return probe
 
+    def test_subprobe(self):
+        # 10 elements:
+        probe = self.linear_probe()
+
+        # elements 0, 2, 4, 6, 8:
+        subprobe = probe.subprobe(np.s_[::2])
+        assert subprobe.numelements == 5
+        np.testing.assert_allclose(subprobe.locations[1], probe.locations[2])
+
+        subprobe = probe.subprobe([2])
+        assert subprobe.numelements == 1
+
     def test_move_probe(self):
         probe = self.linear_probe()
         probe_bak = self.linear_probe()
