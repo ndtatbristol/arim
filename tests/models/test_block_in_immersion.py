@@ -96,31 +96,31 @@ def test_path_in_immersion():
     couplant = arim.Material(
         longitudinal_vel=1480,
         transverse_vel=None,
-        density=1000.,
+        density=1000.0,
         state_of_matter="liquid",
         metadata={"long_name": "Water"},
     )
     block = arim.Material(
-        longitudinal_vel=6320.,
-        transverse_vel=3130.,
-        density=2700.,
+        longitudinal_vel=6320.0,
+        transverse_vel=3130.0,
+        density=2700.0,
         state_of_matter="solid",
         metadata={"long_name": "Aluminium"},
     )
 
     probe_points, probe_orientations = arim.geometry.points_1d_wall_z(
-        0e-3, 15e-3, z=0., numpoints=16, name="Frontwall"
+        0e-3, 15e-3, z=0.0, numpoints=16, name="Frontwall"
     )
 
     frontwall_points, frontwall_orientations = arim.geometry.points_1d_wall_z(
-        xmin, xmax, z=0., numpoints=20, name="Frontwall"
+        xmin, xmax, z=0.0, numpoints=20, name="Frontwall"
     )
     backwall_points, backwall_orientations = arim.geometry.points_1d_wall_z(
         xmin, xmax, z=40.18e-3, numpoints=21, name="Backwall"
     )
 
     grid = arim.geometry.Grid(
-        xmin, xmax, ymin=0., ymax=0., zmin=0., zmax=20e-3, pixel_size=5e-3
+        xmin, xmax, ymin=0.0, ymax=0.0, zmin=0.0, zmax=20e-3, pixel_size=5e-3
     )
     grid_points, grid_orientation = grid.to_oriented_points()
 
@@ -246,36 +246,36 @@ SCATTERERS_SPECS = [
 @pytest.mark.parametrize("scat_specs", SCATTERERS_SPECS)
 def test_model(scat_specs, show_plots):
     couplant = arim.Material(
-        longitudinal_vel=1480.,
-        density=1000.,
+        longitudinal_vel=1480.0,
+        density=1000.0,
         state_of_matter="liquid",
-        longitudinal_att=arim.material_attenuation_factory("constant", 1.),
+        longitudinal_att=arim.material_attenuation_factory("constant", 1.0),
     )
     block = arim.Material(
-        longitudinal_vel=6320.,
-        transverse_vel=3130.,
-        density=2700.,
+        longitudinal_vel=6320.0,
+        transverse_vel=3130.0,
+        density=2700.0,
         state_of_matter="solid",
-        longitudinal_att=arim.material_attenuation_factory("constant", 2.),
-        transverse_att=arim.material_attenuation_factory("constant", 3.),
+        longitudinal_att=arim.material_attenuation_factory("constant", 2.0),
+        transverse_att=arim.material_attenuation_factory("constant", 3.0),
     )
 
     probe = arim.Probe.make_matrix_probe(5, 1e-3, 1, np.nan, 5e6)
     probe_element_width = 0.8e-3
     probe.set_reference_element("first")
     probe.reset_position()
-    probe.translate([0., 0., -5e-3])
+    probe.translate([0.0, 0.0, -5e-3])
     probe.rotate(arim.geometry.rotation_matrix_y(np.deg2rad(10)))
 
     probe_p = probe.to_oriented_points()
     frontwall = arim.geometry.points_1d_wall_z(
-        numpoints=1000, xmin=-5.e-3, xmax=20.e-3, z=0., name="Frontwall"
+        numpoints=1000, xmin=-5.0e-3, xmax=20.0e-3, z=0.0, name="Frontwall"
     )
     backwall = arim.geometry.points_1d_wall_z(
-        numpoints=1000, xmin=-5.e-3, xmax=20.e-3, z=30.e-3, name="Backwall"
+        numpoints=1000, xmin=-5.0e-3, xmax=20.0e-3, z=30.0e-3, name="Backwall"
     )
     scatterer_p = arim.geometry.default_oriented_points(
-        arim.Points([[19e-3, 0., 20e-3]])
+        arim.Points([[19e-3, 0.0, 20e-3]])
     )
     all_points = [probe_p, frontwall, backwall, scatterer_p]
 
@@ -348,33 +348,33 @@ def test_model(scat_specs, show_plots):
 def test_fulltime_model(use_multifreq, show_plots):
     # Setup
     couplant = arim.Material(
-        longitudinal_vel=1480., density=1000., state_of_matter="liquid"
+        longitudinal_vel=1480.0, density=1000.0, state_of_matter="liquid"
     )
     block = arim.Material(
-        longitudinal_vel=6320.,
-        transverse_vel=3130.,
-        density=2700.,
+        longitudinal_vel=6320.0,
+        transverse_vel=3130.0,
+        density=2700.0,
         state_of_matter="solid",
-        longitudinal_att=arim.material_attenuation_factory("constant", 2.),
-        transverse_att=arim.material_attenuation_factory("constant", 20.),
+        longitudinal_att=arim.material_attenuation_factory("constant", 2.0),
+        transverse_att=arim.material_attenuation_factory("constant", 20.0),
     )
 
     probe = arim.Probe.make_matrix_probe(20, 1e-3, 1, np.nan, 5e6)
     probe_element_width = 0.8e-3
     probe.set_reference_element("first")
     probe.reset_position()
-    probe.translate([0., 0., -5e-3])
+    probe.translate([0.0, 0.0, -5e-3])
     probe.rotate(arim.geometry.rotation_matrix_y(np.deg2rad(10)))
 
     probe_p = probe.to_oriented_points()
     frontwall = arim.geometry.points_1d_wall_z(
-        numpoints=1000, xmin=0.e-3, xmax=40.e-3, z=0., name="Frontwall"
+        numpoints=1000, xmin=0.0e-3, xmax=40.0e-3, z=0.0, name="Frontwall"
     )
     backwall = arim.geometry.points_1d_wall_z(
-        numpoints=1000, xmin=0.e-3, xmax=40.e-3, z=30.e-3, name="Backwall"
+        numpoints=1000, xmin=0.0e-3, xmax=40.0e-3, z=30.0e-3, name="Backwall"
     )
     scatterer_p = arim.geometry.default_oriented_points(
-        arim.Points([[35e-3, 0., 20e-3]])
+        arim.Points([[35e-3, 0.0, 20e-3]])
     )
     all_points = [probe_p, frontwall, backwall, scatterer_p]
 
@@ -388,12 +388,12 @@ def test_fulltime_model(use_multifreq, show_plots):
     exam_obj = arim.BlockInImmersion(block, couplant, frontwall, backwall, scatterer_p)
     scat_obj = arim.scat.scat_factory(material=block, kind="sdh", radius=0.5e-3)
     scat_funcs = scat_obj.as_angles_funcs(probe.frequency)
-    scat_angle = 0.
+    scat_angle = 0.0
 
     tx_list, rx_list = arim.ut.fmc(probe.numelements)
 
     # Toneburst
-    dt = .25 / probe.frequency  # to adjust so that the whole toneburst is sampled
+    dt = 0.25 / probe.frequency  # to adjust so that the whole toneburst is sampled
     toneburst_time, toneburst, toneburst_t0_idx = arim.model.make_toneburst2(
         5, probe.frequency, dt, num_before=1
     )
@@ -415,7 +415,7 @@ def test_fulltime_model(use_multifreq, show_plots):
             for view in views.values()
         )
     )
-    scanlines_time = arim.Time(0., dt, math.ceil(max_delay / dt) + len(toneburst_time))
+    scanlines_time = arim.Time(0.0, dt, math.ceil(max_delay / dt) + len(toneburst_time))
     scanlines = None
 
     # Run model

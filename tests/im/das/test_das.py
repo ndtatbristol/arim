@@ -9,7 +9,7 @@ import arim.im.das as das
 import arim.im.tfm
 
 
-def _random_uniform(dtype, low=0., high=1., size=None):
+def _random_uniform(dtype, low=0.0, high=1.0, size=None):
     z = np.zeros(size, dtype)
     if np.issubdtype(dtype, np.complexfloating):
         z.real = np.random.uniform(low, high, size)
@@ -23,20 +23,20 @@ def _random_uniform(dtype, low=0., high=1., size=None):
 
 def make_delay_and_sum_case_random(dtype_float, dtype_data, amplitudes="random"):
     locations = g.Points(
-        np.array([(0, 0, 0), (1., 0, 0), (2., 0., 0.)], dtype=np.float)
+        np.array([(0, 0, 0), (1.0, 0, 0), (2.0, 0.0, 0.0)], dtype=np.float)
     )
     numelements = len(locations)
     frequency = 1e6
     probe = Probe(locations, frequency)
 
     # examination object:
-    vel = 10.
+    vel = 10.0
     material = Material(vel)
     examination_object = ExaminationObject(material)
 
     # scanlines
     # time = Time(start=0.35, step=0.001, num=100)
-    time = Time(start=0., step=0.001, num=100)
+    time = Time(start=0.0, step=0.001, num=100)
 
     tx = np.array([0, 0, 1, 1, 2, 2], dtype=np.int)
     rx = np.array([0, 1, 0, 1, 0, 1], dtype=np.int)
@@ -48,7 +48,9 @@ def make_delay_and_sum_case_random(dtype_float, dtype_data, amplitudes="random")
     stop_lookup = (time.end - time.step) / 2
 
     np.random.seed(31031596)
-    scanlines = _random_uniform(dtype_data, 100., 101., size=(numscanlines, len(time)))
+    scanlines = _random_uniform(
+        dtype_data, 100.0, 101.0, size=(numscanlines, len(time))
+    )
     amplitudes_tx = _random_uniform(dtype_data, 1.0, 1.1, size=(numpoints, numelements))
     amplitudes_rx = _random_uniform(
         dtype_data, -1.0, -1.1, size=(numpoints, numelements)
@@ -111,7 +113,7 @@ def datatypes(request):
     return request.param
 
 
-@pytest.fixture(params=(0., np.nan), ids=("fillvalue_0", "fillvalue_nan"))
+@pytest.fixture(params=(0.0, np.nan), ids=("fillvalue_0", "fillvalue_nan"))
 def fillvalue(request):
     return request.param
 
@@ -163,7 +165,7 @@ class TestDasDispatcher:
         frame, focal_law = make_delay_and_sum_case_random(
             dtype_float, dtype_data, amplitudes="none"
         )
-        res = das.delay_and_sum(frame, focal_law, fillvalue=0.)
+        res = das.delay_and_sum(frame, focal_law, fillvalue=0.0)
         res = das.delay_and_sum(frame, focal_law, fillvalue=np.nan)
         res = das.delay_and_sum(frame, focal_law, interpolation="nearest")
         res = das.delay_and_sum(frame, focal_law, interpolation=("nearest",))
@@ -174,7 +176,7 @@ class TestDasDispatcher:
         frame, focal_law = make_delay_and_sum_case_random(
             dtype_float, dtype_data, amplitudes="random"
         )
-        res = das.delay_and_sum(frame, focal_law, fillvalue=0.)
+        res = das.delay_and_sum(frame, focal_law, fillvalue=0.0)
         res = das.delay_and_sum(frame, focal_law, fillvalue=np.nan)
         res = das.delay_and_sum(frame, focal_law, interpolation="nearest")
         res = das.delay_and_sum(frame, focal_law, interpolation="linear")

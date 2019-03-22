@@ -10,7 +10,7 @@ import arim.geometry as g
 
 
 def test_extrema_lookup_times_in_rectbox():
-    grid = g.Grid(-10., 10., 0., 0., 0., 15., 1.)
+    grid = g.Grid(-10.0, 10.0, 0.0, 0.0, 0.0, 15.0, 1.0)
     tx = [0, 0, 0, 1, 1, 1]
     rx = [0, 1, 2, 1, 1, 2]
 
@@ -22,7 +22,7 @@ def test_extrema_lookup_times_in_rectbox():
     lookup_times_tx[grid_idx, 5] = -1.5
     lookup_times_rx[grid_idx, 5] = -1.5
     # some noise:
-    lookup_times_tx[grid_idx, 4] = -2.
+    lookup_times_tx[grid_idx, 4] = -2.0
     lookup_times_rx[grid_idx, 4] = -0.1
 
     # scanline 1 (tx=0, rx=1) is the maximum time:
@@ -30,14 +30,14 @@ def test_extrema_lookup_times_in_rectbox():
     lookup_times_tx[grid_idx, 1] = 1.5
     lookup_times_rx[grid_idx, 1] = 1.5
     # some noise:
-    lookup_times_tx[0, 0] = 2.
+    lookup_times_tx[0, 0] = 2.0
     lookup_times_rx[0, 0] = 0.1
 
     out = im.tfm.extrema_lookup_times_in_rectbox(
         grid, lookup_times_tx, lookup_times_rx, tx, rx
     )
-    assert math.isclose(out.tmin, -3.)
-    assert math.isclose(out.tmax, 3.)
+    assert math.isclose(out.tmin, -3.0)
+    assert math.isclose(out.tmax, 3.0)
     assert out.tx_elt_for_tmin == 1
     assert out.rx_elt_for_tmin == 2
     assert out.tx_elt_for_tmax == 0
@@ -50,11 +50,11 @@ def test_multiview_tfm(use_real_grid):
     probe = arim.Probe.make_matrix_probe(5, 0.5e-3, 1, np.nan, 1e6)
     probe.set_reference_element("first")
     probe.reset_position()
-    probe.translate([0., 0., -1e-3])
+    probe.translate([0.0, 0.0, -1e-3])
 
     # make frame
     tx_arr, rx_arr = arim.ut.fmc(probe.numelements)
-    time = arim.Time(.5e-6, 1 / 20e6, 100)
+    time = arim.Time(0.5e-6, 1 / 20e6, 100)
     # use random data but ensure reciprocity
     scanlines = np.zeros((len(tx_arr), len(time)))
     for i, (tx, rx) in enumerate(zip(tx_arr, rx_arr)):
@@ -67,10 +67,10 @@ def test_multiview_tfm(use_real_grid):
 
     # prepare view LL-T in contact
     if use_real_grid:
-        grid = arim.Grid(0., 0., 0., 0., 5e-3, 5e-3, np.nan)
+        grid = arim.Grid(0.0, 0.0, 0.0, 0.0, 5e-3, 5e-3, np.nan)
         grid_interface = arim.Interface(*grid.to_oriented_points())
     else:
-        grid = arim.Points(np.array([0., 0., 5e-3]), name="Grid")
+        grid = arim.Points(np.array([0.0, 0.0, 5e-3]), name="Grid")
         grid_interface = arim.Interface(
             *arim.geometry.default_oriented_points(grid.to_1d_points())
         )
@@ -115,7 +115,7 @@ def test_contact_tfm(use_hmc):
     probe = arim.Probe.make_matrix_probe(5, 0.5e-3, 1, np.nan, 1e6)
     probe.set_reference_element("first")
     probe.reset_position()
-    probe.translate([0., 0., -1e-3])
+    probe.translate([0.0, 0.0, -1e-3])
 
     # make frame
     if use_hmc:
@@ -123,7 +123,7 @@ def test_contact_tfm(use_hmc):
     else:
         tx_arr, rx_arr = arim.ut.fmc(probe.numelements)
 
-    time = arim.Time(.5e-6, 1 / 20e6, 100)
+    time = arim.Time(0.5e-6, 1 / 20e6, 100)
 
     # use random data but ensure reciprocity
     scanlines = np.zeros((len(tx_arr), len(time)))
@@ -146,7 +146,7 @@ def test_contact_tfm(use_hmc):
     )
 
     # prepare view LL-T in contact
-    grid = arim.Points(np.array([0., 0., 5e-3]), name="Grid")
+    grid = arim.Points(np.array([0.0, 0.0, 5e-3]), name="Grid")
 
     tfm = im.tfm.contact_tfm(frame, grid, block.longitudinal_vel, fillvalue=np.nan)
 

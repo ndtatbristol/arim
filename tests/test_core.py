@@ -231,19 +231,22 @@ def examination_object():
 @pytest.fixture(scope="module")
 def water():
     return c.Material(
-        1400., density=1000., state_of_matter="liquid", metadata={"long_name": "Water"}
+        1400.0,
+        density=1000.0,
+        state_of_matter="liquid",
+        metadata={"long_name": "Water"},
     )
 
 
 @pytest.fixture(scope="module")
 def aluminium():
-    v_longi = 6320.
-    v_transverse = 3130.
+    v_longi = 6320.0
+    v_transverse = 3130.0
 
     return c.Material(
         v_longi,
         v_transverse,
-        density=2700.,
+        density=2700.0,
         state_of_matter="solid",
         metadata={"long_name": "Aluminium"},
     )
@@ -435,7 +438,7 @@ class TestProbe:
         # define a nasty isometry:
         centre = np.array((1.1, 1.2, 1.3))
         rotation = g.rotation_matrix_ypr(0.5, -0.6, 0.7)
-        translation = np.array((66., -77., 0.))
+        translation = np.array((66.0, -77.0, 0.0))
 
         # rotate!
         probe = probe.rotate(rotation, centre)
@@ -452,14 +455,14 @@ class TestProbe:
         # define a nasty isometry:
         centre = np.array((1.1, 1.2, 1.3))
         rotation = g.rotation_matrix_ypr(0.5, -0.6, 0.7)
-        translation = np.array((66., -77., 0.))
+        translation = np.array((66.0, -77.0, 0.0))
         probe = probe.rotate(rotation, centre)
         probe = probe.translate(translation)
 
         # define a second isometry:
-        centre = np.array((4., 5., 6.))
+        centre = np.array((4.0, 5.0, 6.0))
         rotation = g.rotation_matrix_ypr(0.1, -0.1, 0.3)
-        translation = np.array((8., 9., -10.))
+        translation = np.array((8.0, 9.0, -10.0))
         probe2.rotate(rotation, centre)
         probe2.translate(translation)
 
@@ -485,33 +488,39 @@ class TestProbe:
         probe.translate_to_point_O()
         np.testing.assert_allclose(probe.locations.y, 0, **allclose_kwargs)
         np.testing.assert_allclose(probe.locations.z, 0, **allclose_kwargs)
-        np.testing.assert_allclose(probe.locations[0], (0., 0., 0.), **allclose_kwargs)
+        np.testing.assert_allclose(
+            probe.locations[0], (0.0, 0.0, 0.0), **allclose_kwargs
+        )
         np.testing.assert_allclose(probe.locations[-1], (9e-3, 0, 0), **allclose_kwargs)
 
         probe = self.linear_probe()
         probe.set_reference_element("last")
         probe.translate_to_point_O()
-        np.testing.assert_allclose(probe.locations.y, 0., **allclose_kwargs)
-        np.testing.assert_allclose(probe.locations.z, 0., **allclose_kwargs)
+        np.testing.assert_allclose(probe.locations.y, 0.0, **allclose_kwargs)
+        np.testing.assert_allclose(probe.locations.z, 0.0, **allclose_kwargs)
         np.testing.assert_allclose(probe.locations[0], (-9e-3, 0, 0), **allclose_kwargs)
-        np.testing.assert_allclose(probe.locations[-1], (0., 0., 0.), **allclose_kwargs)
+        np.testing.assert_allclose(
+            probe.locations[-1], (0.0, 0.0, 0.0), **allclose_kwargs
+        )
 
         probe = self.linear_probe()
         probe.set_reference_element("last")
         probe.flip_probe_around_axis_Oz()
         probe.translate_to_point_O()
-        np.testing.assert_allclose(probe.locations.y, 0., **allclose_kwargs)
-        np.testing.assert_allclose(probe.locations.z, 0., **allclose_kwargs)
+        np.testing.assert_allclose(probe.locations.y, 0.0, **allclose_kwargs)
+        np.testing.assert_allclose(probe.locations.z, 0.0, **allclose_kwargs)
         np.testing.assert_allclose(probe.locations[0], (9e-3, 0, 0), **allclose_kwargs)
-        np.testing.assert_allclose(probe.locations[-1], (0., 0., 0.), **allclose_kwargs)
+        np.testing.assert_allclose(
+            probe.locations[-1], (0.0, 0.0, 0.0), **allclose_kwargs
+        )
 
         probe = self.linear_probe()
         probe.set_reference_element("mean")
         probe.translate_to_point_O()
-        np.testing.assert_allclose(probe.locations.z, 0., **allclose_kwargs)
-        np.testing.assert_allclose(probe.locations.y, 0., **allclose_kwargs)
+        np.testing.assert_allclose(probe.locations.z, 0.0, **allclose_kwargs)
+        np.testing.assert_allclose(probe.locations.y, 0.0, **allclose_kwargs)
         np.testing.assert_allclose(
-            probe.locations[0], (-4.5e-3, 0., 0.), **allclose_kwargs
+            probe.locations[0], (-4.5e-3, 0.0, 0.0), **allclose_kwargs
         )
         np.testing.assert_allclose(
             probe.locations[-1], (+4.5e-3, 0, 0), **allclose_kwargs
@@ -519,7 +528,7 @@ class TestProbe:
 
         probe.flip_probe_around_axis_Oz()
         np.testing.assert_allclose(
-            probe.locations[0], (+4.5e-3, 0., 0.), **allclose_kwargs
+            probe.locations[0], (+4.5e-3, 0.0, 0.0), **allclose_kwargs
         )
         np.testing.assert_allclose(
             probe.locations[-1], (-4.5e-3, 0, 0), **allclose_kwargs
@@ -736,7 +745,7 @@ def test_interface_kind():
 
 @pytest.mark.parametrize(
     "mat_att_args,expected",
-    [(("constant", 777.), 777.), (("polynomial", (777., 0., 0.02)), 779.)],
+    [(("constant", 777.0), 777.0), (("polynomial", (777.0, 0.0, 0.02)), 779.0)],
 )
 def test_material_attenuation_factory(mat_att_args, expected):
     mat_att_func = c.material_attenuation_factory(*mat_att_args)
@@ -745,7 +754,7 @@ def test_material_attenuation_factory(mat_att_args, expected):
     np.testing.assert_allclose(fval, expected)
 
     # test 1d arrays are accepted:
-    frequencies = np.linspace(0., 10e6)
+    frequencies = np.linspace(0.0, 10e6)
     fval = mat_att_func(frequencies)
     assert fval.shape == frequencies.shape
     np.testing.assert_allclose(fval[-1], expected)

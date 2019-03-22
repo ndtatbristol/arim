@@ -8,10 +8,10 @@ import arim.geometry as g
 from arim import Time, ExaminationObject, Material, Probe, Frame
 
 _MOVE_PROBE_ON_OXY_DATA = [
-    ((0., 0., 0.), (5., 0., 0.), 6., 10.),
-    ((0., 0., 0.), (5., 0., 0.), 10., 6.),
-    ((0., 0., 0.), (-5., 0., 0.), 6., 10.),
-    ((0., 0., 0.), (-5., 0., 0.), 10., 6.),
+    ((0.0, 0.0, 0.0), (5.0, 0.0, 0.0), 6.0, 10.0),
+    ((0.0, 0.0, 0.0), (5.0, 0.0, 0.0), 10.0, 6.0),
+    ((0.0, 0.0, 0.0), (-5.0, 0.0, 0.0), 6.0, 10.0),
+    ((0.0, 0.0, 0.0), (-5.0, 0.0, 0.0), 10.0, 6.0),
 ]
 
 
@@ -30,7 +30,7 @@ def test_find_probe_loc_from_frontwall_ideal(A, B, dA, dB):
 
     distance_to_surface = np.array([dA, np.nan, dB])
 
-    time = Time(0., 1.0, 50)
+    time = Time(0.0, 1.0, 50)
     scanlines = np.zeros((len(tx), len(time)))
 
     frame = Frame(scanlines, time, tx, rx, probe, ExaminationObject(Material(1.0)))
@@ -48,11 +48,11 @@ def test_find_probe_loc_from_frontwall_ideal(A, B, dA, dB):
     assert np.isclose(new_locations.z[1], -dB)
 
     # Elements are in plane y=0
-    assert np.isclose(new_locations.y[0], 0.)
-    assert np.isclose(new_locations.y[1], 0.)
+    assert np.isclose(new_locations.y[0], 0.0)
+    assert np.isclose(new_locations.y[1], 0.0)
 
     # Is element A(0., 0., 0.) now in (0., 0., z)?
-    assert np.allclose(new_locations[0], (0., 0., iso.z_o))
+    assert np.allclose(new_locations[0], (0.0, 0.0, iso.z_o))
 
     # the elements are still in the right distance
     dAB = g.norm2(*(locations[0] - locations[1]))
@@ -72,17 +72,17 @@ def test_find_probe_loc_from_frontwall_ideal(A, B, dA, dB):
 @pytest.mark.parametrize("theta_deg", [30, -30])
 def test_find_probe_loc_from_frontwall_real(theta_deg):
     """Test move_probe_on_Oxy() with a 10 element linear points1"""
-    standoff = -10.
+    standoff = -10.0
 
     numelements = 10
 
     # Setup: a 2-element points1
-    probe = Probe.make_matrix_probe(numelements, 0.1, 1, 0., 1e6)
+    probe = Probe.make_matrix_probe(numelements, 0.1, 1, 0.0, 1e6)
 
     locations_pcs = probe.locations
 
     # The point O(0., 0., 0.) is the 'centre' of the points1 (geometrical centre)
-    assert np.allclose(np.mean(locations_pcs, axis=0), 0.)
+    assert np.allclose(np.mean(locations_pcs, axis=0), 0.0)
 
     # rotate and shift points1:
     locations_gcs = locations_pcs @ g.rotation_matrix_y(np.deg2rad(theta_deg)).T
@@ -90,7 +90,7 @@ def test_find_probe_loc_from_frontwall_real(theta_deg):
 
     # empty fmc data
     tx, rx = arim.ut.fmc(numelements)
-    time = Time(0., 1.0, 50)
+    time = Time(0.0, 1.0, 50)
     scanlines = np.zeros((len(tx), len(time)))
     frame = Frame(scanlines, time, tx, rx, probe, ExaminationObject(Material(1.0)))
 
@@ -107,7 +107,7 @@ def test_find_probe_loc_from_frontwall_real(theta_deg):
 def test_detect_surface_from_extrema():
     probe = Probe.make_matrix_probe(3, 1.0, 1.0, 0.0, 1e6)
 
-    time = Time(10., 1.0, 50)
+    time = Time(10.0, 1.0, 50)
 
     tx = np.array([0, 0, 1, 1, 2, 2])
     rx = np.array([0, 1, 1, 0, 2, 0])

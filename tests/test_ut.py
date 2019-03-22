@@ -6,41 +6,41 @@ from arim import ut
 
 
 def test_decibel():
-    db = ut.decibel(0.01, reference=1.)
-    assert np.allclose(db, -40.)
+    db = ut.decibel(0.01, reference=1.0)
+    assert np.allclose(db, -40.0)
 
-    arr = np.array([0.01, 0.1, 1., 10.])
+    arr = np.array([0.01, 0.1, 1.0, 10.0])
     db = ut.decibel(arr)
-    assert np.allclose(db, [-60., -40., -20., 0.])
+    assert np.allclose(db, [-60.0, -40.0, -20.0, 0.0])
 
-    arr = np.array([0.01, 0.1, 1., 10.])
-    db = ut.decibel(arr, reference=1.)
-    assert np.allclose(db, [-40., -20., 0., 20.])
+    arr = np.array([0.01, 0.1, 1.0, 10.0])
+    db = ut.decibel(arr, reference=1.0)
+    assert np.allclose(db, [-40.0, -20.0, 0.0, 20.0])
 
-    arr = np.array([0.01, 0.1, 1., 10.])
+    arr = np.array([0.01, 0.1, 1.0, 10.0])
     db, ref = ut.decibel(arr, return_reference=True)
-    assert np.allclose(db, [-60., -40., -20., 0.])
-    assert np.isclose(ref, 10.)
+    assert np.allclose(db, [-60.0, -40.0, -20.0, 0.0])
+    assert np.isclose(ref, 10.0)
 
-    arr = np.array([0.01, 0.1, 1., 10., np.nan])
+    arr = np.array([0.01, 0.1, 1.0, 10.0, np.nan])
     with np.errstate(all="raise"):
         db = ut.decibel(arr)
     assert np.isnan(db[-1])
-    assert np.allclose(db[:-1], [-60., -40., -20., 0.])
+    assert np.allclose(db[:-1], [-60.0, -40.0, -20.0, 0.0])
 
     # Check argument neginf_values:
-    arr = np.array([0., 0.01, 0.1, 1., 10., np.nan])
+    arr = np.array([0.0, 0.01, 0.1, 1.0, 10.0, np.nan])
     with np.errstate(all="raise"):
-        db = ut.decibel(arr, neginf_value=-666.)
+        db = ut.decibel(arr, neginf_value=-666.0)
     assert np.isnan(db[-1])
-    assert np.allclose(db[:-1], [-666., -60., -40., -20., 0.])
+    assert np.allclose(db[:-1], [-666.0, -60.0, -40.0, -20.0, 0.0])
 
-    arr = np.array([0., 0.01, 0.1, 1., 10., np.nan])
+    arr = np.array([0.0, 0.01, 0.1, 1.0, 10.0, np.nan])
     with np.errstate(all="raise"):
         db = ut.decibel(arr, neginf_value=None)
     assert np.isnan(db[-1])
     assert np.isneginf(db[0])
-    assert np.allclose(db[1:-1], [-60., -40., -20., 0.])
+    assert np.allclose(db[1:-1], [-60.0, -40.0, -20.0, 0.0])
 
 
 def test_fmc():
@@ -130,31 +130,31 @@ def test_default_scanline_weights():
     # FMC
     tx = [0, 0, 0, 1, 1, 1, 2, 2, 2]
     rx = [0, 1, 2, 0, 1, 2, 0, 1, 2]
-    expected = [1., 1., 1., 1., 1., 1., 1., 1., 1.]
+    expected = [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
     np.testing.assert_almost_equal(ut.default_scanline_weights(tx, rx), expected)
 
     # FMC with dead-element 1
     tx = [0, 0, 2, 2]
     rx = [0, 2, 0, 2]
-    expected = [1., 1., 1., 1.]
+    expected = [1.0, 1.0, 1.0, 1.0]
     np.testing.assert_almost_equal(ut.default_scanline_weights(tx, rx), expected)
 
     # HMC
     tx = [0, 0, 0, 1, 1, 2]
     rx = [0, 1, 2, 1, 2, 2]
-    expected = [1., 2., 2., 1., 2., 1.]
+    expected = [1.0, 2.0, 2.0, 1.0, 2.0, 1.0]
     np.testing.assert_almost_equal(ut.default_scanline_weights(tx, rx), expected)
 
     # HMC with dead-element 1
     tx = [0, 0, 2]
     rx = [0, 2, 2]
-    expected = [1., 2., 1.]
+    expected = [1.0, 2.0, 1.0]
     np.testing.assert_almost_equal(ut.default_scanline_weights(tx, rx), expected)
 
     # HMC again
     tx, rx = ut.hmc(30)
     expected = np.ones(len(tx))
-    expected[tx != rx] = 2.
+    expected[tx != rx] = 2.0
     np.testing.assert_almost_equal(ut.default_scanline_weights(tx, rx), expected)
 
 
@@ -162,7 +162,7 @@ def test_instantaneous_phase_shift():
     t = np.arange(300)
     f0 = 20
     theta = np.pi / 3
-    sig = 12. * np.exp(1j * (2. * np.pi * f0 * t + theta))
+    sig = 12.0 * np.exp(1j * (2.0 * np.pi * f0 * t + theta))
 
     theta_computed = ut.instantaneous_phase_shift(sig, t, f0)
     np.testing.assert_allclose(theta_computed, theta)
@@ -196,7 +196,7 @@ def test_make_timevect():
         x = ut.make_timevect(num, step)
         assert len(x) == num
         np.testing.assert_allclose(x[1] - x[0], step)
-        np.testing.assert_allclose(x[0], 0.)
+        np.testing.assert_allclose(x[0], 0.0)
         np.testing.assert_allclose(x[-1], (num - 1) * step)
 
         # Standard case
@@ -294,8 +294,8 @@ def test_reciprocal_viewname():
 
 def test_rayleigh_wave():
     # steel
-    v_l = 5900.
-    v_t = 3200.
+    v_l = 5900.0
+    v_t = 3200.0
 
     v_r = ut.rayleigh_vel(v_l, v_t)
     v_r_expected = 2959.250291  # the value was not checked against literature

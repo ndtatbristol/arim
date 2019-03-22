@@ -32,37 +32,39 @@ def make_context(couplant_att=None, block_l_att=None, block_t_att=None):
 
     """
     couplant = arim.Material(
-        longitudinal_vel=1480.,
-        density=1000.,
+        longitudinal_vel=1480.0,
+        density=1000.0,
         state_of_matter="liquid",
         longitudinal_att=couplant_att,
     )
     block = arim.Material(
-        longitudinal_vel=6320.,
-        transverse_vel=3130.,
-        density=2700.,
+        longitudinal_vel=6320.0,
+        transverse_vel=3130.0,
+        density=2700.0,
         state_of_matter="solid",
         longitudinal_att=block_l_att,
         transverse_att=block_t_att,
     )
 
-    probe_points = arim.Points([[0., 0., -10e-3]], "Probe")
+    probe_points = arim.Points([[0.0, 0.0, -10e-3]], "Probe")
     probe_orientations = arim.geometry.default_orientations(probe_points)
     probe_oriented_points = arim.geometry.OrientedPoints(
         probe_points, probe_orientations
     )
 
     frontwall_oriented_points = arim.geometry.points_1d_wall_z(
-        numpoints=1000, xmin=-5.e-3, xmax=20.e-3, z=0., name="Frontwall"
+        numpoints=1000, xmin=-5.0e-3, xmax=20.0e-3, z=0.0, name="Frontwall"
     )
     frontwall_points, frontwall_orientations = frontwall_oriented_points
 
     backwall_oriented_points = arim.geometry.points_1d_wall_z(
-        numpoints=1000, xmin=-5.e-3, xmax=50.e-3, z=30.e-3, name="Backwall"
+        numpoints=1000, xmin=-5.0e-3, xmax=50.0e-3, z=30.0e-3, name="Backwall"
     )
     backwall_points, backwall_orientations = backwall_oriented_points
 
-    scatterer_points = arim.Points([[0., 0., 20e-3], [50e-3, 0., 20e-3]], "Scatterers")
+    scatterer_points = arim.Points(
+        [[0.0, 0.0, 20e-3], [50e-3, 0.0, 20e-3]], "Scatterers"
+    )
     scatterer_orientations = arim.geometry.default_orientations(scatterer_points)
     scatterer_oriented_points = arim.geometry.OrientedPoints(
         scatterer_points, scatterer_orientations
@@ -224,55 +226,55 @@ def test_ray_tracing():
         # print("'{}': {},".format(pathname, repr(path.rays.times)))
         np.testing.assert_allclose(path.rays.times, expected_rays[pathname].times)
 
-    tol = dict(atol=0., rtol=1e-5)
+    tol = dict(atol=0.0, rtol=1e-5)
 
     # check intersection points on frontwall (as coordinates)
     expected_frontwall_points = {
         "L": array(
             [
                 [
-                    [5.00500501e-06, 0.00000000e+00, 0.00000000e+00],
-                    [2.20720721e-03, 0.00000000e+00, 0.00000000e+00],
+                    [5.00500501e-06, 0.00000000e00, 0.00000000e00],
+                    [2.20720721e-03, 0.00000000e00, 0.00000000e00],
                 ]
             ]
         ),
         "T": array(
             [
                 [
-                    [5.00500501e-06, 0.00000000e+00, 0.00000000e+00],
-                    [4.78478478e-03, 0.00000000e+00, 0.00000000e+00],
+                    [5.00500501e-06, 0.00000000e00, 0.00000000e00],
+                    [4.78478478e-03, 0.00000000e00, 0.00000000e00],
                 ]
             ]
         ),
         "LL": array(
             [
                 [
-                    [5.00500501e-06, 0.00000000e+00, 0.00000000e+00],
-                    [1.83183183e-03, 0.00000000e+00, 0.00000000e+00],
+                    [5.00500501e-06, 0.00000000e00, 0.00000000e00],
+                    [1.83183183e-03, 0.00000000e00, 0.00000000e00],
                 ]
             ]
         ),
         "LT": array(
             [
                 [
-                    [5.00500501e-06, 0.00000000e+00, 0.00000000e+00],
-                    [1.95695696e-03, 0.00000000e+00, 0.00000000e+00],
+                    [5.00500501e-06, 0.00000000e00, 0.00000000e00],
+                    [1.95695696e-03, 0.00000000e00, 0.00000000e00],
                 ]
             ]
         ),
         "TL": array(
             [
                 [
-                    [5.00500501e-06, 0.00000000e+00, 0.00000000e+00],
-                    [2.28228228e-03, 0.00000000e+00, 0.00000000e+00],
+                    [5.00500501e-06, 0.00000000e00, 0.00000000e00],
+                    [2.28228228e-03, 0.00000000e00, 0.00000000e00],
                 ]
             ]
         ),
         "TT": array(
             [
                 [
-                    [5.00500501e-06, 0.00000000e+00, 0.00000000e+00],
-                    [3.83383383e-03, 0.00000000e+00, 0.00000000e+00],
+                    [5.00500501e-06, 0.00000000e00, 0.00000000e00],
+                    [3.83383383e-03, 0.00000000e00, 0.00000000e00],
                 ]
             ]
         ),
@@ -293,32 +295,32 @@ def test_ray_tracing():
         "LL": array(
             [
                 [
-                    [1.00100100e-05, 0.00000000e+00, 3.00000000e-02],
-                    [3.79429429e-02, 0.00000000e+00, 3.00000000e-02],
+                    [1.00100100e-05, 0.00000000e00, 3.00000000e-02],
+                    [3.79429429e-02, 0.00000000e00, 3.00000000e-02],
                 ]
             ]
         ),
         "LT": array(
             [
                 [
-                    [1.00100100e-05, 0.00000000e+00, 3.00000000e-02],
-                    [4.55405405e-02, 0.00000000e+00, 3.00000000e-02],
+                    [1.00100100e-05, 0.00000000e00, 3.00000000e-02],
+                    [4.55405405e-02, 0.00000000e00, 3.00000000e-02],
                 ]
             ]
         ),
         "TL": array(
             [
                 [
-                    [1.00100100e-05, 0.00000000e+00, 3.00000000e-02],
-                    [1.83433433e-02, 0.00000000e+00, 3.00000000e-02],
+                    [1.00100100e-05, 0.00000000e00, 3.00000000e-02],
+                    [1.83433433e-02, 0.00000000e00, 3.00000000e-02],
                 ]
             ]
         ),
         "TT": array(
             [
                 [
-                    [1.00100100e-05, 0.00000000e+00, 3.00000000e-02],
-                    [3.84384384e-02, 0.00000000e+00, 3.00000000e-02],
+                    [1.00100100e-05, 0.00000000e00, 3.00000000e-02],
+                    [3.84384384e-02, 0.00000000e00, 3.00000000e-02],
                 ]
             ]
         ),
@@ -344,8 +346,8 @@ def test_ray_tracing():
         # The first scatterer is just below the transmitter so the angles should be 0.
         # poor precision because of discretisation of interface
         # TODO: better precision for ray tracing?
-        assert np.isclose(incident_angles[0][0], 0., atol=1e-3, rtol=0.)
-        assert np.isclose(refracted_angles[0][0], 0., atol=1e-3, rtol=0.)
+        assert np.isclose(incident_angles[0][0], 0.0, atol=1e-3, rtol=0.0)
+        assert np.isclose(refracted_angles[0][0], 0.0, atol=1e-3, rtol=0.0)
 
         c_incident = path.velocities[idx - 1]
         c_refracted = path.velocities[idx]
@@ -353,7 +355,7 @@ def test_ray_tracing():
             incident_angles, c_incident, c_refracted
         )
         np.testing.assert_allclose(
-            refracted_angles, expected_refracted_angles, rtol=0., atol=1e-2
+            refracted_angles, expected_refracted_angles, rtol=0.0, atol=1e-2
         )
 
     # check Snell-laws for backwall (half-skip only)
@@ -366,8 +368,8 @@ def test_ray_tracing():
         incident_angles = ray_geometry.conventional_inc_angle(idx)
         refracted_angles = ray_geometry.conventional_out_angle(idx)
 
-        assert np.isclose(incident_angles[0][0], 0., atol=1e-2, rtol=0.)
-        assert np.isclose(refracted_angles[0][0], 0., atol=1e-2, rtol=0.)
+        assert np.isclose(incident_angles[0][0], 0.0, atol=1e-2, rtol=0.0)
+        assert np.isclose(refracted_angles[0][0], 0.0, atol=1e-2, rtol=0.0)
 
         c_incident = path.velocities[idx - 1]
         c_refracted = path.velocities[idx]
@@ -375,7 +377,7 @@ def test_ray_tracing():
             incident_angles, c_incident, c_refracted
         )
         np.testing.assert_allclose(
-            refracted_angles, expected_refracted_angles, rtol=0., atol=1e-2
+            refracted_angles, expected_refracted_angles, rtol=0.0, atol=1e-2
         )
 
     # check incident angles for scatterer
@@ -384,11 +386,11 @@ def test_ray_tracing():
         if len(paths[pathname].interfaces) <= 3:
             # direct paths
             incident_angles = ray_geometry.conventional_inc_angle(2)
-            assert np.isclose(incident_angles[0][0], np.pi, atol=1e-3, rtol=0.)
+            assert np.isclose(incident_angles[0][0], np.pi, atol=1e-3, rtol=0.0)
         else:
             # half-skip paths
             incident_angles = ray_geometry.conventional_inc_angle(3)
-            assert np.isclose(incident_angles[0][0], 0., atol=1e-2, rtol=0.)
+            assert np.isclose(incident_angles[0][0], 0.0, atol=1e-2, rtol=0.0)
 
     # check conventional angles are in the right quadrant
     for pathname, ray_geometry in ray_geometry_dict.items():
@@ -539,13 +541,13 @@ def test_beamspread_2d_direct():
     # Path LL - scat 0:
     first_leg = 10e-3
     second_leg = 30e-3
-    third_leg = 10.e-3
+    third_leg = 10.0e-3
     c1 = couplant.longitudinal_vel
     c2 = block.longitudinal_vel
     c3 = block.longitudinal_vel
     beta = c1 / c2
     gamma = c2 / c3
-    beamspread_LL = 1. / np.sqrt(
+    beamspread_LL = 1.0 / np.sqrt(
         first_leg + second_leg / beta + third_leg / (gamma * beta)
     )
     np.testing.assert_allclose(beamspread["LL"][0][0], beamspread_LL, rtol=1e-5)
@@ -553,13 +555,13 @@ def test_beamspread_2d_direct():
     # Path LT - scat 0:
     first_leg = 10e-3
     second_leg = 30e-3
-    third_leg = 10.e-3
+    third_leg = 10.0e-3
     c1 = couplant.longitudinal_vel
     c2 = block.longitudinal_vel
     c3 = block.transverse_vel
     beta = c1 / c2
     gamma = c2 / c3
-    beamspread_LT = 1. / np.sqrt(
+    beamspread_LT = 1.0 / np.sqrt(
         first_leg + second_leg / beta + third_leg / (gamma * beta)
     )
     np.testing.assert_allclose(beamspread["LT"][0][0], beamspread_LT, rtol=1e-5)
@@ -622,13 +624,13 @@ def test_beamspread_2d_reverse():
     # Path LL - scat 0:
     first_leg = 10e-3
     second_leg = 30e-3
-    third_leg = 10.e-3
+    third_leg = 10.0e-3
     c1 = block.longitudinal_vel
     c2 = block.longitudinal_vel
     c3 = couplant.longitudinal_vel
     beta = c1 / c2
     gamma = c2 / c3
-    beamspread_LL = 1. / np.sqrt(
+    beamspread_LL = 1.0 / np.sqrt(
         first_leg + second_leg / beta + third_leg / (gamma * beta)
     )
     np.testing.assert_allclose(beamspread["LL"][0][0], beamspread_LL, rtol=1e-5)
@@ -636,13 +638,13 @@ def test_beamspread_2d_reverse():
     # Path LT - scat 0:
     first_leg = 10e-3
     second_leg = 30e-3
-    third_leg = 10.e-3
+    third_leg = 10.0e-3
     c1 = block.transverse_vel
     c2 = block.longitudinal_vel
     c3 = couplant.longitudinal_vel
     beta = c1 / c2
     gamma = c2 / c3
-    beamspread_LT = 1. / np.sqrt(
+    beamspread_LT = 1.0 / np.sqrt(
         first_leg + second_leg / beta + third_leg / (gamma * beta)
     )
     np.testing.assert_allclose(beamspread["LT"][0][0], beamspread_LT, rtol=1e-5)
@@ -661,32 +663,32 @@ def test_transmission_reflection_direct():
 
     # hardcoded results
     expected_transrefl = {
-        "L": array([[1.84037966 + 0.j, 2.24977557 + 0.j]]),
-        "T": array([[-1.92953093e-03 + 0.j, -2.06170606e+00 + 0.76785004j]]),
-        "LL": array([[-1.54661755 + 0.j, -0.73952250 + 0.j]]),
-        "LT": array([[2.77193223e-04 + 0.j, 9.17687259e-01 + 0.j]]),
-        "TL": array([[1.18487466e-06 - 0.j, 1.29264072e+00 - 0.j]]),
-        "TT": array([[0.00192953 - 0.j, -1.39294465 + 0.09773593j]]),
+        "L": array([[1.84037966 + 0.0j, 2.24977557 + 0.0j]]),
+        "T": array([[-1.92953093e-03 + 0.0j, -2.06170606e00 + 0.76785004j]]),
+        "LL": array([[-1.54661755 + 0.0j, -0.73952250 + 0.0j]]),
+        "LT": array([[2.77193223e-04 + 0.0j, 9.17687259e-01 + 0.0j]]),
+        "TL": array([[1.18487466e-06 - 0.0j, 1.29264072e00 - 0.0j]]),
+        "TT": array([[0.00192953 - 0.0j, -1.39294465 + 0.09773593j]]),
     }
     transrefl = dict()
     for pathname, path in paths.items():
         ray_geometry = ray_geometry_dict[pathname]
         transrefl[pathname] = model.transmission_reflection_for_path(path, ray_geometry)
         np.testing.assert_allclose(
-            transrefl[pathname], expected_transrefl[pathname], rtol=0., atol=1e-6
+            transrefl[pathname], expected_transrefl[pathname], rtol=0.0, atol=1e-6
         )
         # print("'{}': {},".format(pathname, repr(transrefl[pathname])))
 
     # For the first scatterer (angle of incidence 0):
     params = (
-        complex(0.),
+        complex(0.0),
         couplant.density,
         block.density,
         couplant.longitudinal_vel,
         block.longitudinal_vel,
         block.transverse_vel,
-        complex(0.),
-        complex(0.),
+        complex(0.0),
+        complex(0.0),
     )
     tol = dict(rtol=0, atol=1e-2)
     _, transrefl_L, transrefl_T = arim.model.fluid_solid(*params)
@@ -721,12 +723,12 @@ def test_transmission_reflection_reverse_hardcode():
 
     # hardcoded results
     expected_rev_transrefl = {
-        "L": array([[0.15962002 + 0.j, 0.07813451 + 0.j]]),
-        "T": array([[0.00033791 + 0.j, 0.16346328 - 0.06087933j]]),
-        "LL": array([[-0.13414141 + 0.j, -0.04164956 + 0.j]]),
-        "LT": array([[-4.85439698e-05 + 0.j, -1.50885505e-01 + 0.j]]),
-        "TL": array([[1.02766857e-07 + 0.j, 3.48642287e-02 + 0.j]]),
-        "TT": array([[-0.00033791 + 0.j, 0.17068649 - 0.01197621j]]),
+        "L": array([[0.15962002 + 0.0j, 0.07813451 + 0.0j]]),
+        "T": array([[0.00033791 + 0.0j, 0.16346328 - 0.06087933j]]),
+        "LL": array([[-0.13414141 + 0.0j, -0.04164956 + 0.0j]]),
+        "LT": array([[-4.85439698e-05 + 0.0j, -1.50885505e-01 + 0.0j]]),
+        "TL": array([[1.02766857e-07 + 0.0j, 3.48642287e-02 + 0.0j]]),
+        "TT": array([[-0.00033791 + 0.0j, 0.17068649 - 0.01197621j]]),
     }
     rev_transrefl = dict()
     for pathname, path in paths.items():
@@ -737,7 +739,7 @@ def test_transmission_reflection_reverse_hardcode():
         np.testing.assert_allclose(
             rev_transrefl[pathname],
             expected_rev_transrefl[pathname],
-            rtol=0.,
+            rtol=0.0,
             atol=1e-6,
         )
         # print("'{}': {},".format(pathname, repr(rev_transrefl[pathname])))
@@ -745,14 +747,14 @@ def test_transmission_reflection_reverse_hardcode():
     # ====================================================================================
     # Check limit case: angle of incidence 0° (first scatterer)
     params = (
-        complex(0.),
+        complex(0.0),
         couplant.density,
         block.density,
         couplant.longitudinal_vel,
         block.longitudinal_vel,
         block.transverse_vel,
-        complex(0.),
-        complex(0.),
+        complex(0.0),
+        complex(0.0),
     )
     tol = dict(rtol=0, atol=1e-3)
     refl_LL, refl_LT, trans_L = arim.model.solid_l_fluid(*params)
@@ -814,7 +816,7 @@ def test_transmission_reflection_reverse_stokes():
     z_t = block.transverse_vel * rho_solid
     z_fluid = couplant.longitudinal_vel * rho_fluid
 
-    magic_coefficient = -1.
+    magic_coefficient = -1.0
 
     # ====================================================================================
     pathname = "LT"
@@ -888,7 +890,7 @@ def test_transmission_reflection_reverse_stokes():
     correction_frontwall = (z_fluid / z_t) * (np.cos(alpha_t) / np.cos(alpha_fluid))
 
     # Backwall in direct sense: solid L inc, solid L out
-    correction_backwall = 1.
+    correction_backwall = 1.0
     transrefl_stokes = (
         model.transmission_reflection_for_path(
             paths[pathname], ray_geometry_dict[pathname]
@@ -929,12 +931,12 @@ def test_material_attenuation():
             rev_path, rev_ray_geometry, frequency
         )
 
-        np.testing.assert_allclose(att, 1.)
-        np.testing.assert_allclose(rev_att, 1.)
+        np.testing.assert_allclose(att, 1.0)
+        np.testing.assert_allclose(rev_att, 1.0)
 
     # add attenuation
     context = make_context(
-        couplant_att=arim.material_attenuation_factory("constant", 7.)
+        couplant_att=arim.material_attenuation_factory("constant", 7.0)
     )
     paths = context["paths"]
     """:type : dict[str, arim.Path]"""
@@ -958,8 +960,8 @@ def test_material_attenuation():
         )
 
         np.testing.assert_allclose(att, rev_att.T)
-        np.testing.assert_array_equal(att > 0., True)
-        np.testing.assert_array_equal(att < 1., True)
+        np.testing.assert_array_equal(att > 0.0, True)
+        np.testing.assert_array_equal(att < 1.0, True)
 
 
 def bak_test_sensitivity():
@@ -967,7 +969,7 @@ def bak_test_sensitivity():
     numelements = 16
     result = np.zeros(numpoints)
 
-    x = np.exp(1j * .3)
+    x = np.exp(1j * 0.3)
 
     # FMC case
     tx, rx = arim.ut.fmc(numelements)
@@ -980,7 +982,7 @@ def bak_test_sensitivity():
     # write on result
     model.sensitivity_image(model_amplitudes, scanline_weights, result)
     np.testing.assert_almost_equal(result[0], numelements * numelements)
-    np.testing.assert_allclose(result[1:], 0.)
+    np.testing.assert_allclose(result[1:], 0.0)
 
     # create a new array
     result2 = model.sensitivity_image(model_amplitudes, scanline_weights)
@@ -989,22 +991,22 @@ def bak_test_sensitivity():
     # FMC case
     tx, rx = arim.ut.hmc(numelements)
     numscanlines = len(tx)
-    scanline_weights = 2. * np.ones(numscanlines)
-    scanline_weights[tx == rx] = 1.
+    scanline_weights = 2.0 * np.ones(numscanlines)
+    scanline_weights[tx == rx] = 1.0
 
     model_amplitudes = np.zeros((numpoints, numscanlines), complex)
     model_amplitudes[0] = x
 
     model.sensitivity_image(model_amplitudes, scanline_weights, result)
     np.testing.assert_almost_equal(result[0], numelements * numelements)
-    np.testing.assert_allclose(result[1:], 0.)
+    np.testing.assert_allclose(result[1:], 0.0)
 
     # create a new array
     result2 = model.sensitivity_image(model_amplitudes, scanline_weights)
     np.testing.assert_almost_equal(result, result2)
 
 
-def random_uniform_complex(low=0., high=1., size=None):
+def random_uniform_complex(low=0.0, high=1.0, size=None):
     return np.random.uniform(low, high, size) + 1j * np.random.uniform(low, high, size)
 
 
@@ -1014,10 +1016,10 @@ def make_point_source_scattering_func(context):
     vt = block.transverse_vel
 
     return {
-        "LL": lambda inc, out: np.full_like(inc, 1.),
+        "LL": lambda inc, out: np.full_like(inc, 1.0),
         "LT": lambda inc, out: np.full_like(inc, vl / vt),
         "TL": lambda inc, out: np.full_like(inc, vt / vl),
-        "TT": lambda inc, out: np.full_like(inc, 1.),
+        "TT": lambda inc, out: np.full_like(inc, 1.0),
     }
 
 
@@ -1111,7 +1113,7 @@ def test_model_amplitudes_factory():
         np.testing.assert_array_equal(amps[:1, ...], amps[:1])
 
         with pytest.raises(TypeError):
-            amps[0] = 1.
+            amps[0] = 1.0
 
         # With scattering matrices -----------
         amps = model.model_amplitudes_factory(
@@ -1137,7 +1139,7 @@ def test_model_amplitudes_factory():
         np.testing.assert_array_equal(amps[:1, ...], amps[:1])
 
         with pytest.raises(TypeError):
-            amps[0] = 1.
+            amps[0] = 1.0
 
 
 def test_sensitivity_tfm():
@@ -1153,7 +1155,7 @@ def test_sensitivity_tfm():
     numscanlines = len(tx)
     numpoints = context["numpoints"]
 
-    scanline_weights = np.array([3., 7.])
+    scanline_weights = np.array([3.0, 7.0])
 
     for viewname, view in views.items():
         amps = model.model_amplitudes_factory(
@@ -1169,7 +1171,7 @@ def test_sensitivity_tfm():
         np.testing.assert_array_equal(sensitivity, sensitivity2)
 
         for k in range(numpoints):
-            expected = 0.
+            expected = 0.0
             for i in range(numscanlines):
                 expected += amps[k][i] * scanline_weights[i]
             assert np.isclose(sensitivity[k], expected)
@@ -1183,14 +1185,14 @@ def test_sensitivity_tfm():
         np.testing.assert_array_equal(sensitivity, sensitivity2)
 
         for k in range(numpoints):
-            expected = 0.
+            expected = 0.0
             for i in range(numscanlines):
                 expected += np.abs(amps[k][i] * amps[k][i]) * scanline_weights[i]
             assert np.isclose(sensitivity[k], expected)
 
 
 def test_directivity_2d_rectangular_in_fluid():
-    theta = 0.
+    theta = 0.0
     element_width = 1e-3
     wavelength = 0.5e-3
     directivity = arim.model.directivity_2d_rectangular_in_fluid(
@@ -1203,7 +1205,7 @@ def test_directivity_2d_rectangular_in_fluid():
     # >>> fn_calc_directivity_main(0.7, 1., 0.3, 'wooh')
     matlab_res = 0.931080327325574
     assert np.isclose(
-        arim.model.directivity_2d_rectangular_in_fluid(0.3, 0.7, 1.), 0.931080327325574
+        arim.model.directivity_2d_rectangular_in_fluid(0.3, 0.7, 1.0), 0.931080327325574
     )
 
 
@@ -1217,13 +1219,13 @@ def test_fluid_solid_real():
     alpha_fluid = np.deg2rad([0, 5, 10])
 
     # water:
-    c_fluid = 1480.
-    rho_fluid = 1000.
+    c_fluid = 1480.0
+    rho_fluid = 1000.0
 
     # aluminium :
-    c_l = 6320.
-    c_t = 3130.
-    rho_solid = 2700.
+    c_l = 6320.0
+    c_t = 3130.0
+    rho_solid = 2700.0
 
     with np.errstate(invalid="raise"):
         alpha_l = arim.model.snell_angles(alpha_fluid, c_fluid, c_l)
@@ -1242,7 +1244,7 @@ def test_fluid_solid_real():
     # Caveat about inhomogeneous waves: Schmerr, §6.2.5
 
     # incident pressure
-    pres_i = 10000.
+    pres_i = 10000.0
 
     # cross section areas:
     area_fluid = np.cos(alpha_fluid)
@@ -1264,16 +1266,16 @@ def test_fluid_solid_complex():
     The conservation of energy should be respected for all cases.
     """
 
-    alpha_fluid = np.asarray(np.deg2rad(np.arange(0., 85., 10.)), dtype=np.complex)
+    alpha_fluid = np.asarray(np.deg2rad(np.arange(0.0, 85.0, 10.0)), dtype=np.complex)
 
     # water:
-    c_fluid = 1480.
-    rho_fluid = 1000.
+    c_fluid = 1480.0
+    rho_fluid = 1000.0
 
     # aluminium :
-    c_l = 6320.
-    c_t = 3130.
-    rho_solid = 2700.
+    c_l = 6320.0
+    c_t = 3130.0
+    rho_solid = 2700.0
 
     with np.errstate(invalid="raise"):
         alpha_l = arim.model.snell_angles(alpha_fluid, c_fluid, c_l)
@@ -1289,7 +1291,7 @@ def test_fluid_solid_complex():
     # Caveat about inhomogeneous waves: Schmerr, §6.2.5
 
     # incident pressure
-    pres_i = 10000.
+    pres_i = 10000.0
 
     # cross section areas:
     area_fluid = np.cos(alpha_fluid.real)
@@ -1311,16 +1313,16 @@ def test_solid_l_fluid():
     Test solid_l_fluid() below critical angles (real only).
     The conservation of energy should be respected.
     """
-    alpha_l = np.deg2rad(np.arange(0., 85., 10.))
+    alpha_l = np.deg2rad(np.arange(0.0, 85.0, 10.0))
 
     # water:
-    c_fluid = 1480.
-    rho_fluid = 1000.
+    c_fluid = 1480.0
+    rho_fluid = 1000.0
 
     # aluminium :
-    c_l = 6320.
-    c_t = 3130.
-    rho_solid = 2700.
+    c_l = 6320.0
+    c_t = 3130.0
+    rho_solid = 2700.0
 
     with np.errstate(invalid="raise"):
         alpha_fluid = arim.model.snell_angles(alpha_l, c_l, c_fluid)
@@ -1336,7 +1338,7 @@ def test_solid_l_fluid():
     # Caveat about inhomogeneous waves: Schmerr, §6.2.5
 
     # incident pressure
-    pres_i = 10000.
+    pres_i = 10000.0
 
     # cross section areas:
     area_fluid = np.cos(alpha_fluid)
@@ -1362,13 +1364,13 @@ def test_solid_t_fluid_complex():
     alpha_t = np.asarray(np.deg2rad([0, 5, 10, 20, 30, 40]), dtype=np.complex)
 
     # water:
-    c_fluid = 1480.
-    rho_fluid = 1000.
+    c_fluid = 1480.0
+    rho_fluid = 1000.0
 
     # aluminium :
-    c_l = 6320.
-    c_t = 3130.
-    rho_solid = 2700.
+    c_l = 6320.0
+    c_t = 3130.0
+    rho_solid = 2700.0
 
     with np.errstate(invalid="raise"):
         alpha_fluid = arim.model.snell_angles(alpha_t, c_t, c_fluid)
@@ -1384,7 +1386,7 @@ def test_solid_t_fluid_complex():
     # Caveat about inhomogeneous waves: Schmerr, §6.2.5
 
     # incident pressure
-    pres_i = 10000.
+    pres_i = 10000.0
 
     # cross section areas:
     area_fluid = np.cos(alpha_fluid.real)
@@ -1409,7 +1411,7 @@ def test_snell_angles():
     incidents_angles = np.deg2rad([0, 10, 20, 30])
 
     # water:
-    c = 1480.
+    c = 1480.0
 
     # aluminium :
     c_l = 6320
@@ -1423,8 +1425,8 @@ def test_snell_angles():
     assert alpha_t.shape == incidents_angles.shape
 
     # Normal incident = normal refraction
-    assert np.isclose(alpha_l[0], 0.)
-    assert np.isclose(alpha_t[0], 0.)
+    assert np.isclose(alpha_l[0], 0.0)
+    assert np.isclose(alpha_t[0], 0.0)
 
     # 10°: transmitted L and T
     assert np.isfinite(alpha_l[1])
@@ -1454,17 +1456,17 @@ def test_stokes_relation():
     ----------
     Schmerr §6.3.3, equation (6.150a)
     """
-    alpha_fluid = np.asarray(np.deg2rad(np.arange(0., 85., 10.)), dtype=np.complex)
+    alpha_fluid = np.asarray(np.deg2rad(np.arange(0.0, 85.0, 10.0)), dtype=np.complex)
     alpha_fluid = np.asarray(np.deg2rad([0, 5, 10]), dtype=np.float)
 
     # water:
-    c_fluid = 1480.
-    rho_fluid = 1000.
+    c_fluid = 1480.0
+    rho_fluid = 1000.0
 
     # aluminium :
-    c_l = 6320.
-    c_t = 3130.
-    rho_solid = 2700.
+    c_l = 6320.0
+    c_t = 3130.0
+    rho_solid = 2700.0
 
     alpha_l = arim.model.snell_angles(alpha_fluid, c_fluid, c_l)
     alpha_t = arim.model.snell_angles(alpha_fluid, c_fluid, c_t)
@@ -1481,7 +1483,7 @@ def test_stokes_relation():
     )
 
     # TODO: there is a magic coefficient here. Rose vs Krautkrämer discrepancy?
-    magic_coefficient = -1.
+    magic_coefficient = -1.0
     transmission_t_sf *= magic_coefficient
 
     transmission_l_sf_stokes = (
@@ -1645,16 +1647,16 @@ def test_make_toneburst2():
     toneburst_time, toneburst, t0_idx = arim.model.make_toneburst2(
         num_cycles, f0, dt, analytical=True
     )
-    assert toneburst_time.samples[t0_idx] == 0.
-    assert toneburst[t0_idx] == complex(1.)
+    assert toneburst_time.samples[t0_idx] == 0.0
+    assert toneburst[t0_idx] == complex(1.0)
 
     # basic checks for real signal
     toneburst_time, toneburst, t0_idx = arim.model.make_toneburst2(
         num_cycles, f0, dt, analytical=False
     )
 
-    assert toneburst_time.samples[t0_idx] == 0.
-    assert toneburst[t0_idx] == 1.
+    assert toneburst_time.samples[t0_idx] == 0.0
+    assert toneburst[t0_idx] == 1.0
 
     # check consistency between toneburst and make_toneburst2
     toneburst = arim.model.make_toneburst(num_cycles, f0, dt, analytical=False)

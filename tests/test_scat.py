@@ -38,7 +38,7 @@ def test_sdh_2d_scat():
             2.722713633111154,
         ]
     )
-    inc_theta = 0.
+    inc_theta = 0.0
     matlab_res = dict()
     matlab_res["LL"] = np.array(
         [
@@ -116,7 +116,7 @@ def test_sdh_2d_scat():
             -0.376441609988753 + 0.188374651320541j,
         ]
     )
-    freq = 2.e6
+    freq = 2.0e6
     v_l = 6000
     v_t = 3000
     hole_radius = 5e-4
@@ -226,7 +226,7 @@ def test_rotate_matrix():
     scat_func = scat.interpolate_matrix(scat_matrix)
 
     # rotation of 0°
-    rotated_scat_matrix = scat.rotate_matrix(scat_matrix, 0.)
+    rotated_scat_matrix = scat.rotate_matrix(scat_matrix, 0.0)
     np.testing.assert_allclose(scat_matrix, rotated_scat_matrix, rtol=1e-6)
 
     # rotation of 360°
@@ -295,29 +295,29 @@ def make_scat_data_single_freq():
 
 def test_scat_factory():
     material = arim.Material(
-        6300., 3120., 2700., "solid", metadata={"long_name": "Aluminium"}
+        6300.0, 3120.0, 2700.0, "solid", metadata={"long_name": "Aluminium"}
     )
 
     fname = tests.helpers.get_data_filename("scat/scat_matlab.mat")
     scat_obj = scat.scat_factory("file", material, fname)
     assert isinstance(scat_obj, scat.ScatFromData)
-    scat_obj(0., 0., 2e6)
+    scat_obj(0.0, 0.0, 2e6)
 
     scat_obj = scat.scat_factory("crack_centre", material, crack_length=2.0e-3)
     assert isinstance(scat_obj, scat.CrackCentreScat)
-    scat_obj(0., 0., 2e6)
+    scat_obj(0.0, 0.0, 2e6)
 
     scat_obj = scat.scat_factory("sdh", material, radius=0.5e-3)
     assert isinstance(scat_obj, scat.SdhScat)
-    scat_obj(0., 0., 2e6)
+    scat_obj(0.0, 0.0, 2e6)
 
     scat_obj = scat.scat_factory("point", material)
     assert isinstance(scat_obj, scat.PointSourceScat)
-    scat_obj(0., 0., 2e6)
+    scat_obj(0.0, 0.0, 2e6)
 
     scat_obj = scat.scat_factory("crack_tip", material)
     assert isinstance(scat_obj, scat.CrackTipScat)
-    scat_obj(0., 0., 2e6)
+    scat_obj(0.0, 0.0, 2e6)
 
 
 def make_scat_data_multi_freq():
@@ -345,7 +345,7 @@ def scat_obj(request):
     elif request.param == "data_multifreq":
         return make_scat_data_multi_freq()
     elif request.param == "crack_centre":
-        crack_length = 2.e-3
+        crack_length = 2.0e-3
         return scat.CrackCentreScat(
             crack_length, TestScattering.v_L, TestScattering.v_T, TestScattering.density
         )
@@ -366,9 +366,9 @@ def scat_data_obj(request):
 
 
 class TestScattering:
-    v_L = 6300.
-    v_T = 3100.
-    density = 2700.
+    v_L = 6300.0
+    v_T = 3100.0
+    density = 2700.0
 
     def test_scattering(self, scat_obj):
         numangles = 7
@@ -399,12 +399,12 @@ class TestScattering:
             assert val.shape == phi_in.shape
 
         # test Scattering.__call__ with broadcast
-        val_dict = scat_obj(0., phi_out, freq)
+        val_dict = scat_obj(0.0, phi_out, freq)
         val_dict2 = scat_obj(np.zeros_like(phi_out), phi_out, freq)
         for scat_key in scat_keys:
             np.testing.assert_allclose(val_dict[scat_key], val_dict2[scat_key])
 
-        val_dict = scat_obj(0., phi_out_array, freq)
+        val_dict = scat_obj(0.0, phi_out_array, freq)
         val_dict2 = scat_obj(np.zeros_like(phi_out_array), phi_out_array, freq)
         for scat_key in scat_keys:
             np.testing.assert_allclose(val_dict[scat_key], val_dict2[scat_key])
@@ -469,8 +469,8 @@ class TestScattering:
         angles_funcs = scat_obj.as_angles_funcs(freq)
         freq_angles_funcs = scat_obj.as_freq_angles_funcs()
         for scat_key in scat_keys:
-            x = angles_funcs[scat_key](2., 3.)
-            y = freq_angles_funcs[scat_key](2., 3., freq)
+            x = angles_funcs[scat_key](2.0, 3.0)
+            y = freq_angles_funcs[scat_key](2.0, 3.0, freq)
             assert x == y
 
     def test_reciprocity(self, scat_obj, show_plots):
@@ -558,23 +558,23 @@ class TestScattering:
 
                 funcs = scat_obj.as_freq_angles_funcs()
                 for scat_key, func in funcs.items():
-                    assert func(2., 3., frequency) == func(2., 3., frequency * 2.)
-                    assert func(2., 3., frequency) == func(2., 3., frequency / 2.)
+                    assert func(2.0, 3.0, frequency) == func(2.0, 3.0, frequency * 2.0)
+                    assert func(2.0, 3.0, frequency) == func(2.0, 3.0, frequency / 2.0)
         else:
             # This should be a linear interpolation
             funcs = scat_obj.as_freq_angles_funcs()
             for scat_key, func in funcs.items():
-                x = a * func(2., 3., scat_obj.frequencies[0]) + b * func(
-                    2., 3., scat_obj.frequencies[1]
+                x = a * func(2.0, 3.0, scat_obj.frequencies[0]) + b * func(
+                    2.0, 3.0, scat_obj.frequencies[1]
                 )
                 y = func(
-                    2., 3., a * scat_obj.frequencies[0] + b * scat_obj.frequencies[1]
+                    2.0, 3.0, a * scat_obj.frequencies[0] + b * scat_obj.frequencies[1]
                 )
                 np.testing.assert_allclose(x, y)
 
             # extrapolation: there should be not bound error
-            func(2., 3., np.min(scat_obj.frequencies) / 2)
-            func(2., 3., np.max(scat_obj.frequencies) * 2)
+            func(2.0, 3.0, np.min(scat_obj.frequencies) / 2)
+            func(2.0, 3.0, np.max(scat_obj.frequencies) * 2)
 
     def test_scat_data2(self):
         n = 10
@@ -607,17 +607,17 @@ def test_crack_2d_scat():
     np.testing.assert_allclose(_scat_crack.basis_function(-5e-4), 0.999999986111111)
     np.testing.assert_allclose(_scat_crack.basis_function(-5), 0.193049319258009)
 
-    np.testing.assert_allclose(_scat_crack.sigma(3, 0), 3.)
-    np.testing.assert_allclose(_scat_crack.sigma(-3, 0), 3.)
+    np.testing.assert_allclose(_scat_crack.sigma(3, 0), 3.0)
+    np.testing.assert_allclose(_scat_crack.sigma(-3, 0), 3.0)
     np.testing.assert_allclose(_scat_crack.sigma(0, 3), -3j)
     np.testing.assert_allclose(_scat_crack.sigma(0, -3), -3j)
 
     np.testing.assert_allclose(
-        _scat_crack.F(100., 20., .1, 10.),
+        _scat_crack.F(100.0, 20.0, 0.1, 10.0),
         -6.201991005820587e-05 - 6.201834393840944e-04j,
     )
     np.testing.assert_allclose(
-        _scat_crack.F(100., 20., .1, 100.), -1.134154772479002e-07
+        _scat_crack.F(100.0, 20.0, 0.1, 100.0), -1.134154772479002e-07
     )
 
     np.testing.assert_allclose(
@@ -704,9 +704,9 @@ def test_crack_2d_scat():
     inc_theta_arr, out_theta_arr = np.meshgrid(inc_theta, out_theta, indexing="xy")
 
     frequency = 5e6
-    v_L = 6300.
-    v_T = 3100.
-    density = 2700.
+    v_L = 6300.0
+    v_T = 3100.0
+    density = 2700.0
     crack_length = 2.0e-3
     scat_vals = scat.crack_2d_scat(
         inc_theta_arr, out_theta_arr, frequency, crack_length, v_L, v_T, density
@@ -857,8 +857,8 @@ def test_crack_2d_scat():
     )
     np.testing.assert_allclose(scat_vals["LL"].T, S_LL_matlab, err_msg="LL", **tol)
     np.testing.assert_allclose(scat_vals["LT"].T, S_LT_matlab, err_msg="LT", **tol)
-    np.testing.assert_allclose(-scat_vals["TL"].T, 0., err_msg="TL", **tol)
-    np.testing.assert_allclose(-scat_vals["TT"].T, 0., err_msg="TT", **tol)
+    np.testing.assert_allclose(-scat_vals["TL"].T, 0.0, err_msg="TL", **tol)
+    np.testing.assert_allclose(-scat_vals["TT"].T, 0.0, err_msg="TT", **tol)
 
     scat_vals = scat.crack_2d_scat(
         inc_theta_arr,
@@ -870,7 +870,7 @@ def test_crack_2d_scat():
         density,
         to_compute=("TL", "TT"),
     )
-    np.testing.assert_allclose(scat_vals["LL"].T, 0., err_msg="LL", **tol)
-    np.testing.assert_allclose(scat_vals["LT"].T, 0., err_msg="LT", **tol)
+    np.testing.assert_allclose(scat_vals["LL"].T, 0.0, err_msg="LL", **tol)
+    np.testing.assert_allclose(scat_vals["LT"].T, 0.0, err_msg="LT", **tol)
     np.testing.assert_allclose(-scat_vals["TL"].T, S_TL_matlab, err_msg="TL", **tol)
     np.testing.assert_allclose(-scat_vals["TT"].T, S_TT_matlab, err_msg="TT", **tol)

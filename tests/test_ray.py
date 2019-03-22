@@ -30,7 +30,7 @@ def test_find_minimum_times():
     # Remark: B3 is a bit more on the right to have only one global minimum.
 
     # distance1[i, k] = distance between Ai and Bk
-    distance1 = np.array([[rt2, 1.0, rt2 + .1], [rt5, rt2, 1.1]])
+    distance1 = np.array([[rt2, 1.0, rt2 + 0.1], [rt5, rt2, 1.1]])
 
     # distance2[k, j] = distance between Ak and Cj
     distance2 = np.array([[rt2], [1.0], [rt2 + 0.1]])
@@ -159,7 +159,7 @@ class TestRays4:
     def rays(self, path, interior_indices):
         n, m, p, q = self.numpoints
 
-        times = np.random.uniform(10., 20., size=(n, q))
+        times = np.random.uniform(10.0, 20.0, size=(n, q))
         rays = ray.Rays(times, interior_indices, path)
         assert np.all(interior_indices == rays.interior_indices)
         return rays
@@ -270,7 +270,7 @@ class TestRays2:
         """Test alternative constructor of Rays"""
         dtype_indices = arim.settings.INT
         n, m = self.numpoints
-        times = np.random.uniform(10., 20., size=(n, m))
+        times = np.random.uniform(10.0, 20.0, size=(n, m))
         rays = ray.Rays.make_rays_two_interfaces(times, path, dtype_indices)
         return rays
 
@@ -332,23 +332,23 @@ def test_fermat_solver():
     n = 5
     m = 12  # number of points of interfaces B and C
 
-    v1 = 99.
-    v2 = 130.
-    v3 = 99.
-    v4 = 50.
+    v1 = 99.0
+    v2 = 130.0
+    v3 = 99.0
+    v4 = 50.0
 
     x_n = np.arange(n, dtype=float)
     x_m = np.linspace(-n, 2 * n, m)
 
     standoff = 11.1
     z = 66.6
-    theta = np.deg2rad(30.)
+    theta = np.deg2rad(30.0)
     interface_a = g.Points.from_xyz(
         x_n, standoff + x_n * np.sin(theta), np.full(n, z), "Interface A"
     )
     interface_b = g.Points.from_xyz(x_m, np.zeros(m), np.full(m, z), "Interface B")
     interface_c = g.Points.from_xyz(
-        x_m, -(x_m - 5) ** 2 - 10., np.full(m, z), "Interface C"
+        x_m, -(x_m - 5) ** 2 - 10.0, np.full(m, z), "Interface C"
     )
 
     path_1 = ray.FermatPath((interface_a, v1, interface_b, v2, interface_c))
@@ -514,7 +514,7 @@ class TestRayGeometry:
         -------
 
         """
-        omega = np.array((3., 0., 5.)) * 1e-2
+        omega = np.array((3.0, 0.0, 5.0)) * 1e-2
         src_points = g.Points(omega.reshape([1, 3]), name="source")
         src_basis = g.default_orientations(src_points)
         src_basis = src_basis.rotate(g.rotation_matrix_y(np.pi / 6))
@@ -675,13 +675,13 @@ class TestRayGeometry:
         # Pi if the source point is in x < 0.
         azimuth = np.squeeze(azimuth)
         for i, theta in enumerate(np.unwrap(self.circle_theta)):
-            if np.isclose(theta, 0.) or np.isclose(theta, np.pi):
+            if np.isclose(theta, 0.0) or np.isclose(theta, np.pi):
                 # Depends on x=+eps or x=-eps
-                assert np.isclose(azimuth[i], 0.) or np.isclose(azimuth[i], np.pi)
+                assert np.isclose(azimuth[i], 0.0) or np.isclose(azimuth[i], np.pi)
             elif 0 < theta < np.pi:
                 assert np.isclose(azimuth[i], np.pi)
             else:
-                assert np.isclose(azimuth[i], 0.)
+                assert np.isclose(azimuth[i], 0.0)
 
     @pytest.mark.parametrize(*RAY_GEOMETRY_CASES)
     def test_inc_leg_polar(self, are_normals_zplus):
@@ -757,9 +757,9 @@ class TestRayGeometry:
         for i, theta in enumerate(np.unwrap(self.circle_theta)):
             if np.isclose(theta, np.pi / 6) or np.isclose(theta, 7 * np.pi / 6):
                 # Depends on x=+eps or x=-eps
-                assert np.isclose(azimuth[i], 0.) or np.isclose(azimuth[i], np.pi)
+                assert np.isclose(azimuth[i], 0.0) or np.isclose(azimuth[i], np.pi)
             elif np.pi / 6 < theta < 7 * np.pi / 6:
-                assert np.isclose(azimuth[i], 0.)
+                assert np.isclose(azimuth[i], 0.0)
             else:
                 assert np.isclose(azimuth[i], np.pi)
 

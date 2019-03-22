@@ -10,7 +10,7 @@ from collections import OrderedDict
 
 
 def test_plot_oxz_many(show_plots):
-    grid = arim.Grid(-5e-3, 5e-3, 0, 0, 0, 15e-3, .1e-3)
+    grid = arim.Grid(-5e-3, 5e-3, 0, 0, 0, 15e-3, 0.1e-3)
     k = 0.01e-3
     data = np.exp(-grid.x ** 2 / k - (grid.z - 5e-3) ** 2 / (2 * k))
 
@@ -43,7 +43,7 @@ def test_plot_oxz_many(show_plots):
 
 
 def test_plot_oxz(show_plots):
-    grid = arim.Grid(-5e-3, 5e-3, 0, 0, 0, 15e-3, .1e-3)
+    grid = arim.Grid(-5e-3, 5e-3, 0, 0, 0, 15e-3, 0.1e-3)
     k = 2 * np.pi / 10e-3
     data = (np.cos(grid.x * 2 * k) * np.sin(grid.z * k)) * (grid.z ** 2)
 
@@ -93,7 +93,7 @@ def test_plot_interfaces(show_plots, plot_interfaces_kwargs):
     z_backwall = 20e-3
 
     points, orientations = arim.geometry.points_1d_wall_z(
-        0, 12e-3, z=0., numpoints=64, name="Probe"
+        0, 12e-3, z=0.0, numpoints=64, name="Probe"
     )
     rot = g.rotation_matrix_y(np.deg2rad((12)))
     points = points.rotate(rot)
@@ -104,7 +104,7 @@ def test_plot_interfaces(show_plots, plot_interfaces_kwargs):
     assert probe.orientations[0, 2, 2] > 0
 
     points, orientations = arim.geometry.points_1d_wall_z(
-        xmin, xmax, z=0., numpoints=numinterface, name="Frontwall"
+        xmin, xmax, z=0.0, numpoints=numinterface, name="Frontwall"
     )
     frontwall = arim.geometry.OrientedPoints(points, orientations)
 
