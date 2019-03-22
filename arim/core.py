@@ -291,6 +291,95 @@ class Frame:
         reciprocal_pairs = {(rx, tx) for tx, rx in zip(self.tx, self.rx)}
         return orig_pairs == reciprocal_pairs
 
+    def drop_scanlines(self, scanlines_idx):
+        pass
+
+    def subframe(self, scanlines_idx):
+        """Return a new Frame containing only a subset of the original scanlines.
+        
+        Parameters
+        ----------
+        scanlines_idx : slice or tuple or list or array
+            Index of the elements of the original probe to retain.
+            Any valid numpy index is accepted.
+        
+        Returns
+        -------
+        subframe : Frame
+            Subframe
+
+        Notes
+        -----
+        The new Frame shares the time, probe, examination object and metadata as the original
+        one, and may or may not share the same scanlines, tx and rx depending on the kind of
+        indexing.
+        """
+        scanlines = self.scanlines[scanlines_idx]
+        tx = self.tx[scanlines_idx]
+        rx = self.rx[scanlines_idx]
+        return self.__class__(
+            scanlines,
+            self.time,
+            tx,
+            rx,
+            self.probe,
+            self.examination_object,
+            self.metadata,
+        )
+
+    def subframe_from_probe_elements(self, elements_idx, make_subprobe=True):
+        """Returns a new Frame which only contains specified probe elements
+
+        Parameters
+        ----------
+        elements_idx : slice or tuple or list or array
+            Probe elements to retain. Any valid numpy index is accepted.
+        make_subprobe : bool, optional
+            If True (default), the subframe contains a new Probe, containing only the
+            specified probe elements.
+            If False, the subframe contains the original Probe .
+
+        Returns
+        -------
+        Frame
+            Frame
+
+        Notes
+        -----
+        In the current implementation, ray tracing and forward modelling is
+        done using all elements of a probe, independently on their actual use
+        in a Frame.
+        This may lead to unnecessary computation if using ``make_subprobe=False``.
+        However, using ``make_subprobe=True`` allows to reuse ray tracing
+        or forward model results if multiple subframes are created.
+        """
+        retained_elements = np.arange(self.probe.numelements)[elements_idx]
+        retained_scanlines_idx = np.logical_and(
+            np.isin(self.tx, retained_elements), np.isin(self.rx, retained_elements)
+        )
+        if not make_subprobe:
+            # We just need to retain the scanlines that use the retained elements
+            return self.subframe(retained_scanlines_idx)
+        else:
+            subprobe = self.probe.subprobe(elements_idx)
+
+            # Construct an array so that mapper[old_elt_idx]==new_elt_idx
+            mapper = np.zeros(self.probe.numelements, dtype=np.int_)
+            mapper[elements_idx] = np.arange(subprobe.numelements)
+
+            tx = mapper[self.tx[retained_scanlines_idx]]
+            rx = mapper[self.rx[retained_scanlines_idx]]
+            scanlines = self.scanlines[retained_scanlines_idx]
+            return self.__class__(
+                scanlines,
+                self.time,
+                tx,
+                rx,
+                subprobe,
+                self.examination_object,
+                self.metadata,
+            )
+
 
 class ElementShape(enum.IntEnum):
     """Enumeration which describes the shape of an element.

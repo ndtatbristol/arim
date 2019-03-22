@@ -307,6 +307,30 @@ class TestFrame:
         np.testing.assert_array_equal(frame2.rx, frame.rx)
         np.testing.assert_allclose(frame2.scanlines, -frame.scanlines)
 
+    def test_subframe(self, frame):
+        # start with a HMC with 4 elements
+        # Retain only element 0, 1 and 3
+        frame_a = frame.subframe(scanlines_idx=[0, 1, 3, 4, 6, 9])
+        frame_b = frame.subframe_from_probe_elements(
+            elements_idx=[0, 1, 3], make_subprobe=False
+        )
+
+        # frame_a and frame_b should be the same
+        assert frame_a.numscanlines == 6
+        assert frame_b.numscanlines == 6
+        np.testing.assert_allclose(frame_a.scanlines, frame_b.scanlines)
+        np.testing.assert_allclose(frame_a.tx, frame_b.tx)
+        np.testing.assert_allclose(frame_a.rx, frame_b.rx)
+        assert frame_a.probe is frame.probe
+        assert frame_b.probe is frame.probe
+
+        frame_c = frame.subframe_from_probe_elements(
+            elements_idx=[0, 1, 3], make_subprobe=True
+        )
+        assert frame_c.numscanlines == 6
+        np.testing.assert_allclose(frame_c.scanlines, frame_a.scanlines)
+        assert frame_c.probe.numelements == 3
+
 
 class TestProbe:
     def test_probe(self, probe):
