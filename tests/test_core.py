@@ -467,6 +467,13 @@ class TestProbe:
         subprobe = probe.subprobe([2])
         assert subprobe.numelements == 1
 
+        # duplicate elements and change order
+        subprobe = probe.subprobe([2, 2, 1])
+        assert subprobe.numelements == 3
+        np.testing.assert_allclose(subprobe.locations[0], probe.locations[2])
+        np.testing.assert_allclose(subprobe.locations[1], probe.locations[2])
+        np.testing.assert_allclose(subprobe.locations[2], probe.locations[1])
+
     def test_move_probe(self):
         probe = self.linear_probe()
         probe_bak = self.linear_probe()

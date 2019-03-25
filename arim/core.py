@@ -352,6 +352,9 @@ class Frame:
         This may lead to unnecessary computation if using ``make_subprobe=False``.
         However, using ``make_subprobe=True`` allows to reuse ray tracing
         or forward model results if multiple subframes are created.
+
+        If using ``make_subprobe=True``, see also :meth:`Probe.subprobe`.
+         
         """
         retained_elements = np.arange(self.probe.numelements)[elements_idx]
         retained_scanlines_idx = np.logical_and(
@@ -634,7 +637,11 @@ class Probe:
         Notes
         ----
         The original PCS is retained and may no longer be at a desirable location
-        in the subprobe; consider using :meth:`Probe.set_reference_element`.
+        in the subprobe; consider using :meth:`Probe.set_reference_element``.
+
+        The subprobe elements will be in the order specified in ``elements_idx``.
+        The subprobe will contain duplicate elements if ``elements_idx`` has
+        duplicate entries.
 
         Examples
         --------
@@ -645,7 +652,6 @@ class Probe:
         >>> probe.subprobe(np.s_[0::2])
         # Returns a subprobe with every other element, starting from element 0.
 
-            
         """
 
         def _index(x):
