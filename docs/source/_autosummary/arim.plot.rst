@@ -18,7 +18,6 @@ arim.plot
       plot_oxz
       plot_oxz_many
       plot_psd
-      plot_scanline
       plot_tfm
    
    
