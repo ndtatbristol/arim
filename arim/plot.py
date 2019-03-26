@@ -29,7 +29,6 @@ Some default values are configurable via the dictionary ``arim.plot.conf``.
 
 """
 
-import functools
 from warnings import warn
 import logging
 
@@ -47,6 +46,7 @@ __all__ = [
     "micro_formatter",
     "mega_formatter",
     "milli_formatter",
+    "plot_bscan",
     "plot_bscan_pulse_echo",
     "plot_oxz",
     "plot_oxz_many",
@@ -78,19 +78,113 @@ conf = Config(
 )
 
 
-def _elements_ticker(i, pos, elements):
-    i = int(i)
-    if i >= len(elements):
-        return ""
+def plot_bscan(
+    frame,
+    scanlines_idx,
+    use_dB=True,
+    ax=None,
+    title="B-scan",
+    clim=None,
+    interpolation="none",
+    draw_cbar=True,
+    cmap=None,
+    savefig=None,
+    filename="bscan",
+):
+    """Plot Bscan (scanlines vs time)
+    
+    Parameters
+    ----------
+    frame : Frame
+    scanlines_idx : slice or tuple or ndarray
+        Scanlines to use. Any valid numpy array is accepted.
+    use_dB : bool, optional
+    ax : matplotlib axis, optional
+        Where to draw. Default: create a new figure and axis.
+    title : str, optional
+        Title of the image (default: "Bscan")
+    clim : tuple, optional
+        Color limits of the image.
+    interpolation : str, optional
+        Image interpolation type (default: "none")
+    draw_cbar : bool, optional
+    cmap : str, optional
+    savefig : bool, optional
+        Default: use ``conf["savefig"]``
+    filename : str, optional
+        Default: "bscan"
+    
+    Returns
+    -------
+    ax : matplotlib axis
+    im : matplotlib image
+
+    Examples
+    --------
+
+    >>> arim.plot.plot_bscan(frame, frame.tx == 0)
+
+    """
+    if ax is None:
+        fig, ax = plt.subplots()
     else:
-        return str(elements[i])
+        fig = ax.figure
+
+    if savefig is None:
+        savefig = conf["savefig"]
+
+    scanlines = frame.scanlines[scanlines_idx]
+    numscanlines = scanlines.shape[0]
+    if use_dB:
+        scanlines = ut.decibel(scanlines)
+        if clim is None:
+            clim = [-40.0, 0.0]
+
+    im = ax.imshow(
+        scanlines,
+        extent=[frame.time.start, frame.time.end, 0, numscanlines - 1],
+        interpolation=interpolation,
+        cmap=cmap,
+        origin="lower",
+    )
+    ax.set_xlabel("Time (µs)")
+    ax.set_ylabel("TX/RX index")
+    ax.xaxis.set_major_formatter(micro_formatter)
+    ax.xaxis.set_minor_formatter(micro_formatter)
+
+    # Use element index instead of scanline index (may be different)
+    tx = frame.tx[scanlines_idx]
+    rx = frame.rx[scanlines_idx]
+
+    def _y_formatter(i, pos):
+        i = int(i)
+        try:
+            return f"({tx[i]}, {rx[i]})"
+        except IndexError:
+            return ""
+
+    y_formatter = ticker.FuncFormatter(_y_formatter)
+    ax.yaxis.set_major_formatter(y_formatter)
+    ax.yaxis.set_minor_formatter(y_formatter)
+
+    if draw_cbar:
+        fig.colorbar(im, ax=ax)
+    if clim is not None:
+        im.set_clim(clim)
+    if title is not None:
+        ax.set_title(title)
+
+    ax.axis("tight")
+    if savefig:
+        ax.figure.savefig(filename)
+    return ax, im
 
 
 def plot_bscan_pulse_echo(
     frame,
     use_dB=True,
     ax=None,
-    title="B-scan",
+    title="B-scan (pulse-echo)",
     clim=None,
     interpolation="none",
     draw_cbar=True,
@@ -116,62 +210,42 @@ def plot_bscan_pulse_echo(
     -------
     axis, image
 
+    See Also
+    --------
+    :func:`plot_bscan`
+
     """
-    if ax is None:
-        fig, ax = plt.subplots()
-    else:
-        fig = ax.figure
-
-    if savefig is None:
-        savefig = conf["savefig"]
-
     pulse_echo = frame.tx == frame.rx
-    numpulseecho = sum(pulse_echo)
     elements = frame.tx[pulse_echo]
-
-    scanlines = frame.scanlines[pulse_echo, :]
-    if use_dB:
-        scanlines = ut.decibel(scanlines)
-        if clim is None:
-            clim = [-40.0, 0.0]
-
-    im = ax.imshow(
-        scanlines,
-        extent=[frame.time.start, frame.time.end, 0, numpulseecho - 1],
+    ax, im = plot_bscan(
+        frame,
+        pulse_echo,
+        use_dB=use_dB,
+        ax=ax,
+        title=title,
+        clim=clim,
         interpolation=interpolation,
+        draw_cbar=draw_cbar,
         cmap=cmap,
-        origin="lower",
+        savefig=False,  # save later
+        filename=filename,
     )
-    ax.set_xlabel("Time (µs)")
     ax.set_ylabel("Element")
-    ax.xaxis.set_major_formatter(micro_formatter)
-    ax.xaxis.set_minor_formatter(micro_formatter)
+    # Use element index instead of scanline index (may be different)
+    def _y_formatter(i, pos):
+        i = int(i)
+        if i >= len(elements):
+            return ""
+        else:
+            return str(elements[i])
 
-    def elements_ticker_func(i, pos):
-        print("call elements_ticker: {}".format((i, pos)))
-        s = "{:d}".format(elements[i])
-        print(s)
-        return s
-
-    # elements_ticker = ticker.FuncFormatter(lambda x, pos: '{:d}'.format(elements[int(x)]))
-    elements_ticker = ticker.FuncFormatter(
-        functools.partial(_elements_ticker, elements=elements)
-    )
-    ax.yaxis.set_major_formatter(elements_ticker)
-    ax.yaxis.set_minor_formatter(elements_ticker)
-    ax.yaxis.set_major_locator(ticker.MultipleLocator(4))
-
-    if draw_cbar:
-        fig.colorbar(im, ax=ax)
-    if clim is not None:
-        im.set_clim(clim)
-    if title is not None:
-        ax.set_title(title)
-
-    ax.axis("tight")
+    y_formatter = ticker.FuncFormatter(_y_formatter)
+    ax.yaxis.set_major_formatter(y_formatter)
+    ax.yaxis.set_minor_formatter(y_formatter)
 
     if savefig:
         ax.figure.savefig(filename)
+
     return ax, im
 
 
@@ -512,7 +586,7 @@ def plot_oxz_many(
     filename=None,
     y_title=1.0,
     y_suptitle=1.0,
-    **plot_oxz_kwargs
+    **plot_oxz_kwargs,
 ):
     """
     Plot many Oxz plots on the same figure.
@@ -578,7 +652,7 @@ def plot_oxz_many(
             draw_cbar=False,
             savefig=False,
             **plot_oxz_kwargs,
-            title=None
+            title=None,
         )
         images.append(im)
         ax.set_xlabel("")
@@ -668,7 +742,7 @@ def plot_directivity_finite_width_2d(element_width, wavelength, ax=None, **kwarg
         np.rad2deg(theta),
         directivity,
         label=r"$a/\lambda = {:.2f}$".format(ratio),
-        **kwargs
+        **kwargs,
     )
     ax.set_xlabel(r"Polar angle $\theta$ (deg)")
     ax.set_ylabel("directivity (1)")
@@ -863,7 +937,7 @@ def plot_interfaces(
                 color=line.get_color(),
                 units="xy",
                 angles="xy",
-                **quiver_kwargs
+                **quiver_kwargs,
             )
 
     # set labels only if there is none in the axis yet

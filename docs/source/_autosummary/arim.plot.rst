@@ -11,6 +11,7 @@ arim.plot
    
       common_dynamic_db_scale
       draw_rays_on_click
+      plot_bscan
       plot_bscan_pulse_echo
       plot_directivity_finite_width_2d
       plot_interfaces
