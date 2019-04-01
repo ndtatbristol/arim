@@ -8,7 +8,9 @@ arim's documentation
 
 arim is a Python library for array imaging in ultrasonic testing.
 
-`Github of the project <https://github.com/nbud/arim>`_
+`Github of the project <https://github.com/ndtatbristol/arim>`_
+
+Authors: Nicolas Budyn, Rhodri Bevan
 
 User documentation
 ------------------

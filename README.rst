@@ -1,15 +1,13 @@
 arim
 =====
 
-A Python library for array imaging in ultrasonic testing.
+A Python 3 library for modelling and imaging in ultrasonic testing.
 
+Features:
 
-Tests
------
+- forward model for ultrasonic array inspection fo small two-dimensional defects,
+- multi-view Total Focusing method imaging.
 
-::
+Download the latest release and documentation of arim: https://github.com/ndtatbristol/arim/releases
 
-  pytest
-
-  pytest --show-plots
-
+Authors: Nicolas Budyn, Rhodri Bevan
