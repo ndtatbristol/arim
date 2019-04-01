@@ -47,9 +47,9 @@ setup(
     long_description=long_description,
     url="https://github.com/nbud/arim",
     author="Nicolas Budyn, Rhodri Bevan",
-    author_email="nbud1@lycos.com",
+    author_email="n.budyn@pm.me",
     # Choose your license
-    license="All rights reserved",
+    # license="All rights reserved",
     # See https://pypi.python.org/pypi?%3Aaction=list_classifiers
     classifiers=[
         # How mature is this project? Common values are
@@ -66,6 +66,7 @@ setup(
         # Specify the Python versions you support here. In particular, ensure
         # that you indicate whether you support Python 2, Python 3 or both.
         "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
     ],
     # What does your project relate to?
     keywords="arim ultrasonic nondestructive imaging",

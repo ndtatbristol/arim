@@ -62,7 +62,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'arim'
-copyright = arim.__copyright__
+# copyright = ''
 author =  arim.__author__
 
 # The version info for the project you're documenting, acts as replacement for
