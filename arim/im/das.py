@@ -216,7 +216,7 @@ def _delay_and_sum_amplitudes_nearest(
                     * amplitudes_rx[point, rx[scan]]
                     * weighted_scanlines[scan, lookup_index]
                 )
-        result[point] = res_tmp
+        result[point] = res_tmp / numscanlines
 
 
 @numba.jit(nopython=True, nogil=True, parallel=True)
@@ -281,7 +281,7 @@ def _delay_and_sum_amplitudes_linear(
                     * amplitudes_rx[point, rx[scan]]
                     * lscanUseVal
                 )
-        result[point] = res_tmp
+        result[point] = res_tmp / numscanlines
 
 
 @numba.jit(nopython=True, nogil=True, parallel=True)
@@ -346,7 +346,7 @@ def _delay_and_sum_amplitudes_linear(
                     * amplitudes_rx[point, rx[scan]]
                     * lscanUseVal
                 )
-        result[point] = res_tmp
+        result[point] = res_tmp / numscanlines
 
 
 def delay_and_sum_numba_noamp(
@@ -448,7 +448,7 @@ def _delay_and_sum_noamp(
                 res_tmp += fillvalue
             else:
                 res_tmp += weighted_scanlines[scan, lookup_index]
-        result[point] = res_tmp
+        result[point] = res_tmp / numscanlines
 
 
 @numba.jit(nopython=True, nogil=True, parallel=True)
@@ -486,7 +486,7 @@ def _delay_and_sum_noamp_linear(
                 scan_val_right = weighted_scanlines[scan, lookup_index_right]
                 res_tmp += (1 - frac) * scan_val_left + frac * scan_val_right
 
-        result[point] = res_tmp
+        result[point] = res_tmp / numscanlines
 
 
 @numba.jit(nopython=True, cache=True)
@@ -546,7 +546,7 @@ def _delay_and_sum_noamp_lanczos(
                     lookup_index, weighted_scanlines[scan], a
                 )
 
-        result[point] = res_tmp
+        result[point] = res_tmp / numscanlines
 
 
 @numba.jit(nopython=True, nogil=True, cache=True)
@@ -608,6 +608,7 @@ def _general_delay_and_sum_nearest(
                 result[point] += (
                     amplitudes[point, scan] * weighted_scanlines[scan, lookup_index]
                 )
+        result[point] /= numscanlines
 
 
 @numba.jit(nopython=True, nogil=True, cache=True)
@@ -673,6 +674,8 @@ def _general_delay_and_sum_linear(
                 lscanVal1 = weighted_scanlines[scan, lookup_index1]
                 lscanUseVal = lscanVal + frac1 * (lscanVal1 - lscanVal)
                 result[point] += amplitudes[point, scan] * lscanUseVal
+        result[point] /= numscanlines
+
 
 
 def delay_and_sum_naive(
@@ -733,6 +736,7 @@ def delay_and_sum_naive(
                     * amplitudes_rx[point, rx[scan]]
                     * scanlines[scan, lookup_index]
                 )
+        result[point] /= numscanlines
     return result
 
 
