@@ -1,7 +1,7 @@
-import math
 import pytest
 import numpy as np
 from collections import OrderedDict
+import contextlib
 
 import arim.geometry as g
 from arim import Probe, ExaminationObject, Material, Time, Frame
@@ -172,6 +172,16 @@ class TestDasDispatcher:
         res = das.delay_and_sum(frame, focal_law, interpolation="linear")
         res = das.delay_and_sum(frame, focal_law, interpolation=("linear",))
         res = das.delay_and_sum(frame, focal_law, interpolation=("lanczos", 3))
+        if dtype_data == np.complex_:
+            # If complex, run normally
+            not_impl_typing = contextlib.nullcontext()
+        else:
+            # If not complex, run but expect NotImplementedTyping exception
+            not_impl_typing = pytest.raises(das.NotImplementedTyping)
+        with not_impl_typing:
+            res = das.delay_and_sum(
+                frame, focal_law, aggregation="median", interpolation=("lanczos", 3)
+            )
 
         frame, focal_law = make_delay_and_sum_case_random(
             dtype_float, dtype_data, amplitudes="random"
