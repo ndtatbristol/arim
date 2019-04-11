@@ -504,6 +504,7 @@ def plot_oxz_many(
     filename=None,
     y_title=1.0,
     y_suptitle=1.0,
+    axes_pad=0.1,
     **plot_oxz_kwargs,
 ):
     """
@@ -531,12 +532,14 @@ def plot_oxz_many(
         Adjust y location of the titles.
     y_suptitle : float
         Adjust y location of the titles.
+    axes_pad : float
+        Pad between images in inches
 
     plot_oxz_kwargs
 
     Returns
     -------
-    ax_list
+    axes_grid : axes_grid1.ImageGrid
     im_list
 
     """
@@ -555,11 +558,22 @@ def plot_oxz_many(
             max(np.nanmax(x) for x in data_list),
         )
 
-    fig, axes = plt.subplots(
-        nrows=nrows, ncols=ncols, sharex=True, sharey=True, figsize=figsize
+    if draw_colorbar:
+        cbar_mode = "single"
+    else:
+        cbar_mode = None
+    fig = plt.figure(figsize=figsize)
+    axes_grid = axes_grid1.ImageGrid(
+        fig,
+        111,
+        nrows_ncols=(nrows, ncols),
+        axes_pad=axes_pad,
+        share_all=True,
+        cbar_mode=cbar_mode,
     )
+
     images = []
-    for data, title, ax in zip(data_list, title_list, axes.ravel()):
+    for data, title, ax in zip(data_list, title_list, axes_grid):
         # the current function handles saving fig, drawing the cbar and displaying the title
         # so we prevent plot_oxz to do it.
         ax, im = plot_oxz(
@@ -573,23 +587,19 @@ def plot_oxz_many(
             title=None,
         )
         images.append(im)
-        ax.set_xlabel("")
-        ax.set_ylabel("")
         if title is not None:
             ax.set_title(title, y=y_title)
-    for ax in axes[-1, :]:
-        ax.set_xlabel("x (mm)")
-    for ax in axes[:, 0]:
-        ax.set_ylabel("z (mm)")
     if suptitle is not None:
         fig.suptitle(suptitle, y=y_suptitle, size="x-large")
     if draw_colorbar:
-        fig.colorbar(im, ax=axes.ravel().tolist())
+        cax = axes_grid.cbar_axes[0]
+        fig.colorbar(im, cax=cax)
+        cax.set_aspect(20, adjustable="box")
     if savefig:
         if filename is None:
             raise ValueError("filename must be provided when savefig is true")
         fig.savefig(filename)
-    return axes, images
+    return axes_grid, images
 
 
 def plot_tfm(tfm, y=0.0, func_res=None, interpolation="bilinear", **plot_oxz_kwargs):
