@@ -1495,6 +1495,7 @@ def sensitivity_uniform_tfm(model_amplitudes, scanline_weights, block_size=4000)
         if sensitivity is None:
             sensitivity = np.zeros((numpoints,), dtype=tmp.dtype)
         sensitivity[chunk] = tmp
+    sensitivity /= numscanlines
     return sensitivity
 
 
@@ -1531,6 +1532,7 @@ def sensitivity_model_assisted_tfm(model_amplitudes, scanline_weights, block_siz
         if sensitivity is None:
             sensitivity = np.zeros((numpoints,), dtype=tmp.dtype)
         sensitivity[chunk] = tmp
+    sensitivity /= numscanlines
     return sensitivity
 
 
