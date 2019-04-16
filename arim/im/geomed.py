@@ -126,7 +126,7 @@ def _backtracking_line_search(data, x, gradval, p, rho, c):
 
 
 @numba.njit(**_numba_opts)
-def geomed(data, xtol=1e-5, maxiter=200, c=1e-4, rho=0.5):
+def geomed(data, xtol=1e-9, maxiter=200, c=1e-4, rho=0.5):
     """
     Calculate geometric median using Newton's descent
     
