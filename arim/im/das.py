@@ -170,7 +170,7 @@ def _infer_datatypes(
     return dtype_float, dtype_amp, dtype_data
 
 
-@numba.jit(nopython=True, nogil=True, parallel=True)
+@numba.jit(nopython=True, nogil=True, parallel=True, fastmath=True)
 def _delay_and_sum_amplitudes_nearest(
     weighted_scanlines,
     tx,
@@ -230,7 +230,7 @@ def _delay_and_sum_amplitudes_nearest(
         result[point] = res_tmp / numscanlines
 
 
-@numba.jit(nopython=True, nogil=True, parallel=True)
+@numba.jit(nopython=True, nogil=True, parallel=True, fastmath=True)
 def _delay_and_sum_amplitudes_linear(
     weighted_scanlines,
     tx,
@@ -295,7 +295,7 @@ def _delay_and_sum_amplitudes_linear(
         result[point] = res_tmp / numscanlines
 
 
-@numba.jit(nopython=True, nogil=True, parallel=True)
+@numba.jit(nopython=True, nogil=True, parallel=True, fastmath=True)
 def _delay_and_sum_amplitudes_linear(
     weighted_scanlines,
     tx,
@@ -447,7 +447,7 @@ def delay_and_sum_numba_noamp(
 
 
 # todo: add cache=True if it becomes compatible with parallel=True (numba)
-@numba.jit(nopython=True, nogil=True, parallel=True)
+@numba.jit(nopython=True, nogil=True, parallel=True, fastmath=True)
 def _delay_and_sum_noamp(
     weighted_scanlines,
     tx,
@@ -478,7 +478,7 @@ def _delay_and_sum_noamp(
         result[point] = res_tmp / numscanlines
 
 
-@numba.jit(nopython=True, nogil=True, parallel=True)
+@numba.jit(nopython=True, nogil=True, parallel=True, fastmath=True)
 def _delay_and_sum_noamp_linear(
     weighted_scanlines,
     tx,
@@ -516,7 +516,7 @@ def _delay_and_sum_noamp_linear(
         result[point] = res_tmp / numscanlines
 
 
-@numba.jit(nopython=True, cache=True)
+@numba.jit(nopython=True, cache=True, fastmath=True)
 def sinc(x):
     if x == 0:
         return 1.0
@@ -524,7 +524,7 @@ def sinc(x):
         return math.sin(math.pi * x) / (math.pi * x)
 
 
-@numba.jit(nopython=True, cache=True)
+@numba.jit(nopython=True, cache=True, fastmath=True)
 def lanczos_interpolation(t, x, a):
     i_min = math.floor(t) - a + 1
     i_max = math.floor(t) + a + 1  # +1 because of how range() works
@@ -535,7 +535,7 @@ def lanczos_interpolation(t, x, a):
     return out
 
 
-@numba.jit(nopython=True, nogil=True, parallel=True)
+@numba.jit(nopython=True, nogil=True, parallel=True, fastmath=True)
 def _delay_and_sum_noamp_lanczos(
     weighted_scanlines,
     tx,
@@ -576,7 +576,7 @@ def _delay_and_sum_noamp_lanczos(
         result[point] = res_tmp / numscanlines
 
 
-@numba.jit(nopython=True, nogil=True, parallel=True)
+@numba.jit(nopython=True, nogil=True, parallel=True, fastmath=True)
 def _delay_and_sum_noamp_median_lanczos(
     weighted_scanlines,
     tx,
@@ -615,7 +615,7 @@ def _delay_and_sum_noamp_median_lanczos(
         result[point] = res.view(np.complex_)[0]
 
 
-@numba.jit(nopython=True, nogil=True, cache=True)
+@numba.jit(nopython=True, nogil=True, cache=True, fastmath=True)
 def _general_delay_and_sum_nearest(
     weighted_scanlines,
     tx,
@@ -677,7 +677,7 @@ def _general_delay_and_sum_nearest(
         result[point] /= numscanlines
 
 
-@numba.jit(nopython=True, nogil=True, cache=True)
+@numba.jit(nopython=True, nogil=True, cache=True, fastmath=True)
 def _general_delay_and_sum_linear(
     weighted_scanlines,
     tx,
