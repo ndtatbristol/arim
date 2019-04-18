@@ -9,14 +9,6 @@ probe_location:
   # Element corresponding to x=0:
   ref_element: mean
 
-couplant_material:
-  metadata:
-    long_name: Water
-    source: "Krautkrämer 1990"
-  longitudinal_vel: 1480.
-  density: 1000.
-  state_of_matter: liquid
-
 block_material:
   metadata:
     long_name: Aluminium

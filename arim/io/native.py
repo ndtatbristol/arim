@@ -231,6 +231,8 @@ def examination_object_from_conf(conf):
         and "block_material" in conf.keys()
     ):
         return block_in_immersion_from_conf(conf)
+    elif "block_material" in conf.keys():
+        return block_in_contact_from_conf(conf)
     else:
         raise NotImplementedError
 
@@ -308,6 +310,21 @@ def block_in_immersion_from_conf(conf):
     frontwall = geometry.points_1d_wall_z(**conf["frontwall"], name="Frontwall")
     backwall = geometry.points_1d_wall_z(**conf["backwall"], name="Backwall")
     return core.BlockInImmersion(block, couplant, frontwall, backwall)
+
+
+def block_in_contact_from_conf(conf):
+    block = material_from_conf(conf["block_material"])
+    frontwall_conf = conf.get("frontwall", None)
+    if frontwall_conf is None:
+        frontwall = None
+    else:
+        frontwall = geometry.points_1d_wall_z(**frontwall_conf, name="Frontwall")
+    backwall_conf = conf.get("backwall", None)
+    if backwall_conf is None:
+        backwall = None
+    else:
+        backwall = geometry.points_1d_wall_z(**backwall_conf, name="Backwall")
+    return core.BlockInContact(block, frontwall, backwall)
 
 
 def grid_from_conf(conf):

@@ -9,6 +9,7 @@ arim.io.native
 
    .. autosummary::
    
+      block_in_contact_from_conf
       block_in_immersion_from_conf
       examination_object_from_conf
       frame_from_conf
