@@ -13,6 +13,7 @@ Examples
     res = das.delay_and_sum(frame, focal_law, fillvalue=0.0)
     res = das.delay_and_sum(frame, focal_law, fillvalue=np.nan)
     res = das.delay_and_sum(frame, focal_law, interpolation="nearest")
+    res = das.delay_and_sum(frame, focal_law, interpolation="nearest", aggregation="median")
     res = das.delay_and_sum(frame, focal_law, interpolation="linear")
     res = das.delay_and_sum(frame, focal_law, interpolation=("lanczos", 3))
     res = das.delay_and_sum(frame, focal_law, interpolation=("lanczos", 3), aggregation="median")
@@ -428,6 +429,9 @@ def delay_and_sum_numba_noamp(
         if interpolation_name == "lanczos":
             das_func = _delay_and_sum_noamp_median_lanczos
             assert len(interpolation_args) == 1
+        elif interpolation_name == "nearest":
+            das_func = _delay_and_sum_noamp_median_nearest
+            assert len(interpolation_args) == 0
         else:
             raise NotImplementedError
 
@@ -459,6 +463,7 @@ def _delay_and_sum_noamp(
     fillvalue,
     result,
 ):
+    # Mean aggregation, nearest interpolation
     numscanlines, numsamples = weighted_scanlines.shape
     numpoints, numelements = lookup_times_tx.shape
 
@@ -476,6 +481,41 @@ def _delay_and_sum_noamp(
             else:
                 res_tmp += weighted_scanlines[scan, lookup_index]
         result[point] = res_tmp / numscanlines
+
+
+@numba.jit(nopython=True, nogil=True, parallel=True, fastmath=True)
+def _delay_and_sum_noamp_median_nearest(
+    weighted_scanlines,
+    tx,
+    rx,
+    lookup_times_tx,
+    lookup_times_rx,
+    invdt,
+    t0,
+    fillvalue,
+    result,
+):
+    numscanlines, numsamples = weighted_scanlines.shape
+    numpoints, numelements = lookup_times_tx.shape
+
+    for point in numba.prange(numpoints):
+        datapoints = np.empty(numscanlines, weighted_scanlines.dtype)
+
+        for scan in range(numscanlines):
+            lookup_time = (
+                lookup_times_tx[point, tx[scan]] + lookup_times_rx[point, rx[scan]]
+            )
+            lookup_index = round((lookup_time - t0) * invdt)
+
+            if lookup_index < 0 or lookup_index >= numsamples:
+                datapoints[scan] = fillvalue
+            else:
+                datapoints[scan] = weighted_scanlines[scan, lookup_index]
+        # I don't know how to statically cast complex64 to float32, and
+        # complex128 to float64 :(
+        # Have to impose dtype meanwhile.
+        res, _ = geomed.geomed(datapoints.view(np.float_).reshape((numscanlines, 2)))
+        result[point] = res.view(np.complex_)[0]
 
 
 @numba.jit(nopython=True, nogil=True, parallel=True, fastmath=True)

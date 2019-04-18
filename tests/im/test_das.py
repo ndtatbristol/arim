@@ -180,6 +180,9 @@ class TestDasDispatcher:
             not_impl_typing = pytest.raises(das.NotImplementedTyping)
         with not_impl_typing:
             res = das.delay_and_sum(
+                frame, focal_law, aggregation="median", interpolation="nearest"
+            )
+            res = das.delay_and_sum(
                 frame, focal_law, aggregation="median", interpolation=("lanczos", 3)
             )
 
