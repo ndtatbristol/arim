@@ -1,6 +1,5 @@
 """
-Forward models
-
+Imaging and forward models
 
 Contribution of a scatterer for a view::
 
@@ -19,8 +18,11 @@ i to j.
 
 
 .. autosummary::
+   :toctree: .
 
    block_in_immersion
+   block_in_contact
+   helpers
 
 
 """

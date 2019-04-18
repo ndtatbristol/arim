@@ -21,7 +21,9 @@ arim reference
 
    model
    models
-   models.block_in_immersion
+   .. models.block_in_immersion
+   .. models.block_in_contact
+   .. models.helpers
    scat
 
 **Imaging**

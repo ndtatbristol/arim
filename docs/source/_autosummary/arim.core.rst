@@ -19,6 +19,7 @@ arim.core
 
    .. autosummary::
    
+      BlockInContact
       BlockInImmersion
       CaptureMethod
       ElementShape

@@ -22,7 +22,8 @@ of memory and calculation required for imaging and modelling. This is the *raiso
 Creating the views
 ==================
 
-The recommended way is to use :func:`arim.models.block_in_immersion.make_views`.
+The recommended way is to use either :func:`arim.models.block_in_immersion.make_views`
+or :func:`arim.models.block_in_contact.make_views`.
 
 This function requires the positions of the probe as a :class:`arim.geometry.OrientedPoints` object::
 

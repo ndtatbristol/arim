@@ -15,7 +15,6 @@ arim.models.block\_in\_immersion
       make_interfaces
       make_paths
       make_views
-      make_views_from_paths
       multifreq_scat_transfer_functions
       multifreq_wall_transfer_functions
       ray_weights_for_views

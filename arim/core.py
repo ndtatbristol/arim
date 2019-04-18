@@ -1345,6 +1345,40 @@ class BlockInImmersion(ExaminationObject):
         self.metadata = metadata
 
 
+class BlockInContact(ExaminationObject):
+    """
+    Solid block on which the probe is in direct contact
+
+    Parameters
+    ----------
+    block_material : Material
+    frontwall : OrientedPoints or None
+    backwall : OrientedPoints or None
+    metadata : dict or None
+
+    Attributes
+    ----------
+    block_material : Material
+    frontwall : OrientedPoints
+    backwall : OrientedPoints
+    metadata : dict
+
+    """
+
+    def __init__(self, block_material, frontwall=None, backwall=None, metadata=None):
+        self.material = block_material
+        self.frontwall = frontwall
+        self.backwall = backwall
+        if metadata is None:
+            metadata = {}
+        self.metadata = metadata
+
+    @property
+    def block_material(self):
+        # alias
+        return self.material
+
+
 class Time:
     """Linearly spaced time vector.
 

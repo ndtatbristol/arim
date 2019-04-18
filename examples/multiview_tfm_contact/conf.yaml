@@ -1,0 +1,66 @@
+frame:
+  datafile: O:\arim-datasets\Aluminium_Notch_Contact_128elts_5MHz\above_notch.mat
+  instrument_delay: 0. # shift the t=0 defined in datafile by this number.
+
+# Probe definition
+probe_key: ima_50_MHz_128_1d
+
+probe_location:
+  # Element corresponding to x=0:
+  ref_element: mean
+
+couplant_material:
+  metadata:
+    long_name: Water
+    source: "Krautkrämer 1990"
+  longitudinal_vel: 1480.
+  density: 1000.
+  state_of_matter: liquid
+
+block_material:
+  metadata:
+    long_name: Aluminium
+    source: Krautkrämer 1990
+  longitudinal_vel: 6320.
+  transverse_vel: 3130.
+  density: 2700.
+  state_of_matter: solid
+
+# If imaging with internal reflection of the frontwall:
+frontwall:
+  numpoints: 1000
+  xmin: -42.e-3
+  xmax: 42.e-3
+  z: 0.
+
+# If imaging with internal reflection of the backwall:
+backwall:
+  numpoints: 1000
+  xmin: -42.e-3
+  xmax: 42.e-3
+  z: 40.e-3
+
+grid:
+  xmin: -40.e-3
+  xmax: 40.e-3
+  zmin: 1.e-3
+  zmax: 42.e-3
+  pixel_size: .25e-3
+
+filter_for_tfm:
+  order: 4
+  cutoff_min: 2.e+6
+  cutoff_max: 8.e+6
+
+# # Disable dynamic dB scale in rectangle:
+# reference_rect: null
+
+# Enable dynamic dB scale in rectangle:
+reference_rect:
+  xmin: -5.e-3
+  xmax: 0.e-3
+  zmin: 17.5e-3
+  zmax: 22.5e-3
+
+# views_to_use: all
+views_to_use: [L-L, L-T, T-T, LL-LL, LLL-L]
