@@ -175,3 +175,63 @@ def geomed(data, xtol=1e-9, maxiter=200, c=1e-4, rho=0.5):
         l1_update = abs(update[0]) + abs(update[1])
         k += 1
     return xk, k
+
+
+@numba.njit(**_numba_opts)
+def _weiszfeld_iter(data, x0, y0):
+    """
+    New iteration in Weiszfeld's algorithm
+    
+    data : (n, d)
+    z: (d, )
+    """
+    t = 0.0
+    x = 0.0
+    y = 0.0
+    for i in range(len(data)):
+        x_i = data[i][0]
+        y_i = data[i][1]
+        t_i = 1 / math.sqrt((x0 - x_i) ** 2 + (y0 - y_i) ** 2)
+        t += t_i
+        x += x_i * t_i
+        y += y_i * t_i
+    inv_t = 1 / t
+    x *= inv_t
+    y *= inv_t
+    return x, y
+
+
+@numba.njit(**_numba_opts)
+def geomed2(data, xtol=1e-9, maxiter=600):
+    """
+    Calculate geometric median Weiszfeld's algorithm 
+    
+    Parameters
+    ----------
+    data : (n, 2)
+    xtol
+    maxiter
+    
+    Returns
+    -------
+    xsol
+    numiter
+    
+    """
+    k = 0  # iteration counter
+    l1_update = 2 * xtol  # init only
+
+    # initial guess
+    xk = 0.0
+    yk = 0.0
+
+    while l1_update > xtol:
+        if k >= maxiter:
+            raise Exception("max iter reached")
+
+        xk1, yk1 = _weiszfeld_iter(data, xk, yk)
+        l1_update = abs(xk - xk1) + abs(yk - yk1)
+        xk = xk1
+        yk = yk1
+        k += 1
+    return np.array((xk, yk)), k

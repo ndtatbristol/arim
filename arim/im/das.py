@@ -514,7 +514,7 @@ def _delay_and_sum_noamp_median_nearest(
         # I don't know how to statically cast complex64 to float32, and
         # complex128 to float64 :(
         # Have to impose dtype meanwhile.
-        res, _ = geomed.geomed(datapoints.view(np.float_).reshape((numscanlines, 2)))
+        res, _ = geomed.geomed2(datapoints.view(np.float_).reshape((numscanlines, 2)))
         result[point] = res.view(np.complex_)[0]
 
 
@@ -651,7 +651,7 @@ def _delay_and_sum_noamp_median_lanczos(
         # I don't know how to statically cast complex64 to float32, and
         # complex128 to float64 :(
         # Have to impose dtype meanwhile.
-        res, _ = geomed.geomed(datapoints.view(np.float_).reshape((numscanlines, 2)))
+        res, _ = geomed.geomed2(datapoints.view(np.float_).reshape((numscanlines, 2)))
         result[point] = res.view(np.complex_)[0]
 
 
