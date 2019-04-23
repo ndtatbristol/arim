@@ -14,6 +14,7 @@ Examples
     res = das.delay_and_sum(frame, focal_law, fillvalue=np.nan)
     res = das.delay_and_sum(frame, focal_law, interpolation="nearest")
     res = das.delay_and_sum(frame, focal_law, interpolation="nearest", aggregation="median")
+    res = das.delay_and_sum(frame, focal_law, interpolation="nearest", aggregation=("huber", 1.5))
     res = das.delay_and_sum(frame, focal_law, interpolation="linear")
     res = das.delay_and_sum(frame, focal_law, interpolation=("lanczos", 3))
     res = das.delay_and_sum(frame, focal_law, interpolation=("lanczos", 3), aggregation="median")
@@ -36,7 +37,7 @@ import logging
 import numba
 import numpy as np
 
-from . import geomed
+from . import geomed, huber
 
 logger = logging.getLogger(__name__)
 
@@ -409,9 +410,14 @@ def delay_and_sum_numba_noamp(
         interpolation_name = interpolation[0].lower()
         interpolation_args = interpolation[1:]
 
-    aggregation = aggregation.lower()
+    if isinstance(aggregation, str):
+        aggregation_name = aggregation.lower()
+        aggregation_args = ()
+    else:
+        aggregation_name = aggregation[0].lower()
+        aggregation_args = aggregation[1:]
 
-    if aggregation == "mean":
+    if aggregation_name == "mean":
         if interpolation_name == "nearest":
             das_func = _delay_and_sum_noamp
             assert len(interpolation_args) == 0
@@ -423,7 +429,7 @@ def delay_and_sum_numba_noamp(
             assert len(interpolation_args) == 1
         else:
             raise ValueError("invalid interpolation")
-    elif aggregation == "median":
+    elif aggregation_name == "median":
         if dtype_data != np.complex_:
             raise NotImplementedTyping
         if interpolation_name == "lanczos":
@@ -432,6 +438,14 @@ def delay_and_sum_numba_noamp(
         elif interpolation_name == "nearest":
             das_func = _delay_and_sum_noamp_median_nearest
             assert len(interpolation_args) == 0
+        else:
+            raise NotImplementedError
+    elif aggregation_name == "huber":
+        if dtype_data != np.complex_:
+            raise NotImplementedTyping
+        if interpolation_name == "lanczos":
+            das_func = _delay_and_sum_noamp_huber_lanczos
+            assert len(interpolation_args) == 1
         else:
             raise NotImplementedError
 
@@ -445,6 +459,7 @@ def delay_and_sum_numba_noamp(
         t0,
         fillvalue,
         *interpolation_args,
+        *aggregation_args,
         result
     )
     return result
@@ -652,6 +667,48 @@ def _delay_and_sum_noamp_median_lanczos(
         # complex128 to float64 :(
         # Have to impose dtype meanwhile.
         res, _ = geomed.geomed(datapoints.view(np.float_).reshape((numscanlines, 2)))
+        result[point] = res.view(np.complex_)[0]
+
+
+@numba.jit(nopython=True, nogil=True, parallel=True, fastmath=True)
+def _delay_and_sum_noamp_huber_lanczos(
+    weighted_scanlines,
+    tx,
+    rx,
+    lookup_times_tx,
+    lookup_times_rx,
+    invdt,
+    t0,
+    fillvalue,
+    a,
+    tau,
+    result,
+):
+    numscanlines, numsamples = weighted_scanlines.shape
+    numpoints, numelements = lookup_times_tx.shape
+
+    for point in numba.prange(numpoints):
+        datapoints = np.empty(numscanlines, weighted_scanlines.dtype)
+
+        for scan in range(numscanlines):
+            lookup_time = (
+                lookup_times_tx[point, tx[scan]] + lookup_times_rx[point, rx[scan]]
+            )
+
+            lookup_index = (lookup_time - t0) * invdt
+
+            if lookup_index < 0 or lookup_index >= numsamples:
+                datapoints[scan] = fillvalue
+            else:
+                datapoints[scan] = lanczos_interpolation(
+                    lookup_index, weighted_scanlines[scan], a
+                )
+        # I don't know how to statically cast complex64 to float32, and
+        # complex128 to float64 :(
+        # Have to impose dtype meanwhile.
+        res, _ = huber.huber_m_estimate(
+            datapoints.view(np.float_).reshape((numscanlines, 2)), tau
+        )
         result[point] = res.view(np.complex_)[0]
 
 

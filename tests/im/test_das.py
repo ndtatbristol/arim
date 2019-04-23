@@ -185,6 +185,12 @@ class TestDasDispatcher:
             res = das.delay_and_sum(
                 frame, focal_law, aggregation="median", interpolation=("lanczos", 3)
             )
+            res = das.delay_and_sum(
+                frame,
+                focal_law,
+                aggregation=("huber", 1.5),
+                interpolation=("lanczos", 3),
+            )
 
         frame, focal_law = make_delay_and_sum_case_random(
             dtype_float, dtype_data, amplitudes="random"
