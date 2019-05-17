@@ -1,4 +1,6 @@
-include README.rst LICENSE.txt
+include MANIFEST.in
+include README.md LICENSE.txt
+include CHANGELOG.md
 include setup.cfg
 include setup.py
 include bld.bat

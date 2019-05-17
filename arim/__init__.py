@@ -24,4 +24,4 @@ __email__ = "n.budyn@pm.me"
 
 # Must respect PEP 440: https://www.python.org/dev/peps/pep-0440/
 # Must be bumped at each release
-__version__ = "0.8.dev5"
+__version__ = "0.8"
