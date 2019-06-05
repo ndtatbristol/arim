@@ -18,5 +18,4 @@ arim includes [example scripts](https://github.com/ndtatbristol/arim/tree/master
 
 ## Citing arim
 
-Budyn, N., Bevan, R. L., Zhang, J., Croxford, A. J., & Wilcox, P. D. (2019). A model for multi-view ultrasonic array inspection of small two-dimensional defects. IEEE transactions on ultrasonics, ferroelectrics, and frequency control, [DOI 10.1109/TUFFC.2018.2874720](http://dx.doi.org/10.1109/TUFFC.2018.2874720)
-
+Budyn, N., Bevan, R. L., Zhang, J., Croxford, A. J., & Wilcox, P. D. (2019). A model for multi-view ultrasonic array inspection of small two-dimensional defects. IEEE transactions on ultrasonics, ferroelectrics, and frequency control, [DOI 10.1109/TUFFC.2019.2909988](https://doi.org/10.1109/TUFFC.2019.2909988)
