@@ -12,6 +12,8 @@ arim.model
       beamspread_2d_for_path
       directivity_2d_rectangular_in_fluid
       directivity_2d_rectangular_in_fluid_for_path
+      directivity_2d_rectangular_on_solid_l
+      directivity_2d_rectangular_on_solid_t
       fluid_solid
       make_toneburst
       make_toneburst2
