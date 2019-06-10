@@ -1,16 +1,396 @@
 """
 Model for solid block on which the probe is in direct contact
 
+Imaging should work as expected.
+
+The forward model is not finalised and is not experimentally validated. Buyer beware.
+
+Known issue :
+
+    - the model is not reciprocal (swapping the transmitter and the receiver
+    gives different results)
+
+Limits of the forward model:
+
+    - the scaling between the L and the T directivity of the elements is dubious
+    - material underneath is fluid
+    - do not model reflection against the backwall
+
+See also :mod:`arim.models.model.block_in_immersion`
 
 """
-from collections import OrderedDict
+import logging
+from collections import namedtuple, OrderedDict
 
-from .helpers import make_views_from_paths
+import numpy as np
+
+from .. import model, ray, helpers, signal
 from .. import core as c
+from ..ray import RayGeometry
+from .helpers import make_views_from_paths
+
+logger = logging.getLogger(__name__)
+
+
+_RayWeightsCommon = namedtuple(
+    "_RayWeightsCommon", ["numgridpoints", "wavelengths_in_block"],
+)
+
+
+def _init_ray_weights(path, frequency, probe_element_width, use_directivity):
+    if path.rays is None:
+        raise ValueError("Ray tracing must have been performed first.")
+
+    block = path.materials[0]
+    numgridpoints = len(path.interfaces[-1].points)
+
+    if use_directivity and probe_element_width is None:
+        raise ValueError("probe_element_width must be provided to compute directivity")
+
+    if block.transverse_vel is None:
+        wavelengths_in_block = dict(
+            [(c.Mode.L, block.longitudinal_vel / frequency), (c.Mode.T, float("nan"))]
+        )
+    else:
+        wavelengths_in_block = dict(
+            [
+                (c.Mode.L, block.longitudinal_vel / frequency),
+                (c.Mode.T, block.transverse_vel / frequency),
+            ]
+        )
+
+    return _RayWeightsCommon(numgridpoints, wavelengths_in_block)
+
+
+def tx_ray_weights(
+    path,
+    ray_geometry,
+    frequency,
+    probe_element_width=None,
+    use_directivity=True,
+    use_beamspread=True,
+    use_transrefl=True,
+    use_attenuation=True,
+):
+    """
+    Coefficients Q_i(r, omega) in forward model.
+
+    Parameters
+    ----------
+    path : Path
+    ray_geometry : arim.ray.RayGeometry
+    frequency : float
+    probe_element_width : float or None
+        Mandatory if use_directivity is True
+    use_directivity : bool
+        Default True
+    use_beamspread : bool
+        Default True
+    use_transrefl : bool
+        Default: True
+    use_attenuation : bool
+        Default: True
+
+    Returns
+    -------
+    weights : ndarray
+        Shape (numelements, numgridpoints)
+    weights_dict : dict[str, ndarray]
+        Components of the ray weights: beamspread, directivity, transmission-reflection, attenuation
+    """
+    d = _init_ray_weights(path, frequency, probe_element_width, use_directivity)
+
+    weights_dict = dict()
+    one = np.ones((len(path.interfaces[0].points), d.numgridpoints), order="F")
+
+    if use_directivity:
+        if path.modes[0] is c.Mode.L:
+            directivity_func = model.directivity_2d_rectangular_on_solid_l
+        elif path.modes[0] is c.Mode.T:
+            directivity_func = model.directivity_2d_rectangular_on_solid_t
+        else:
+            raise RuntimeError
+        weights_dict["directivity"] = directivity_func(
+            ray_geometry.conventional_out_angle(0),
+            probe_element_width,
+            d.wavelengths_in_block[c.Mode.L],
+            d.wavelengths_in_block[c.Mode.T],
+        )
+    else:
+        weights_dict["directivity"] = one
+    if use_transrefl and path.numlegs >= 2:
+        weights_dict["transrefl"] = model.transmission_reflection_for_path(
+            path, ray_geometry, unit="displacement"
+        )
+    else:
+        weights_dict["transrefl"] = one
+    if use_beamspread:
+        weights_dict["beamspread"] = model.beamspread_2d_for_path(ray_geometry)
+    else:
+        weights_dict["beamspread"] = one
+    if use_attenuation:
+        weights_dict["attenuation"] = model.material_attenuation_for_path(
+            path, ray_geometry, frequency
+        )
+    else:
+        weights_dict["attenuation"] = one
+
+    weights = (
+        weights_dict["directivity"]
+        * weights_dict["transrefl"]
+        * weights_dict["beamspread"]
+        * weights_dict["attenuation"]
+    )
+    return weights, weights_dict
+
+
+def rx_ray_weights(
+    path,
+    ray_geometry,
+    frequency,
+    probe_element_width=None,
+    use_directivity=True,
+    use_beamspread=True,
+    use_transrefl=True,
+    use_attenuation=True,
+):
+    """
+    Coefficients Q'_i(r, omega) in forward model.
+
+    Parameters
+    ----------
+    path : Path
+    ray_geometry : arim.ray.RayGeometry
+    frequency : float
+    probe_element_width : float or None
+        Mandatory if use_directivity is True
+    use_directivity : bool
+        Default True
+    use_beamspread : bool
+        Default True
+    use_transrefl : bool
+        Default: True
+    use_attenuation : bool
+        Default: True
+
+    Returns
+    -------
+    weights : ndarray
+        Shape (numelements, numgridpoints)
+    weights_dict : dict[str, ndarray]
+        Components of the ray weights: beamspread, directivity, transmission-reflection, attenuation
+    """
+    d = _init_ray_weights(path, frequency, probe_element_width, use_directivity)
+
+    weights_dict = dict()
+    one = np.ones((len(path.interfaces[0].points), d.numgridpoints), order="F")
+
+    if use_directivity:
+        if path.modes[0] is c.Mode.L:
+            directivity_func = model.directivity_2d_rectangular_on_solid_l
+        elif path.modes[0] is c.Mode.T:
+            directivity_func = model.directivity_2d_rectangular_on_solid_t
+        else:
+            raise RuntimeError
+        weights_dict["directivity"] = directivity_func(
+            ray_geometry.conventional_out_angle(0),
+            probe_element_width,
+            d.wavelengths_in_block[c.Mode.L],
+            d.wavelengths_in_block[c.Mode.T],
+        )
+    else:
+        weights_dict["directivity"] = one
+    if use_transrefl and path.numlegs >= 2:
+        weights_dict["transrefl"] = model.reverse_transmission_reflection_for_path(
+            path, ray_geometry, unit="displacement"
+        )
+    else:
+        weights_dict["transrefl"] = one
+    if use_beamspread:
+        weights_dict["beamspread"] = model.reverse_beamspread_2d_for_path(ray_geometry)
+    else:
+        weights_dict["beamspread"] = one
+    if use_attenuation:
+        weights_dict["attenuation"] = model.material_attenuation_for_path(
+            path, ray_geometry, frequency
+        )
+    else:
+        weights_dict["attenuation"] = one
+
+    # the coefficient accounts for the normalisation convention of the scattering in Bristol's literature
+    scat_normalisation = np.sqrt(d.wavelengths_in_block[path.modes[-1]])
+    weights = (
+        weights_dict["directivity"]
+        * weights_dict["transrefl"]
+        * weights_dict["beamspread"]
+        * weights_dict["attenuation"]
+    )
+    # if path.modes[-1] is c.Mode.L:
+    #     reception_coeff = d.wavelengths_in_block[c.Mode.L]**1.5
+    # elif path.modes[-1] is c.Mode.T:
+    #     reception_coeff = -d.wavelengths_in_block[c.Mode.T]**1.5
+    # else:
+    #     raise RuntimeError
+    # weights *= scat_normalisation * reception_coeff
+    weights *= scat_normalisation
+    return weights, weights_dict
+
+
+def _make_backwall_refl_interface(backwall, under_material):
+    if under_material is not None:
+        backwall_refl = c.Interface(
+            *backwall,
+            "solid_fluid",
+            "reflection",
+            reflection_against=under_material,
+            are_normals_on_inc_rays_side=False,
+            are_normals_on_out_rays_side=False,
+        )
+    else:
+        backwall_refl = c.Interface(
+            *backwall,
+            are_normals_on_inc_rays_side=False,
+            are_normals_on_out_rays_side=False,
+        )
+    return backwall_refl
+
+
+def backwall_paths(
+    block_material, probe_oriented_points, backwall, under_material=None
+):
+    """
+    Make backwall paths LL, LT, TL, TT
+
+    Probe -> block -> backwall > block -> probe
+    
+    Parameters
+    ----------
+    block_material : Material
+    probe_oriented_points : OrientedPoints
+    backwall: OrientedPoints
+    under_material : Material or None
+
+    Returns
+    -------
+    OrderedDict of Path
+        Keys: LL, LT, TL, TT
+
+    """
+    probe_start = c.Interface(*probe_oriented_points, are_normals_on_out_rays_side=True)
+    backwall_refl = _make_backwall_refl_interface(backwall, under_material)
+    probe_end = c.Interface(*probe_oriented_points, are_normals_on_inc_rays_side=True)
+
+    paths = OrderedDict()
+
+    for mode1 in (c.Mode.L, c.Mode.T):
+        for mode2 in (c.Mode.L, c.Mode.T):
+            key = mode1.key() + mode2.key()
+            paths[key] = c.Path(
+                interfaces=(probe_start, backwall_refl, probe_end,),
+                materials=(block_material, block_material,),
+                modes=(mode1, mode2),
+                name="Backwall " + key,
+            )
+    return paths
+
+
+def ray_weights_for_wall(
+    path,
+    frequency,
+    probe_element_width=None,
+    use_directivity=True,
+    use_beamspread=True,
+    use_transrefl=True,
+    use_attenuation=True,
+):
+    """
+    Compute model coefficients for wall echoes.
+
+    Parameters
+    ----------
+    path
+    frequency
+    probe_element_width
+    use_directivity
+    use_beamspread
+    use_transrefl
+    use_attenuation
+
+    Returns
+    -------
+    weights : ndarray
+        Shape (numelements, numelements)
+    weights_dict : dict[str, ndarray]
+        Components of the ray weights: beamspread, directivity, transmission-reflection, attenuation
+
+    """
+    # perform ray tracing if needed
+    if path.rays is None:
+        ray.ray_tracing_for_paths([path])
+
+    ray_geometry = RayGeometry.from_path(path)
+
+    d = _init_ray_weights(path, frequency, probe_element_width, use_directivity)
+
+    weights_dict = dict()
+    one = np.ones((len(path.interfaces[0].points), d.numgridpoints), order="F")
+
+    if use_directivity:
+        if path.modes[0] is c.Mode.L:
+            directivity_func_tx = model.directivity_2d_rectangular_on_solid_l
+        elif path.modes[0] is c.Mode.T:
+            directivity_func_tx = model.directivity_2d_rectangular_on_solid_t
+        if path.modes[-1] is c.Mode.L:
+            directivity_func_rx = model.directivity_2d_rectangular_on_solid_l
+        elif path.modes[-1] is c.Mode.T:
+            directivity_func_rx = model.directivity_2d_rectangular_on_solid_t
+        directivity_tx = directivity_func_tx(
+            ray_geometry.conventional_out_angle(0),
+            probe_element_width,
+            d.wavelengths_in_block[c.Mode.L],
+            d.wavelengths_in_block[c.Mode.T],
+        )
+        directivity_rx = directivity_func_rx(
+            ray_geometry.conventional_inc_angle(-1),
+            probe_element_width,
+            d.wavelengths_in_block[c.Mode.L],
+            d.wavelengths_in_block[c.Mode.T],
+        )
+        weights_dict["directivity"] = directivity_tx * directivity_rx
+    else:
+        weights_dict["directivity"] = one
+    if use_transrefl:
+        weights_dict["transrefl"] = model.transmission_reflection_for_path(
+            path, ray_geometry, unit="displacement"
+        )
+    else:
+        weights_dict["transrefl"] = one
+    if use_beamspread:
+        weights_dict["beamspread"] = model.beamspread_2d_for_path(ray_geometry)
+    else:
+        weights_dict["beamspread"] = one
+    if use_attenuation:
+        weights_dict["attenuation"] = model.material_attenuation_for_path(
+            path, ray_geometry, frequency
+        )
+    else:
+        weights_dict["attenuation"] = one
+
+    weights = (
+        weights_dict["directivity"]
+        * weights_dict["transrefl"]
+        * weights_dict["beamspread"]
+        * weights_dict["attenuation"]
+    )
+    return weights, weights_dict
 
 
 def make_interfaces(
-    probe_oriented_points, grid_oriented_points, frontwall=None, backwall=None
+    probe_oriented_points,
+    grid_oriented_points,
+    frontwall=None,
+    backwall=None,
+    under_material=None,
 ):
     """
     Construct interfaces
@@ -23,6 +403,7 @@ def make_interfaces(
     grid_oriented_points: OrientedPoints
     frontwall: OrientedPoints or None
     backwall: OrientedPoints or None
+    under_material : Material or None
 
     Returns
     -------
@@ -38,10 +419,8 @@ def make_interfaces(
         *grid_oriented_points, are_normals_on_inc_rays_side=True
     )
     if backwall is not None:
-        interface_dict["backwall_refl"] = c.Interface(
-            *backwall,
-            are_normals_on_inc_rays_side=False,
-            are_normals_on_out_rays_side=False,
+        interface_dict["backwall_refl"] = _make_backwall_refl_interface(
+            backwall, under_material
         )
     if frontwall is not None:
         interface_dict["frontwall_refl"] = c.Interface(
@@ -169,11 +548,615 @@ def make_views(
         backwall = examination_object.backwall
     except AttributeError:
         backwall = None
+    try:
+        under_material = examination_object.under_material
+    except AttributeError:
+        under_material = None
     interfaces = make_interfaces(
         probe_oriented_points,
         grid_oriented_points,
         frontwall=frontwall,
         backwall=backwall,
+        under_material=under_material,
     )
     paths = make_paths(block_material, interfaces, max_number_of_reflection)
     return make_views_from_paths(paths, tfm_unique_only)
+
+
+# ----------------
+# From now on, almost perfect copy/paste of block_in_immersion.
+# To factorise!
+
+
+def ray_weights_for_views(
+    views,
+    frequency,
+    probe_element_width=None,
+    use_directivity=True,
+    use_beamspread=True,
+    use_transrefl=True,
+    use_attenuation=True,
+    save_debug=False,
+):
+    """
+    Compute coefficients Q_i(r, omega) and Q'_j(r, omega) from the forward model for
+    all views.
+
+    NB: do not compute the scattering.
+
+    Internally use :func:`tx_ray_weights` and :func:`rx_way_weights`.
+
+    Parameters
+    ----------
+    views : dict[Views]
+    frequency : float
+    probe_element_width : float
+    use_directivity : bool
+    use_beamspread : bool
+    use_transrefl : bool
+    use_attenuation : bool
+    save_debug : bool
+
+    Returns
+    -------
+    RayWeights
+    """
+    tx_ray_weights_dict = {}
+    rx_ray_weights_dict = {}
+    if save_debug:
+        tx_ray_weights_debug_dict = {}
+        rx_ray_weights_debug_dict = {}
+    else:
+        tx_ray_weights_debug_dict = None
+        rx_ray_weights_debug_dict = None
+    scat_angle_dict = {}
+
+    all_tx_paths = {view.tx_path for view in views.values()}
+    all_rx_paths = {view.rx_path for view in views.values()}
+    all_paths = all_tx_paths | all_rx_paths
+
+    model_options = dict(
+        frequency=frequency,
+        probe_element_width=probe_element_width,
+        use_beamspread=use_beamspread,
+        use_directivity=use_directivity,
+        use_transrefl=use_transrefl,
+        use_attenuation=use_attenuation,
+    )
+
+    # By proceeding this way, geometrical computations can be reused for both
+    # tx and rx path.
+    for path in all_paths:
+        ray_geometry = RayGeometry.from_path(path)
+        scat_angle_dict[path] = ray_geometry.signed_inc_angle(-1)
+        scat_angle_dict[path].flags.writeable = False
+
+        if path in all_tx_paths:
+            ray_weights, ray_weights_debug = tx_ray_weights(
+                path, ray_geometry, **model_options
+            )
+            ray_weights.flags.writeable = False
+            tx_ray_weights_dict[path] = ray_weights
+            if save_debug:
+                tx_ray_weights_debug_dict[path] = ray_weights_debug
+            del ray_weights, ray_weights_debug
+        if path in all_rx_paths:
+            ray_weights, ray_weights_debug = rx_ray_weights(
+                path, ray_geometry, **model_options
+            )
+            ray_weights.flags.writeable = False
+            rx_ray_weights_dict[path] = ray_weights
+            if save_debug:
+                rx_ray_weights_debug_dict[path] = ray_weights_debug
+            del ray_weights, ray_weights_debug
+
+    return model.RayWeights(
+        tx_ray_weights_dict,
+        rx_ray_weights_dict,
+        tx_ray_weights_debug_dict,
+        rx_ray_weights_debug_dict,
+        scat_angle_dict,
+    )
+
+
+def scat_unshifted_transfer_functions(
+    views,
+    tx,
+    rx,
+    freq_array,
+    scat_obj,
+    probe_element_width=None,
+    use_directivity=True,
+    use_beamspread=True,
+    use_transrefl=True,
+    use_attenuation=True,
+    scat_angle=0.0,
+    numangles_for_scat_precomp=0,
+    first_nonzero_freq_idx=None,
+):
+    """
+    Compute unshifted transfer functions for scatterer echoes (multi-frequency model).
+
+    Returns ``H_ij(omega) = Q_i(omega) Q'_j(omega) S(omega, theta_i, theta_j)``
+
+    Output spectra uses the *math* Fourier convention (not the acoustics one).
+
+    Parameters
+    ----------
+    views : Dict[Views]
+    tx : ndarray
+        Shape: (numscanlines, )
+    rx : ndarray
+        Shape: (numscanlines, )
+    freq_array : ndarray or float
+        Shape: (numfreq, )
+    scat_obj : arim.scat.Scattering2d
+    probe_element_width : float or None
+    use_directivity : bool
+    use_beamspread : bool
+    use_transrefl : bool
+    use_attenuation : bool
+    scat_angle : float
+    numangles_for_scat_precomp : int
+        Number of angles in [-pi, pi] for scattering precomputation.
+        0 to disable. See module documentation.
+    first_nonzero_freq_idx : int or None
+        Default: assumes first freq is zero, except if only one freq is given.
+    
+    Yields
+    ------
+    partial_transfer_function_f : ndarray
+        Shape: (numscatterers, numscanlines, numfreq). Complex. Contribution for one view.
+    delays : ndarray
+        Shape: (numscatterers, numscanlines). Float. Contribution for one view.
+
+    See Also
+    --------
+    :func:`arim.signal.timeshift_spectra`
+
+    """
+    freq_array = np.atleast_1d(freq_array)
+    numfreq = len(freq_array)
+
+    if first_nonzero_freq_idx is None:
+        if numfreq == 1:
+            # assume the freq is nonzero
+            first_nonzero_freq_idx = 0
+        else:
+            # assume only the first freq is zero, as returned by fftfreq
+            first_nonzero_freq_idx = 1
+    nonzero_freq_array = freq_array[first_nonzero_freq_idx:]
+
+    # Precompute all ray weights
+    ray_weights_allfreq = []
+    with helpers.timeit("Computation of ray weights", logger):
+        for frequency in nonzero_freq_array:
+            # logger.debug(f'ray weight freq={frequency}')
+            ray_weights = ray_weights_for_views(
+                views,
+                frequency=frequency,
+                probe_element_width=probe_element_width,
+                use_beamspread=use_beamspread,
+                use_directivity=use_directivity,
+                use_transrefl=use_transrefl,
+                use_attenuation=use_attenuation,
+            )
+            ray_weights_allfreq.append(ray_weights)
+
+    # (Pre)compute scattering
+    from ..scat import ScatFromData
+
+    scat_keys_to_compute = set(view.scat_key() for view in views.values())
+    # model_amplitudes_factory is way faster with the scattering is given as matrices instead of functions.
+    # If matrices can be computed cheaply, it's worth it.
+    if isinstance(scat_obj, ScatFromData):
+        with helpers.timeit("Scattering", logger):
+            scat_matrices = scat_obj.as_multi_freq_matrices(
+                nonzero_freq_array, scat_obj.numangles, to_compute=scat_keys_to_compute
+            )
+    elif numangles_for_scat_precomp > 0:
+        with helpers.timeit("Scattering", logger):
+            scat_matrices = scat_obj.as_multi_freq_matrices(
+                nonzero_freq_array,
+                numangles_for_scat_precomp,
+                to_compute=scat_keys_to_compute,
+            )
+    else:
+        scat_matrices = None
+
+    numscanlines = len(tx)
+
+    for view in views.values():
+        logger.info("Transfer function for scatterers in view {}".format(view.name))
+
+        numscatterers = view.tx_path.rays.times.shape[1]
+        partial_transfer_function_f = np.zeros(
+            (numscatterers, numscanlines, numfreq), np.complex_
+        )
+
+        # shape: (numscatterers, numscanlines)
+        delays = np.ascontiguousarray(
+            (
+                np.take(view.tx_path.rays.times, tx, axis=0)
+                + np.take(view.rx_path.rays.times, rx, axis=0)
+            ).T
+        )
+
+        for freq_idx, frequency in enumerate(nonzero_freq_array):
+            freq_idx2 = first_nonzero_freq_idx + freq_idx
+
+            if scat_matrices:
+                scattering = {key: mat[freq_idx] for key, mat in scat_matrices.items()}
+            else:
+                scattering = scat_obj.as_angles_funcs(frequency)
+
+            ray_weights = ray_weights_allfreq[freq_idx]
+
+            # compute Q_i Q'_j S_ij
+            # shape: (numscatterers, numscanlines, )
+            model_coefficients = model.model_amplitudes_factory(
+                tx, rx, view, ray_weights, scattering, scat_angle=scat_angle
+            )[...]
+            np.conj(model_coefficients, out=model_coefficients)
+
+            partial_transfer_function_f[..., freq_idx2] = model_coefficients
+
+        yield partial_transfer_function_f, delays
+
+
+def wall_unshifted_transfer_functions(
+    wall_paths,
+    tx,
+    rx,
+    freq_array,
+    probe_element_width=None,
+    use_directivity=True,
+    use_beamspread=True,
+    use_transrefl=True,
+    use_attenuation=True,
+    first_nonzero_freq_idx=None,
+):
+    """Compute unshifted transfer functions for walls echoes.
+
+    Output spectra uses the *math* Fourier convention (not the acoustics one).
+
+    Parameters
+    ----------
+    wall_paths : Dict[arim.Path]
+    tx : ndarray
+        Shape: (numscanlines, )
+    rx : ndarray
+        Shape: (numscanlines, )
+    freq_array : ndarray or float
+        Shape: (numfreq, )
+    probe_element_width : [type], optional
+        [description] (the default is None, which [default_description])
+    probe_element_width : float or None
+    use_directivity : bool
+    use_beamspread : bool
+    use_transrefl : bool
+    use_attenuation : bool
+    first_nonzero_freq_idx : int or None
+        Default: assumes first freq is zero, except if only one freq is given.
+        
+    Yields
+    ------
+    partial_transfer_function_f : ndarray
+        Shape: (numscanlines, numfreq). Complex. Contribution for one wall path.
+    delays : ndarray
+        Shape: (numscanlines). Float. Contribution for wall path.
+    """
+    freq_array = np.atleast_1d(freq_array)
+    numfreq = len(freq_array)
+
+    if first_nonzero_freq_idx is None:
+        if numfreq == 1:
+            # assume the freq is nonzero
+            first_nonzero_freq_idx = 0
+        else:
+            # assume only the first freq is zero, as returned by fftfreq
+            first_nonzero_freq_idx = 1
+    nonzero_freq_array = freq_array[first_nonzero_freq_idx:]
+
+    for pathname, path in wall_paths.items():
+        logger.info(f"Transfer function for wall {pathname}")
+
+        partial_transfer_function_f = np.zeros((len(tx), len(freq_array)), np.complex_)
+
+        for freq_idx, frequency in enumerate(nonzero_freq_array):
+            freq_idx2 = first_nonzero_freq_idx + freq_idx
+
+            # shape: (numelements, numelements)
+            ray_weights, _ = ray_weights_for_wall(
+                path,
+                frequency=frequency,
+                probe_element_width=probe_element_width,
+                use_beamspread=use_beamspread,
+                use_directivity=use_directivity,
+                use_transrefl=use_transrefl,
+                use_attenuation=use_attenuation,
+            )
+
+            # Fancy indexing:
+            partial_transfer_function_f[:, freq_idx2] = ray_weights[tx, rx].conj()
+            delays = path.rays.times[tx, rx]
+
+        yield partial_transfer_function_f, delays
+
+
+def singlefreq_scat_transfer_functions(
+    views,
+    tx,
+    rx,
+    frequency,
+    freq_array,
+    scat_obj,
+    probe_element_width=None,
+    use_directivity=True,
+    use_beamspread=True,
+    use_transrefl=True,
+    use_attenuation=True,
+    scat_angle=0.0,
+    numangles_for_scat_precomp=0,
+):
+    """
+    Compute transfer functions for scatterer echoes (single-frequency model).
+
+    Output spectra uses the *math* Fourier convention (not the acoustics one).
+
+    Parameters
+    ----------
+    views : Dict[Views]
+    tx : ndarray
+        Shape: (numscanlines, )
+    rx : ndarray
+        Shape: (numscanlines, )
+    frequency : float
+    freq_array : ndarray
+        Shape: (numfreq, )
+    scat_obj : arim.scat.Scattering2d
+    probe_element_width : float or None
+    use_directivity : bool
+    use_beamspread : bool
+    use_transrefl : bool
+    use_attenuation : bool
+    scat_angle : float
+    numangles_for_scat_precomp : int
+        Number of angles in [-pi, pi] for scattering precomputation.
+        0 to disable. See module documentation.
+
+    Yields
+    ------
+    viewname : str
+        Key of `views`
+    partial_transfer_function_f : ndarray
+        Shape: (numscanlines, numfreq). Complex. Contribution for one view.
+
+    Notes
+    -----
+    Legacy function, superseeded by :func:`scat_unshifted_transfer_functions`
+    and :func:`arim.signal.timeshift_spectra`.
+    """
+    unshifted_tfs = scat_unshifted_transfer_functions(
+        views,
+        tx,
+        rx,
+        frequency,
+        scat_obj,
+        probe_element_width=probe_element_width,
+        use_directivity=use_directivity,
+        use_beamspread=use_beamspread,
+        use_transrefl=use_transrefl,
+        use_attenuation=use_attenuation,
+        scat_angle=scat_angle,
+        numangles_for_scat_precomp=numangles_for_scat_precomp,
+    )
+
+    for viewname, (unshifted_tf, delays) in zip(views.keys(), unshifted_tfs):
+        # shape (numscatterers, numscanlines, numfreq)
+        tf = signal.timeshift_spectra(unshifted_tf, delays, freq_array)
+
+        # lazy tf.sum(axis=0):
+        if tf.shape[0] == 1:
+            tf = tf[0]
+        else:
+            tf = tf.sum(axis=0)
+        yield viewname, tf
+
+
+def singlefreq_wall_transfer_functions(
+    wall_paths,
+    tx,
+    rx,
+    frequency,
+    freq_array,
+    probe_element_width=None,
+    use_directivity=True,
+    use_beamspread=True,
+    use_transrefl=True,
+    use_attenuation=True,
+):
+    """
+    Compute transfer functions for wall echoes (single-frequency model).
+ 
+    Parameters
+    ----------
+    wall_paths : Dict[Path]
+    tx : ndarray
+        Shape: (numscanlines, )
+    rx : ndarray
+        Shape: (numscanlines, )
+    frequency : float
+        Frequency at which the model runs.
+    freq_array : ndarray
+        Shape: (numfreq, ). First freq is assumed to be zero.
+    probe_element_width : float or None
+    use_directivity : bool
+    use_beamspread : bool
+    use_transrefl : bool
+    use_attenuation : bool
+
+    Yields
+    ------
+    pathname : str
+        Key of `wall_paths`
+    partial_transfer_function_f : ndarray
+        Shape: (numscanlines, numfreq). Complex. Contribution for one path.
+    
+    Notes
+    -----
+    Legacy function, superseeded by :func:`wall_unshifted_transfer_functions`
+    and :func:`arim.signal.timeshift_spectra`.
+
+    """
+    unshifted_tfs = wall_unshifted_transfer_functions(
+        wall_paths,
+        tx,
+        rx,
+        frequency,
+        probe_element_width=probe_element_width,
+        use_directivity=use_directivity,
+        use_beamspread=use_beamspread,
+        use_transrefl=use_transrefl,
+        use_attenuation=use_attenuation,
+    )
+
+    for pathname, (unshifted_tf, delays) in zip(wall_paths.keys(), unshifted_tfs):
+        tf = signal.timeshift_spectra(unshifted_tf, delays, freq_array)
+        yield pathname, tf
+
+
+def multifreq_scat_transfer_functions(
+    views,
+    tx,
+    rx,
+    freq_array,
+    scat_obj,
+    probe_element_width=None,
+    use_directivity=True,
+    use_beamspread=True,
+    use_transrefl=True,
+    use_attenuation=True,
+    scat_angle=0.0,
+    numangles_for_scat_precomp=0,
+):
+    """
+    Compute transfer functions for scatterer echoes (multi-frequency model).
+
+    Output spectra uses the *math* Fourier convention (not the acoustics one).
+
+    Parameters
+    ----------
+    views : Dict[Views]
+    tx : ndarray
+        Shape: (numscanlines, )
+    rx : ndarray
+        Shape: (numscanlines, )
+    freq_array : ndarray
+        Shape: (numfreq, )
+    scat_obj : arim.scat.Scattering2d
+    probe_element_width : float or None
+    use_directivity : bool
+    use_beamspread : bool
+    use_transrefl : bool
+    use_attenuation : bool
+    scat_angle : float
+    numangles_for_scat_precomp : int
+        Number of angles in [-pi, pi] for scattering precomputation.
+        0 to disable. See module documentation.
+
+    Yields
+    ------
+    viewname : str
+        Key of `views`
+    partial_transfer_function_f : ndarray
+        Shape: (numscanlines, numfreq). Complex. Contribution for one view.
+
+    Notes
+    -----
+    Legacy function, superseeded by :func:`scat_unshifted_transfer_functions`
+    and :func:`arim.signal.timeshift_spectra`.
+    """
+    unshifted_tfs = scat_unshifted_transfer_functions(
+        views,
+        tx,
+        rx,
+        freq_array,
+        scat_obj,
+        probe_element_width=probe_element_width,
+        use_directivity=use_directivity,
+        use_beamspread=use_beamspread,
+        use_transrefl=use_transrefl,
+        use_attenuation=use_attenuation,
+        scat_angle=scat_angle,
+        numangles_for_scat_precomp=numangles_for_scat_precomp,
+    )
+
+    for viewname, (unshifted_tf, delays) in zip(views.keys(), unshifted_tfs):
+        # shape (numscatterers, numscanlines, numfreq)
+        tf = signal.timeshift_spectra(unshifted_tf, delays, freq_array)
+
+        # lazy tf.sum(axis=0):
+        if tf.shape[0] == 1:
+            tf = tf[0]
+        else:
+            tf = tf.sum(axis=0)
+        yield viewname, tf
+
+
+def multifreq_wall_transfer_functions(
+    wall_paths,
+    tx,
+    rx,
+    freq_array,
+    probe_element_width=None,
+    use_directivity=True,
+    use_beamspread=True,
+    use_transrefl=True,
+    use_attenuation=True,
+):
+    """
+    Compute transfer functions for scatterer echoes (multi-frequency model).
+
+    Parameters
+    ----------
+    wall_paths : Dict[Path]
+    tx : ndarray
+        Shape: (numscanlines, )
+    rx : ndarray
+        Shape: (numscanlines, )
+    freq_array : ndarray
+        Shape: (numfreq, ). First freq is assumed to be zero.
+    probe_element_width : float or None
+    use_directivity : bool
+    use_beamspread : bool
+    use_transrefl : bool
+    use_attenuation : bool
+
+    Yields
+    ------
+    pathname : str
+        Key of `wall_paths`
+    partial_transfer_function_f : ndarray
+        Shape: (numscanlines, numfreq). Complex. Contribution for one path.
+
+    Notes
+    -----
+    Legacy function, superseeded by :func:`wall_unshifted_transfer_functions`
+    and :func:`arim.signal.timeshift_spectra`.
+    """
+    unshifted_tfs = wall_unshifted_transfer_functions(
+        wall_paths,
+        tx,
+        rx,
+        freq_array,
+        probe_element_width=probe_element_width,
+        use_directivity=use_directivity,
+        use_beamspread=use_beamspread,
+        use_transrefl=use_transrefl,
+        use_attenuation=use_attenuation,
+    )
+
+    for pathname, (unshifted_tf, delays) in zip(wall_paths.keys(), unshifted_tfs):
+        tf = signal.timeshift_spectra(unshifted_tf, delays, freq_array)
+        yield pathname, tf
