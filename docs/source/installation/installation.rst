@@ -114,7 +114,7 @@ Option 1: normal installation
 
 In the Anaconda Prompt, change to the top arim directory (the one with ``setup.py``) and type::
 
-  python setup.py install
+  pip install .
 
 The content of your local git repository will be *copied* into the ``site-packages`` directory, which is the main
 location where Python stores the non-standard libraries For an Anaconda installation on Windows with default settings,
@@ -129,10 +129,13 @@ if needed.
 
 Option 2: developer installation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+The recommended setup for development is an
+`editable installation <https://pip.pypa.io/en/stable/reference/pip_install/#editable-installs>`_
+with the extra dev dependencies::
 
-In the Anaconda Prompt, change to the top arim directory (the one with ``setup.py``) and type::
+  pip install -e .[dev]
 
-  python setup.py develop
+(to run in the arim directory containing ``setup.py``).
 
 The content of the your local git repository becomes the place where Python looks up arim files during an import. These
 files are *not copied* into the ``site-packages`` directory.  When running ``import arim`` in Python, the files from the
