@@ -23,10 +23,10 @@ Examples
 Data structures
 ---------------
 
-- ``lookup_times_tx``: ndarray of shape (numgridpoints, numelements)
-- ``lookup_times_rx``: ndarray of shape (numgridpoints, numelements)
-- ``amplitudes_tx``: ndarray of shape (numgridpoints, numelements)
-- ``amplitudes_tx``: ndarray of shape (numgridpoints, numelements)
+- ``lookup_times_tx``: ndarray of shape (numgridpoints, numtx)
+- ``lookup_times_rx``: ndarray of shape (numgridpoints, numrx)
+- ``amplitudes_tx``: ndarray of shape (numgridpoints, numtx)
+- ``amplitudes_tx``: ndarray of shape (numgridpoints, numrx)
 - ``amplitudes``: TxRxAmplitudes or ndarray (numgridpoints, numscanlines) or None
 
 """
@@ -48,12 +48,12 @@ class NotImplementedTyping(NotImplementedError, TypeError):
 
 def _check_shapes(frame, focal_law):
     numscanlines = frame.numscanlines
-    numpoints, numelements = focal_law.lookup_times_tx.shape
+    numpoints, numtx = focal_law.lookup_times_tx.shape
+    _, numrx = focal_law.lookup_times_rx.shape
 
-    assert focal_law.lookup_times_rx.shape == (numpoints, numelements)
     if focal_law.amplitudes is not None:
-        assert focal_law.amplitudes.amplitudes_tx.shape == (numpoints, numelements)
-        assert focal_law.amplitudes.amplitudes_rx.shape == (numpoints, numelements)
+        assert focal_law.amplitudes.amplitudes_tx.shape == (numpoints, numtx)
+        assert focal_law.amplitudes.amplitudes_rx.shape == (numpoints, numrx)
         assert focal_law.amplitudes.amplitudes_tx.flags.c_contiguous
         assert focal_law.amplitudes.amplitudes_rx.flags.c_contiguous
 
@@ -97,7 +97,7 @@ def delay_and_sum_numba(
 
     """
     # numscanlines = frame.numscanlines
-    numpoints, numelements = focal_law.lookup_times_tx.shape
+    numpoints, _ = focal_law.lookup_times_tx.shape
 
     _check_shapes(frame, focal_law)
 
@@ -193,24 +193,24 @@ def _delay_and_sum_amplitudes_nearest(
     Parameters
     ----------
     weighted_scanlines : ndarray [numscanlines x numsamples]
-    lookup_times_tx : ndarray [numpoints x numelements]
+    lookup_times_tx : ndarray [numpoints x numtx]
         Times of flight (floats) between the transmitters and the grid points.
-    lookup_times_rx : ndarray [numpoints x numelements]
+    lookup_times_rx : ndarray [numpoints x numrx]
         Times of flight (floats) between the grid points and the receivers.
-    amplitudes_tx : ndarray [numpoints x numelements]
-    amplitudes_rx : ndarray [numpoints x numelements]
+    amplitudes_tx : ndarray [numpoints x numtx]
+    amplitudes_rx : ndarray [numpoints x numrx]
     result : ndarray [numpoints]
         Result.
     tx, rx : ndarray [numscanlines]
         Mapping between the scanlines and the transmitter/receiver.
-        Values: integers in [0, numelements[
+        Values: integers in [0, numtx[ and [0, numrx] respectively
 
     Returns
     -------
     None
     """
     numscanlines, numsamples = weighted_scanlines.shape
-    numpoints, numelements = lookup_times_tx.shape
+    numpoints, _ = lookup_times_tx.shape
 
     for point in numba.prange(numpoints):
         res_tmp = 0.0
@@ -253,24 +253,24 @@ def _delay_and_sum_amplitudes_linear(
     Parameters
     ----------
     weighted_scanlines : ndarray [numscanlines x numsamples]
-    lookup_times_tx : ndarray [numpoints x numelements]
+    lookup_times_tx : ndarray [numpoints x numtx]
         Times of flight (floats) between the transmitters and the grid points.
-    lookup_times_rx : ndarray [numpoints x numelements]
+    lookup_times_rx : ndarray [numpoints x numrx]
         Times of flight (floats) between the grid points and the receivers.
-    amplitudes_tx : ndarray [numpoints x numelements]
-    amplitudes_rx : ndarray [numpoints x numelements]
+    amplitudes_tx : ndarray [numpoints x numtx]
+    amplitudes_rx : ndarray [numpoints x numrx]
     result : ndarray [numpoints]
         Result.
     tx, rx : ndarray [numscanlines]
         Mapping between the scanlines and the transmitter/receiver.
-        Values: integers in [0, numelements[
+        Values: integers in [0, numtx[ and [0, numrx] respectively
 
     Returns
     -------
     None
     """
     numscanlines, numsamples = weighted_scanlines.shape
-    numpoints, numelements = lookup_times_tx.shape
+    numpoints, _ = lookup_times_tx.shape
 
     for point in numba.prange(numpoints):
         res_tmp = 0.0
@@ -318,24 +318,24 @@ def _delay_and_sum_amplitudes_linear(
     Parameters
     ----------
     weighted_scanlines : ndarray [numscanlines x numsamples]
-    lookup_times_tx : ndarray [numpoints x numelements]
+    lookup_times_tx : ndarray [numpoints x numtx]
         Times of flight (floats) between the transmitters and the grid points.
-    lookup_times_rx : ndarray [numpoints x numelements]
+    lookup_times_rx : ndarray [numpoints x numrx]
         Times of flight (floats) between the grid points and the receivers.
-    amplitudes_tx : ndarray [numpoints x numelements]
-    amplitudes_rx : ndarray [numpoints x numelements]
+    amplitudes_tx : ndarray [numpoints x numtx]
+    amplitudes_rx : ndarray [numpoints x numrx]
     result : ndarray [numpoints]
         Result.
     tx, rx : ndarray [numscanlines]
         Mapping between the scanlines and the transmitter/receiver.
-        Values: integers in [0, numelements[
+        Values: integers in [0, numtx[ and [0, numrx] respectively
 
     Returns
     -------
     None
     """
     numscanlines, numsamples = weighted_scanlines.shape
-    numpoints, numelements = lookup_times_tx.shape
+    numpoints, _ = lookup_times_tx.shape
 
     for point in numba.prange(numpoints):
         res_tmp = 0.0
@@ -387,7 +387,7 @@ def delay_and_sum_numba_noamp(
     result : ndarray (numpoints, )
 
     """
-    numpoints, numelements = focal_law.lookup_times_tx.shape
+    numpoints, _ = focal_law.lookup_times_tx.shape
 
     _check_shapes(frame, focal_law)
 
@@ -480,7 +480,7 @@ def _delay_and_sum_noamp(
 ):
     # Mean aggregation, nearest interpolation
     numscanlines, numsamples = weighted_scanlines.shape
-    numpoints, numelements = lookup_times_tx.shape
+    numpoints, _ = lookup_times_tx.shape
 
     for point in numba.prange(numpoints):
         res_tmp = 0.0
@@ -511,7 +511,7 @@ def _delay_and_sum_noamp_median_nearest(
     result,
 ):
     numscanlines, numsamples = weighted_scanlines.shape
-    numpoints, numelements = lookup_times_tx.shape
+    numpoints, _ = lookup_times_tx.shape
 
     for point in numba.prange(numpoints):
         datapoints = np.empty(numscanlines, weighted_scanlines.dtype)
@@ -546,7 +546,7 @@ def _delay_and_sum_noamp_linear(
     result,
 ):
     numscanlines, numsamples = weighted_scanlines.shape
-    numpoints, numelements = lookup_times_tx.shape
+    numpoints, _ = lookup_times_tx.shape
 
     for point in numba.prange(numpoints):
         res_tmp = 0.0
@@ -609,7 +609,7 @@ def _delay_and_sum_noamp_lanczos(
     https://en.wikipedia.org/wiki/Lanczos_resampling
     """
     numscanlines, numsamples = weighted_scanlines.shape
-    numpoints, numelements = lookup_times_tx.shape
+    numpoints, _ = lookup_times_tx.shape
 
     for point in numba.prange(numpoints):
         res_tmp = 0.0
@@ -645,7 +645,7 @@ def _delay_and_sum_noamp_median_lanczos(
     result,
 ):
     numscanlines, numsamples = weighted_scanlines.shape
-    numpoints, numelements = lookup_times_tx.shape
+    numpoints, _ = lookup_times_tx.shape
 
     for point in numba.prange(numpoints):
         datapoints = np.empty(numscanlines, weighted_scanlines.dtype)
@@ -685,7 +685,7 @@ def _delay_and_sum_noamp_huber_lanczos(
     result,
 ):
     numscanlines, numsamples = weighted_scanlines.shape
-    numpoints, numelements = lookup_times_tx.shape
+    numpoints, _ = lookup_times_tx.shape
 
     for point in numba.prange(numpoints):
         datapoints = np.empty(numscanlines, weighted_scanlines.dtype)
@@ -737,23 +737,23 @@ def _general_delay_and_sum_nearest(
     Parameters
     ----------
     weighted_scanlines : ndarray [numscanlines x numsamples]
-    lookup_times_tx : ndarray [numpoints x numelements]
+    lookup_times_tx : ndarray [numpoints x numtx]
         Times of flight (floats) between the transmitters and the grid points.
-    lookup_times_rx : ndarray [numpoints x numelements]
+    lookup_times_rx : ndarray [numpoints x numrx]
         Times of flight (floats) between the grid points and the receivers.
     amplitudes : ndarray [numpoints x numscanlines]
     result : ndarray [numpoints]
         Result.
     tx, rx : ndarray [numscanlines]
         Mapping between the scanlines and the transmitter/receiver.
-        Values: integers in [0, numelements[
+        Values: integers in [0, numtx[ and [0, numrx]
 
     Returns
     -------
     None
     """
     numscanlines, numsamples = weighted_scanlines.shape
-    numpoints, numelements = lookup_times_tx.shape
+    numpoints, _ = lookup_times_tx.shape
 
     for point in range(numpoints):
         if np.isnan(result[point]):
@@ -799,23 +799,23 @@ def _general_delay_and_sum_linear(
     Parameters
     ----------
     weighted_scanlines : ndarray [numscanlines x numsamples]
-    lookup_times_tx : ndarray [numpoints x numelements]
+    lookup_times_tx : ndarray [numpoints x numtx]
         Times of flight (floats) between the transmitters and the grid points.
-    lookup_times_rx : ndarray [numpoints x numelements]
+    lookup_times_rx : ndarray [numpoints x numrx]
         Times of flight (floats) between the grid points and the receivers.
     amplitudes : ndarray [numpoints x numscanlines]
     result : ndarray [numpoints]
         Result.
     tx, rx : ndarray [numscanlines]
         Mapping between the scanlines and the transmitter/receiver.
-        Values: integers in [0, numelements[
+        Values: integers in [0, numtx[ and [0, numrx]
 
     Returns
     -------
     None
     """
     numscanlines, numsamples = weighted_scanlines.shape
-    numpoints, numelements = lookup_times_tx.shape
+    numpoints, _ = lookup_times_tx.shape
 
     for point in range(numpoints):
         if np.isnan(result[point]):
@@ -849,7 +849,7 @@ def delay_and_sum_naive(
     This is a very slow implementation, use for test only.
     """
     numscanlines = frame.numscanlines
-    numpoints, numelements = focal_law.lookup_times_tx.shape
+    numpoints, _ = focal_law.lookup_times_tx.shape
 
     from . import tfm
 
