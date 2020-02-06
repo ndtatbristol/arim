@@ -12,6 +12,7 @@ from collections import namedtuple
 import numba
 from concurrent.futures import ThreadPoolExecutor
 import logging
+import warnings
 
 from .. import geometry as g, model, ut
 from . import das
@@ -32,9 +33,9 @@ class TxRxAmplitudes:
     Parameters
     ----------
     amplitudes_tx : ndarray
-        Shape (numelements, numgridpoints)
+        Shape (numtx, numgridpoints)
     amplitudes_rx : ndarray
-        Shape (numelements, numgridpoints)
+        Shape (numrx, numgridpoints)
     force_c_order : bool
         Default True
 
@@ -55,6 +56,9 @@ class TxRxAmplitudes:
 
     @property
     def shape(self):
+        warnings.warn(
+            DeprecationWarning("TxRxAmplitudes.shape is deprecated because ambiguous")
+        )
         return self.amplitudes_tx.shape
 
     @property
@@ -112,7 +116,7 @@ class FocalLaw:
             lookup_times_rx = np.ascontiguousarray(lookup_times_rx)
 
         assert lookup_times_tx.ndim == lookup_times_rx.ndim == 2
-        assert lookup_times_tx.shape == lookup_times_rx.shape
+        assert lookup_times_tx.shape[0] == lookup_times_rx.shape[0]
 
         if scanline_weights is not None:
             if force_c_order:
@@ -125,8 +129,9 @@ class FocalLaw:
         if amplitudes is not None:
             # don't force to C order because 'amplitudes' may be a arim.model.ModelAmplitudes or a TxRxAmplitudes
             if isinstance(amplitudes, TxRxAmplitudes):
-                # arrays of shape (numgridpoints, numelements)
-                assert amplitudes.shape == lookup_times_tx.shape
+                # arrays of shape (numgridpoints, num{tx,rx})
+                assert amplitudes.amplitudes_tx.shape == lookup_times_tx.shape
+                assert amplitudes.amplitudes_rx.shape == lookup_times_rx.shape
             else:
                 # arrays of shape (numgridpoints, numscanlines)
                 assert amplitudes.ndim == 2
@@ -144,7 +149,20 @@ class FocalLaw:
 
     @property
     def numelements(self):
+        warnings.warn(
+            DeprecationWarning(
+                "FocalLaw.numelements is deprecated. Use FocalLaw.numtx or FocalLaw.numrx"
+            )
+        )
         return self.lookup_times_tx.shape[1]
+
+    @property
+    def numtx(self):
+        return self.lookup_times_tx.shape[1]
+
+    @property
+    def numrx(self):
+        return self.lookup_times_rx.shape[1]
 
     @property
     def numgridpoints(self):

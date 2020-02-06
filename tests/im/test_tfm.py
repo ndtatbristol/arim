@@ -92,7 +92,7 @@ def test_multiview_tfm(use_real_grid):
     tfm = im.tfm.tfm_for_view(frame, grid, view, fillvalue=np.nan)
 
     # Check this value is unchanged over time!
-    expected_val = 12.745499105785953
+    expected_val = 12.745499105785953 / frame.numscanlines
     assert tfm.res.shape == grid.shape
     if use_real_grid:
         np.testing.assert_array_almost_equal(tfm.res, [[[expected_val]]])
@@ -151,6 +151,6 @@ def test_contact_tfm(use_hmc):
     tfm = im.tfm.contact_tfm(frame, grid, block.longitudinal_vel, fillvalue=np.nan)
 
     # Check this value is unchanged over time!
-    expected_val = 12.49925772283528
+    expected_val = 12.49925772283528 / frame.numscanlines
     assert tfm.res.shape == grid.shape
     np.testing.assert_allclose(tfm.res, expected_val)
