@@ -260,6 +260,117 @@ def directivity_2d_rectangular_in_fluid_for_path(
     )
 
 
+def _f0(x, k2):
+    # Miller and Pursey 1954 eq (74)
+    x2 = x * x
+    # Warning: sqrt(a) * sqrt(b) != sqrt(a * b) because of negative values
+    return (2 * x2 - k2) ** 2 - 4 * x2 * np.sqrt((x2 - 1)) * np.sqrt((x2 - k2))
+
+
+def directivity_2d_rectangular_on_solid_l(
+    theta, element_width, wavelength_l, wavelength_t
+):
+    """
+    L-wave directivity of rectangular element on solid
+
+    The element is modelled by an infinitely long strip of finite width
+    vibrating in a direction normal to the surface of the solid medium.
+
+    Parameters
+    ----------
+    theta : ndarray
+        Angles in radians.
+    element_width : float
+    wavelength_l : float
+    wavelength_t : float
+
+    Returns
+    -------
+    directivity_l : ndarray
+        Complex
+
+    Notes
+    -----
+    Equations MP (93) and DW (2), (3), (6)
+
+    The sinc results of the integration of MP (90) with far field
+    approximation.
+
+    Normalisation coefficients are ignored, but the values are consistent with 
+    :func:`directivity_2d_rectangular_on_solid_t`.
+
+    References
+    ----------
+    Miller, G. F., and H. Pursey. 1954. ‘The Field and Radiation Impedance of
+    Mechanical Radiators on the Free Surface of a Semi-Infinite Isotropic
+    Solid’. Proceedings of the Royal Society of London A: Mathematical,
+    Physical and Engineering Sciences 223 (1155): 521–41.
+    https://doi.org/10.1098/rspa.1954.0134.
+
+    Drinkwater, Bruce W., and Paul D. Wilcox. 2006. ‘Ultrasonic Arrays for
+    Non-Destructive Evaluation: A Review’. NDT & E International 39 (7):
+    525–41. https://doi.org/10.1016/j.ndteint.2006.03.006.
+
+    See Also
+    --------
+    :func:`directivity_2d_rectangular_on_solid_t`
+
+    """
+    k = wavelength_l / wavelength_t
+    k2 = k * k
+    theta = np.asarray(theta).astype(np.complex_)
+    S = sin(theta)
+    C = cos(theta)
+    return (
+        ((k2 - 2 * S ** 2) * C)
+        / _f0(S, k2)
+        * np.sinc((element_width / wavelength_l) * S)
+    )
+
+
+def directivity_2d_rectangular_on_solid_t(
+    theta, element_width, wavelength_l, wavelength_t
+):
+    """
+    T-wave directivity of rectangular element on solid
+
+    See :func:`directivity_2d_rectangular_on_solid_l` for further information. 
+
+    Parameters
+    ----------
+    theta : ndarray
+        Angles in radians.
+    element_width : float
+    wavelength_l : float
+    wavelength_t : float
+
+    Returns
+    -------
+    directivity_t : ndarray
+        Complex
+
+    Notes
+    -----
+    Equations MP (94) and DW (2), (4), (6)
+
+    See Also
+    --------
+    :func:`directivity_2d_rectangular_on_solid_t`
+
+    """
+    k = wavelength_l / wavelength_t
+    k2 = k * k
+    theta = np.asarray(theta).astype(np.complex_)
+    S = sin(theta)
+    C = cos(theta)
+    return (
+        k ** 2.5
+        * (np.sqrt(k2 * S * S - 1) * sin(2 * theta))
+        / _f0(k * S, k2)
+        * np.sinc((element_width / wavelength_t) * S)
+    )
+
+
 def snell_angles(incidents_angles, c_incident, c_refracted):
     """
     Returns the angles of the refracted rays according to Snell–Descartes law:

@@ -1,0 +1,72 @@
+probe:
+  frequency: 5.e+6
+  numx: 32
+  pitch_x: 1.2e-3
+  numy: 1
+  pitch_y: .nan
+  dimensions: [1.1e-3, 15.e-3, .nan]
+
+probe_location:
+  ref_element: mean # 'first', 'mean', 'end' or a number
+
+toneburst:
+  num_cycles: 5
+
+under_material:
+  metadata:
+    long_name: Air
+  longitudinal_vel: 340.
+  density: 1.2
+  state_of_matter: liquid
+
+block_material:
+  metadata:
+    long_name: Aluminium
+    source: Krautkrämer 1990
+  longitudinal_vel: 6320.
+  transverse_vel: 3130.
+  density: 2700.
+  state_of_matter: solid
+
+scatterer:
+  angle_deg: 90.
+  location:
+    x: 5.e-3
+    y: 0.0
+    z: 15.e-3
+
+  # Uncomment and edit the desired specs
+  specs:
+    kind: sdh
+    radius: 1.0e-3
+
+  # specs:
+  #   kind: crack_centre
+  #   crack_length: 2.e-3
+
+  # specs:
+  #   kind: file
+  #   filename: scattering.mat
+
+  # specs:
+  #   kind: point  # unphysical, debug only
+
+frontwall:
+  numpoints: 3000
+  xmin: -25.e-3
+  xmax: 25.e-3
+  z: 0.
+
+backwall:
+  numpoints: 3000
+  xmin: -25.e-3
+  xmax: 25.e-3
+  z: 40.e-3
+
+# for imaging:
+grid:
+  xmin: -25.e-3
+  xmax: 25.e-3
+  zmin: 1.e-3
+  zmax: 45.e-3
+  pixel_size: .5e-3

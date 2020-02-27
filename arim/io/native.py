@@ -27,7 +27,6 @@ read the latest will be kept.
 import pathlib
 import copy
 import yaml
-import os
 import numpy as np
 
 from .. import core, _probes, geometry, config
@@ -40,6 +39,7 @@ __all__ = [
     "probe_from_conf",
     "examination_object_from_conf",
     "block_in_immersion_from_conf",
+    "block_in_contact_from_conf",
     "material_from_conf",
     "material_attenuation_from_conf",
     "grid_from_conf",
@@ -324,7 +324,12 @@ def block_in_contact_from_conf(conf):
         backwall = None
     else:
         backwall = geometry.points_1d_wall_z(**backwall_conf, name="Backwall")
-    return core.BlockInContact(block, frontwall, backwall)
+    under_material_conf = conf.get("under_material", None)
+    if under_material_conf is None:
+        under_material = None
+    else:
+        under_material = material_from_conf(under_material_conf)
+    return core.BlockInContact(block, frontwall, backwall, under_material)
 
 
 def grid_from_conf(conf):
