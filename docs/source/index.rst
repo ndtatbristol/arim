@@ -2,15 +2,16 @@
 arim's documentation
 =====================
 
-:Release: |version|
-:Date: |today|
+Release |release|, |today|
 
+arim is a Python library for modelling and imaging immersion inspections in ultrasonic testing (nondestructive testing).
 
-arim is a Python library for array imaging in ultrasonic testing.
+Homepage of the project: https://github.com/ndtatbristol/arim
 
-`Github of the project <https://github.com/ndtatbristol/arim>`_
+Related paper:
 
-Authors: Nicolas Budyn, Rhodri Bevan
+- Budyn, N., Bevan, R. L., Zhang, J., Croxford, A. J., & Wilcox, P. D. (2019).  A Model for Multiview Ultrasonic Array Inspection of Small Two-Dimensional Defects. IEEE transactions on ultrasonics, ferroelectrics, and frequency control, `DOI 10.1109/TUFFC.2019.2909988 <https://doi.org/10.1109/TUFFC.2019.2909988>`_
+
 
 User documentation
 ------------------

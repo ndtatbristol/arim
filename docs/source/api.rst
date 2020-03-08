@@ -56,7 +56,6 @@ arim reference
 .. autosummary::
    :toctree: _autosummary
 
-   cli
    config
    helpers
    settings
