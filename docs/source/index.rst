@@ -10,7 +10,7 @@ Homepage of the project: https://github.com/ndtatbristol/arim
 
 Related paper:
 
-- Budyn, N., Bevan, R. L., Zhang, J., Croxford, A. J., & Wilcox, P. D. (2019).  A Model for Multiview Ultrasonic Array Inspection of Small Two-Dimensional Defects. IEEE transactions on ultrasonics, ferroelectrics, and frequency control, `DOI 10.1109/TUFFC.2019.2909988 <https://doi.org/10.1109/TUFFC.2019.2909988>`_
+- Budyn, Nicolas, Rhodri L. T. Bevan, Jie Zhang, Anthony J. Croxford, and Paul D. Wilcox. 2019. ‘A Model for Multiview Ultrasonic Array Inspection of Small Two-Dimensional Defects’. IEEE Transactions on Ultrasonics, Ferroelectrics, and Frequency Control, April. https://doi.org/10.1109/TUFFC.2019.2909988.
 
 
 User documentation
@@ -29,14 +29,6 @@ User documentation
   examples/index
   glossary
   bibliography
-
-Developper documentation
-------------------------
-
-.. toctree::
-  :maxdepth: 2
-
-  development/index
 
 arim reference
 --------------

@@ -5,8 +5,7 @@ Installation
 ============
 
 This section described how to install arim for the end-user. For developer installation,
-see: :ref:`developer_installation`. Using conda is recommended because it ensures all dependencies are
-present.
+see `the CONTRIBUTING guide <https://github.com/ndtatbristol/arim/blob/master/CONTRIBUTING.md>`_ in arim's git repository.
 
 .. _reqs_user_install:
 
@@ -33,14 +32,16 @@ Optional dependency:
 Installation
 ============
 
-Installation from a wheel file (recommended)
---------------------------------------------
+Installation from a stable release (recommended)
+------------------------------------------------
 
 Use case: general case.
 
 Install `Anaconda distribution <https://www.anaconda.com/download/>`_ (Python 3 version).
 
-Get a wheel package of arim (``.whl`` file) from the developpement team.
+Go to the `Release page of arim <https://github.com/ndtatbristol/arim/releases>`_.
+
+Download the wheel package (``.whl`` file) corresponding to the latest release.
 
 Start an Anaconda Prompt (in Windows, it should be in the Start menu) and type in::
 
@@ -48,7 +49,7 @@ Start an Anaconda Prompt (in Windows, it should be in the Start menu) and type i
 
 Example::
 
-  pip install arim-0.3-py3-none-any.whl
+  pip install arim-1.0-py3-none-any.whl
 
 
 Installation from a wheel file in a virtual environment
@@ -80,7 +81,7 @@ Then install arim::
 
 Example::
 
-  pip install arim-0.3-py3-none-any.whl
+  pip install arim-1.0-py3-none-any.whl
 
 .. seealso::
 
@@ -96,16 +97,15 @@ Use cases:
 - tracking the latest changes in arim,
 - and/or developer installation
 
-
 Install all requirements, in a virtual environment if desired.
-Clone the `github repository <https://github.com/nbud/arim>`_. The newly created directory is referred below
+Clone the `github repository <https://github.com/ndtatbristol/arim>`_. The newly created directory is referred below
 as your *local git repository*. It contains:
 
 - ``arim/setup.py``: file for installing arim
 - ``arim/arim``: directory of the code of arim
 - ``arim/examples``: directory of example scripts
 - ``arim/tests``: directory of unit tests for arim
-- ``arim/docs``: directory of the present documentation (must be built first, :ref:`build_doc`)
+- ``arim/docs``: directory of the present documentation (must be built first)
 - other elements.
 
 
@@ -114,7 +114,7 @@ Option 1: normal installation
 
 In the Anaconda Prompt, change to the top arim directory (the one with ``setup.py``) and type::
 
-  python setup.py install
+  pip install .
 
 The content of your local git repository will be *copied* into the ``site-packages`` directory, which is the main
 location where Python stores the non-standard libraries For an Anaconda installation on Windows with default settings,
@@ -132,7 +132,7 @@ Option 2: developer installation
 
 In the Anaconda Prompt, change to the top arim directory (the one with ``setup.py``) and type::
 
-  python setup.py develop
+  pip install . -e
 
 The content of the your local git repository becomes the place where Python looks up arim files during an import. These
 files are *not copied* into the ``site-packages`` directory.  When running ``import arim`` in Python, the files from the
@@ -140,7 +140,7 @@ local git repository are imported.
 
 .. seealso::
 
-   :ref:`developer_installation`
+   `CONTRIBUTING guide <https://github.com/ndtatbristol/arim/blob/master/CONTRIBUTING.md>`_
 
 
 Update arim
@@ -151,14 +151,6 @@ Re-run the installation procedure with the updated wheel or source files.
 Check arim is working
 =====================
 
-If arim was installed in a virtual environment, activate it first::
-
-  # on Windows:
-  activate arim 
-
-  # on Unix-like:
-  source activate arim
-
 Start Python::
 
   python
@@ -167,15 +159,14 @@ Start arim::
 
   >>> import arim
   >>> arim.__version__
-  '0.3'
+  '1.0'
   >>> exit()
 
-Check also that arim executable is working by typing in a terminal::
-
-  arim --version
 
 Upgrade arim
 ============
+
+To upgrade, repeat the installation procedure with the updated package.
 
 In arim virtual environment (if any)::
 
