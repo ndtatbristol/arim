@@ -19,9 +19,7 @@ mpl.rcParams["image.cmap"] = "viridis"
 
 # %% Load datafile (exported from BRAIN)
 
-expdata_filename = (
-    r"O:\arim-datasets\Aluminium_Notch_Contact_128elts_5MHz\above_notch.mat"
-)
+expdata_filename = r"example-datasets/contact_notch_aluminium.mat"
 frame = arim.io.load_expdata(expdata_filename)
 
 print("Frame:")
@@ -60,7 +58,13 @@ plt.draw()
 
 # %% Perform TFM:
 grid = arim.geometry.Grid(
-    xmin=-20e-3, xmax=20e-3, ymin=0., ymax=0., zmin=0., zmax=50e-3, pixel_size=0.15e-3
+    xmin=-20e-3,
+    xmax=20e-3,
+    ymin=0.0,
+    ymax=0.0,
+    zmin=0.0,
+    zmax=50e-3,
+    pixel_size=0.15e-3,
 )
 speed = frame.examination_object.material.longitudinal_vel
 tfm = arim.im.tfm.contact_tfm(frame, grid, speed)

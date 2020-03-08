@@ -19,6 +19,7 @@ TFM images
 """
 import matplotlib as mpl
 import matplotlib.pyplot as plt
+import numpy as np
 
 import arim, arim.ray, arim.io, arim.signal, arim.im
 import arim.models.block_in_immersion as bim
@@ -43,7 +44,11 @@ frame = frame.expand_frame_assuming_reciprocity()
 
 
 # %% Measure probe position by measuring frontwall
-probe_standoff, probe_angle, time_to_surface = arim.measurement.find_probe_loc_from_frontwall(
+(
+    probe_standoff,
+    probe_angle,
+    time_to_surface,
+) = arim.measurement.find_probe_loc_from_frontwall(
     frame, frame.examination_object.couplant_material, tmin=10e-6
 )
 probe_p = frame.probe.to_oriented_points()
@@ -94,7 +99,7 @@ tfms = dict()
 for viewname, view in views.items():
     with arim.helpers.timeit("TFM {}".format(view.name)):
         tfms[viewname] = arim.im.tfm.tfm_for_view(
-            frame, grid, view, fillvalue=0., interpolation="nearest"
+            frame, grid, view, fillvalue=0.0, interpolation="nearest"
         )
 
 # %% Plot TFM
@@ -108,7 +113,7 @@ else:
 
 # dynamic dB scale:
 scale = aplt.common_dynamic_db_scale(
-    [tfm.res for tfm in tfms.values()], reference_area, db_range=40.
+    [tfm.res for tfm in tfms.values()], reference_area, db_range=40.0
 )
 
 for i, (viewname, tfm) in enumerate(tfms.items()):
