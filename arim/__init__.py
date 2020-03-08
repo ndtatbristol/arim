@@ -1,5 +1,5 @@
 """
-A Python library for array imaging and modelling in ultrasonic testing
+Python library for modelling and imaging immersion inspections in ultrasonic testing (nondestructive testing)
 """
 
 from . import settings
@@ -20,7 +20,9 @@ T = Mode.T
 
 __author__ = "Nicolas Budyn, Rhodri Bevan"
 __credits__ = ["Nicolas Budyn", "Rhodri Bevan"]
-__email__ = "n.budyn@pm.me"
+__email__ = "n.budyn@bristol.ac.uk"
+__copyright__ = f"{__author__} 2016-2020"
+__license__ = "MIT"
 
 # Must respect PEP 440: https://www.python.org/dev/peps/pep-0440/
 # Must be bumped at each release

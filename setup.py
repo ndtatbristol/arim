@@ -43,13 +43,13 @@ setup(
     # the version across setup.py and the project code, see
     # https://packaging.python.org/en/latest/single_source_version.html
     version=find_version("arim", "__init__.py"),
-    description="A simple Python library for ultrasonic testing with arrays",
+    description="Python library for modelling and imaging immersion inspections in ultrasonic testing (nondestructive testing)",
     long_description=long_description,
-    url="https://github.com/nbud/arim",
+    url="https://github.com/ndtatbristol/arim",
     author="Nicolas Budyn, Rhodri Bevan",
-    author_email="n.budyn@pm.me",
+    author_email="n.budyn@bristol.ac.uk",
     # Choose your license
-    # license="All rights reserved",
+    license="License :: OSI Approved :: MIT License",
     # See https://pypi.python.org/pypi?%3Aaction=list_classifiers
     classifiers=[
         # How mature is this project? Common values are
@@ -69,7 +69,7 @@ setup(
         "Programming Language :: Python :: 3.7",
     ],
     # What does your project relate to?
-    keywords="arim ultrasonic nondestructive imaging",
+    keywords="arim ultrasonic nondestructive imaging modelling",
     # You can just specify the packages manually here if your project is
     # simple. Or you can use find_packages().
     packages=find_packages(exclude=["contrib", "docs", "tests", "tests.*"]),
@@ -85,7 +85,7 @@ setup(
     # dependencies). You can install these using the following syntax,
     # for example:
     # $ pip install -e .[dev,test]
-    extras_require={"test": ["pytest"]},
+    extras_require={"dev": ["pytest", "numdifftools", "sphinx", "sphinx_rtd_theme"]},
     # If there are data files included in your packages that need to be
     # installed, specify them here.  If using Python 2.6 or less, then these
     # have to be included in MANIFEST.in as well.
@@ -99,7 +99,7 @@ setup(
     # To provide executable scripts, use entry points in preference to the
     # "scripts" keyword. Entry points provide cross-platform support and allow
     # pip to create the appropriate form of executable for the target platform.
-    entry_points={"console_scripts": ["arim = arim.cli:main"]},
+    # entry_points={"console_scripts": ["arim = arim.cli:main"]},
     # ext_modules=[],
     zip_safe=False,
 )
