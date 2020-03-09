@@ -1354,6 +1354,7 @@ class BlockInContact(ExaminationObject):
     block_material : Material
     frontwall : OrientedPoints or None
     backwall : OrientedPoints or None
+    under_material : Material
     metadata : dict or None
 
     Attributes
@@ -1361,14 +1362,23 @@ class BlockInContact(ExaminationObject):
     block_material : Material
     frontwall : OrientedPoints
     backwall : OrientedPoints
+    under_material : Material
     metadata : dict
 
     """
 
-    def __init__(self, block_material, frontwall=None, backwall=None, metadata=None):
+    def __init__(
+        self,
+        block_material,
+        frontwall=None,
+        backwall=None,
+        under_material=None,
+        metadata=None,
+    ):
         self.material = block_material
         self.frontwall = frontwall
         self.backwall = backwall
+        self.under_material = under_material
         if metadata is None:
             metadata = {}
         self.metadata = metadata

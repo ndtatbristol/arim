@@ -22,4 +22,10 @@ arim.im.das
 
    
    
+   .. rubric:: Exceptions
+
+   .. autosummary::
+   
+      NotImplementedTyping
+   
    

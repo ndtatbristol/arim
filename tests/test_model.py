@@ -1174,6 +1174,7 @@ def test_sensitivity_tfm():
             expected = 0.0
             for i in range(numscanlines):
                 expected += amps[k][i] * scanline_weights[i]
+            expected /= numscanlines
             assert np.isclose(sensitivity[k], expected)
 
         # Sensitivity for model-assited TFM
@@ -1188,6 +1189,7 @@ def test_sensitivity_tfm():
             expected = 0.0
             for i in range(numscanlines):
                 expected += np.abs(amps[k][i] * amps[k][i]) * scanline_weights[i]
+            expected /= numscanlines
             assert np.isclose(sensitivity[k], expected)
 
 
