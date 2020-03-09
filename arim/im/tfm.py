@@ -304,8 +304,7 @@ def contact_tfm(
         if __debug__ and not frame.is_complete_assuming_reciprocity():
             logger.warning(
                 "Possible erroneous usage of a noncomplete frame in TFM; "
-                "use Frame.expand_frame_assuming_reciprocity()",
-                IncompleteFrameWarning,
+                "use Frame.expand_frame_assuming_reciprocity()"
             )
 
     if scanline_weights == "default":
@@ -343,8 +342,7 @@ def tfm_for_view(frame, grid, view, amplitudes=None, **kwargs_delay_and_sum):
     if not frame.is_complete_assuming_reciprocity():
         logger.warning(
             "Possible erroneous usage of a noncomplete frame in TFM; "
-            "use Frame.expand_frame_assuming_reciprocity()",
-            IncompleteFrameWarning,
+            "use Frame.expand_frame_assuming_reciprocity()"
         )
 
     lookup_times_tx = view.tx_path.rays.times.T
