@@ -3,18 +3,19 @@ Model for solid block on which the probe is in direct contact
 
 Imaging should work as expected.
 
-The forward model is not finalised and is not experimentally validated. Buyer beware.
+The forward model is not finalised and is not experimentally validated. Buyer
+beware.
 
 Known issue :
 
-    - the model is not reciprocal (swapping the transmitter and the receiver
-    gives different results)
+- the model is not reciprocal (swapping the transmitter and the receiver gives
+  different results)
 
 Limits of the forward model:
 
-    - the scaling between the L and the T directivity of the elements is dubious
-    - material underneath is fluid
-    - do not model reflection against the backwall
+- the scaling between the L and the T directivity of the elements is dubious
+- material underneath is fluid
+- do not model reflection against the backwall
 
 See also :mod:`arim.models.model.block_in_immersion`
 
