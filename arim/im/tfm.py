@@ -80,7 +80,7 @@ class FocalLaw:
     lookup_times_tx : ndarray
     lookup_times_rx : ndarray
     amplitudes : TxRxAmplitudes or ndarray or None
-    scanline_weights : ndarray or None
+    timetrace_weights : ndarray or None
         Use
     force_c_order
 
@@ -89,8 +89,8 @@ class FocalLaw:
     lookup_times_tx : ndarray
     lookup_times_rx : ndarray
     amplitudes : TxRxAmplitudes or ndarray or None
-    scanline_weights : ndarray or None
-    numscanlines : int
+    timetrace_weights : ndarray or None
+    numtimetraces : int
     numelements
 
     """
@@ -99,8 +99,8 @@ class FocalLaw:
         "lookup_times_tx",
         "lookup_times_rx",
         "amplitudes",
-        "scanline_weights",
-        "_numscanlines",
+        "timetrace_weights",
+        "_numtimetraces",
     )
 
     def __init__(
@@ -108,7 +108,7 @@ class FocalLaw:
         lookup_times_tx,
         lookup_times_rx,
         amplitudes=None,
-        scanline_weights=None,
+        timetrace_weights=None,
         force_c_order=True,
     ):
         if force_c_order:
@@ -118,13 +118,13 @@ class FocalLaw:
         assert lookup_times_tx.ndim == lookup_times_rx.ndim == 2
         assert lookup_times_tx.shape[0] == lookup_times_rx.shape[0]
 
-        if scanline_weights is not None:
+        if timetrace_weights is not None:
             if force_c_order:
-                scanline_weights = np.ascontiguousarray(scanline_weights)
-            assert scanline_weights.ndim == 1
-            numscanlines = scanline_weights.shape[0]
+                timetrace_weights = np.ascontiguousarray(timetrace_weights)
+            assert timetrace_weights.ndim == 1
+            numtimetraces = timetrace_weights.shape[0]
         else:
-            numscanlines = None
+            numtimetraces = None
 
         if amplitudes is not None:
             # don't force to C order because 'amplitudes' may be a arim.model.ModelAmplitudes or a TxRxAmplitudes
@@ -133,19 +133,28 @@ class FocalLaw:
                 assert amplitudes.amplitudes_tx.shape == lookup_times_tx.shape
                 assert amplitudes.amplitudes_rx.shape == lookup_times_rx.shape
             else:
-                # arrays of shape (numgridpoints, numscanlines)
+                # arrays of shape (numgridpoints, numtimetraces)
                 assert amplitudes.ndim == 2
                 assert amplitudes.shape[1] == lookup_times_tx.shape[1]
-                if numscanlines is not None:
-                    assert amplitudes.shape[1] == numscanlines
+                if numtimetraces is not None:
+                    assert amplitudes.shape[1] == numtimetraces
                 else:
-                    numscanlines = amplitudes.shape[1]
+                    numtimetraces = amplitudes.shape[1]
 
         self.lookup_times_tx = lookup_times_tx
         self.lookup_times_rx = lookup_times_rx
         self.amplitudes = amplitudes
-        self.scanline_weights = scanline_weights
-        self._numscanlines = numscanlines
+        self.timetrace_weights = timetrace_weights
+        self._numtimetraces = numtimetraces
+
+    @property
+    def scanline_weights(self):
+        warnings.warn(
+            DeprecationWarning(
+                "FocalLaw.scanline_weights is deprecated. Use FocalLaw.timetrace_weights"
+            )
+        )
+        return self.timetrace_weights
 
     @property
     def numelements(self):
@@ -169,33 +178,41 @@ class FocalLaw:
         return self.lookup_times_tx.shape[0]
 
     @property
-    def numscanlines(self):
-        if self._numscanlines is None:
-            raise AttributeError("no data for inferring the number of scanlines")
+    def numtimetraces(self):
+        if self._numtimetraces is None:
+            raise AttributeError("no data for inferring the number of timetraces")
         else:
-            return self._numscanlines
+            return self._numtimetraces
 
-    def weigh_scanlines(self, scanlines):
+    def weigh_timetraces(self, timetraces):
         """
-        Multiply each scanline by a weight
+        Multiply each timetrace by a weight
 
-        Canonical usage: use a weight of 2 for the scanlines i != j in the HMC for contact TFM.
+        Canonical usage: use a weight of 2 for the timetraces i != j in the HMC for contact TFM.
 
         Parameters
         ----------
-        scanlines : ndarray
+        timetraces : ndarray
 
         Returns
         -------
-        weighted_scanlines : ndarray
+        weighted_timetraces : ndarray
         """
-        assert scanlines.ndim == 2
-        if self.scanline_weights is None:
-            return scanlines
+        assert timetraces.ndim == 2
+        if self.timetrace_weights is None:
+            return timetraces
         else:
-            out = scanlines * self.scanline_weights[:, np.newaxis]
+            out = timetraces * self.timetrace_weights[:, np.newaxis]
             assert out.ndim == 2
             return out
+
+    def weigh_scanlines(self, timetraces):
+        warnings.warn(
+            DeprecationWarning(
+                "FocalLaw.weigh_scanlines is deprecated. Use FocalLaw.weigh_timetraces"
+            )
+        )
+        return self.weigh_timetraces(self, timetraces)
 
     def amp_dtype(self):
         if self.amplitudes is not None:
@@ -271,7 +288,7 @@ def contact_tfm(
     grid,
     velocity,
     amplitudes=None,
-    scanline_weights="default",
+    timetrace_weights="default",
     **kwargs_delay_and_sum
 ):
     """
@@ -285,8 +302,8 @@ def contact_tfm(
     grid : Points
     velocity : float
     amplitudes : None or ndarray or TxRxAmplitudes
-    scanline_weights : None or ndarray or 'default'
-        Default: 2 for i!=j, 1 for i==j. None: 1 for all scanlines.
+    timetrace_weights : None or ndarray or 'default'
+        Default: 2 for i!=j, 1 for i==j. None: 1 for all timetraces.
     kwargs_delay_and_sum : dict
 
     Returns
@@ -307,9 +324,9 @@ def contact_tfm(
                 "use Frame.expand_frame_assuming_reciprocity()"
             )
 
-    if scanline_weights == "default":
-        scanline_weights = ut.default_scanline_weights(frame.tx, frame.rx)
-    focal_law = FocalLaw(lookup_times, lookup_times, amplitudes, scanline_weights)
+    if timetrace_weights == "default":
+        timetrace_weights = ut.default_timetrace_weights(frame.tx, frame.rx)
+    focal_law = FocalLaw(lookup_times, lookup_times, amplitudes, timetrace_weights)
 
     res = das.delay_and_sum(frame, focal_law, **kwargs_delay_and_sum)
     res = res.reshape(grid.shape)
@@ -338,7 +355,7 @@ def tfm_for_view(frame, grid, view, amplitudes=None, **kwargs_delay_and_sum):
     In this case, an :exc:`IncompleteFrameWarning` is emitted.
 
     """
-    # do not use scanline weights, it is likely to be ill-defined here
+    # do not use timetrace weights, it is likely to be ill-defined here
     if not frame.is_complete_assuming_reciprocity():
         logger.warning(
             "Possible erroneous usage of a noncomplete frame in TFM; "
@@ -409,7 +426,7 @@ def extrema_lookup_times_in_rectbox(
 @numba.jit(nopython=True, cache=True)
 def _extrema_lookup_times(lookup_times_tx, lookup_times_rx, tx_list, rx_list):
     numpoints, _ = lookup_times_tx.shape
-    numscanlines = tx_list.shape[0]
+    numtimetraces = tx_list.shape[0]
     tmin = np.inf
     tmax = -np.inf
     tx_elt_for_tmin = tx_list[0]
@@ -418,16 +435,16 @@ def _extrema_lookup_times(lookup_times_tx, lookup_times_rx, tx_list, rx_list):
     rx_elt_for_tmax = rx_list[0]
 
     for point in range(numpoints):
-        for scanline in range(numscanlines):
-            t = lookup_times_tx[point, scanline] + lookup_times_rx[point, scanline]
+        for timetrace in range(numtimetraces):
+            t = lookup_times_tx[point, timetrace] + lookup_times_rx[point, timetrace]
             if t > tmax:
                 tmax = t
-                tx_elt_for_tmax = tx_list[scanline]
-                rx_elt_for_tmax = rx_list[scanline]
+                tx_elt_for_tmax = tx_list[timetrace]
+                rx_elt_for_tmax = rx_list[timetrace]
             if t < tmin:
                 tmin = t
-                tx_elt_for_tmin = tx_list[scanline]
-                rx_elt_for_tmin = rx_list[scanline]
+                tx_elt_for_tmin = tx_list[timetrace]
+                rx_elt_for_tmin = rx_list[timetrace]
     return (
         tmin,
         tmax,
@@ -448,13 +465,13 @@ def tfm_with_scattering(
     rx_ray_weights,
     tx_scattering_angles,
     rx_scattering_angles,
-    scanline_weights=None,
+    timetrace_weights=None,
     divide_by_sensitivity=True,
     numthreads=None,
     block_size=None,
 ):
     # todo: refactor this
-    numscanlines = frame.numscanlines
+    numtimetraces = frame.numtimetraces
     numpoints = grid.numpoints
     numelements = frame.probe.numelements
 
@@ -463,12 +480,12 @@ def tfm_with_scattering(
     tx_amplitudes = np.ascontiguousarray(tx_ray_weights.T)
     rx_amplitudes = np.ascontiguousarray(rx_ray_weights.T)
 
-    if scanline_weights is None:
-        scanline_weights = ut.default_scanline_weights(frame.tx, frame.rx)
+    if timetrace_weights is None:
+        timetrace_weights = ut.default_timetrace_weights(frame.tx, frame.rx)
 
-    weighted_scanlines = frame.scanlines * scanline_weights[:, np.newaxis]
+    weighted_timetraces = frame.timetraces * timetrace_weights[:, np.newaxis]
 
-    assert weighted_scanlines.shape[0] == numscanlines
+    assert weighted_timetraces.shape[0] == numtimetraces
     assert rx_scattering_angles.shape == (numelements, numpoints)
     assert tx_lookup_times.shape == (numpoints, numelements)
     assert rx_lookup_times.shape == (numpoints, numelements)
@@ -490,8 +507,8 @@ def tfm_with_scattering(
     with ThreadPoolExecutor(max_workers=numthreads) as executor:
         for chunk in chunk_array((grid.numpoints,), block_size, axis=0):
             _tfm_with_scattering(
-                weighted_scanlines,
-                scanline_weights,
+                weighted_timetraces,
+                timetrace_weights,
                 frame.tx,
                 frame.rx,
                 tx_lookup_times[chunk],
@@ -530,8 +547,8 @@ def tfm_with_scattering(
 
 
 def _tfm_with_scattering(
-    weighted_scanlines,
-    scanline_weights,
+    weighted_timetraces,
+    timetrace_weights,
     tx,
     rx,
     tx_lookup_times,
@@ -567,8 +584,8 @@ def _tfm_with_scattering(
 
     Parameters
     ----------
-    weighted_scanlines
-    scanline_weights
+    weighted_timetraces
+    timetrace_weights
     tx
     rx
     tx_lookup_times
@@ -598,10 +615,10 @@ def _tfm_with_scattering(
 
     """
     numelements, numpoints = tx_scattering_angles.shape
-    numscanlines = tx.shape[0]
-    assert tx.shape == (numscanlines,)
-    assert rx.shape == (numscanlines,)
-    assert weighted_scanlines.shape[0] == numscanlines
+    numtimetraces = tx.shape[0]
+    assert tx.shape == (numtimetraces,)
+    assert rx.shape == (numtimetraces,)
+    assert weighted_timetraces.shape[0] == numtimetraces
     assert rx_scattering_angles.shape == (numelements, numpoints)
     assert tx_lookup_times.shape == (numpoints, numelements)
     assert rx_lookup_times.shape == (numpoints, numelements)
@@ -616,7 +633,7 @@ def _tfm_with_scattering(
         np.take(rx_scattering_angles, rx, axis=0),
     )
     scattering_amplitudes = np.ascontiguousarray(scattering_amplitudes.T)
-    assert scattering_amplitudes.shape == (numpoints, numscanlines)
+    assert scattering_amplitudes.shape == (numpoints, numtimetraces)
 
     # Model amplitudes P_ij
     model_amplitudes = (
@@ -627,14 +644,14 @@ def _tfm_with_scattering(
     del scattering_amplitudes
 
     # Compute sensitivity image (write result on sensitivity_result)
-    model.sensitivity_image(model_amplitudes, scanline_weights, sensitivity_result)
+    model.sensitivity_image(model_amplitudes, timetrace_weights, sensitivity_result)
 
     # Remark: the sensitivity here does not depend on the
     tfm_amplitudes = model_amplitudes.conjugate()
     del model_amplitudes
 
     das.das._general_delay_and_sum_nearest(
-        weighted_scanlines,
+        weighted_timetraces,
         tx,
         rx,
         tx_lookup_times,

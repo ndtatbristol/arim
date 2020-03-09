@@ -386,7 +386,7 @@ class CoordinateSystem:
 
     A more accurate word to describe this object should be "affine frame", however we keep
     coordinate system to be consistent with MFMC terminology (global and probe coordinate systems)
-    and to avoid confusion with the word "frame" as a set of scanline.
+    and to avoid confusion with the word "frame" as a set of timetrace.
 
 
     Attributes

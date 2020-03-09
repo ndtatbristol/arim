@@ -11,6 +11,7 @@ arim.ut
    
       decibel
       default_scanline_weights
+      default_timetrace_weights
       default_viewname_order
       filter_unique_views
       fmc

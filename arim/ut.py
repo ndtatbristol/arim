@@ -22,9 +22,9 @@ def fmc(numelements):
     Returns
     -------
     tx : ndarray [numelements^2]
-        Transmitter for each scanline: 0, 0, ..., 1, 1, ...
+        Transmitter for each timetrace: 0, 0, ..., 1, 1, ...
     rx : ndarray
-        Receiver for each scanline: 1, 2, ..., 1, 2, ...
+        Receiver for each timetrace: 1, 2, ..., 1, 2, ...
     """
     numelements = int(numelements)
     elements = np.arange(numelements)
@@ -45,9 +45,9 @@ def hmc(numelements):
     Returns
     -------
     tx : ndarray [numelements^2]
-        Transmitter for each scanline: 0, 0, 0, ..., 1, 1, 1, ...
+        Transmitter for each timetrace: 0, 0, 0, ..., 1, 1, 1, ...
     rx : ndarray
-        Receiver for each scanline: 0, 1, 2, ..., 1, 2, ...
+        Receiver for each timetrace: 0, 1, 2, ..., 1, 2, ...
     """
     numelements = int(numelements)
     elements = np.arange(numelements)
@@ -75,9 +75,9 @@ def infer_capture_method(tx, rx):
     Parameters
     ----------
     tx : list
-        One per scanline
+        One per timetrace
     rx : list
-        One per scanline
+        One per timetrace
 
     Returns
     -------
@@ -111,17 +111,17 @@ def infer_capture_method(tx, rx):
     return "unsupported"
 
 
-def default_scanline_weights(tx, rx):
+def default_timetrace_weights(tx, rx):
     """
-    Scanline weights for TFM.
+    timetrace weights for TFM.
 
-    Consider a scanline obtained by the transmitter i and the receiver j; this
-    scanline is denoted (i,j). If the response matrix contains both (i, j) and (j, i),
-    the corresponding scanline weight is 1. Otherwise, the scanline weight is 2.
+    Consider a timetrace obtained by the transmitter i and the receiver j; this
+    timetrace is denoted (i,j). If the response matrix contains both (i, j) and (j, i),
+    the corresponding timetrace weight is 1. Otherwise, the timetrace weight is 2.
 
-    Example: for a FMC, all scanline weights are 1.
-    Example: for a HMC, scanline weights for the pulse-echo scanlines are 1,
-    scanline weights for the non-pulse-echo scanlines are 2.
+    Example: for a FMC, all timetrace weights are 1.
+    Example: for a HMC, timetrace weights for the pulse-echo timetraces are 1,
+    timetrace weights for the non-pulse-echo timetraces are 2.
 
     Remark: the function does not check if there are duplicated signals.
 
@@ -129,29 +129,38 @@ def default_scanline_weights(tx, rx):
     ----------
     tx : list[int] or ndarray
         tx[i] is the index of the transmitter (between 0 and numelements-1) for
-        the i-th scanline.
+        the i-th timetrace.
     rx : list[int] or ndarray
         rx[i] is the index of the receiver (between 0 and numelements-1) for
-        the i-th scanline.
+        the i-th timetrace.
 
     Returns
     -------
-    scanline_weights : ndarray
+    timetrace_weights : ndarray
 
     """
     if len(tx) != len(rx):
-        raise ValueError("tx and rx must have the same lengths (numscanlines)")
-    numscanlines = len(tx)
+        raise ValueError("tx and rx must have the same lengths (numtimetraces)")
+    numtimetraces = len(tx)
 
     # elements_pairs contains (tx[0], rx[0]), (tx[1], rx[1]), etc.
     elements_pairs = {*zip(tx, rx)}
-    scanline_weights = np.ones(numscanlines)
-    for this_tx, this_rx, scanline_weight in zip(
-        tx, rx, np.nditer(scanline_weights, op_flags=["readwrite"])
+    timetrace_weights = np.ones(numtimetraces)
+    for this_tx, this_rx, timetrace_weight in zip(
+        tx, rx, np.nditer(timetrace_weights, op_flags=["readwrite"])
     ):
         if (this_rx, this_tx) not in elements_pairs:
-            scanline_weight[...] = 2.0
-    return scanline_weights
+            timetrace_weight[...] = 2.0
+    return timetrace_weights
+
+
+def default_scanline_weights(tx, rx):
+    warnings.warn(
+        DeprecationWarning(
+            "default_scanline_weights is deprecated. Use default_timetrace_weights"
+        )
+    )
+    return default_timetrace_weights(tx, rx)
 
 
 def decibel(arr, reference=None, neginf_value=-1000.0, return_reference=False):

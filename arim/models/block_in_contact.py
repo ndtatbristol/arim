@@ -686,9 +686,9 @@ def scat_unshifted_transfer_functions(
     ----------
     views : Dict[Views]
     tx : ndarray
-        Shape: (numscanlines, )
+        Shape: (numtimetraces, )
     rx : ndarray
-        Shape: (numscanlines, )
+        Shape: (numtimetraces, )
     freq_array : ndarray or float
         Shape: (numfreq, )
     scat_obj : arim.scat.Scattering2d
@@ -707,9 +707,9 @@ def scat_unshifted_transfer_functions(
     Yields
     ------
     partial_transfer_function_f : ndarray
-        Shape: (numscatterers, numscanlines, numfreq). Complex. Contribution for one view.
+        Shape: (numscatterers, numtimetraces, numfreq). Complex. Contribution for one view.
     delays : ndarray
-        Shape: (numscatterers, numscanlines). Float. Contribution for one view.
+        Shape: (numscatterers, numtimetraces). Float. Contribution for one view.
 
     See Also
     --------
@@ -765,17 +765,17 @@ def scat_unshifted_transfer_functions(
     else:
         scat_matrices = None
 
-    numscanlines = len(tx)
+    numtimetraces = len(tx)
 
     for view in views.values():
         logger.info("Transfer function for scatterers in view {}".format(view.name))
 
         numscatterers = view.tx_path.rays.times.shape[1]
         partial_transfer_function_f = np.zeros(
-            (numscatterers, numscanlines, numfreq), np.complex_
+            (numscatterers, numtimetraces, numfreq), np.complex_
         )
 
-        # shape: (numscatterers, numscanlines)
+        # shape: (numscatterers, numtimetraces)
         delays = np.ascontiguousarray(
             (
                 np.take(view.tx_path.rays.times, tx, axis=0)
@@ -794,7 +794,7 @@ def scat_unshifted_transfer_functions(
             ray_weights = ray_weights_allfreq[freq_idx]
 
             # compute Q_i Q'_j S_ij
-            # shape: (numscatterers, numscanlines, )
+            # shape: (numscatterers, numtimetraces, )
             model_coefficients = model.model_amplitudes_factory(
                 tx, rx, view, ray_weights, scattering, scat_angle=scat_angle
             )[...]
@@ -825,9 +825,9 @@ def wall_unshifted_transfer_functions(
     ----------
     wall_paths : Dict[arim.Path]
     tx : ndarray
-        Shape: (numscanlines, )
+        Shape: (numtimetraces, )
     rx : ndarray
-        Shape: (numscanlines, )
+        Shape: (numtimetraces, )
     freq_array : ndarray or float
         Shape: (numfreq, )
     probe_element_width : [type], optional
@@ -843,9 +843,9 @@ def wall_unshifted_transfer_functions(
     Yields
     ------
     partial_transfer_function_f : ndarray
-        Shape: (numscanlines, numfreq). Complex. Contribution for one wall path.
+        Shape: (numtimetraces, numfreq). Complex. Contribution for one wall path.
     delays : ndarray
-        Shape: (numscanlines). Float. Contribution for wall path.
+        Shape: (numtimetraces). Float. Contribution for wall path.
     """
     freq_array = np.atleast_1d(freq_array)
     numfreq = len(freq_array)
@@ -909,9 +909,9 @@ def singlefreq_scat_transfer_functions(
     ----------
     views : Dict[Views]
     tx : ndarray
-        Shape: (numscanlines, )
+        Shape: (numtimetraces, )
     rx : ndarray
-        Shape: (numscanlines, )
+        Shape: (numtimetraces, )
     frequency : float
     freq_array : ndarray
         Shape: (numfreq, )
@@ -931,7 +931,7 @@ def singlefreq_scat_transfer_functions(
     viewname : str
         Key of `views`
     partial_transfer_function_f : ndarray
-        Shape: (numscanlines, numfreq). Complex. Contribution for one view.
+        Shape: (numtimetraces, numfreq). Complex. Contribution for one view.
 
     Notes
     -----
@@ -954,7 +954,7 @@ def singlefreq_scat_transfer_functions(
     )
 
     for viewname, (unshifted_tf, delays) in zip(views.keys(), unshifted_tfs):
-        # shape (numscatterers, numscanlines, numfreq)
+        # shape (numscatterers, numtimetraces, numfreq)
         tf = signal.timeshift_spectra(unshifted_tf, delays, freq_array)
 
         # lazy tf.sum(axis=0):
@@ -984,9 +984,9 @@ def singlefreq_wall_transfer_functions(
     ----------
     wall_paths : Dict[Path]
     tx : ndarray
-        Shape: (numscanlines, )
+        Shape: (numtimetraces, )
     rx : ndarray
-        Shape: (numscanlines, )
+        Shape: (numtimetraces, )
     frequency : float
         Frequency at which the model runs.
     freq_array : ndarray
@@ -1002,7 +1002,7 @@ def singlefreq_wall_transfer_functions(
     pathname : str
         Key of `wall_paths`
     partial_transfer_function_f : ndarray
-        Shape: (numscanlines, numfreq). Complex. Contribution for one path.
+        Shape: (numtimetraces, numfreq). Complex. Contribution for one path.
     
     Notes
     -----
@@ -1050,9 +1050,9 @@ def multifreq_scat_transfer_functions(
     ----------
     views : Dict[Views]
     tx : ndarray
-        Shape: (numscanlines, )
+        Shape: (numtimetraces, )
     rx : ndarray
-        Shape: (numscanlines, )
+        Shape: (numtimetraces, )
     freq_array : ndarray
         Shape: (numfreq, )
     scat_obj : arim.scat.Scattering2d
@@ -1071,7 +1071,7 @@ def multifreq_scat_transfer_functions(
     viewname : str
         Key of `views`
     partial_transfer_function_f : ndarray
-        Shape: (numscanlines, numfreq). Complex. Contribution for one view.
+        Shape: (numtimetraces, numfreq). Complex. Contribution for one view.
 
     Notes
     -----
@@ -1094,7 +1094,7 @@ def multifreq_scat_transfer_functions(
     )
 
     for viewname, (unshifted_tf, delays) in zip(views.keys(), unshifted_tfs):
-        # shape (numscatterers, numscanlines, numfreq)
+        # shape (numscatterers, numtimetraces, numfreq)
         tf = signal.timeshift_spectra(unshifted_tf, delays, freq_array)
 
         # lazy tf.sum(axis=0):
@@ -1123,9 +1123,9 @@ def multifreq_wall_transfer_functions(
     ----------
     wall_paths : Dict[Path]
     tx : ndarray
-        Shape: (numscanlines, )
+        Shape: (numtimetraces, )
     rx : ndarray
-        Shape: (numscanlines, )
+        Shape: (numtimetraces, )
     freq_array : ndarray
         Shape: (numfreq, ). First freq is assumed to be zero.
     probe_element_width : float or None
@@ -1139,7 +1139,7 @@ def multifreq_wall_transfer_functions(
     pathname : str
         Key of `wall_paths`
     partial_transfer_function_f : ndarray
-        Shape: (numscanlines, numfreq). Complex. Contribution for one path.
+        Shape: (numtimetraces, numfreq). Complex. Contribution for one path.
 
     Notes
     -----

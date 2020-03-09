@@ -348,7 +348,7 @@ def test_fermat_solver():
     )
     interface_b = g.Points.from_xyz(x_m, np.zeros(m), np.full(m, z), "Interface B")
     interface_c = g.Points.from_xyz(
-        x_m, -(x_m - 5) ** 2 - 10.0, np.full(m, z), "Interface C"
+        x_m, -((x_m - 5) ** 2) - 10.0, np.full(m, z), "Interface C"
     )
 
     path_1 = ray.FermatPath((interface_a, v1, interface_b, v2, interface_c))

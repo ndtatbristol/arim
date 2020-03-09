@@ -32,15 +32,15 @@ Filters can be composed::
     filtered_data = f_abs(f_hil(raw_data))
 
 
-To filter scanlines, the recommended approach is to call :meth:`arim.core.frame.Frame.apply_filter`::
+To filter timetraces, the recommended approach is to call :meth:`arim.core.frame.Frame.apply_filter`::
 
     frame.apply_filter(f_abs_hil)
 
-    # filtered scanlines:
-    frame.scanlines
+    # filtered timetraces:
+    frame.timetraces
 
-    # raw scanlines:
-    frame.scanlines_raw
+    # raw timetraces:
+    frame.timetraces_raw
 
 
 To create a new filter, create a class derived from :meth:`arim.signal.Filter`::

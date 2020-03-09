@@ -22,7 +22,7 @@ def find_probe_loc_from_frontwall(frame, couplant, tmin=None, tmax=None):
     This function:
     0. reset the position of the probe,
     1. detects the frontwall by looking for the extrama in the pulse-echo
-    scanlines,
+    timetraces,
     2. infers the probe angle and standoff from these values
     (use a linear fit),
     3. move the probe.
@@ -87,7 +87,7 @@ def move_probe_over_flat_surface(frame, distance_to_surface, full_output=False):
     The distances passed as arguments must corresponds to a flat surface.
     Perform a linear regression for robustness.
 
-    Use only the distances corresponding to a pulse-echo scanlines. Other distances are discarded.
+    Use only the distances corresponding to a pulse-echo timetraces. Other distances are discarded.
 
     **Warning:** this function modifies the points1 (you might want to make a copy before the call).
 
@@ -95,7 +95,7 @@ def move_probe_over_flat_surface(frame, distance_to_surface, full_output=False):
     ----------
     frame : Frame
     distance_to_surface : ndarray
-        Distance between elements and the plane. One per scanline. Only pulse echo data are used.
+        Distance between elements and the plane. One per timetrace. Only pulse echo data are used.
     full_output : boolean, optional
         If True, returns also ``(z_op, theta, phi)``. Default: False.
 
@@ -134,13 +134,13 @@ def move_probe_over_flat_surface(frame, distance_to_surface, full_output=False):
     if not frame.probe.pcs.isclose(g.GCS):
         raise ValueError("This function requires that PCS and the GCS are the same.")
 
-    # I/ keep only pulse echo scanlines
+    # I/ keep only pulse echo timetraces
     # ---------------------------------
 
     # Consider only pulse-echo data:
     pulse_echo = frame.tx == frame.rx
     if sum(pulse_echo) < 2:
-        raise ValueError("The frame must have at least 2 pulse echo scanlines.")
+        raise ValueError("The frame must have at least 2 pulse echo timetraces.")
 
     distance_to_surface = distance_to_surface[pulse_echo]
     all_locations = frame.probe.locations_pcs
@@ -220,14 +220,14 @@ def detect_surface_from_extrema(frame, tmin=None, tmax=None):
     Returns
     -------
     times_to_surface : ndarray of float
-        For each scanline, time at which occurs the maximum of the absolute signal in [tmin, tmax].
+        For each timetrace, time at which occurs the maximum of the absolute signal in [tmin, tmax].
 
     """
     valid_times_ind = frame.time.window(tmin, tmax)
     valid_times = frame.time.samples[valid_times_ind]
 
-    # Get the scanlines within the window [tmin, tmax].
-    data = np.abs(frame.scanlines[:, valid_times_ind])
+    # Get the timetraces within the window [tmin, tmax].
+    data = np.abs(frame.timetraces[:, valid_times_ind])
 
     # Find the times of the maximum amplitudes (assumed to be the surface):
     times_to_surface = valid_times[np.argmax(data, axis=1)]

@@ -17,7 +17,7 @@ def test_extrema_lookup_times_in_rectbox():
     lookup_times_tx = np.zeros((grid.numpoints, len(tx)))
     lookup_times_rx = np.zeros((grid.numpoints, len(tx)))
 
-    # scanline 5 (tx=1, rx=2) is the minimum time:
+    # timetrace 5 (tx=1, rx=2) is the minimum time:
     grid_idx = 5
     lookup_times_tx[grid_idx, 5] = -1.5
     lookup_times_rx[grid_idx, 5] = -1.5
@@ -25,7 +25,7 @@ def test_extrema_lookup_times_in_rectbox():
     lookup_times_tx[grid_idx, 4] = -2.0
     lookup_times_rx[grid_idx, 4] = -0.1
 
-    # scanline 1 (tx=0, rx=1) is the maximum time:
+    # timetrace 1 (tx=0, rx=1) is the maximum time:
     grid_idx = 3
     lookup_times_tx[grid_idx, 1] = 1.5
     lookup_times_rx[grid_idx, 1] = 1.5
@@ -56,13 +56,13 @@ def test_multiview_tfm(use_real_grid):
     tx_arr, rx_arr = arim.ut.fmc(probe.numelements)
     time = arim.Time(0.5e-6, 1 / 20e6, 100)
     # use random data but ensure reciprocity
-    scanlines = np.zeros((len(tx_arr), len(time)))
+    timetraces = np.zeros((len(tx_arr), len(time)))
     for i, (tx, rx) in enumerate(zip(tx_arr, rx_arr)):
         np.random.seed((tx * rx) ** 2)  # symmetric in tx and rx
-        scanlines[i] = np.random.rand(len(time))
+        timetraces[i] = np.random.rand(len(time))
     block = arim.Material(6300, 3100)
     frame = arim.Frame(
-        scanlines, time, tx_arr, rx_arr, probe, arim.ExaminationObject(block)
+        timetraces, time, tx_arr, rx_arr, probe, arim.ExaminationObject(block)
     )
 
     # prepare view LL-T in contact
@@ -92,7 +92,7 @@ def test_multiview_tfm(use_real_grid):
     tfm = im.tfm.tfm_for_view(frame, grid, view, fillvalue=np.nan)
 
     # Check this value is unchanged over time!
-    expected_val = 12.745499105785953 / frame.numscanlines
+    expected_val = 12.745499105785953 / frame.numtimetraces
     assert tfm.res.shape == grid.shape
     if use_real_grid:
         np.testing.assert_array_almost_equal(tfm.res, [[[expected_val]]])
@@ -126,23 +126,23 @@ def test_contact_tfm(use_hmc):
     time = arim.Time(0.5e-6, 1 / 20e6, 100)
 
     # use random data but ensure reciprocity
-    scanlines = np.zeros((len(tx_arr), len(time)))
+    timetraces = np.zeros((len(tx_arr), len(time)))
     for i, (tx, rx) in enumerate(zip(tx_arr, rx_arr)):
         np.random.seed((tx * rx) ** 2)  # symmetric in tx and rx
-        scanlines[i] = np.random.rand(len(time))
+        timetraces[i] = np.random.rand(len(time))
 
     # check reciprocity
     if not use_hmc:
         for i, (tx, rx) in enumerate(zip(tx_arr, rx_arr)):
-            scanline_1 = scanlines[i]
-            scanline_2 = scanlines[np.logical_and(tx_arr == rx, rx_arr == tx)][0]
+            timetrace_1 = timetraces[i]
+            timetrace_2 = timetraces[np.logical_and(tx_arr == rx, rx_arr == tx)][0]
             np.testing.assert_allclose(
-                scanline_1, scanline_2, err_msg="fmc data not symmetric"
+                timetrace_1, timetrace_2, err_msg="fmc data not symmetric"
             )
 
     block = arim.Material(6300, 3100)
     frame = arim.Frame(
-        scanlines, time, tx_arr, rx_arr, probe, arim.ExaminationObject(block)
+        timetraces, time, tx_arr, rx_arr, probe, arim.ExaminationObject(block)
     )
 
     # prepare view LL-T in contact
@@ -151,6 +151,6 @@ def test_contact_tfm(use_hmc):
     tfm = im.tfm.contact_tfm(frame, grid, block.longitudinal_vel, fillvalue=np.nan)
 
     # Check this value is unchanged over time!
-    expected_val = 12.49925772283528 / frame.numscanlines
+    expected_val = 12.49925772283528 / frame.numtimetraces
     assert tfm.res.shape == grid.shape
     np.testing.assert_allclose(tfm.res, expected_val)

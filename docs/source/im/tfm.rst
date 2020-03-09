@@ -27,17 +27,17 @@ The most generic definition available in arim is:
       \tau_{i}(r) + \tau'_{j}(r)
       )
 
-:math:`g_{ij}(t)` is the scanline of the transmitter `i` and the receiver `j`, obtained from
-:attr:`arim.core.Frame.scanlines`. The set `S` of the transmitters and receivers is obtained from
-:attr:`arim.core.Frame.tx` and :attr:`arim.core.Frame.rx`. Its size is denoted `numscanlines`.
-TFM is always applied on all scanlines in the frame; to apply TFM on a subset of the scanlines, create a new Frame
-with only the selected scanlines and pass it to TFM.
+:math:`g_{ij}(t)` is the timetrace of the transmitter `i` and the receiver `j`, obtained from
+:attr:`arim.core.Frame.timetraces`. The set `S` of the transmitters and receivers is obtained from
+:attr:`arim.core.Frame.tx` and :attr:`arim.core.Frame.rx`. Its size is denoted `numtimetraces`.
+TFM is always applied on all timetraces in the frame; to apply TFM on a subset of the timetraces, create a new Frame
+with only the selected timetraces and pass it to TFM.
 
 :math:`\tau_{i}(r)` is the time of flight for the transmission path between the element `i` and the grid point `r`.
 These times are stored in ``lookup_times_tx``, a 2d array of shape `(numgridpoints, numelements)`. Similarly, the
 times of fight for the reception path are stored in ``lookup_times_rx``.
 
-The weights :math:`A_{ij}(r)` are stored in a `(numgridpoints, numscanlines)` array named ``amplitudes``. Because this
+The weights :math:`A_{ij}(r)` are stored in a `(numgridpoints, numtimetraces)` array named ``amplitudes``. Because this
 array may be too big for the memory, chunking it may be necessary (example: :class:`arim.model.ModelAmplitudes`).
 
 If the following decomposition is possible
@@ -47,7 +47,7 @@ If the following decomposition is possible
     A_{ij}(r) = B_{i}(r) B'_{j}(r)
 
 then ``amplitudes`` can be a :class:`arim.model.TxRxAmplitudes` object where ``amplitudes_tx`` and ``amplitudes_rx``,
-which contain respectively :math:`B_{i}(r)` and  :math:`B'_{j}(r)`, are arrays of shape `(numelements, numscanlines)`.
+which contain respectively :math:`B_{i}(r)` and  :math:`B'_{j}(r)`, are arrays of shape `(numelements, numtimetraces)`.
 
 Finally if for all `i`, `j` and `r`
 
@@ -91,8 +91,8 @@ where
   \end{cases}
 
 This reduces the number of summands and therefore the computation time. This last equation is used in
-:func:`contact_tfm`. Internally, the weighted scanlines :math:`g'_{ij}` are obtained with
-:meth:`FocalLaw.weigh_scanlines`.
+:func:`contact_tfm`. Internally, the weighted timetraces :math:`g'_{ij}` are obtained with
+:meth:`FocalLaw.weigh_timetraces`.
 
 This technique is not used :func:`tfm_for_view` because the times of flight in transmission and reception are not
 the same in general.

@@ -69,7 +69,7 @@ conf = arim.io.load_conf(".")
 #%% Define inspection set-up
 probe = arim.io.probe_from_conf(conf)
 tx_list, rx_list = arim.ut.fmc(probe.numelements)
-numscanlines = len(tx_list)
+numtimetraces = len(tx_list)
 
 examination_object = arim.io.block_in_immersion_from_conf(conf)
 
@@ -195,7 +195,7 @@ scat_obj = arim.scat.scat_factory(
 )
 scat_angle = np.deg2rad(conf["scatterer"]["angle_deg"])
 
-transfer_function_f = np.zeros((numscanlines, numfreq), np.complex_)
+transfer_function_f = np.zeros((numtimetraces, numfreq), np.complex_)
 tfms_scat = OrderedDict()
 
 
@@ -232,7 +232,7 @@ with arim.helpers.timeit("Main loop for scatterer"):
 
 #%% Compute transfer functions for walls
 
-transfer_function_wall_f = np.zeros((numscanlines, numfreq), np.complex_)
+transfer_function_wall_f = np.zeros((numtimetraces, numfreq), np.complex_)
 
 if use_multifreq:
     transfer_function_iterator = bim.multifreq_wall_transfer_functions(
@@ -248,23 +248,23 @@ with arim.helpers.timeit("Main loop for walls:"):
         transfer_function_wall_f += partial_transfer_func
 
 #%% Compute the response in frequency then time domain
-response_scanlines_f = (transfer_function_f + transfer_function_wall_f) * toneburst_f
-# response_scanlines_f = transfer_function_f  * toneburst_f
-# response_scanlines_f = transfer_function_wall_f  * toneburst_f
-response_scanlines = arim.signal.rfft_to_hilbert(
-    response_scanlines_f, numsamples, axis=-1
+response_timetraces_f = (transfer_function_f + transfer_function_wall_f) * toneburst_f
+# response_timetraces_f = transfer_function_f  * toneburst_f
+# response_timetraces_f = transfer_function_wall_f  * toneburst_f
+response_timetraces = arim.signal.rfft_to_hilbert(
+    response_timetraces_f, numsamples, axis=-1
 )
-real_response_scanlines = np.real(response_scanlines)
+real_response_timetraces = np.real(response_timetraces)
 
 frame = arim.Frame(
-    response_scanlines, time, tx_list, rx_list, probe, examination_object
+    response_timetraces, time, tx_list, rx_list, probe, examination_object
 )
 
 plt.figure()
 idx = 31
 plt.plot(
     frame.time.samples * 1e6,
-    np.real(frame.scanlines[idx]),
+    np.real(frame.timetraces[idx]),
     label=f"tx={frame.tx[idx]}, rx={frame.rx[idx]}",
 )
 plt.xlabel("time (µs)")
@@ -286,22 +286,22 @@ rx = 19
 idx1 = np.nonzero(np.logical_and(tx_list == tx, rx_list == rx))[0][0]
 idx2 = np.nonzero(np.logical_and(tx_list == rx, rx_list == tx))[0][0]
 
-real_response_scanlines = np.real(response_scanlines)
+real_response_timetraces = np.real(response_timetraces)
 
 plt.figure()
 plt.plot(
     time.samples * 1e6,
-    real_response_scanlines[idx1],
+    real_response_timetraces[idx1],
     label=f"tx={tx_list[idx1]}, rx={rx_list[idx1]}",
 )
 plt.plot(
     time.samples * 1e6,
-    real_response_scanlines[idx2],
+    real_response_timetraces[idx2],
     label=f"tx={tx_list[idx2]}, rx={rx_list[idx2]}",
 )
 plt.plot(
     time.samples * 1e6,
-    np.abs(real_response_scanlines[idx1] - real_response_scanlines[idx2]),
+    np.abs(real_response_timetraces[idx1] - real_response_timetraces[idx2]),
     label=f"error",
 )
 plt.legend()
@@ -309,13 +309,15 @@ plt.xlabel("time (µs)")
 plt.title("reciprocity - signals must overlap perfectly")
 if aplt.conf["savefig"]:
     plt.savefig("reciprocity")
-response_scanlines_1 = real_response_scanlines.reshape(
+response_timetraces_1 = real_response_timetraces.reshape(
     (probe.numelements, probe.numelements, len(time))
 )
-response_scanlines_2 = np.swapaxes(response_scanlines_1, 0, 1)
-error_reciprocity = np.max(np.abs(response_scanlines_1 - response_scanlines_2), axis=-1)
+response_timetraces_2 = np.swapaxes(response_timetraces_1, 0, 1)
+error_reciprocity = np.max(
+    np.abs(response_timetraces_1 - response_timetraces_2), axis=-1
+)
 logger.info(
-    f"Reciprocity error: {np.max(error_reciprocity)} on scanline {np.argmax(error_reciprocity)}"
+    f"Reciprocity error: {np.max(error_reciprocity)} on timetrace {np.argmax(error_reciprocity)}"
 )
 for viewname, view in views.items():
     plt.text(

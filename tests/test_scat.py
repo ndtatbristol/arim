@@ -221,8 +221,8 @@ def test_rotate_matrix():
     n = 72
     inc_angles, out_angles = scat.make_angles_grid(n)
     scat_matrix = np.exp(
-        -(inc_angles - np.pi / 6) ** 2 - (out_angles + np.pi / 4) ** 2
-    ) + 1j * np.exp(-(inc_angles + np.pi / 2) ** 2 - (out_angles - np.pi / 10) ** 2)
+        -((inc_angles - np.pi / 6) ** 2) - (out_angles + np.pi / 4) ** 2
+    ) + 1j * np.exp(-((inc_angles + np.pi / 2) ** 2) - (out_angles - np.pi / 10) ** 2)
     scat_func = scat.interpolate_matrix(scat_matrix)
 
     # rotation of 0°

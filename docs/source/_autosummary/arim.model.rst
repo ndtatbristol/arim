@@ -28,6 +28,7 @@ arim.model
       solid_l_fluid
       solid_t_fluid
       transfer_func_to_scanlines
+      transfer_func_to_timetraces
       transmission_at_interface
       transmission_reflection_for_path
    

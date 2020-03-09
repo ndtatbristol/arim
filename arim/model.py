@@ -10,6 +10,7 @@ Core functions of the forward models.
 # This module is imported on demand. It should be imported only for modelling.
 # Function that are not modelling-specific should go to arim.ut, which is always imported.
 
+import warnings
 import abc
 import logging
 from collections import namedtuple
@@ -1329,14 +1330,14 @@ def model_amplitudes_factory(tx, rx, view, ray_weights, scattering, scat_angle=0
         can be indexe as an array but that computes the
         Function that returns the model amplitudes and takes as argument a slice.
         ndarray
-        Shape: (blocksize, numscanlines)
+        Shape: (blocksize, numtimetraces)
         Yield until all grid points are processed.
 
     Examples
     --------
     >>> model_amplitudes = model_amplitudes_factory(tx, rx, view, ray_weights, scattering)
     >>> model_amplitudes[0]
-    # returns the 'numscanlines' amplitudes at the grid point 0
+    # returns the 'numtimetraces' amplitudes at the grid point 0
     >>> model_amplitudes[:10] # returns the amplitudes for the first 10 grid points
     array([ 0.27764253,  0.78863332,  0.83998295,  0.96811351,  0.57929045, 0.00935137,  0.8905348 ,  0.46976061,  0.08101099,  0.57615469])
     >>> model_amplitudes[...] # returns the amplitudes for all points. Warning: you may
@@ -1402,7 +1403,7 @@ class ModelAmplitudes(abc.ABC):
     Class for on-the-fly calculation of model amplitudes.
 
 
-    Pseudo-array of coefficients P_ij = Q_i Q'_j S_ij. Shape: (numpoints, numscanlines)
+    Pseudo-array of coefficients P_ij = Q_i Q'_j S_ij. Shape: (numpoints, numtimetraces)
 
     This object can be indexed almost like a regular Numpy array.
     When indexed, the values are computed on the fly.
@@ -1423,11 +1424,11 @@ class ModelAmplitudes(abc.ABC):
     >>> type(model_amplitudes[0])
     numpy.ndarray
 
-    Get the P_ij for the first grid point (returns an array of size (numscanlines,)):
+    Get the P_ij for the first grid point (returns an array of size (numtimetraces,)):
     >>> model_amplitudes[0]
 
     Get the P_ij for the first ten grid points (returns an array of size
-    (10, numscanlines,)):
+    (10, numtimetraces,)):
     >>> model_amplitudes[:10]
 
     Get all P_ij (may run out of memory):
@@ -1437,7 +1438,7 @@ class ModelAmplitudes(abc.ABC):
     >>> model_amplitudes[...]
 
     Indexing the second dimension will fail. For example to model amplitude of
-    the fourth point and the eigth scanline, use:
+    the fourth point and the eigth timetrace, use:
     >>> model_amplitudes[3][7]  # valid usage
     >>> model_amplitudes[3, 7]  # invalid usage, raise an IndexError
     """
@@ -1448,15 +1449,15 @@ class ModelAmplitudes(abc.ABC):
 
     @property
     def shape(self):
-        return (self.numpoints, self.numscanlines)
+        return (self.numpoints, self.numtimetraces)
 
-    def sensitivity_uniform_tfm(self, scanline_weights, **kwargs):
+    def sensitivity_uniform_tfm(self, timetrace_weights, **kwargs):
         # wrapper in general case, inherit and write a faster implementation if possible
-        return sensitivity_uniform_tfm(self, scanline_weights, **kwargs)
+        return sensitivity_uniform_tfm(self, timetrace_weights, **kwargs)
 
-    def sensitivity_model_assisted_tfm(self, scanline_weights, **kwargs):
+    def sensitivity_model_assisted_tfm(self, timetrace_weights, **kwargs):
         # wrapper in general case, inherit and write a faster implementation if possible
-        return sensitivity_model_assisted_tfm(self, scanline_weights, **kwargs)
+        return sensitivity_model_assisted_tfm(self, timetrace_weights, **kwargs)
 
 
 class _ModelAmplitudesWithScatFunction(ModelAmplitudes):
@@ -1479,12 +1480,12 @@ class _ModelAmplitudesWithScatFunction(ModelAmplitudes):
         self.tx_scattering_angles = tx_scattering_angles
         self.rx_scattering_angles = rx_scattering_angles
         self.numpoints, self.numelements = tx_ray_weights.shape
-        self.numscanlines = self.tx.shape[0]
+        self.numtimetraces = self.tx.shape[0]
         self.scat_angle = scat_angle
         self.dtype = np.complex_
 
     def __getitem__(self, grid_slice):
-        # Nota bene: arrays' shape is (numpoints, numscanline), i.e. the transpose
+        # Nota bene: arrays' shape is (numpoints, numtimetrace), i.e. the transpose
         # of RayWeights. They are contiguous.
         if np.empty(self.numpoints)[grid_slice].ndim > 1:
             raise IndexError("Only the first dimension of the object is indexable.")
@@ -1523,10 +1524,10 @@ def _model_amplitudes_with_scat_matrix(
     res,
 ):
     # This is a kernel on a grid point.
-    numscanlines = tx.shape[0]
+    numtimetraces = tx.shape[0]
     # assert res.shape[0] == tx_ray_weights.shape[0]
     # assert tx_ray_weights.shape == rx_ray_weights.shape == tx_scattering_angles.shape == rx_scattering_angles.shape
-    for scan in range(numscanlines):
+    for scan in range(numtimetraces):
         inc_theta = tx_scattering_angles[tx[scan]] - scat_angle[0]
         out_theta = rx_scattering_angles[rx[scan]] - scat_angle[0]
 
@@ -1556,12 +1557,12 @@ class _ModelAmplitudesWithScatMatrix(ModelAmplitudes):
         self.tx_scattering_angles = tx_scattering_angles
         self.rx_scattering_angles = rx_scattering_angles
         self.numpoints, self.numelements = tx_ray_weights.shape
-        self.numscanlines = self.tx.shape[0]
+        self.numtimetraces = self.tx.shape[0]
         self.scat_angle = scat_angle
         self.dtype = np.result_type(tx_ray_weights, rx_ray_weights, scattering_mat)
 
     def __getitem__(self, grid_slice):
-        # Nota bene: arrays' shape is (numpoints, numscanline), i.e. the transpose
+        # Nota bene: arrays' shape is (numpoints, numtimetrace), i.e. the transpose
         # of RayWeights. They are contiguous.
         return _model_amplitudes_with_scat_matrix(
             self.tx,
@@ -1575,7 +1576,7 @@ class _ModelAmplitudesWithScatMatrix(ModelAmplitudes):
         )
 
 
-def sensitivity_uniform_tfm(model_amplitudes, scanline_weights, block_size=4000):
+def sensitivity_uniform_tfm(model_amplitudes, timetrace_weights, block_size=4000):
     """
     Return the sensitivity for uniform TFM.
 
@@ -1585,34 +1586,36 @@ def sensitivity_uniform_tfm(model_amplitudes, scanline_weights, block_size=4000)
     Parameters
     ----------
     model_amplitudes : ndarray or ModelAmplitudes
-        Coefficients P_ij. Shape: (numpoints, numscanlines)
-    scanline_weights : ndarray
-        Shape: (numscanlines, )
+        Coefficients P_ij. Shape: (numpoints, numtimetraces)
+    timetrace_weights : ndarray
+        Shape: (numtimetraces, )
 
     Returns
     -------
     predicted_intensities
         Shape: (numpoints, )
     """
-    numpoints, numscanlines = model_amplitudes.shape
-    assert scanline_weights.ndim == 1
-    assert model_amplitudes.shape[1] == scanline_weights.shape[0]
+    numpoints, numtimetraces = model_amplitudes.shape
+    assert timetrace_weights.ndim == 1
+    assert model_amplitudes.shape[1] == timetrace_weights.shape[0]
 
     sensitivity = None
 
     # chunk the array in case we have an array too big (ModelAmplitudes)
-    for chunk in helpers.chunk_array((numpoints, numscanlines), block_size):
-        tmp = (scanline_weights[np.newaxis] * model_amplitudes[chunk]).sum(axis=1)
+    for chunk in helpers.chunk_array((numpoints, numtimetraces), block_size):
+        tmp = (timetrace_weights[np.newaxis] * model_amplitudes[chunk]).sum(axis=1)
         if sensitivity is None:
             sensitivity = np.zeros((numpoints,), dtype=tmp.dtype)
         sensitivity[chunk] = tmp
-    sensitivity /= numscanlines
+    sensitivity /= numtimetraces
     return sensitivity
 
 
-def sensitivity_model_assisted_tfm(model_amplitudes, scanline_weights, block_size=4000):
+def sensitivity_model_assisted_tfm(
+    model_amplitudes, timetrace_weights, block_size=4000
+):
     """
-    Return the sensitivity for model assisted TFM (multiply TFM scanlines by conjugate
+    Return the sensitivity for model assisted TFM (multiply TFM timetraces by conjugate
     of scatterer contribution).
 
     The sensitivity at a point is defined the predicted TFM amplitude that a sole
@@ -1621,29 +1624,29 @@ def sensitivity_model_assisted_tfm(model_amplitudes, scanline_weights, block_siz
     Parameters
     ----------
     model_amplitudes : ndarray or ModelAmplitudes
-        Coefficients P_ij. Shape: (numpoints, numscanlines)
-    scanline_weights : ndarray
-        Shape: (numscanlines, )
+        Coefficients P_ij. Shape: (numpoints, numtimetraces)
+    timetrace_weights : ndarray
+        Shape: (numtimetraces, )
 
     Returns
     -------
     predicted_intensities
         Shape: (numpoints, ).
     """
-    numpoints, numscanlines = model_amplitudes.shape
-    assert scanline_weights.ndim == 1
-    assert model_amplitudes.shape[1] == scanline_weights.shape[0]
+    numpoints, numtimetraces = model_amplitudes.shape
+    assert timetrace_weights.ndim == 1
+    assert model_amplitudes.shape[1] == timetrace_weights.shape[0]
 
     sensitivity = None
 
     # chunk the array in case we have an array too big (ModelAmplitudes)
-    for chunk in helpers.chunk_array((numpoints, numscanlines), block_size):
+    for chunk in helpers.chunk_array((numpoints, numtimetraces), block_size):
         absval = np.abs(model_amplitudes[chunk])
-        tmp = (absval * absval * scanline_weights[np.newaxis]).sum(axis=1)
+        tmp = (absval * absval * timetrace_weights[np.newaxis]).sum(axis=1)
         if sensitivity is None:
             sensitivity = np.zeros((numpoints,), dtype=tmp.dtype)
         sensitivity[chunk] = tmp
-    sensitivity /= numscanlines
+    sensitivity /= numtimetraces
     return sensitivity
 
 
@@ -1655,27 +1658,27 @@ def _timeshift_timedomain(unshifted_response, delays, dt, t0_idx, out):
         out[idx, delay_idx - t0_idx : delay_idx - t0_idx + n] += unshifted_response[idx]
 
 
-def transfer_func_to_scanlines(
+def transfer_func_to_timetraces(
     unshifted_transfer_func,
     delays,
-    scanlines_time,
+    timetraces_time,
     toneburst_time,
     toneburst_freq,
     toneburst_f,
     toneburst_t0_idx,
-    scanlines=None,
+    timetraces=None,
 ):
-    """Returns time-domain scanlines from the unshifted transfer function and the toneburst
+    """Returns time-domain timetraces from the unshifted transfer function and the toneburst
 
     Parameters
     ----------
     unshifted_transfer_func : ndarray
         Transfer function to apply, without the "exp(-i omega tau)" term.
-        Shape ``(numscanlines, numfreq)`` or ``(numscatterers, numscanlines, numfreq)``
+        Shape ``(numtimetraces, numfreq)`` or ``(numscatterers, numtimetraces, numfreq)``
     delays : ndarray
-        Delay for each scatterer and scanline.
-        Shape ``(numscanlines,)`` or ``(numscatterers, numscanlines)``
-    scanlines_time : arim.core.Time
+        Delay for each scatterer and timetrace.
+        Shape ``(numtimetraces,)`` or ``(numscatterers, numtimetraces)``
+    timetraces_time : arim.core.Time
     toneburst_time : arim.core.Time
     toneburst_freq : ndarray
         Frequency array of the toneburst, obtained typically with ``np.fft.rfftfreq``
@@ -1683,13 +1686,13 @@ def transfer_func_to_scanlines(
         Spectrum of the toneburst, obtained with ``np.fft.rfft``.
     toneburst_t0_idx : [type]
         Index so that ``toneburst_time.samples[t0_idx] = 0.``
-    scanlines : ndarray
+    timetraces : ndarray
         Optional, write on this array if provided.
 
     Returns
     -------
-    scanlines : ndarray
-        scanlines
+    timetraces : ndarray
+        timetraces
 
     """
     if unshifted_transfer_func.ndim == 2:
@@ -1698,18 +1701,18 @@ def transfer_func_to_scanlines(
         )
     if delays.ndim == 1:
         delays = delays.reshape((1, *delays.shape))
-    numscatterers, numscanlines, _ = unshifted_transfer_func.shape
-    assert delays.shape == (numscatterers, numscanlines)
+    numscatterers, numtimetraces, _ = unshifted_transfer_func.shape
+    assert delays.shape == (numscatterers, numtimetraces)
 
-    if scanlines_time.step != toneburst_time.step:
+    if timetraces_time.step != toneburst_time.step:
         raise NotImplementedError
-    dt = scanlines_time.step
+    dt = timetraces_time.step
 
-    if scanlines is None:
-        scanlines = np.zeros((numscanlines, len(scanlines_time)), np.complex_)
+    if timetraces is None:
+        timetraces = np.zeros((numtimetraces, len(timetraces_time)), np.complex_)
 
-    # Account for the scanlines t0
-    delays = delays - scanlines_time.start
+    # Account for the timetraces t0
+    delays = delays - timetraces_time.start
     assert np.all(delays >= 0.0)
 
     # Shift transfer func by the frac of the time step
@@ -1730,7 +1733,34 @@ def transfer_func_to_scanlines(
             delays[scat_idx],
             dt,
             toneburst_t0_idx,
-            scanlines,
+            timetraces,
         )
 
-    return scanlines
+    return timetraces
+
+
+def transfer_func_to_scanlines(
+    unshifted_transfer_func,
+    delays,
+    scanlines_time,
+    toneburst_time,
+    toneburst_freq,
+    toneburst_f,
+    toneburst_t0_idx,
+    timetraces=None,
+):
+    warnings.warn(
+        DeprecationWarning(
+            "transfer_func_to_scanlines is deprecated. Use transfer_func_to_timetraces"
+        )
+    )
+    return transfer_func_to_timetraces(
+        unshifted_transfer_func,
+        delays,
+        scanlines_time,
+        toneburst_time,
+        toneburst_freq,
+        toneburst_f,
+        toneburst_t0_idx,
+        timetraces,
+    )

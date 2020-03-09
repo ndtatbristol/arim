@@ -259,24 +259,24 @@ def frame(probe, examination_object):
 
     time = c.Time(start=5e-6, step=1 / 25e6, num=1000)
 
-    scanlines = np.zeros((len(tx), len(time)))
-    scanlines[...] = (tx * 1000 + rx)[..., np.newaxis]
+    timetraces = np.zeros((len(tx), len(time)))
+    timetraces[...] = (tx * 1000 + rx)[..., np.newaxis]
 
     return c.Frame(
-        scanlines, time, tx, rx, probe, examination_object, metadata=metadata
+        timetraces, time, tx, rx, probe, examination_object, metadata=metadata
     )
 
 
 class TestFrame:
-    def test_get_scanline(self, frame: c.Frame):
+    def test_get_timetrace(self, frame: c.Frame):
         tx = 1
         rx = 2
-        scan = frame.get_scanline(tx, rx)
+        scan = frame.get_timetrace(tx, rx)
         assert scan.shape == (frame.numsamples,)
         assert scan[0] == tx * 1000 + rx
 
         with pytest.raises(IndexError):
-            frame.get_scanline(1000, 0)
+            frame.get_timetrace(1000, 0)
 
     def test_expand_frame_assuming_reciprocity_hmc(self, frame):
         assert not frame.is_complete_assuming_reciprocity()
@@ -289,36 +289,36 @@ class TestFrame:
 
         for tx, rx in zip(expected_tx, expected_rx):
             if tx <= rx:
-                orig_scan = fmc_frame.get_scanline(tx, rx)
+                orig_scan = fmc_frame.get_timetrace(tx, rx)
             else:
-                orig_scan = fmc_frame.get_scanline(rx, tx)
-            expanded_scan = fmc_frame.get_scanline(tx, rx)
+                orig_scan = fmc_frame.get_timetrace(rx, tx)
+            expanded_scan = fmc_frame.get_timetrace(tx, rx)
             np.testing.assert_allclose(orig_scan, expanded_scan)
 
         fmc_frame2 = fmc_frame.expand_frame_assuming_reciprocity()
         np.testing.assert_array_equal(fmc_frame2.tx, fmc_frame.tx)
         np.testing.assert_array_equal(fmc_frame2.rx, fmc_frame.rx)
-        np.testing.assert_array_equal(fmc_frame2.scanlines, fmc_frame.scanlines)
+        np.testing.assert_array_equal(fmc_frame2.timetraces, fmc_frame.timetraces)
 
     def test_apply_filter(self, frame):
         filt = lambda x: -x
         frame2 = frame.apply_filter(filt)
         np.testing.assert_array_equal(frame2.tx, frame.tx)
         np.testing.assert_array_equal(frame2.rx, frame.rx)
-        np.testing.assert_allclose(frame2.scanlines, -frame.scanlines)
+        np.testing.assert_allclose(frame2.timetraces, -frame.timetraces)
 
     def test_subframe(self, frame):
         # start with a HMC with 4 elements
         # Retain only element 0, 1 and 3
-        frame_a = frame.subframe(scanlines_idx=[0, 1, 3, 4, 6, 9])
+        frame_a = frame.subframe(timetraces_idx=[0, 1, 3, 4, 6, 9])
         frame_b = frame.subframe_from_probe_elements(
             elements_idx=[0, 1, 3], make_subprobe=False
         )
 
         # frame_a and frame_b should be the same
-        assert frame_a.numscanlines == 6
-        assert frame_b.numscanlines == 6
-        np.testing.assert_allclose(frame_a.scanlines, frame_b.scanlines)
+        assert frame_a.numtimetraces == 6
+        assert frame_b.numtimetraces == 6
+        np.testing.assert_allclose(frame_a.timetraces, frame_b.timetraces)
         np.testing.assert_allclose(frame_a.tx, frame_b.tx)
         np.testing.assert_allclose(frame_a.rx, frame_b.rx)
         assert frame_a.probe is frame.probe
@@ -327,8 +327,8 @@ class TestFrame:
         frame_c = frame.subframe_from_probe_elements(
             elements_idx=[0, 1, 3], make_subprobe=True
         )
-        assert frame_c.numscanlines == 6
-        np.testing.assert_allclose(frame_c.scanlines, frame_a.scanlines)
+        assert frame_c.numtimetraces == 6
+        np.testing.assert_allclose(frame_c.timetraces, frame_a.timetraces)
         assert frame_c.probe.numelements == 3
 
 

@@ -31,9 +31,9 @@ def test_find_probe_loc_from_frontwall_ideal(A, B, dA, dB):
     distance_to_surface = np.array([dA, np.nan, dB])
 
     time = Time(0.0, 1.0, 50)
-    scanlines = np.zeros((len(tx), len(time)))
+    timetraces = np.zeros((len(tx), len(time)))
 
-    frame = Frame(scanlines, time, tx, rx, probe, ExaminationObject(Material(1.0)))
+    frame = Frame(timetraces, time, tx, rx, probe, ExaminationObject(Material(1.0)))
 
     frame, iso = reg.move_probe_over_flat_surface(
         frame, distance_to_surface, full_output=True
@@ -91,8 +91,8 @@ def test_find_probe_loc_from_frontwall_real(theta_deg):
     # empty fmc data
     tx, rx = arim.ut.fmc(numelements)
     time = Time(0.0, 1.0, 50)
-    scanlines = np.zeros((len(tx), len(time)))
-    frame = Frame(scanlines, time, tx, rx, probe, ExaminationObject(Material(1.0)))
+    timetraces = np.zeros((len(tx), len(time)))
+    frame = Frame(timetraces, time, tx, rx, probe, ExaminationObject(Material(1.0)))
 
     # Distance to surface: orthogonal projection on Oxy
     distance_to_surface = np.full(len(tx), np.nan)
@@ -112,14 +112,14 @@ def test_detect_surface_from_extrema():
     tx = np.array([0, 0, 1, 1, 2, 2])
     rx = np.array([0, 1, 1, 0, 2, 0])
 
-    scanlines = np.random.uniform(high=10.0, size=(len(tx), len(time)))
+    timetraces = np.random.uniform(high=10.0, size=(len(tx), len(time)))
 
     times_to_surface_expected = np.array([25.0, 26.0, 27.0, 28.0, 29.0, 30.0])
 
     for (i, t) in enumerate(times_to_surface_expected):
-        scanlines[i, time.closest_index(t)] = t
+        timetraces[i, time.closest_index(t)] = t
 
-    frame = Frame(scanlines, time, tx, rx, probe, ExaminationObject(Material(1.0)))
+    frame = Frame(timetraces, time, tx, rx, probe, ExaminationObject(Material(1.0)))
 
     times_to_surface = reg.detect_surface_from_extrema(frame)
 

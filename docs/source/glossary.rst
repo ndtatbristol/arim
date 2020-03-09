@@ -20,11 +20,11 @@ Glossary
         Component examined in order to detect defects.
 
     frame
-        Set of :term:`scanlines <scanline>` obtained at a given position of the probes. An
+        Set of :term:`timetraces <timetrace>` obtained at a given position of the probes. An
         inspection is usually made of several frames. See also: :ref:`frame`. Examples:
 
         - A :term:`FMC` frame is a frame.
-        - A FMC frame where one scanline is missing is a frame but is not a FMC frame.
+        - A FMC frame where one timetrace is missing is a frame but is not a FMC frame.
 
     FMC
         Full Matrix Capture.
@@ -75,7 +75,7 @@ Glossary
     scan axis
         Axis along which the probe is moved during an inspection.
 
-    scanline
+    timetrace
         Electrical signal over time obtained from exactly one transmitter and one receiver (possibly
         the same).
 

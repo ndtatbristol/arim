@@ -46,7 +46,7 @@ def compute_sensitivity(dataset_name, save):
     probe = arim.io.probe_from_conf(conf)
     examination_object = arim.io.block_in_immersion_from_conf(conf)
     tx, rx = arim.ut.fmc(probe.numelements)
-    numscanlines = len(tx)
+    numtimetraces = len(tx)
 
     model_options = dict(
         frequency=probe.frequency, probe_element_width=probe.dimensions.x[0]
@@ -89,7 +89,7 @@ def compute_sensitivity(dataset_name, save):
         ray_weights = bim.ray_weights_for_views(views, **model_options)
 
     sensitivity_images_dict = dict()
-    scanline_weights = np.ones(numscanlines)
+    timetrace_weights = np.ones(numtimetraces)
 
     for viewname, view in views.items():
         model_coefficients = arim.model.model_amplitudes_factory(
@@ -102,7 +102,7 @@ def compute_sensitivity(dataset_name, save):
         )
 
         sensitivity_images_dict[viewname] = model_coefficients.sensitivity_uniform_tfm(
-            scanline_weights
+            timetrace_weights
         )
 
     toc = time.time()

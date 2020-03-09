@@ -125,13 +125,13 @@ def _load_frame(exp_data, probe):
     rx = rx.astype(s.UINT) - 1
     # Remark: [...] is required to read in the case of HDF5 file
     # (and does nothing if we have a regular array
-    scanlines = np.squeeze(exp_data["time_data"][...])
-    scanlines = scanlines.astype(s.FLOAT)
+    timetraces = np.squeeze(exp_data["time_data"][...])
+    timetraces = timetraces.astype(s.FLOAT)
     # exp_data.time_data is such as a two consecutive time samples are stored contiguously, which
-    # is what we want. However Matlab saves either in Fortran order (shape: numscanlines x numsamples)
-    # or C order (shape: numsamples x numscanlines). We force using the later case.
-    if scanlines.flags.f_contiguous:
-        scanlines = scanlines.T
+    # is what we want. However Matlab saves either in Fortran order (shape: numtimetraces x numsamples)
+    # or C order (shape: numsamples x numtimetraces). We force using the later case.
+    if timetraces.flags.f_contiguous:
+        timetraces = timetraces.T
 
     timevect = np.squeeze(exp_data["time"])
     timevect = timevect.astype(s.FLOAT)
@@ -142,7 +142,7 @@ def _load_frame(exp_data, probe):
     material = Material(velocity)
     examination_object = ExaminationObject(material)
 
-    return Frame(scanlines, time, tx, rx, probe, examination_object)
+    return Frame(timetraces, time, tx, rx, probe, examination_object)
 
 
 def _load_from_scipy(file):

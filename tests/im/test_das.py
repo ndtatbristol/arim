@@ -34,13 +34,13 @@ def make_delay_and_sum_case_random(dtype_float, dtype_data, amplitudes="random")
     material = Material(vel)
     examination_object = ExaminationObject(material)
 
-    # scanlines
+    # timetraces
     # time = Time(start=0.35, step=0.001, num=100)
     time = Time(start=0.0, step=0.001, num=100)
 
     tx = np.array([0, 0, 1, 1, 2, 2], dtype=np.int)
     rx = np.array([0, 1, 0, 1, 0, 1], dtype=np.int)
-    numscanlines = len(tx)
+    numtimetraces = len(tx)
 
     numpoints = 10
 
@@ -48,14 +48,14 @@ def make_delay_and_sum_case_random(dtype_float, dtype_data, amplitudes="random")
     stop_lookup = (time.end - time.step) / 2
 
     np.random.seed(31031596)
-    scanlines = _random_uniform(
-        dtype_data, 100.0, 101.0, size=(numscanlines, len(time))
+    timetraces = _random_uniform(
+        dtype_data, 100.0, 101.0, size=(numtimetraces, len(time))
     )
     amplitudes_tx = _random_uniform(dtype_data, 1.0, 1.1, size=(numpoints, numelements))
     amplitudes_rx = _random_uniform(
         dtype_data, -1.0, -1.1, size=(numpoints, numelements)
     )
-    scanline_weights = _random_uniform(dtype_data, size=(numscanlines))
+    timetrace_weights = _random_uniform(dtype_data, size=(numtimetraces))
     lookup_times_tx = _random_uniform(
         dtype_float, start_lookup, stop_lookup, (numpoints, numelements)
     )
@@ -79,10 +79,10 @@ def make_delay_and_sum_case_random(dtype_float, dtype_data, amplitudes="random")
     # lookup_times_rx[1, 1] = time.end * 2.
 
     focal_law = arim.im.tfm.FocalLaw(
-        lookup_times_tx, lookup_times_rx, amplitudes, scanline_weights
+        lookup_times_tx, lookup_times_rx, amplitudes, timetrace_weights
     )
 
-    frame = Frame(scanlines, time, tx, rx, probe, examination_object)
+    frame = Frame(timetraces, time, tx, rx, probe, examination_object)
 
     return frame, focal_law
 

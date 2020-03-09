@@ -2,6 +2,7 @@
 Defines core objects of arim.
 """
 from collections import namedtuple
+import warnings
 import copy
 import enum
 import numpy as np
@@ -87,12 +88,12 @@ class Frame:
     """
     A frame contains the data received by a probe at a specific location.
 
-    Scanlines are stored a 2D array of length `numscanlines x numsamples`. Each line of the array  is a scanline, i.e.
+    timetraces are stored a 2D array of length `numtimetraces x numsamples`. Each line of the array  is a timetrace, i.e.
     the data received by a specific element when a specific element was transmitting.
 
     Parameters
     ----------
-    scanlines
+    timetraces
     tx
     rx
     probe
@@ -101,22 +102,22 @@ class Frame:
 
     Attributes
     ----------
-    scanlines : ndarray
-        Time-traces as a 2d array of shape `(numscanlines, numsamples)`.
+    timetraces : ndarray
+        Time-traces as a 2d array of shape `(numtimetraces, numsamples)`.
     time : Time
-        Time vector associated to all scanlines.
+        Time vector associated to all timetraces.
     tx : ndarray
-        1D array of length `numscanlines`. `tx[i]` is the index of the element
-        transmitting during the acquisition of the i-th scanline.
+        1D array of length `numtimetraces`. `tx[i]` is the index of the element
+        transmitting during the acquisition of the i-th timetrace.
     rx : ndarray
-        1D array of length `numscanlines`. `rx[i]` is the index of the element
-        receiving during the acquisition of the i-th scanline.
+        1D array of length `numtimetraces`. `rx[i]` is the index of the element
+        receiving during the acquisition of the i-th timetrace.
     probe : Probe
         Probe used during acquisition.
     examination_object : ExaminationObject
         Object inspected.
-    numscanlines : int
-        Number of scanlines in the frame.
+    numtimetraces : int
+        Number of timetraces in the frame.
     metadata : dict
         Metadata
 
@@ -124,7 +125,7 @@ class Frame:
     """
 
     def __init__(
-        self, scanlines, time, tx, rx, probe, examination_object, metadata=None
+        self, timetraces, time, tx, rx, probe, examination_object, metadata=None
     ):
         # Check shape and dimensions
         try:
@@ -135,7 +136,7 @@ class Frame:
             )
         numsamples = len(time)
 
-        scanlines = np.asarray(scanlines)
+        timetraces = np.asarray(timetraces)
         tx = np.asarray(tx)
         rx = np.asarray(rx)
         if tx.dtype.kind not in ("i", "u"):
@@ -147,24 +148,24 @@ class Frame:
                 "receivers must be integer indices (got {})".format(rx.dtype)
             )
 
-        (numscanlines, _) = helpers.get_shape_safely(
-            scanlines, "scanlines", (None, numsamples)
+        (numtimetraces, _) = helpers.get_shape_safely(
+            timetraces, "timetraces", (None, numsamples)
         )
-        _ = helpers.get_shape_safely(tx, "tx", (numscanlines,))
-        _ = helpers.get_shape_safely(rx, "rx", (numscanlines,))
+        _ = helpers.get_shape_safely(tx, "tx", (numtimetraces,))
+        _ = helpers.get_shape_safely(rx, "rx", (numtimetraces,))
 
         unique_tx_rx_pairs = {(tx_i, rx_i) for tx_i, rx_i in zip(tx, rx)}
-        if len(unique_tx_rx_pairs) < numscanlines:
-            raise ValueError("The frame contains duplicate scanlines")
+        if len(unique_tx_rx_pairs) < numtimetraces:
+            raise ValueError("The frame contains duplicate timetraces")
 
-        self.scanlines = scanlines
+        self.timetraces = timetraces
         self.tx = tx
         self.rx = rx
         self.time = time
         self.probe = probe
         self.examination_object = examination_object
 
-        self.numscanlines = numscanlines
+        self.numtimetraces = numtimetraces
         self.numsamples = numsamples
 
         if metadata is None:
@@ -172,14 +173,32 @@ class Frame:
         self.metadata = metadata
 
     @property
+    def numscanlines(self):
+        warnings.warn(
+            DeprecationWarning(
+                "Frame.numscanlines is deprecated, use Frame.numtimetraces instead"
+            )
+        )
+        return self.numtimetraces
+
+    @property
+    def scanlines(self):
+        warnings.warn(
+            DeprecationWarning(
+                "Frame.scanlines is deprecated, use Frame.timetraces instead"
+            )
+        )
+        return self.timetraces
+
+    @property
     def capture_method(self):
         return CaptureMethod[ut.infer_capture_method(self.tx, self.rx)]
 
     def apply_filter(self, filt):
         """
-        Filter the scanlines and save them in the frame.
+        Filter the timetraces and save them in the frame.
 
-        Warning: the attribute ``scanlines`` is overwritten during this operation.
+        Warning: the attribute ``timetraces`` is overwritten during this operation.
 
         Parameters
         ----------
@@ -188,13 +207,13 @@ class Frame:
         Returns
         -------
         frame: Frame
-            New Frame object where the scanlines are filtered. All objects are passed
+            New Frame object where the timetraces are filtered. All objects are passed
             by reference.
 
         """
-        new_scanlines = filt(self.scanlines)
+        new_timetraces = filt(self.timetraces)
         return self.__class__(
-            new_scanlines,
+            new_timetraces,
             self.time,
             self.tx,
             self.rx,
@@ -203,9 +222,9 @@ class Frame:
             self.metadata,
         )
 
-    def get_scanline(self, tx, rx):
+    def get_timetrace(self, tx, rx):
         """
-        Return the scanline corresponding to the pair (tx, rx).
+        Return the timetrace corresponding to the pair (tx, rx).
 
         Parameters
         ----------
@@ -219,18 +238,26 @@ class Frame:
         """
         match = np.logical_and(self.tx == tx, self.rx == rx)
 
-        match_scanline = self.scanlines[match]
-        if match_scanline.shape[0] == 1:
-            return match_scanline[0]
+        match_timetrace = self.timetraces[match]
+        if match_timetrace.shape[0] == 1:
+            return match_timetrace[0]
         else:
-            raise IndexError("no scanline")
+            raise IndexError("no timetrace")
+
+    def get_scanline(self, tx, rx):
+        warnings.warn(
+            DeprecationWarning(
+                "Frame.get_scanline is deprecated, use Frame.get_timetrace instead"
+            )
+        )
+        return self.get_timetrace(tx, rx)
 
     def expand_frame_assuming_reciprocity(self):
         """
-        Return a new Frame where new scanlines are inferred assuming reciprocity of
+        Return a new Frame where new timetraces are inferred assuming reciprocity of
         transmitters and receivers.
 
-        Assumes that the scanline obtained with the transmitter i and the receiver j
+        Assumes that the timetrace obtained with the transmitter i and the receiver j
         is the same as the one obtained with the transmitter j and the receiver i.
         If the original frame is a FMC, this function returns a copy of the original
         frame.
@@ -255,7 +282,9 @@ class Frame:
             (tx, rx): i for i, (tx, rx) in enumerate(zip(self.tx, self.rx))
         }
 
-        new_scanlines = np.empty((len(all_pairs), len(self.time)), self.scanlines.dtype)
+        new_timetraces = np.empty(
+            (len(all_pairs), len(self.time)), self.timetraces.dtype
+        )
 
         new_tx, new_rx = zip(*all_pairs)
         for new_scan_idx, (tx, rx) in enumerate(all_pairs):
@@ -266,10 +295,10 @@ class Frame:
                 # this is the expansion
                 old_scan_idx = pair_to_scan_idx[rx, tx]
 
-            new_scanlines[new_scan_idx] = self.scanlines[old_scan_idx]
+            new_timetraces[new_scan_idx] = self.timetraces[old_scan_idx]
 
         return self.__class__(
-            new_scanlines,
+            new_timetraces,
             self.time,
             new_tx,
             new_rx,
@@ -280,8 +309,8 @@ class Frame:
 
     def is_complete_assuming_reciprocity(self):
         """
-        Returns: "for all pair of elements (i, j), the scanline (i, j) is in the frame
-        if and only if the scanline (j, i) exists."
+        Returns: "for all pair of elements (i, j), the timetrace (i, j) is in the frame
+        if and only if the timetrace (j, i) exists."
 
         Returns
         -------
@@ -291,15 +320,15 @@ class Frame:
         reciprocal_pairs = {(rx, tx) for tx, rx in zip(self.tx, self.rx)}
         return orig_pairs == reciprocal_pairs
 
-    def drop_scanlines(self, scanlines_idx):
+    def drop_timetraces(self, timetraces_idx):
         pass
 
-    def subframe(self, scanlines_idx):
-        """Return a new Frame containing only a subset of the original scanlines.
+    def subframe(self, timetraces_idx):
+        """Return a new Frame containing only a subset of the original timetraces.
         
         Parameters
         ----------
-        scanlines_idx : slice or tuple or list or array
+        timetraces_idx : slice or tuple or list or array
             Index of the elements of the original probe to retain.
             Any valid numpy index is accepted.
         
@@ -311,14 +340,14 @@ class Frame:
         Notes
         -----
         The new Frame shares the time, probe, examination object and metadata as the original
-        one, and may or may not share the same scanlines, tx and rx depending on the kind of
+        one, and may or may not share the same timetraces, tx and rx depending on the kind of
         indexing.
         """
-        scanlines = self.scanlines[scanlines_idx]
-        tx = self.tx[scanlines_idx]
-        rx = self.rx[scanlines_idx]
+        timetraces = self.timetraces[timetraces_idx]
+        tx = self.tx[timetraces_idx]
+        rx = self.rx[timetraces_idx]
         return self.__class__(
-            scanlines,
+            timetraces,
             self.time,
             tx,
             rx,
@@ -357,12 +386,12 @@ class Frame:
          
         """
         retained_elements = np.arange(self.probe.numelements)[elements_idx]
-        retained_scanlines_idx = np.logical_and(
+        retained_timetraces_idx = np.logical_and(
             np.isin(self.tx, retained_elements), np.isin(self.rx, retained_elements)
         )
         if not make_subprobe:
-            # We just need to retain the scanlines that use the retained elements
-            return self.subframe(retained_scanlines_idx)
+            # We just need to retain the timetraces that use the retained elements
+            return self.subframe(retained_timetraces_idx)
         else:
             subprobe = self.probe.subprobe(elements_idx)
 
@@ -370,11 +399,11 @@ class Frame:
             mapper = np.zeros(self.probe.numelements, dtype=np.int_)
             mapper[elements_idx] = np.arange(subprobe.numelements)
 
-            tx = mapper[self.tx[retained_scanlines_idx]]
-            rx = mapper[self.rx[retained_scanlines_idx]]
-            scanlines = self.scanlines[retained_scanlines_idx]
+            tx = mapper[self.tx[retained_timetraces_idx]]
+            rx = mapper[self.rx[retained_timetraces_idx]]
+            timetraces = self.timetraces[retained_timetraces_idx]
             return self.__class__(
-                scanlines,
+                timetraces,
                 self.time,
                 tx,
                 rx,

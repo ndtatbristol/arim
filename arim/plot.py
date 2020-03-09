@@ -81,7 +81,7 @@ conf = Config(
 
 def plot_bscan(
     frame,
-    scanlines_idx,
+    timetraces_idx,
     use_dB=True,
     ax=None,
     title="B-scan",
@@ -92,13 +92,13 @@ def plot_bscan(
     savefig=None,
     filename="bscan",
 ):
-    """Plot Bscan (scanlines vs time)
+    """Plot Bscan (timetraces vs time)
     
     Parameters
     ----------
     frame : Frame
-    scanlines_idx : slice or tuple or ndarray
-        Scanlines to use. Any valid numpy array is accepted.
+    timetraces_idx : slice or tuple or ndarray
+        timetraces to use. Any valid numpy array is accepted.
     use_dB : bool, optional
     ax : matplotlib axis, optional
         Where to draw. Default: create a new figure and axis.
@@ -134,16 +134,16 @@ def plot_bscan(
     if savefig is None:
         savefig = conf["savefig"]
 
-    scanlines = frame.scanlines[scanlines_idx]
-    numscanlines = scanlines.shape[0]
+    timetraces = frame.timetraces[timetraces_idx]
+    numtimetraces = timetraces.shape[0]
     if use_dB:
-        scanlines = ut.decibel(scanlines)
+        timetraces = ut.decibel(timetraces)
         if clim is None:
             clim = [-40.0, 0.0]
 
     im = ax.imshow(
-        scanlines,
-        extent=[frame.time.start, frame.time.end, 0, numscanlines - 1],
+        timetraces,
+        extent=[frame.time.start, frame.time.end, 0, numtimetraces - 1],
         interpolation=interpolation,
         cmap=cmap,
         origin="lower",
@@ -153,9 +153,9 @@ def plot_bscan(
     ax.xaxis.set_major_formatter(micro_formatter)
     ax.xaxis.set_minor_formatter(micro_formatter)
 
-    # Use element index instead of scanline index (may be different)
-    tx = frame.tx[scanlines_idx]
-    rx = frame.rx[scanlines_idx]
+    # Use element index instead of timetrace index (may be different)
+    tx = frame.tx[timetraces_idx]
+    rx = frame.rx[timetraces_idx]
 
     def _y_formatter(i, pos):
         i = int(i)
@@ -194,7 +194,7 @@ def plot_bscan_pulse_echo(
     filename="bscan",
 ):
     """
-    Plot a B-scan. Use the pulse-echo scanlines.
+    Plot a B-scan. Use the pulse-echo timetraces.
 
     Parameters
     ----------
@@ -232,7 +232,7 @@ def plot_bscan_pulse_echo(
         filename=filename,
     )
     ax.set_ylabel("Element")
-    # Use element index instead of scanline index (may be different)
+    # Use element index instead of timetrace index (may be different)
     def _y_formatter(i, pos):
         i = int(i)
         if i >= len(elements):
@@ -262,13 +262,13 @@ def plot_psd(
     filename="psd",
 ):
     """
-    Plot the estimated power spectrum of a scanline using Welch's method.
+    Plot the estimated power spectrum of a timetrace using Welch's method.
 
     Parameters
     ----------
     frame : Frame
     idx : int or slice or list
-        Index or indices of the scanline to use. If multiple indices are given,
+        Index or indices of the timetrace to use. If multiple indices are given,
         the arithmetical mean of all PSDs is plotted. Default: use all
     to_show
     welch_params : dict
@@ -317,14 +317,14 @@ def plot_psd(
     lines = {}
 
     if show_raw:
-        x = frame.scanlines_raw[idx].real
+        x = frame.timetraces_raw[idx].real
         freq, pxx = scipy.signal.welch(x, fs, **welch_params)
         if pxx.ndim == 2:
             pxx = np.mean(pxx, axis=0)
         line = ax.plot(freq, pxx, label="raw".format(idx=idx))
         lines["raw"] = line
     if show_filtered:
-        x = frame.scanlines[idx].real
+        x = frame.timetraces[idx].real
         freq, pxx = scipy.signal.welch(x, fs, **welch_params)
         if pxx.ndim == 2:
             pxx = np.mean(pxx, axis=0)

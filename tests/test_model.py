@@ -973,36 +973,36 @@ def bak_test_sensitivity():
 
     # FMC case
     tx, rx = arim.ut.fmc(numelements)
-    numscanlines = len(tx)
-    scanline_weights = np.ones(numscanlines)
+    numtimetraces = len(tx)
+    timetrace_weights = np.ones(numtimetraces)
 
-    model_amplitudes = np.zeros((numpoints, numscanlines), complex)
+    model_amplitudes = np.zeros((numpoints, numtimetraces), complex)
     model_amplitudes[0] = x
 
     # write on result
-    model.sensitivity_image(model_amplitudes, scanline_weights, result)
+    model.sensitivity_image(model_amplitudes, timetrace_weights, result)
     np.testing.assert_almost_equal(result[0], numelements * numelements)
     np.testing.assert_allclose(result[1:], 0.0)
 
     # create a new array
-    result2 = model.sensitivity_image(model_amplitudes, scanline_weights)
+    result2 = model.sensitivity_image(model_amplitudes, timetrace_weights)
     np.testing.assert_almost_equal(result, result2)
 
     # FMC case
     tx, rx = arim.ut.hmc(numelements)
-    numscanlines = len(tx)
-    scanline_weights = 2.0 * np.ones(numscanlines)
-    scanline_weights[tx == rx] = 1.0
+    numtimetraces = len(tx)
+    timetrace_weights = 2.0 * np.ones(numtimetraces)
+    timetrace_weights[tx == rx] = 1.0
 
-    model_amplitudes = np.zeros((numpoints, numscanlines), complex)
+    model_amplitudes = np.zeros((numpoints, numtimetraces), complex)
     model_amplitudes[0] = x
 
-    model.sensitivity_image(model_amplitudes, scanline_weights, result)
+    model.sensitivity_image(model_amplitudes, timetrace_weights, result)
     np.testing.assert_almost_equal(result[0], numelements * numelements)
     np.testing.assert_allclose(result[1:], 0.0)
 
     # create a new array
-    result2 = model.sensitivity_image(model_amplitudes, scanline_weights)
+    result2 = model.sensitivity_image(model_amplitudes, timetrace_weights)
     np.testing.assert_almost_equal(result, result2)
 
 
@@ -1084,7 +1084,7 @@ def test_model_amplitudes_factory():
     # tx, rx = arim.ut.hmc(context['numelements'])
     tx = np.array([0, 0, 0])
     rx = np.array([0, 0, 0])
-    numscanlines = len(tx)
+    numtimetraces = len(tx)
     numpoints = context["numpoints"]
 
     for viewname, view in views.items():
@@ -1095,17 +1095,17 @@ def test_model_amplitudes_factory():
         a_ref = amps[...].copy()
         np.testing.assert_array_equal(a_ref, amps[...])
 
-        assert amps.shape == (numpoints, numscanlines)
-        assert amps[...].shape == (numpoints, numscanlines)
-        assert amps[0].shape == (numscanlines,)
-        assert amps[:1].shape == (1, numscanlines)
-        assert amps[:1, ...].shape == (1, numscanlines)
-        assert amps[slice(0, 1), ...].shape == (1, numscanlines)
+        assert amps.shape == (numpoints, numtimetraces)
+        assert amps[...].shape == (numpoints, numtimetraces)
+        assert amps[0].shape == (numtimetraces,)
+        assert amps[:1].shape == (1, numtimetraces)
+        assert amps[:1, ...].shape == (1, numtimetraces)
+        assert amps[slice(0, 1), ...].shape == (1, numtimetraces)
 
         with pytest.raises(IndexError):
             amps[0, 0]
 
-        for k, i in np.ndindex(numpoints, numscanlines):
+        for k, i in np.ndindex(numpoints, numtimetraces):
             assert amps[k][i] == a_ref[k, i]
             assert amps[k, ...][i] == a_ref[k, i]
 
@@ -1121,17 +1121,17 @@ def test_model_amplitudes_factory():
         )
         np.testing.assert_array_equal(a_ref, amps[...])
 
-        assert amps.shape == (numpoints, numscanlines)
-        assert amps[...].shape == (numpoints, numscanlines)
-        assert amps[0].shape == (numscanlines,)
-        assert amps[:1].shape == (1, numscanlines)
-        assert amps[:1, ...].shape == (1, numscanlines)
-        assert amps[slice(0, 1), ...].shape == (1, numscanlines)
+        assert amps.shape == (numpoints, numtimetraces)
+        assert amps[...].shape == (numpoints, numtimetraces)
+        assert amps[0].shape == (numtimetraces,)
+        assert amps[:1].shape == (1, numtimetraces)
+        assert amps[:1, ...].shape == (1, numtimetraces)
+        assert amps[slice(0, 1), ...].shape == (1, numtimetraces)
 
         with pytest.raises(ValueError):
             amps[0, 0]
 
-        for k, i in np.ndindex(numpoints, numscanlines):
+        for k, i in np.ndindex(numpoints, numtimetraces):
             assert amps[k][i] == a_ref[k, i]
             assert amps[k, ...][i] == a_ref[k, i]
 
@@ -1149,13 +1149,13 @@ def test_sensitivity_tfm():
     ray_weights = make_random_ray_weights(context)
     scattering_dict = make_point_source_scattering_func(context)
 
-    # we have only one element, duplicate scanline to check the sum is actually performed
+    # we have only one element, duplicate timetrace to check the sum is actually performed
     tx = np.array([0, 0])
     rx = np.array([0, 0])
-    numscanlines = len(tx)
+    numtimetraces = len(tx)
     numpoints = context["numpoints"]
 
-    scanline_weights = np.array([3.0, 7.0])
+    timetrace_weights = np.array([3.0, 7.0])
 
     for viewname, view in views.items():
         amps = model.model_amplitudes_factory(
@@ -1163,33 +1163,33 @@ def test_sensitivity_tfm():
         )
 
         # Sensitivity for uniform TFM
-        sensitivity = model.sensitivity_uniform_tfm(amps, scanline_weights)
+        sensitivity = model.sensitivity_uniform_tfm(amps, timetrace_weights)
         assert sensitivity.shape == (numpoints,)
         sensitivity2 = model.sensitivity_uniform_tfm(
-            amps, scanline_weights, block_size=1
+            amps, timetrace_weights, block_size=1
         )
         np.testing.assert_array_equal(sensitivity, sensitivity2)
 
         for k in range(numpoints):
             expected = 0.0
-            for i in range(numscanlines):
-                expected += amps[k][i] * scanline_weights[i]
-            expected /= numscanlines
+            for i in range(numtimetraces):
+                expected += amps[k][i] * timetrace_weights[i]
+            expected /= numtimetraces
             assert np.isclose(sensitivity[k], expected)
 
         # Sensitivity for model-assited TFM
-        sensitivity = model.sensitivity_model_assisted_tfm(amps, scanline_weights)
+        sensitivity = model.sensitivity_model_assisted_tfm(amps, timetrace_weights)
         assert sensitivity.shape == (numpoints,)
         sensitivity2 = model.sensitivity_model_assisted_tfm(
-            amps, scanline_weights, block_size=1
+            amps, timetrace_weights, block_size=1
         )
         np.testing.assert_array_equal(sensitivity, sensitivity2)
 
         for k in range(numpoints):
             expected = 0.0
-            for i in range(numscanlines):
-                expected += np.abs(amps[k][i] * amps[k][i]) * scanline_weights[i]
-            expected /= numscanlines
+            for i in range(numtimetraces):
+                expected += np.abs(amps[k][i] * amps[k][i]) * timetrace_weights[i]
+            expected /= numtimetraces
             assert np.isclose(sensitivity[k], expected)
 
 

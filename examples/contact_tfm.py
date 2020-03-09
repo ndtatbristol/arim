@@ -43,17 +43,17 @@ filt = arim.signal.Hilbert() + arim.signal.ButterworthBandpass(
 frame_raw = frame
 frame = frame_raw.apply_filter(filt)
 
-# %% Plot scanlines
+# %% Plot timetraces
 plt.figure()
 tx, rx = (19, 19)
-plt.plot(frame_raw.time.samples, frame_raw.get_scanline(tx, rx), label="raw")
-plt.plot(frame.time.samples, np.abs(frame.get_scanline(tx, rx)), label="filtered")
+plt.plot(frame_raw.time.samples, frame_raw.get_timetrace(tx, rx), label="raw")
+plt.plot(frame.time.samples, np.abs(frame.get_timetrace(tx, rx)), label="filtered")
 plt.gca().xaxis.set_major_formatter(aplt.micro_formatter)
 plt.gca().xaxis.set_minor_formatter(aplt.micro_formatter)
 plt.xlabel("time (µs)")
 plt.ylabel("amplitude (1)")
 plt.legend()
-plt.title("Scanlines tx={} rx={}".format(tx, rx))
+plt.title("timetraces tx={} rx={}".format(tx, rx))
 plt.draw()
 
 # %% Perform TFM:

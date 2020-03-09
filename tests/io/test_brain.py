@@ -22,13 +22,13 @@ def test_load_expdata(expdata):
     assert frame.examination_object.material.longitudinal_vel == 6300
     assert np.isclose(frame.time.step, 4.0e-8)
     assert np.isclose(frame.time.start, 5.0e-6)
-    assert frame.scanlines.shape == (2080, 300)
+    assert frame.timetraces.shape == (2080, 300)
     assert np.allclose(
-        frame.scanlines[0, :4], [0.05468750, 0.05468750, 0.05468750, 0.04687500]
-    )  # first scanline
+        frame.timetraces[0, :4], [0.05468750, 0.05468750, 0.05468750, 0.04687500]
+    )  # first timetrace
     assert np.allclose(
-        frame.scanlines[-1, :4], [0.07031250, 0.06250000, 0.06250000, 0.06250000]
-    )  # last scanline
+        frame.timetraces[-1, :4], [0.07031250, 0.06250000, 0.06250000, 0.06250000]
+    )  # last timetrace
     assert np.allclose(frame.tx[:4], [0, 0, 0, 0])
     assert np.allclose(frame.rx[:4], [0, 1, 2, 3])
     assert frame.probe.numelements == 64

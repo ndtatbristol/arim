@@ -400,7 +400,7 @@ def test_fulltime_model(use_multifreq, show_plots):
     toneburst_f = np.fft.rfft(toneburst)
     toneburst_freq = np.fft.rfftfreq(len(toneburst_time), dt)
 
-    # Allocate a long enough time vector for the scanlines
+    # Allocate a long enough time vector for the timetraces
     views = bim.make_views(
         exam_obj,
         probe_p,
@@ -415,8 +415,10 @@ def test_fulltime_model(use_multifreq, show_plots):
             for view in views.values()
         )
     )
-    scanlines_time = arim.Time(0.0, dt, math.ceil(max_delay / dt) + len(toneburst_time))
-    scanlines = None
+    timetraces_time = arim.Time(
+        0.0, dt, math.ceil(max_delay / dt) + len(toneburst_time)
+    )
+    timetraces = None
 
     # Run model
     if use_multifreq:
@@ -440,17 +442,17 @@ def test_fulltime_model(use_multifreq, show_plots):
     )
 
     for unshifted_transfer_func, delays in transfer_function_iterator:
-        scanlines = arim.model.transfer_func_to_scanlines(
+        timetraces = arim.model.transfer_func_to_timetraces(
             unshifted_transfer_func,
             delays,
-            scanlines_time,
+            timetraces_time,
             toneburst_time,
             toneburst_freq,
             toneburst_f,
             toneburst_t0_idx,
-            scanlines=scanlines,
+            timetraces=timetraces,
         )
-    frame = arim.Frame(scanlines, scanlines_time, tx_list, rx_list, probe, exam_obj)
+    frame = arim.Frame(timetraces, timetraces_time, tx_list, rx_list, probe, exam_obj)
     if show_plots:
         import matplotlib.pyplot as plt
         import arim.plot as aplt
@@ -461,8 +463,8 @@ def test_fulltime_model(use_multifreq, show_plots):
         tx = 0
         rx = probe.numelements - 1
         plt.figure()
-        plt.plot(np.real(frame.get_scanline(tx, rx)), label=f"tx={tx}, rx={rx}")
-        plt.plot(np.real(frame.get_scanline(rx, tx)), label=f"tx={rx}, rx={tx}")
+        plt.plot(np.real(frame.get_timetrace(tx, rx)), label=f"tx={tx}, rx={rx}")
+        plt.plot(np.real(frame.get_timetrace(rx, tx)), label=f"tx={rx}, rx={tx}")
         plt.title(f"test_fulltime_model - use_multifreq={use_multifreq}")
         plt.legend()
         plt.show()
