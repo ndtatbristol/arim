@@ -847,7 +847,7 @@ def plot_interfaces(
             continue
         if i == numinterfaces - 1 and not show_last:
             continue
-        line, = ax.plot(
+        (line,) = ax.plot(
             interface.points.x, interface.points.z, marker, label=interface.points.name
         )
 

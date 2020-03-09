@@ -30,7 +30,7 @@ def F(xi, xi2, h, beta):
     sigma_1 = sigma(beta, xi)
     sigma_2 = sigma(beta, 1)
 
-    L2 = -(beta ** 2 - 0.5) ** 2 + beta ** 2 * sigma_1 * sigma_2
+    L2 = -((beta ** 2 - 0.5) ** 2) + beta ** 2 * sigma_1 * sigma_2
     return F ** 2 * L2
 
 
@@ -84,7 +84,7 @@ def A_x_F2_imag(x, data):
 @numba.njit(cache=True)
 def A_x_F(x, xi, xi2, h_nodes, z):
     return (
-        -((1 + 1j * x ** 2) ** 2 - 0.5) ** 2
+        -(((1 + 1j * x ** 2) ** 2 - 0.5) ** 2)
         * P(xi2 * h_nodes * (1 + 1j * x ** 2))
         / sqrt(2 + 1j * x ** 2)
         * exp(-1j * pi / 4)
@@ -208,7 +208,7 @@ def A_z_F2_imag(x, data):
 @numba.njit(cache=True)
 def A_z_F(x, xi, xi2, h_nodes, z):
     return (
-        -((xi + 1j * x ** 2) ** 2 - 0.5) ** 2
+        -(((xi + 1j * x ** 2) ** 2 - 0.5) ** 2)
         * P(xi2 * h_nodes * (xi + 1j * x ** 2))
         / sqrt(2 * xi + 1j * x ** 2)
         * exp(-1j * pi / 4)

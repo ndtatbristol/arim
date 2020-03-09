@@ -141,7 +141,7 @@ def plot_sensitivity(dataset_name, save):
     ref_db = max(np.nanmax(np.abs(data)) for data in loaded["images"].values())
 
     for (viewname, data), ax in zip(loaded["images"].items(), axes.ravel()):
-        clim = [-40, 0.]
+        clim = [-40, 0.0]
         ax, im = aplt.plot_oxz(
             data,
             grid,
@@ -153,7 +153,7 @@ def plot_sensitivity(dataset_name, save):
             savefig=False,
             draw_cbar=False,
         )
-        ax.set_title(viewname, y=.9, size="small")
+        ax.set_title(viewname, y=0.9, size="small")
         ax.set_adjustable("box")
         ax.axis([xmin, xmax, zmax, zmin])
 

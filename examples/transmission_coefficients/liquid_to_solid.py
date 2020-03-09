@@ -20,13 +20,13 @@ NULL_TRANSMISSION_ABOVE_CRIT_ANGLES = False
 SAVEFIG = False
 
 # water:
-c_fluid = 1480.
-rho_fluid = 1000.
+c_fluid = 1480.0
+rho_fluid = 1000.0
 
 # aluminium :
-c_l = 6320.
-c_t = 3130.
-rho_solid = 2700.
+c_l = 6320.0
+c_t = 3130.0
+rho_solid = 2700.0
 
 # %% Computation of reflection and transmission coefficients
 
@@ -132,7 +132,7 @@ if SAVEFIG:
 # %% Computation of the repartition of energy
 
 # incident pressure (no effect because of normalisation, we keep it for clarity of the formulas)
-pres_i = 10000.
+pres_i = 10000.0
 
 # cross section areas:
 area_r = np.cos(alpha_fluid).real

@@ -30,7 +30,7 @@ for key in ["LL", "LT", "TL", "TT"]:
 # %% Scattering as functions of incident and scattered angles
 
 fig, ax = plt.subplots()
-theta_in = 0.
+theta_in = 0.0
 theta_out = np.linspace(0, np.pi, 100)
 scat_vals = scat_obj(theta_in, theta_out, freq)
 for key in ["LL", "LT", "TL", "TT"]:
