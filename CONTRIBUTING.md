@@ -15,7 +15,7 @@ A developer installation requires extra packages for testing, the documentation 
 The recommended method is to use an [editable installation](https://pip.pypa.io/en/stable/reference/pip_install/), as follows:
 
 1) Duplicate code from git repository
-2) In the root directory which contains ```setup.py``, type in a console:
+2) In the root directory which contains ``setup.py``, type in a console:
 ```
 pip install -e .[dev]
 ```
