@@ -62,7 +62,7 @@ def load_conf_from_str(stream):
     -------
     arim.config.Config
     """
-    return config.Config(yaml.load(stream))
+    return config.Config(yaml.safe_load(stream))
 
 
 def load_conf_file(filename):
