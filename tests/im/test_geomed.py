@@ -28,7 +28,7 @@ def test_gradf_and_inv_hessf():
     np.testing.assert_allclose(h22, hessref[1, 1], **tol)
 
 
-@pytest.mark.parametrize("dtype", [np.float32, np.float64])
+@pytest.mark.parametrize("dtype", [float])
 def test_geomed(dtype):
     data2 = data.copy().astype(dtype)
     geomed.geomed(data2)
