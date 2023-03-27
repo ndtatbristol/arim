@@ -481,7 +481,7 @@ def plot_oxz(
 
     # Like axis('equal') but mitigates https://github.com/matplotlib/matplotlib/issues/11416
     # adjustable=box to avoid white space (default in matplotlib 3)
-    ax.axis(aspect=1, adjustable="box")
+    ax.set_aspect(aspect=1, adjustable="box")
     ax.axis([grid.xmin, grid.xmax, grid.zmax, grid.zmin])
     if savefig:
         if filename is None:

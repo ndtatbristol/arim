@@ -5,7 +5,7 @@ https://github.com/pypa/sampleproject
 
 From https://github.com/pypa/sampleproject/blob/master/setup.py
 """
- # 
+
 from setuptools import setup, find_packages, Extension
 
 import codecs
