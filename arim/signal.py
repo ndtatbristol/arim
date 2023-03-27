@@ -19,6 +19,7 @@ __all__ = [
     "NoFilter",
     "Abs",
     "Gaussian",
+    "Hanning",
     "rfft_to_hilbert",
     "timeshift_spectra",
 ]
@@ -176,6 +177,62 @@ class ButterworthBandpass(Filter):
 
     def __repr__(self):
         return "<{} at {}>".format(str(self), hex(id(self)))
+    
+
+class Hanning(Filter):
+    """ 
+    Hanning Filter - Apply the Hann function.
+
+    Return the analytical signal
+    
+    Parameters
+    ----------
+    nsamples : int
+        ``len(time)``
+    centre_freq : float
+        In Hz
+    half_bandwidth : float
+        In Hz
+    time : arim.Time
+        Time object. This filter can be used only on data sampled consistently with the attribute
+    ``time``.
+    force_zero : bool
+        If True (default), the spectrum amplitudes below ``-db_down`` will be
+        replaced by exactly zero.
+    db_down : float
+
+    """
+
+    def __init__(
+        self, nsamples, centre_freq, half_bandwidth, time
+    ):
+
+        # fract = np.power(10, -db_down / 20.0)
+        max_freq = 1.0 / (time.step)
+        peak_pos_fract = centre_freq / max_freq
+        half_width_fract = half_bandwidth / max_freq
+        r = np.arange(nsamples) / (nsamples - 1)
+        r1 = 0.5 * (1 + np.cos((r - peak_pos_fract) / half_width_fract * np.pi))
+        self.samples = nsamples
+        self.centre_freq = centre_freq
+        self.half_bandwidth = half_bandwidth
+        self.max_freq = max_freq
+        self.filter_window = r1 * np.logical_and((r >= (peak_pos_fract - half_width_fract)), (r <= peak_pos_fract + half_width_fract))
+        # print('Hanning')
+
+    def __str__(self):
+        return "{} [{:.1f}, {:.1f}] MHz order {}".format(
+            self.__class__.__qualname__,
+            self.max_freq * 1e-6,
+            self.half_bandwidth * 1e-6,
+            self.max_freq * 1e-6,
+        )
+
+    def __call__(self, arr):
+        arr = np.asarray(arr)
+        # broadcast window to (1, 1, ..., numsamples)
+        window = np.array(self.filter_window, ndmin=arr.ndim)
+        return np.fft.ifft(np.fft.fft(arr) * window)
 
 
 class Hilbert(Filter):
