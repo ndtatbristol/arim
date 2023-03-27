@@ -136,8 +136,12 @@ def _load_frame(exp_data, probe):
     timevect = np.squeeze(exp_data["time"])
     timevect = timevect.astype(s.FLOAT)
     time = Time.from_vect(timevect)
-
-    velocity = np.squeeze(exp_data["ph_velocity"])
+    try:
+        velocity = np.squeeze(exp_data["material"]["vel_spherical_harmonic_coeffs"])
+    # Old version of brain saves phase velocity, new version has it saved in material.
+    except ValueError:
+        velocity = np.squeeze(exp_data["ph_velocity"])
+    
     velocity = velocity.astype(s.FLOAT)
     material = Material(velocity)
     examination_object = ExaminationObject(material)
