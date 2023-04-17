@@ -10,16 +10,16 @@ import arim.geometry as g
 DATASET_1 = dict(
     # set1:
     points1=g.Points.from_xyz(
-        np.array([0, 1, 1], dtype=np.float),
-        np.array([0, 0, 0], dtype=np.float),
-        np.array([1, 0, 2], dtype=np.float),
+        np.array([0, 1, 1], dtype=np.float64),
+        np.array([0, 0, 0], dtype=np.float64),
+        np.array([1, 0, 2], dtype=np.float64),
         "Points1",
     ),
     # set 2:
     points2=g.Points.from_xyz(
-        np.array([0, 1, 2], dtype=np.float),
-        np.array([0, -1, -2], dtype=np.float),
-        np.array([0, 0, 1], dtype=np.float),
+        np.array([0, 1, 2], dtype=np.float64),
+        np.array([0, -1, -2], dtype=np.float64),
+        np.array([0, 0, 1], dtype=np.float64),
         "Points2",
     ),
 )
@@ -78,10 +78,10 @@ def test_rotations():
         assert np.allclose(identity, rot(-theta) @ rot(theta))
 
     # Check the rotations of 90° are correct
-    v = np.array((1, 2, 3), dtype=float)
-    v_x = np.array((1, -3, 2), dtype=float)
-    v_y = np.array((3, 2, -1), dtype=float)
-    v_z = np.array((-2, 1, 3), dtype=float)
+    v = np.array((1, 2, 3), dtype=np.float64)
+    v_x = np.array((1, -3, 2), dtype=np.float64)
+    v_y = np.array((3, 2, -1), dtype=np.float64)
+    v_z = np.array((-2, 1, 3), dtype=np.float64)
     phi = np.pi / 2
     assert np.allclose(v_x, rot_x(phi) @ v)
     assert np.allclose(v_y, rot_y(phi) @ v)
@@ -98,7 +98,7 @@ def test_norm2():
     assert np.allclose(g.norm2(x, y, z), [1.0, np.sqrt(5.0)])
 
     # using out:
-    out = np.array(0.0, dtype=np.float)
+    out = np.array(0.0, dtype=np.float64)
     out1 = g.norm2(0.0, 0.0, 2.0, out=out)
     assert out is out1
     assert np.isclose(out, 2.0)
@@ -374,7 +374,7 @@ class TestPoints:
 
     @staticmethod
     def make_points(shape, name, size):
-        coords = np.arange(size * 3, dtype=np.float).reshape((*shape, 3))
+        coords = np.arange(size * 3, dtype=np.float64).reshape((*shape, 3))
         raw_coords = np.copy(coords)
 
         points = g.Points(coords, name)
@@ -782,7 +782,7 @@ class TestCoordinateSystem:
         assert cs_expect.isclose(cs_out)
 
     def test_convert_gcs(self):
-        points = g.Points(np.arange(12, dtype=np.float).reshape((4, 3)))
+        points = g.Points(np.arange(12, dtype=np.float64).reshape((4, 3)))
 
         gcs = g.GCS
 
@@ -841,7 +841,7 @@ class TestCoordinateSystem:
         """
         ultimate test
         """
-        points = g.Points(np.arange(15, dtype=np.float).reshape((5, 3)))
+        points = g.Points(np.arange(15, dtype=np.float64).reshape((5, 3)))
         points_cs_init = cs.convert_from_gcs(points)
 
         # define a nasty isometry:
@@ -888,7 +888,7 @@ def mock_euclidean_distance(points1, points2):
     """
     global EUCLIDEAN_DISTANCE_1
     if EUCLIDEAN_DISTANCE_1 is None:
-        distance = np.full((len(points1), len(points2)), 0, dtype=np.float)
+        distance = np.full((len(points1), len(points2)), 0, dtype=np.float64)
         for i in range(len(points1)):
             for j in range(len(points2)):
                 distance[i, j] = math.sqrt(
@@ -918,7 +918,7 @@ def test_euclidean_distance_advanced():
     assert np.allclose(np.real(distance), mock_distance)
 
     distance = np.full(
-        (len(DATASET_1["points1"]), len(DATASET_1["points2"])), 0.0, dtype=np.float
+        (len(DATASET_1["points1"]), len(DATASET_1["points2"])), 0.0, dtype=np.float64
     )
     g.distance_pairwise(**DATASET_1, out=distance)  # write inplace
     assert np.allclose(distance, mock_distance)
