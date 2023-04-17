@@ -207,7 +207,6 @@ class Hanning(Filter):
         self, nsamples, centre_freq, half_bandwidth, time
     ):
 
-        # fract = np.power(10, -db_down / 20.0)
         max_freq = 1.0 / (time.step)
         peak_pos_fract = centre_freq / max_freq
         half_width_fract = half_bandwidth / max_freq
@@ -218,7 +217,6 @@ class Hanning(Filter):
         self.half_bandwidth = half_bandwidth
         self.max_freq = max_freq
         self.filter_window = r1 * np.logical_and((r >= (peak_pos_fract - half_width_fract)), (r <= peak_pos_fract + half_width_fract))
-        # print('Hanning')
 
     def __str__(self):
         return "{} [{:.1f}, {:.1f}] MHz order {}".format(
@@ -299,7 +297,6 @@ class Gaussian(Filter):
         self.half_bandwidth = half_bandwidth
         self.max_freq = max_freq
         self.filter_window = np.exp(-np.power(r / r1, 2))
-        # print('Gaussian')
         if force_zero:
             self.filter_window[self.filter_window < fract] = 0
 
