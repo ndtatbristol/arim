@@ -1,0 +1,7 @@
+furo==2021.11.16
+numba==0.56.4
+numpy==1.23.5
+scipy==1.10.1
+pyyaml==6.0
+sphinx_rtd_theme
+matplotlib==3.7.1
