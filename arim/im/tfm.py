@@ -71,6 +71,69 @@ class TxRxAmplitudes:
         yield self.amplitudes_rx
 
 
+def angle_limit_amplitudes(theta, phi, limit, elev=0., azim=np.pi/2):
+    """
+    Apply an angle limit to the probe. Hanning window applied over limit
+    centred on elevation. Assumes 2D.
+
+    Parameters
+    ----------
+    theta : ndarray
+        Shape (numtx, numgridpoints)
+        Angle made by the ray from the probe.
+    limit : float
+    elev : float, optional
+
+    Returns
+    -------
+    TxRxAmplitudes
+    
+    """
+    lookvec = np.asarray([
+        np.sin(azim) * np.sin(elev),
+        np.cos(azim) * np.sin(elev), 
+                       np.cos(elev)
+    ])
+    radial  = np.asarray([
+        np.cos(phi) * np.sin(theta),
+        np.sin(phi) * np.cos(theta),
+                      np.cos(theta)
+    ]).transpose(1, 2, 0)
+    gamma = np.dot(radial, lookvec)
+    amplitudes = np.zeros(gamma.shape)
+    amplitudes[np.abs(gamma) >= limit] = (np.cos(gamma[np.abs(gamma) >= limit] * np.pi / limit) + 1) / 2
+    return TxRxAmplitudes(amplitudes, amplitudes)
+
+
+def angle_limit_contact(grid, probe, limit, elev=0., azim=np.pi/2):
+    """
+    Calculates the amplitudes required for the focal law when the grid is in
+    contact with the probe (i.e. one leg, no reflections).
+
+    Parameters
+    ----------
+    grid : Points
+    probe : Probe
+    limit : float
+    elev : float, optional
+    azim : float, optional
+
+    Returns
+    -------
+    TxRxAmplitudes
+
+    """
+    grid = grid.to_1d_points().reshape((-1, 1))
+    probe = probe.locations.reshape((1, -1))
+    x = grid.x - probe.x
+    y = grid.y - probe.y
+    z = grid.z - probe.z
+    
+    theta = np.arctan2(np.sqrt(x*x + y*y), z)
+    phi = np.arctan2(y, x)
+    return angle_limit_amplitudes(theta, phi, limit, elev, azim)
+
+
 class FocalLaw:
     """
     Focal law for TFM.

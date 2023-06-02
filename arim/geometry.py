@@ -374,7 +374,24 @@ class Points:
         Points
 
         """
-        return Points(self.coords.reshape((self.size, 3)), self.name)
+        return self.reshape(self.size)
+    
+    def reshape(self, new_shape):
+        """
+        Returns the reshaped coordinates.
+
+        Parameters
+        ----------
+        shape : tuple
+
+        Returns
+        -------
+        Points
+
+        """
+        if isinstance(new_shape, int):
+            new_shape = (new_shape,)
+        return Points(self.coords.reshape((*new_shape, 3)), self.name)
 
 
 OrientedPoints = namedtuple("OrientedPoints", "points orientations")
