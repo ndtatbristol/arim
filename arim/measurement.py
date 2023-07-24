@@ -137,14 +137,18 @@ def move_probe_over_flat_surface(frame, distance_to_surface, full_output=False):
     # I/ keep only pulse echo timetraces
     # ---------------------------------
 
+    numelements = frame.probe.numelements
+    dead_elements = np.asarray(range(numelements))[frame.probe.dead_elements]
+    
     # Consider only pulse-echo data:
     pulse_echo = frame.tx == frame.rx
+    pulse_echo[np.any(frame.tx.reshape(-1, 1) == dead_elements.reshape(1, -1), axis=1)] = False
+    pulse_echo[np.any(frame.rx.reshape(-1, 1) == dead_elements.reshape(1, -1), axis=1)] = False
     if sum(pulse_echo) < 2:
         raise ValueError("The frame must have at least 2 pulse echo timetraces.")
 
     distance_to_surface = distance_to_surface[pulse_echo]
     all_locations = frame.probe.locations_pcs
-    numelements = frame.probe.numelements
 
     if np.any(distance_to_surface < 0):
         raise ValueError("Negative distance.")
