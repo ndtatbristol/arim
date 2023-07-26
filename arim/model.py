@@ -21,6 +21,7 @@ import numba
 from numpy.core.umath import sin, cos
 
 from . import core as c, _scat, helpers, signal
+from .config import USE_PARALLEL
 
 logger = logging.getLogger(__name__)
 
@@ -1650,7 +1651,7 @@ def sensitivity_model_assisted_tfm(
     return sensitivity
 
 
-@numba.njit(parallel=True, nogil=True)
+@numba.njit(parallel=USE_PARALLEL, nogil=True)
 def _timeshift_timedomain(unshifted_response, delays, dt, t0_idx, out):
     n = unshifted_response.shape[1]
     for idx in numba.prange(unshifted_response.shape[0]):

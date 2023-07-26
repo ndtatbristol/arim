@@ -6,9 +6,12 @@ import pprint
 import re
 import copy
 import collections.abc
+from numba.core.config import IS_32BITS
 
 __all__ = ["Config"]
 
+
+USE_PARALLEL = not IS_32BITS
 
 class Config(dict):
     """

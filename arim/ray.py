@@ -19,6 +19,7 @@ from . import geometry as g
 from .helpers import Cache, NoCache
 from .exceptions import InvalidDimension, ArimWarning
 from .helpers import chunk_array
+from .config import USE_PARALLEL
 
 
 def find_minimum_times(
@@ -197,7 +198,7 @@ def ray_tracing(views_list, convert_to_fortran_order=False):
     )
 
 
-@numba.jit(nopython=True, nogil=True, parallel=True)
+@numba.jit(nopython=True, nogil=True, parallel=USE_PARALLEL)
 def _expand_rays(interior_indices, indices_new_interface, expanded_indices):
     """
     Expand the rays by one interface knowing the beginning of the rays and the

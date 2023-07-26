@@ -158,8 +158,8 @@ def angle_limit_for_view(view, limit, elev=0., azim=np.pi/2):
     tx_ray = RayGeometry.from_path(view[0])
     rx_ray = RayGeometry.from_path(view[1])
     
-    tx_amps = angle_limit(tx_ray.out_leg_polar(-2), tx_ray.out_leg_azimuth(-2), limit, elev, azim)
-    rx_amps = angle_limit(rx_ray.out_leg_polar(-2), rx_ray.out_leg_azimuth(-2), limit, elev, azim)
+    tx_amps = angle_limit(tx_ray.out_leg_polar(-2), tx_ray.out_leg_azimuth(-2), limit, elev, azim).transpose()
+    rx_amps = angle_limit(rx_ray.out_leg_polar(-2), rx_ray.out_leg_azimuth(-2), limit, elev, azim).transpose()
     
     return TxRxAmplitudes(tx_amps, rx_amps)
 
