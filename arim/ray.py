@@ -10,6 +10,7 @@ import math
 import time
 import warnings
 from concurrent.futures import ThreadPoolExecutor
+import os
 
 import numba
 import numpy as np
@@ -19,8 +20,8 @@ from . import geometry as g
 from .helpers import Cache, NoCache
 from .exceptions import InvalidDimension, ArimWarning
 from .helpers import chunk_array
-from .config import USE_PARALLEL
 
+use_parallel = os.environ.get("ARIM_USE_PARALLEL", True)
 
 def find_minimum_times(
     time_1, time_2, dtype=None, dtype_indices=None, block_size=None, numthreads=None
@@ -198,7 +199,7 @@ def ray_tracing(views_list, convert_to_fortran_order=False):
     )
 
 
-@numba.jit(nopython=True, nogil=True, parallel=USE_PARALLEL)
+@numba.jit(nopython=True, nogil=True, parallel=use_parallel)
 def _expand_rays(interior_indices, indices_new_interface, expanded_indices):
     """
     Expand the rays by one interface knowing the beginning of the rays and the

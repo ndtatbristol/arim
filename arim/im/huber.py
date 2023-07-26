@@ -6,10 +6,11 @@ Huber M-estimate in 2D
 import numba
 import math
 import numpy as np
-from ..config import USE_PARALLEL
+import os
 
 # enable SIMD!
-_numba_opts = dict(nogil=True, parallel=USE_PARALLEL, fastmath=True, error_model="numpy")
+use_parallel = os.environ.get("ARIM_USE_PARALLEL", True)
+_numba_opts = dict(nogil=True, parallel=use_parallel, fastmath=True, error_model="numpy")
 
 
 @numba.njit(**_numba_opts)

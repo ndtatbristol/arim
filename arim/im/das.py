@@ -33,14 +33,16 @@ Data structures
 
 import math
 import logging
+import os
 
 import numba
 import numpy as np
 
 from . import geomed, huber
-from ..config import USE_PARALLEL
 
 logger = logging.getLogger(__name__)
+
+use_parallel = os.environ.get("ARIM_USE_PARALLEL", True)
 
 
 class NotImplementedTyping(NotImplementedError, TypeError):
@@ -173,7 +175,7 @@ def _infer_datatypes(
     return dtype_float, dtype_amp, dtype_data
 
 
-@numba.jit(nopython=True, nogil=True, parallel=USE_PARALLEL, fastmath=True)
+@numba.jit(nopython=True, nogil=True, parallel=use_parallel, fastmath=True)
 def _delay_and_sum_amplitudes_nearest(
     weighted_timetraces,
     tx,
@@ -233,7 +235,7 @@ def _delay_and_sum_amplitudes_nearest(
         result[point] = res_tmp / numtimetraces
 
 
-@numba.jit(nopython=True, nogil=True, parallel=USE_PARALLEL, fastmath=True)
+@numba.jit(nopython=True, nogil=True, parallel=use_parallel, fastmath=True)
 def _delay_and_sum_amplitudes_linear(
     weighted_timetraces,
     tx,
@@ -298,7 +300,7 @@ def _delay_and_sum_amplitudes_linear(
         result[point] = res_tmp / numtimetraces
 
 
-@numba.jit(nopython=True, nogil=True, parallel=USE_PARALLEL, fastmath=True)
+@numba.jit(nopython=True, nogil=True, parallel=use_parallel, fastmath=True)
 def _delay_and_sum_amplitudes_linear(
     weighted_timetraces,
     tx,
@@ -467,7 +469,7 @@ def delay_and_sum_numba_noamp(
 
 
 # todo: add cache=True if it becomes compatible with parallel=True (numba)
-@numba.jit(nopython=True, nogil=True, parallel=USE_PARALLEL, fastmath=True)
+@numba.jit(nopython=True, nogil=True, parallel=use_parallel, fastmath=True)
 def _delay_and_sum_noamp(
     weighted_timetraces,
     tx,
@@ -499,7 +501,7 @@ def _delay_and_sum_noamp(
         result[point] = res_tmp / numtimetraces
 
 
-@numba.jit(nopython=True, nogil=True, parallel=USE_PARALLEL, fastmath=True)
+@numba.jit(nopython=True, nogil=True, parallel=use_parallel, fastmath=True)
 def _delay_and_sum_noamp_median_nearest(
     weighted_timetraces,
     tx,
@@ -534,7 +536,7 @@ def _delay_and_sum_noamp_median_nearest(
         result[point] = res.view(np.complex_)[0]
 
 
-@numba.jit(nopython=True, nogil=True, parallel=USE_PARALLEL, fastmath=True)
+@numba.jit(nopython=True, nogil=True, parallel=use_parallel, fastmath=True)
 def _delay_and_sum_noamp_linear(
     weighted_timetraces,
     tx,
@@ -591,7 +593,7 @@ def lanczos_interpolation(t, x, a):
     return out
 
 
-@numba.jit(nopython=True, nogil=True, parallel=USE_PARALLEL, fastmath=True)
+@numba.jit(nopython=True, nogil=True, parallel=use_parallel, fastmath=True)
 def _delay_and_sum_noamp_lanczos(
     weighted_timetraces,
     tx,
@@ -632,7 +634,7 @@ def _delay_and_sum_noamp_lanczos(
         result[point] = res_tmp / numtimetraces
 
 
-@numba.jit(nopython=True, nogil=True, parallel=USE_PARALLEL, fastmath=True)
+@numba.jit(nopython=True, nogil=True, parallel=use_parallel, fastmath=True)
 def _delay_and_sum_noamp_median_lanczos(
     weighted_timetraces,
     tx,
@@ -671,7 +673,7 @@ def _delay_and_sum_noamp_median_lanczos(
         result[point] = res.view(np.complex_)[0]
 
 
-@numba.jit(nopython=True, nogil=True, parallel=USE_PARALLEL, fastmath=True)
+@numba.jit(nopython=True, nogil=True, parallel=use_parallel, fastmath=True)
 def _delay_and_sum_noamp_huber_lanczos(
     weighted_timetraces,
     tx,
