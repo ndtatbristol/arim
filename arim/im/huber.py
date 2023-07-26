@@ -9,7 +9,7 @@ import numpy as np
 import os
 
 # enable SIMD!
-use_parallel = os.environ.get("ARIM_USE_PARALLEL", True)
+use_parallel = os.environ.get("ARIM_USE_PARALLEL", not numba.core.config.IS_32BITS)
 _numba_opts = dict(nogil=True, parallel=use_parallel, fastmath=True, error_model="numpy")
 
 
