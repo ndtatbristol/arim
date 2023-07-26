@@ -21,7 +21,7 @@ from .helpers import Cache, NoCache
 from .exceptions import InvalidDimension, ArimWarning
 from .helpers import chunk_array
 
-use_parallel = os.environ.get("ARIM_USE_PARALLEL", True)
+use_parallel = os.environ.get("ARIM_USE_PARALLEL", not numba.core.config.IS_32BITS)
 
 def find_minimum_times(
     time_1, time_2, dtype=None, dtype_indices=None, block_size=None, numthreads=None

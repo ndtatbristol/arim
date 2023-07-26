@@ -42,7 +42,7 @@ from . import geomed, huber
 
 logger = logging.getLogger(__name__)
 
-use_parallel = os.environ.get("ARIM_USE_PARALLEL", True)
+use_parallel = os.environ.get("ARIM_USE_PARALLEL", not numba.core.config.IS_32BITS)
 
 
 class NotImplementedTyping(NotImplementedError, TypeError):

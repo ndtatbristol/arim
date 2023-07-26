@@ -25,7 +25,7 @@ from . import core as c, _scat, helpers, signal
 
 logger = logging.getLogger(__name__)
 
-use_parallel = os.environ.get("ARIM_USE_PARALLEL", True)
+use_parallel = os.environ.get("ARIM_USE_PARALLEL", not numba.core.config.IS_32BITS)
 
 
 def make_toneburst(
