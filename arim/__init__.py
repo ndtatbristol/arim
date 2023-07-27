@@ -26,4 +26,4 @@ __license__ = "MIT"
 
 # Must respect PEP 440: https://www.python.org/dev/peps/pep-0440/
 # Must be bumped at each release
-__version__ = "0.9.rc2"
+__version__ = "0.9.rc3"
