@@ -6,7 +6,6 @@ import pprint
 import re
 import copy
 import collections.abc
-import os
 
 __all__ = ["Config"]
 
