@@ -1268,7 +1268,7 @@ def test_fluid_solid_complex():
     The conservation of energy should be respected for all cases.
     """
 
-    alpha_fluid = np.asarray(np.deg2rad(np.arange(0.0, 85.0, 10.0)), dtype=np.complex)
+    alpha_fluid = np.asarray(np.deg2rad(np.arange(0.0, 85.0, 10.0)), dtype=complex)
 
     # water:
     c_fluid = 1480.0
@@ -1363,7 +1363,7 @@ def test_solid_t_fluid_complex():
     Test solid_t_fluid() below and above critical angles (complex).
     The conservation of energy should be respected for all cases.
     """
-    alpha_t = np.asarray(np.deg2rad([0, 5, 10, 20, 30, 40]), dtype=np.complex)
+    alpha_t = np.asarray(np.deg2rad([0, 5, 10, 20, 30, 40]), dtype=complex)
 
     # water:
     c_fluid = 1480.0
@@ -1458,8 +1458,8 @@ def test_stokes_relation():
     ----------
     Schmerr §6.3.3, equation (6.150a)
     """
-    alpha_fluid = np.asarray(np.deg2rad(np.arange(0.0, 85.0, 10.0)), dtype=np.complex)
-    alpha_fluid = np.asarray(np.deg2rad([0, 5, 10]), dtype=np.float)
+    alpha_fluid = np.asarray(np.deg2rad(np.arange(0.0, 85.0, 10.0)), dtype=complex)
+    alpha_fluid = np.asarray(np.deg2rad([0, 5, 10]), dtype=float)
 
     # water:
     c_fluid = 1480.0
@@ -1603,8 +1603,8 @@ def test_make_toneburst():
     max_toneburst = np.argmax(toneburst_ref)
 
     assert len(toneburst) == num_samples
-    assert toneburst.dtype == np.float
-    assert toneburst_complex.dtype == np.complex
+    assert toneburst.dtype == float
+    assert toneburst_complex.dtype == complex
     np.testing.assert_allclose(toneburst_complex.real, toneburst)
     assert np.count_nonzero(np.isclose(toneburst, 1.0)) == 1, "1.0 does not appear"
     np.testing.assert_allclose(toneburst, toneburst_ref)
@@ -1617,8 +1617,8 @@ def test_make_toneburst():
     )
 
     assert len(toneburst) == num_samples
-    assert toneburst.dtype == np.float
-    assert toneburst_complex.dtype == np.complex
+    assert toneburst.dtype == float
+    assert toneburst_complex.dtype == complex
     np.testing.assert_allclose(toneburst_complex.real, toneburst)
     np.testing.assert_allclose(toneburst[0], 1.0)
     np.testing.assert_allclose(

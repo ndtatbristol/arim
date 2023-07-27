@@ -18,8 +18,8 @@ _MOVE_PROBE_ON_OXY_DATA = [
 @pytest.mark.parametrize("A,B,dA,dB", _MOVE_PROBE_ON_OXY_DATA)
 def test_find_probe_loc_from_frontwall_ideal(A, B, dA, dB):
     """Test move_probe_over_flat_surface() with 2 elements"""
-    A = np.asarray(A, dtype=np.float)
-    B = np.asarray(B, dtype=np.float)
+    A = np.asarray(A, dtype=float)
+    B = np.asarray(B, dtype=float)
 
     # Setup: a 2-element points1
     locations = g.Points(np.array([A, B]))  # locations in PCS

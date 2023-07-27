@@ -533,7 +533,7 @@ class Probe:
             assert shapes.shape == (numelements,)
 
         if dead_elements is None:
-            dead_elements = np.full((numelements,), False, dtype=np.bool)
+            dead_elements = np.full((numelements,), False, dtype=bool)
         else:
             dead_elements = np.asarray(dead_elements, dtype=bool)
             if dead_elements.shape == ():

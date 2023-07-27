@@ -915,19 +915,19 @@ def spherical_coordinates(x, y, z, r=None):
 def rotation_matrix_x(theta):
     s = np.sin(theta)
     c = np.cos(theta)
-    return np.array(((1, 0, 0), (0, c, -s), (0, s, c)), dtype=np.float)
+    return np.array(((1, 0, 0), (0, c, -s), (0, s, c)), dtype=float)
 
 
 def rotation_matrix_y(theta):
     s = np.sin(theta)
     c = np.cos(theta)
-    return np.array(((c, 0, s), (0, 1, 0), (-s, 0, c)), dtype=np.float)
+    return np.array(((c, 0, s), (0, 1, 0), (-s, 0, c)), dtype=float)
 
 
 def rotation_matrix_z(theta):
     s = np.sin(theta)
     c = np.cos(theta)
-    return np.array(((c, -s, 0), (s, c, 0), (0, 0, 1)), dtype=np.float)
+    return np.array(((c, -s, 0), (s, c, 0), (0, 0, 1)), dtype=float)
 
 
 def rotate(coords, rotation_matrix, centre=None):

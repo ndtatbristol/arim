@@ -23,7 +23,7 @@ def _random_uniform(dtype, low=0.0, high=1.0, size=None):
 
 def make_delay_and_sum_case_random(dtype_float, dtype_data, amplitudes="random"):
     locations = g.Points(
-        np.array([(0, 0, 0), (1.0, 0, 0), (2.0, 0.0, 0.0)], dtype=np.float)
+        np.array([(0, 0, 0), (1.0, 0, 0), (2.0, 0.0, 0.0)], dtype=float)
     )
     numelements = len(locations)
     frequency = 1e6
@@ -38,8 +38,8 @@ def make_delay_and_sum_case_random(dtype_float, dtype_data, amplitudes="random")
     # time = Time(start=0.35, step=0.001, num=100)
     time = Time(start=0.0, step=0.001, num=100)
 
-    tx = np.array([0, 0, 1, 1, 2, 2], dtype=np.int)
-    rx = np.array([0, 1, 0, 1, 0, 1], dtype=np.int)
+    tx = np.array([0, 0, 1, 1, 2, 2], dtype=int)
+    rx = np.array([0, 1, 0, 1, 0, 1], dtype=int)
     numtimetraces = len(tx)
 
     numpoints = 10

@@ -130,7 +130,7 @@ def A_x(xi, xi2, h_nodes, num_nodes):
 
     # For num_nodes = 4, I_12 looks like [a3, a2, a1, a0, a1, a2, a3] (size: 2*num_nodes-1)
     # Build the second half first, then copy it to the first half
-    I_12 = np.zeros(2 * num_nodes - 1, np.complex)
+    I_12 = np.zeros(2 * num_nodes - 1, complex)
     for i, z in enumerate(z_1):
         data[3] = z
 
@@ -250,7 +250,7 @@ def A_z(xi, xi2, h_nodes, num_nodes):
 
     # For num_nodes = 4, I_12 looks like [a3, a2, a1, a0, a1, a2, a3] (size: 2*num_nodes-1)
     # Build the second half first, then copy it to the first half
-    I_12 = np.zeros(2 * num_nodes - 1, np.complex)
+    I_12 = np.zeros(2 * num_nodes - 1, complex)
     for i, z in enumerate(z_1):
         data[3] = z
         if i < 2:  # two first iterations, coefficients a0 and a1
