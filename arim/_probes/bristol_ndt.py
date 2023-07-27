@@ -18,18 +18,18 @@ def _make_ima_50_MHz_128_1d():
         serial="7186 A101",
     )
     numelements = 128
-    shapes = np.full(numelements, core.ElementShape.rectangular, dtype=np.object)
+    shapes = np.full(numelements, core.ElementShape.rectangular, dtype=object)
     orientations = g.Points.from_xyz(
-        np.zeros((numelements,), dtype=np.float),
-        np.zeros((numelements,), dtype=np.float),
-        np.ones((numelements,), dtype=np.float),
+        np.zeros((numelements,), dtype=float),
+        np.zeros((numelements,), dtype=float),
+        np.ones((numelements,), dtype=float),
     )
     dimensions = g.Points.from_xyz(
         np.full(numelements, 0.2e-3),
         np.full(numelements, 15e-3),
         np.full(numelements, 0.0),
     )
-    dead_elements = np.full(numelements, False, dtype=np.bool)
+    dead_elements = np.full(numelements, False, dtype=bool)
 
     probe = core.Probe.make_matrix_probe(
         numx=numelements,
@@ -64,18 +64,18 @@ def _make_ima_50_MHz_64_1d():
         serial="12157 1001",
     )
     numelements = 64
-    shapes = np.full(numelements, core.ElementShape.rectangular, dtype=np.object)
+    shapes = np.full(numelements, core.ElementShape.rectangular, dtype=object)
     orientations = g.Points.from_xyz(
-        np.zeros((numelements,), dtype=np.float),
-        np.zeros((numelements,), dtype=np.float),
-        np.ones((numelements,), dtype=np.float),
+        np.zeros((numelements,), dtype=float),
+        np.zeros((numelements,), dtype=float),
+        np.ones((numelements,), dtype=float),
     )
     dimensions = g.Points.from_xyz(
         np.full(numelements, 0.53e-3),
         np.full(numelements, 15e-3),
         np.full(numelements, 0.0),
     )
-    dead_elements = np.full(numelements, False, dtype=np.bool)
+    dead_elements = np.full(numelements, False, dtype=bool)
 
     probe = core.Probe.make_matrix_probe(
         numx=numelements,
@@ -110,18 +110,18 @@ def _make_ima_25_MHz_64_1d():
         serial="6065 A 101",
     )
     numelements = 64
-    shapes = np.full(numelements, core.ElementShape.rectangular, dtype=np.object)
+    shapes = np.full(numelements, core.ElementShape.rectangular, dtype=object)
     orientations = g.Points.from_xyz(
-        np.zeros((numelements,), dtype=np.float),
-        np.zeros((numelements,), dtype=np.float),
-        np.ones((numelements,), dtype=np.float),
+        np.zeros((numelements,), dtype=float),
+        np.zeros((numelements,), dtype=float),
+        np.ones((numelements,), dtype=float),
     )
     dimensions = g.Points.from_xyz(
         np.full(numelements, 0.35e-3),
         np.full(numelements, 15e-3),
         np.full(numelements, 0.0),
     )
-    dead_elements = np.full(numelements, False, dtype=np.bool)
+    dead_elements = np.full(numelements, False, dtype=bool)
 
     probe = core.Probe.make_matrix_probe(
         numx=numelements,
@@ -156,18 +156,18 @@ def _make_sonaxis_150_MHz_110_1d():
         serial="unknown",
     )
     numelements = 110
-    shapes = np.full(numelements, core.ElementShape.rectangular, dtype=np.object)
+    shapes = np.full(numelements, core.ElementShape.rectangular, dtype=object)
     orientations = g.Points.from_xyz(
-        np.zeros((numelements,), dtype=np.float),
-        np.zeros((numelements,), dtype=np.float),
-        np.ones((numelements,), dtype=np.float),
+        np.zeros((numelements,), dtype=float),
+        np.zeros((numelements,), dtype=float),
+        np.ones((numelements,), dtype=float),
     )
     dimensions = g.Points.from_xyz(
         np.full(numelements, 0.14e-3),
         np.full(numelements, 3.0e-3),
         np.full(numelements, 0.0),
     )
-    dead_elements = np.full(numelements, False, dtype=np.bool)
+    dead_elements = np.full(numelements, False, dtype=bool)
 
     probe = core.Probe.make_matrix_probe(
         numx=numelements,
@@ -202,18 +202,18 @@ def _make_ima_100_MHz_128_1d():
         serial="10345 A101",
     )
     numelements = 128
-    shapes = np.full(numelements, core.ElementShape.rectangular, dtype=np.object)
+    shapes = np.full(numelements, core.ElementShape.rectangular, dtype=object)
     orientations = g.Points.from_xyz(
-        np.zeros((numelements,), dtype=np.float),
-        np.zeros((numelements,), dtype=np.float),
-        np.ones((numelements,), dtype=np.float),
+        np.zeros((numelements,), dtype=float),
+        np.zeros((numelements,), dtype=float),
+        np.ones((numelements,), dtype=float),
     )
     dimensions = g.Points.from_xyz(
         np.full(numelements, 0.25e-3),
         np.full(numelements, 10e-3),
         np.full(numelements, 0.0),
     )
-    dead_elements = np.full(numelements, False, dtype=np.bool)
+    dead_elements = np.full(numelements, False, dtype=bool)
 
     probe = core.Probe.make_matrix_probe(
         numx=numelements,

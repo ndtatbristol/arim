@@ -209,10 +209,10 @@ def test_make_matrix_probe():
 @pytest.fixture(scope="module")
 def probe():
     numelements = 4
-    locx = np.arange(numelements, dtype=np.float) * 0.1e-3
+    locx = np.arange(numelements, dtype=float) * 0.1e-3
     locx -= locx.mean()
-    locy = np.zeros(numelements, dtype=np.float)
-    locz = np.zeros(numelements, dtype=np.float)
+    locy = np.zeros(numelements, dtype=float)
+    locz = np.zeros(numelements, dtype=float)
     locations = g.Points.from_xyz(locx, locy, locz)
     x = np.arange(numelements) * 0.1e-3
 
@@ -432,15 +432,15 @@ class TestProbe:
         dimensions = g.Points.from_xyz(
             np.full(numelements, 0.8e-3),
             np.full(numelements, 30e-3),
-            np.zeros(numelements, dtype=np.float),
+            np.zeros(numelements, dtype=float),
         )
         orientations = g.Points.from_xyz(
-            np.zeros(numelements, dtype=np.float),
-            np.zeros(numelements, dtype=np.float),
-            np.ones(numelements, dtype=np.float),
+            np.zeros(numelements, dtype=float),
+            np.zeros(numelements, dtype=float),
+            np.ones(numelements, dtype=float),
         )
         shapes = np.array(numelements * [c.ElementShape.rectangular], dtype="O")
-        dead_elements = np.zeros((numelements,), dtype=np.bool)
+        dead_elements = np.zeros((numelements,), dtype=bool)
         probe = c.Probe.make_matrix_probe(
             pitch_x=1e-3,
             numx=numelements,

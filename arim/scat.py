@@ -508,7 +508,7 @@ def _crack_tip_k_plus_integral(alpha, k_p, k_s, eps=1e-3, **quad_kwargs):
 
 
 def _crack_tip_k_plus_integral_arr(alpha_arr, k_p, k_s, **quad_kwargs):
-    out = np.empty_like(alpha_arr, np.float)
+    out = np.empty_like(alpha_arr, float)
     it = np.nditer([alpha_arr, out], op_flags=(["readonly"], ["writeonly", "allocate"]))
     for alpha, res in it:
         res[...] = _crack_tip_k_plus_integral(alpha, k_p, k_s, **quad_kwargs)[0]
@@ -641,7 +641,7 @@ def crack_tip_2d(
                     sqrt(2 * k_p)
                     * (2 * k_p2 * cos_beta ** 2 - k_s2)
                     * sin(2 * theta)
-                    * sqrt((k_p - k_s * cos_theta).astype(np.complex))
+                    * sqrt((k_p - k_s * cos_theta).astype(complex))
                     - 4
                     * k_p2
                     * sqrt(2 * k_s)
@@ -683,7 +683,7 @@ def crack_tip_2d(
                     * cos(beta)
                     * sin(theta / 2)
                     * (2 * k_p2 * cos_theta ** 2 - k_s2)
-                    * sqrt((k_p - k_s * cos_beta).astype(np.complex))
+                    * sqrt((k_p - k_s * cos_beta).astype(complex))
                 )
             )
             / (
@@ -709,8 +709,8 @@ def crack_tip_2d(
                 * cos(beta / 2)
                 * cos(beta)
                 * sin(2 * theta)
-                * sqrt((k_p - k_s * cos_theta).astype(np.complex))
-                * sqrt((k_p - k_s * cos_beta).astype(np.complex))
+                * sqrt((k_p - k_s * cos_theta).astype(complex))
+                * sqrt((k_p - k_s * cos_beta).astype(complex))
             )
             / (
                 2

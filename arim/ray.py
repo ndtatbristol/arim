@@ -441,7 +441,7 @@ class Rays:
         order = "F" if self.indices.flags.f_contiguous else "C"
 
         shape = self.indices.shape[1:]
-        out = np.zeros(shape, order=order, dtype=np.bool)
+        out = np.zeros(shape, order=order, dtype=bool)
 
         interior_indices = self.interior_indices
         middle_points = tuple(self.fermat_path.points)[1:-1]

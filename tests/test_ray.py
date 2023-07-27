@@ -66,17 +66,17 @@ def test_find_minimum_times2():
     p = 302
 
     # The unique minimum of the i-th row of time_1 is on the i-th column and is 0.
-    time_1 = np.fromfunction(lambda i, j: (j - i) % m, (n, m), dtype=np.float)
+    time_1 = np.fromfunction(lambda i, j: (j - i) % m, (n, m), dtype=float)
 
     # Each column of time_2 is constant
-    time_2 = np.fromfunction(lambda i, j: j * m, (m, p), dtype=np.float)
+    time_2 = np.fromfunction(lambda i, j: j * m, (m, p), dtype=float)
 
     # Run the tested function:
     best_times, best_indices = ray.find_minimum_times(time_1, time_2)
 
     # Expected results:
-    best_times_expected = np.fromfunction(lambda i, j: m * j, (n, p), dtype=np.float)
-    best_indices_expected = np.fromfunction(lambda i, j: i, (n, p), dtype=np.int)
+    best_times_expected = np.fromfunction(lambda i, j: m * j, (n, p), dtype=float)
+    best_indices_expected = np.fromfunction(lambda i, j: i, (n, p), dtype=int)
 
     assert np.allclose(best_times_expected, best_times)
     assert np.all(best_indices_expected == best_indices)
@@ -207,7 +207,7 @@ class TestRays4:
                 assert expanded_indices[self.d - 2, i, j] == idx
 
     def test_rays_gone_through_extreme_points(self, rays):
-        expected = np.full(rays.times.shape, False, dtype=np.bool)
+        expected = np.full(rays.times.shape, False, dtype=bool)
         n, m, p, q = self.numpoints
 
         interior_indices = rays.interior_indices

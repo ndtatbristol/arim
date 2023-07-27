@@ -206,7 +206,7 @@ def test_make_timevect():
         np.testing.assert_allclose(x[-1], end)
 
         # Check dtype
-        dtype = np.complex
+        dtype = complex
         x = ut.make_timevect(num, step, start, dtype)
         np.testing.assert_allclose(x[1] - x[0], step)
         np.testing.assert_allclose(x[0], start)
