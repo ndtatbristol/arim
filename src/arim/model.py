@@ -1510,7 +1510,7 @@ class _ModelAmplitudesWithScatFunction(ModelAmplitudes):
 
 
 @numba.guvectorize(
-    "void(int32[:], int32[:], complex128[:,:], complex128[:], complex128[:], float64[:], float64[:], float64[:], complex128[:])",
+    "void(int_[:], int_[:], complex128[:,:], complex128[:], complex128[:], float64[:], float64[:], float64[:], complex128[:])",
     "(n),(n),(s,s),(e),(e),(e),(e),()->(n)",
     nopython=True,
     target="parallel",
