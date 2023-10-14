@@ -8,6 +8,8 @@
 # Pycharm:
 .idea
 
+.vscode
+
 # Spyder project settings
 .spyproject
 

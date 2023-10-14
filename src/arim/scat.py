@@ -384,6 +384,10 @@ def crack_2d_scat(
 
     inc_theta, out_theta = np.atleast_2d(inc_theta, out_theta)
     inc_theta, out_theta = np.broadcast_arrays(inc_theta, out_theta)
+    # Explicitly mark the broadcasted arrays as read-only, to prevent
+    # a FutureWarning and anticipate the future behaviour of numpy.
+    inc_theta.flags.writeable = False
+    out_theta.flags.writeable = False
     comp_broadcast = np.broadcast(inc_theta, out_theta)
 
     v_L = longitudinal_vel

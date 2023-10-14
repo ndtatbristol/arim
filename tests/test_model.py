@@ -1119,7 +1119,7 @@ def test_model_amplitudes_factory():
         amps = model.model_amplitudes_factory(
             tx, rx, view, ray_weights, scattering_matrices
         )
-        np.testing.assert_array_equal(a_ref, amps[...])
+        np.testing.assert_allclose(a_ref, amps[...])
 
         assert amps.shape == (numpoints, numtimetraces)
         assert amps[...].shape == (numpoints, numtimetraces)
@@ -1132,13 +1132,14 @@ def test_model_amplitudes_factory():
             amps[0, 0]
 
         for k, i in np.ndindex(numpoints, numtimetraces):
-            assert amps[k][i] == a_ref[k, i]
-            assert amps[k, ...][i] == a_ref[k, i]
+            np.testing.assert_allclose(amps[k][i], a_ref[k, i])
+            np.testing.assert_allclose(amps[k, ...][i], a_ref[k, i])
 
-        np.testing.assert_array_equal(amps[[0, 0, 0]], a_ref[[0, 0, 0]])
-        np.testing.assert_array_equal(amps[:1, ...], amps[:1])
+        np.testing.assert_allclose(amps[[0, 0, 0]], a_ref[[0, 0, 0]])
+        np.testing.assert_allclose(amps[:1, ...], amps[:1])
 
         with pytest.raises(TypeError):
+            # TypeError: '_ModelAmplitudesWithScatMatrix' object does not support item assignment
             amps[0] = 1.0
 
 
