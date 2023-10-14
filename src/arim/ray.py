@@ -78,7 +78,7 @@ def find_minimum_times(
         numthreads = s.NUMTHREADS
 
     out_min_times = np.full((n, p), np.inf, dtype=dtype)
-    out_best_indices = np.full((n, p), np.inf, dtype=dtype_indices)
+    out_best_indices = np.full((n, p), -1, dtype=dtype_indices)
 
     # time_1 will be scanned row per row, time_2 column per column.
     # Force to use the most efficient order (~20 times speed-up between the best and worst case).

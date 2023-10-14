@@ -138,6 +138,9 @@ def _load_frame(exp_data, probe):
     time = Time.from_vect(timevect)
     try:
         velocity = np.squeeze(exp_data["material"]["vel_spherical_harmonic_coeffs"])
+        if isinstance(velocity[()], np.ndarray):
+            # Accept nested array
+            velocity = velocity[()]
     # Old version of brain saves phase velocity, new version has it saved in material.
     except ValueError:
         velocity = np.squeeze(exp_data["ph_velocity"])
