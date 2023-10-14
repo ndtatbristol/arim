@@ -13,17 +13,12 @@ from .geometry import Points, Grid
 # probe database
 probes = _probes.probes
 
-#
+# Aliases
 L = Mode.L
 T = Mode.T
 
-
-__author__ = "Nicolas Budyn, Rhodri Bevan"
-__credits__ = ["Nicolas Budyn", "Rhodri Bevan"]
-__email__ = "n.budyn@bristol.ac.uk"
-__copyright__ = f"{__author__} 2016-2020"
-__license__ = "MIT"
-
-# Must respect PEP 440: https://www.python.org/dev/peps/pep-0440/
+# Must respect PEP 440 and SemVer
+#  https://www.python.org/dev/peps/pep-0440/
+#  https://semver.org/
 # Must be bumped at each release
-__version__ = "0.9.rc3"
+__version__ = "0.9.0.a0"

@@ -23,6 +23,9 @@ from multiprocessing import cpu_count
 
 # ------------------------------------------------------------------------------
 ## Standard types
+# Unreliable, because inconsistently used in this library. In the future, using
+# the platform's default, i.e. np.float_, np.int_, np.uint, np.complex_, seems
+# more realistic. 
 FLOAT = np.float64
 INT = np.int32
 UINT = np.uint32
