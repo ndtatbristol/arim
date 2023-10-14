@@ -590,8 +590,8 @@ def tfm_with_scattering(
     dict(dt=frame.time.step, t0=frame.time.start, fillvalue=fillvalue)
 
     # TODO: improve selection of datatype
-    tfm_result = np.zeros(grid.numpoints, np.complex)
-    sensitivity_result = np.zeros(grid.numpoints, np.float)
+    tfm_result = np.zeros(grid.numpoints, np.complex_)
+    sensitivity_result = np.zeros(grid.numpoints, np.float_)
 
     if block_size is None:
         block_size = 1000

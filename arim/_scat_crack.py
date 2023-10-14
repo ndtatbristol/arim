@@ -19,7 +19,7 @@ def basis_function(k):
 
 @numba.njit(cache=True)
 def sigma(k, k0):
-    return sqrt(np.complex(k * k - k0 * k0)).conjugate()
+    return sqrt(np.complex_(k * k - k0 * k0)).conjugate()
 
 
 @numba.njit(cache=True)
