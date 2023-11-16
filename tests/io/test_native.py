@@ -9,7 +9,7 @@ probe:
   pitch_y: .nan
   dimensions: [0.17e-3, 15.e-3, .nan]
   metadata:
-    short_name: 
+    short_name:
     long_name: Modelled
     probe_type: linear
 """

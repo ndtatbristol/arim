@@ -24,12 +24,13 @@ read the latest will be kept.
 
 """
 
-import pathlib
 import copy
-import yaml
-import numpy as np
+import pathlib
 
-from .. import core, _probes, geometry, config
+import numpy as np
+import yaml
+
+from .. import _probes, config, core, geometry
 from . import brain
 
 __all__ = [
@@ -77,7 +78,7 @@ def load_conf_file(filename):
     -------
     arim.config.Config
     """
-    with open(filename, "r") as f:
+    with open(filename) as f:
         return load_conf_from_str(f)
 
 

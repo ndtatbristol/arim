@@ -1,11 +1,12 @@
 """Nuts and bolts of arim.scat.crack_2d_scat"""
 
-import numpy as np
-import numba
-import scipy.integrate as si
-from numpy.core.umath import sin, cos, pi, exp, sqrt
 import ctypes
+
+import numba
+import numpy as np
 import scipy
+import scipy.integrate as si
+from numpy.core.umath import cos, exp, pi, sin, sqrt
 
 
 @numba.njit(cache=True)

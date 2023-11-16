@@ -1,12 +1,14 @@
-import numpy as np
-import pytest
 import collections
 import math
 
-from tests.test_model import make_context
+import numpy as np
+import pytest
+
 import arim
 import arim.models.block_in_immersion as bim
-import arim.ray, arim.scat
+import arim.ray
+import arim.scat
+from tests.test_model import make_context
 
 
 def test_ray_weights():
@@ -277,9 +279,9 @@ def test_model(scat_specs, show_plots):
     scatterer_p = arim.geometry.default_oriented_points(
         arim.Points([[19e-3, 0.0, 20e-3]])
     )
-    all_points = [probe_p, frontwall, backwall, scatterer_p]
 
     # import arim.plot as aplt
+    # all_points = [probe_p, frontwall, backwall, scatterer_p]
     # aplt.plot_interfaces(all_points, markers=['o', 'o', 'o', 'd'],
     #                      show_orientations=True)
     # aplt.plt.show()
@@ -314,7 +316,7 @@ def test_model(scat_specs, show_plots):
         ]  # (tx=0, rx=k) for all k
 
         max_err = np.max(np.abs(lhs - rhs))
-        err_msg = "view {} (#{}) - max_err={}".format(viewname, i, max_err)
+        err_msg = f"view {viewname} (#{i}) - max_err={max_err}"
 
         tol = dict(rtol=1e-7, atol=1e-8)
 
@@ -329,8 +331,7 @@ def test_model(scat_specs, show_plots):
                 ax.plot(lhs.real, label="tx=k, rx=0")
                 ax.plot(rhs.real, label="tx=0, rx=k")
                 ax.set_title(
-                    scat_obj.__class__.__name__
-                    + "\n {} and {}".format(viewname, viewname_r)
+                    scat_obj.__class__.__name__ + f"\n {viewname} and {viewname_r}"
                 )
                 ax.set_ylabel("real")
                 ax.legend()
@@ -376,10 +377,10 @@ def test_fulltime_model(use_multifreq, show_plots):
     scatterer_p = arim.geometry.default_oriented_points(
         arim.Points([[35e-3, 0.0, 20e-3]])
     )
-    all_points = [probe_p, frontwall, backwall, scatterer_p]
 
     # if show_plots:
     #     import arim.plot as aplt
+    #     all_points = [probe_p, frontwall, backwall, scatterer_p]
     #     aplt.plot_interfaces(
     #         all_points, markers=["o", "o", "o", "d"], show_orientations=True
     #     )
@@ -387,7 +388,6 @@ def test_fulltime_model(use_multifreq, show_plots):
 
     exam_obj = arim.BlockInImmersion(block, couplant, frontwall, backwall, scatterer_p)
     scat_obj = arim.scat.scat_factory(material=block, kind="sdh", radius=0.5e-3)
-    scat_funcs = scat_obj.as_angles_funcs(probe.frequency)
     scat_angle = 0.0
 
     tx_list, rx_list = arim.ut.fmc(probe.numelements)
@@ -410,10 +410,8 @@ def test_fulltime_model(use_multifreq, show_plots):
     )
     arim.ray.ray_tracing(views.values())
     max_delay = max(
-        (
-            view.tx_path.rays.times.max() + view.rx_path.rays.times.max()
-            for view in views.values()
-        )
+        view.tx_path.rays.times.max() + view.rx_path.rays.times.max()
+        for view in views.values()
     )
     timetraces_time = arim.Time(
         0.0, dt, math.ceil(max_delay / dt) + len(toneburst_time)
@@ -455,6 +453,7 @@ def test_fulltime_model(use_multifreq, show_plots):
     frame = arim.Frame(timetraces, timetraces_time, tx_list, rx_list, probe, exam_obj)
     if show_plots:
         import matplotlib.pyplot as plt
+
         import arim.plot as aplt
 
         aplt.plot_bscan_pulse_echo(frame)

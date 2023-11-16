@@ -10,18 +10,19 @@ Core functions of the forward models.
 # This module is imported on demand. It should be imported only for modelling.
 # Function that are not modelling-specific should go to arim.ut, which is always imported.
 
-import warnings
 import abc
 import logging
-from collections import namedtuple
 import math
 import os
+import warnings
+from collections import namedtuple
 
-import numpy as np
 import numba
-from numpy.core.umath import sin, cos
+import numpy as np
+from numpy.core.umath import cos, sin
 
-from . import core as c, _scat, helpers, signal
+from . import _scat, helpers, signal
+from . import core as c
 
 logger = logging.getLogger(__name__)
 
@@ -268,7 +269,7 @@ def _f0(x, k2):
     # Miller and Pursey 1954 eq (74)
     x2 = x * x
     # Warning: sqrt(a) * sqrt(b) != sqrt(a * b) because of negative values
-    return (2 * x2 - k2) ** 2 - 4 * x2 * np.sqrt((x2 - 1)) * np.sqrt((x2 - k2))
+    return (2 * x2 - k2) ** 2 - 4 * x2 * np.sqrt(x2 - 1) * np.sqrt(x2 - k2)
 
 
 def directivity_2d_rectangular_on_solid_l(
@@ -366,7 +367,6 @@ def directivity_2d_rectangular_on_solid_t(
     k2 = k * k
     theta = np.asarray(theta).astype(np.complex_)
     S = sin(theta)
-    C = cos(theta)
     return (
         k**2.5
         * (np.sqrt(k2 * S * S - 1) * sin(2 * theta))
@@ -1230,7 +1230,7 @@ def material_attenuation_for_path(path, ray_geometry, frequency):
         Shape: (numelements, numgridpoints)
     """
     log_att = np.zeros(
-        ((path.interfaces[0].points.numpoints, path.interfaces[-1].points.numpoints))
+        (path.interfaces[0].points.numpoints, path.interfaces[-1].points.numpoints)
     )
 
     for k, (material, mode) in enumerate(zip(path.materials, path.modes), start=1):

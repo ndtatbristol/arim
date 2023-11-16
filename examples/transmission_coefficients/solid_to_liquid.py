@@ -3,10 +3,10 @@ Compute and plot the transmission and reflection coefficients.
 
 """
 
-import numpy as np
 import warnings
 
 import matplotlib.pyplot as plt
+import numpy as np
 
 from arim.model import snell_angles, solid_l_fluid
 

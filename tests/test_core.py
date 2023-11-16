@@ -214,7 +214,6 @@ def probe():
     locy = np.zeros(numelements, dtype=float)
     locz = np.zeros(numelements, dtype=float)
     locations = g.Points.from_xyz(locx, locy, locz)
-    x = np.arange(numelements) * 0.1e-3
 
     frequency = 1e6
 

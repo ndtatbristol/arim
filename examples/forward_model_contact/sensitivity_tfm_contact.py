@@ -8,16 +8,16 @@ import logging
 import pickle
 import time
 
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 
 import arim
-import arim.io
-import arim.ray
 import arim.im
+import arim.io
 import arim.models.block_in_contact as bic
-import arim.scat
 import arim.plot as aplt
+import arim.ray
+import arim.scat
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)

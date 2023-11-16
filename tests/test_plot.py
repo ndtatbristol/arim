@@ -1,12 +1,13 @@
-import arim
-import arim.plot as aplt
-import arim.geometry as g
-import numpy as np
-import matplotlib.pyplot as plt
 import tempfile
 from pathlib import Path
+
+import matplotlib.pyplot as plt
+import numpy as np
 import pytest
-from collections import OrderedDict
+
+import arim
+import arim.geometry as g
+import arim.plot as aplt
 
 
 def test_plot_oxz_many(show_plots):
@@ -17,7 +18,7 @@ def test_plot_oxz_many(show_plots):
     nrows = 2
     ncols = 3
     data_list = [data * (i + 1) for i in range(nrows * ncols)]
-    title_list = ["Plot {}".format(i + 1) for i in range(nrows * ncols)]
+    title_list = [f"Plot {i + 1}" for i in range(nrows * ncols)]
 
     figsize = (12, 8)
 
@@ -95,7 +96,7 @@ def test_plot_interfaces(show_plots, plot_interfaces_kwargs):
     points, orientations = arim.geometry.points_1d_wall_z(
         0, 12e-3, z=0.0, numpoints=64, name="Probe"
     )
-    rot = g.rotation_matrix_y(np.deg2rad((12)))
+    rot = g.rotation_matrix_y(np.deg2rad(12))
     points = points.rotate(rot)
     points = points.translate((0, 0, -10e-3))
     orientations = orientations.rotate(rot)

@@ -1,9 +1,8 @@
-# -*- coding: utf-8 -*-
 """
 Tools and methods based on ultrasonic data measurements
 """
-from collections import namedtuple
 import logging
+from collections import namedtuple
 
 import numpy as np
 
@@ -73,8 +72,8 @@ def find_probe_loc_from_frontwall(frame, couplant, tmin=None, tmax=None):
 
     probe_standoff = iso.z_o
     probe_angle = iso.theta
-    logger.info("Probe orientation: {:.2f}°".format(np.rad2deg(iso.theta)))
-    logger.info("Probe standoff: {:.2f} mm".format(-1e3 * iso.z_o))
+    logger.info(f"Probe orientation: {np.rad2deg(iso.theta):.2f}°")
+    logger.info(f"Probe standoff: {-1e3 * iso.z_o:.2f} mm")
 
     return probe_standoff, probe_angle, time_to_surface
 
@@ -129,8 +128,6 @@ def move_probe_over_flat_surface(frame, distance_to_surface, full_output=False):
     # if probe_type not in ('linear'):
     #    raise NotImplementedError("Only linear points1 are supported yet (given: ('{}').".format(probe_type))
 
-    O = np.array([0.0, 0.0, 0.0])
-
     if not frame.probe.pcs.isclose(g.GCS):
         raise ValueError("This function requires that PCS and the GCS are the same.")
 
@@ -164,7 +161,7 @@ def move_probe_over_flat_surface(frame, distance_to_surface, full_output=False):
     if not np.all(on_Ox):
         raise NotImplementedError(
             "This function works only with linear points1. The following elements are not on axis Ox: {}".format(
-                np.arange(numelements)[on_Ox == False]
+                np.arange(numelements)[np.logical_not(on_Ox)]
             )
         )
 

@@ -15,9 +15,7 @@ class InvalidDimension(ValueError):
     @classmethod
     def message_auto(cls, array_name, expected_dimension, current_dimension=None):
         current = (
-            " (current: {})".format(current_dimension)
-            if current_dimension is not None
-            else ""
+            f" (current: {current_dimension})" if current_dimension is not None else ""
         )
         message = "Dimension of array '{}' must be {}{}.".format(
             array_name, expected_dimension, current
@@ -33,9 +31,7 @@ class InvalidShape(ValueError):
 
     @classmethod
     def message_auto(cls, array_name, expected_shape, current_shape=None):
-        current = (
-            " (current: {})".format(current_shape) if current_shape is not None else ""
-        )
+        current = f" (current: {current_shape})" if current_shape is not None else ""
         message = "Array '{}' must have shape {} (current: {}){}.".format(
             array_name, expected_shape, current_shape, current
         )

@@ -4,12 +4,12 @@ Compute and plot the transmission and reflection coefficients.
 Case: an incident longitudinal in the fluid hits the wall of an solid part.
 """
 
-import numpy as np
 import warnings
 
 import matplotlib.pyplot as plt
+import numpy as np
 
-from arim.model import snell_angles, fluid_solid
+from arim.model import fluid_solid, snell_angles
 
 # %% Parameters
 
@@ -33,8 +33,8 @@ rho_solid = 2700.0
 # Critical angles
 critical_l = np.arcsin(c_fluid / c_l)
 critical_t = np.arcsin(c_fluid / c_t)
-print("Critical angle L: {:.3f}°".format(np.rad2deg(critical_l)))
-print("Critical angle T: {:.3f}°".format(np.rad2deg(critical_t)))
+print(f"Critical angle L: {np.rad2deg(critical_l):.3f}°")
+print(f"Critical angle T: {np.rad2deg(critical_t):.3f}°")
 
 # Remark: by using complex angles, complex reflection and transmission coefficients
 # are computed.

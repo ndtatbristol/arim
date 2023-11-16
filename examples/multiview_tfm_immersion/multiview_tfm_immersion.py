@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# encoding: utf-8
 """
 Computes for a block in immersion multi-view TFM with uniform amplitudes (21
 views).
@@ -15,15 +14,19 @@ conf.yaml
 Output
 ------
 TFM images
-    
+
 """
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 
-import arim, arim.ray, arim.io, arim.signal, arim.im
+import arim
+import arim.im
+import arim.io
 import arim.models.block_in_immersion as bim
 import arim.plot as aplt
+import arim.ray
+import arim.signal
 
 # %% Load configuration
 
@@ -35,10 +38,8 @@ result_dir = conf["result_dir"]
 # %% Load frame
 frame = arim.io.frame_from_conf(conf)
 frame = frame.apply_filter(
-    (
-        arim.signal.Hilbert()
-        + arim.signal.ButterworthBandpass(**conf["filter_for_tfm"], time=frame.time)
-    )
+    arim.signal.Hilbert()
+    + arim.signal.ButterworthBandpass(**conf["filter_for_tfm"], time=frame.time)
 )
 frame = frame.expand_frame_assuming_reciprocity()
 
@@ -63,7 +64,7 @@ plt.xlabel("element")
 plt.ylabel("time (µs)")
 plt.gca().yaxis.set_major_formatter(aplt.micro_formatter)
 plt.gca().yaxis.set_minor_formatter(aplt.micro_formatter)
-plt.title(f"time between elements and frontwall - must be a line")
+plt.title("time between elements and frontwall - must be a line")
 if save:
     plt.savefig(str(result_dir / "frontwall_detection"))
 
@@ -97,7 +98,7 @@ arim.ray.ray_tracing(views.values(), convert_to_fortran_order=True)
 
 tfms = dict()
 for viewname, view in views.items():
-    with arim.helpers.timeit("TFM {}".format(view.name)):
+    with arim.helpers.timeit(f"TFM {view.name}"):
         tfms[viewname] = arim.im.tfm.tfm_for_view(
             frame, grid, view, fillvalue=0.0, interpolation="nearest"
         )

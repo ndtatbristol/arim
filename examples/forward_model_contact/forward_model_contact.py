@@ -5,20 +5,23 @@ Model was not validated experimentally, buyer beware.
 """
 
 
-import math
 import logging
+import math
 from collections import OrderedDict
 
-import numpy as np
 import matplotlib.pyplot as plt
-from scipy.signal import hilbert
+import numpy as np
 import scipy.fftpack
+from scipy.signal import hilbert
 
-import arim, arim.model, arim.scat, arim.plot as aplt
-import arim.models.block_in_contact as bic
-import arim.im, arim.signal  # for imaging
-import arim.scat
+import arim
+import arim.im  # for imaging
 import arim.io
+import arim.model
+import arim.models.block_in_contact as bic
+import arim.plot as aplt
+import arim.scat
+import arim.signal
 
 save = False
 aplt.conf["savefig"] = False
@@ -90,10 +93,8 @@ arim.ray.ray_tracing_for_paths(wall_paths.values())
 print("Wall paths: " + ", ".join(wall_paths.keys()))
 # %% Toneburst and time vector
 max_delay_scat = max(
-    (
-        view.tx_path.rays.times.max() + view.rx_path.rays.times.max()
-        for view in views.values()
-    )
+    view.tx_path.rays.times.max() + view.rx_path.rays.times.max()
+    for view in views.values()
 )
 max_delay_backwall = max(path.rays.times.max() for path in backwall_paths.values())
 max_delay = max(max_delay_scat, max_delay_backwall)
@@ -288,7 +289,7 @@ arim.ray.ray_tracing(views_imaging.values(), convert_to_fortran_order=True)
 
 tfms = {}
 for i, view in enumerate(views_imaging.values()):
-    with arim.helpers.timeit("TFM {}".format(view.name), logger=logger):
+    with arim.helpers.timeit(f"TFM {view.name}", logger=logger):
         tfms[view.name] = arim.im.tfm.tfm_for_view(
             frame, grid, view, fillvalue=0.0, interpolation=("lanczos", 3)
         )

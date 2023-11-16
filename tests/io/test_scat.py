@@ -1,7 +1,6 @@
 import numpy as np
 
 from arim import io, scat
-
 from tests import helpers
 
 

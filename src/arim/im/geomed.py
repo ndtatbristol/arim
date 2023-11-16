@@ -2,8 +2,9 @@
 Geometric median of 2D points using Newton's descent with backtracking line-search
 """
 
-import numba
 import math
+
+import numba
 import numpy as np
 
 # Remark: none of the function in this module can be parallelized

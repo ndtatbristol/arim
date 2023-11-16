@@ -51,8 +51,9 @@ def load_scat_from_matlab(filename):
     arim.scat.ScatFromData
 
     """
-    from .. import scat
     import scipy.io as sio
+
+    from .. import scat
 
     try:
         data = sio.loadmat(filename)
@@ -69,7 +70,7 @@ def load_scat_from_matlab(filename):
 
     for scat_key in scat.SCAT_KEYS:
         try:
-            matrices[scat_key] = data["scattering_{}".format(scat_key)]
+            matrices[scat_key] = data[f"scattering_{scat_key}"]
         except KeyError:
             pass
 

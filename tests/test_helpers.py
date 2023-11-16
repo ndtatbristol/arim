@@ -5,7 +5,7 @@ import numpy as np
 import pytest
 
 import arim.helpers
-from arim.exceptions import InvalidShape, InvalidDimension, NotAnArray
+from arim.exceptions import InvalidDimension, InvalidShape, NotAnArray
 
 
 def test_get_name():
@@ -78,7 +78,7 @@ def test_cache():
     assert cache.misses == 1
 
     with pytest.raises(KeyError):
-        b = cache["another_miss"]
+        b = cache["another_miss"]  # noqa
     assert len(cache) == 1
     assert cache.hits == 2
     assert cache.misses == 2
@@ -113,7 +113,7 @@ def test_nocache():
     assert cache.hits == 0
     assert cache.misses == 1
 
-    a = cache.get("toto")
+    a = cache.get("toto")  # noqa
     assert len(cache) == 0
     assert cache.hits == 0
     assert cache.misses == 2

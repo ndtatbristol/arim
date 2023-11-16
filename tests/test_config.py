@@ -1,5 +1,6 @@
-import arim
 import pytest
+
+import arim
 
 
 class TestConfig:

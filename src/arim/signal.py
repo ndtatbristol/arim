@@ -3,13 +3,12 @@ Module for signal processing.
 
 """
 
-from enum import Enum
 import cmath
-import numba
 
+import numba
 import numpy as np
-from scipy.signal import butter, filtfilt, hilbert
 import scipy.fftpack
+from scipy.signal import butter, filtfilt, hilbert
 
 __all__ = [
     "Filter",
@@ -114,7 +113,7 @@ class ComposedFilter(Filter):
             else:
                 out = op(out, **op_kwargs)
         if len(kwargs) != 0:
-            raise ValueError("Unexpected keys: {}".format(kwargs.keys()))
+            raise ValueError(f"Unexpected keys: {kwargs.keys()}")
         return out
 
     def __str__(self):
@@ -176,7 +175,7 @@ class ButterworthBandpass(Filter):
         return np.ascontiguousarray(filtfilt(self.b, self.a, arr, axis=axis, **kwargs))
 
     def __repr__(self):
-        return "<{} at {}>".format(str(self), hex(id(self)))
+        return f"<{str(self)} at {hex(id(self))}>"
 
 
 class Hanning(Filter):

@@ -27,7 +27,7 @@ with
 
 Data structure of this script:
 
-- the times of flight tau are encapsulated in 
+- the times of flight tau are encapsulated in
   ``view.tx_path.rays.times`` and ``view.rx_path.rays.times``
 - S(omega) is calculated in ``scat_obj``
 - H(omega) is stored in ``transfer_function_f``
@@ -36,20 +36,23 @@ Data structure of this script:
 """
 
 
-import math
 import logging
+import math
 from collections import OrderedDict
 
-import numpy as np
 import matplotlib.pyplot as plt
-from scipy.signal import hilbert
+import numpy as np
 import scipy.fftpack
+from scipy.signal import hilbert
 
-import arim, arim.model, arim.scat, arim.plot as aplt
-import arim.models.block_in_immersion as bim
-import arim.im, arim.signal  # for imaging
-import arim.scat
+import arim
+import arim.im  # for imaging
 import arim.io
+import arim.model
+import arim.models.block_in_immersion as bim
+import arim.plot as aplt
+import arim.scat
+import arim.signal
 
 save = False
 aplt.conf["savefig"] = False
@@ -137,10 +140,8 @@ print("Wall paths: " + ", ".join(wall_paths.keys()))
 
 # %% Toneburst and time vector
 max_delay_scat = max(
-    (
-        view.tx_path.rays.times.max() + view.rx_path.rays.times.max()
-        for view in views.values()
-    )
+    view.tx_path.rays.times.max() + view.rx_path.rays.times.max()
+    for view in views.values()
 )
 max_delay_wall = max(path.rays.times.max() for path in wall_paths.values())
 max_delay = max(max_delay_scat, max_delay_wall)
@@ -302,7 +303,7 @@ plt.plot(
 plt.plot(
     time.samples * 1e6,
     np.abs(real_response_timetraces[idx1] - real_response_timetraces[idx2]),
-    label=f"error",
+    label="error",
 )
 plt.legend()
 plt.xlabel("time (µs)")
@@ -340,7 +341,7 @@ arim.ray.ray_tracing(views_imaging.values(), convert_to_fortran_order=True)
 
 tfms = {}
 for i, view in enumerate(views_imaging.values()):
-    with arim.helpers.timeit("TFM {}".format(view.name), logger=logger):
+    with arim.helpers.timeit(f"TFM {view.name}", logger=logger):
         tfms[view.name] = arim.im.tfm.tfm_for_view(
             frame, grid, view, fillvalue=0.0, interpolation=("lanczos", 3)
         )

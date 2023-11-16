@@ -3,8 +3,9 @@ Huber M-estimate in 2D
 
 """
 
-import numba
 import math
+
+import numba
 import numpy as np
 
 # Remark: none of the function in this module can be parallelized

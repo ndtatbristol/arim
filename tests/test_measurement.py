@@ -1,11 +1,10 @@
 import numpy as np
 import pytest
-import arim.measurement as reg
-from unittest.mock import Mock
 
 import arim
 import arim.geometry as g
-from arim import Time, ExaminationObject, Material, Probe, Frame
+import arim.measurement as reg
+from arim import ExaminationObject, Frame, Material, Probe, Time
 
 _MOVE_PROBE_ON_OXY_DATA = [
     ((0.0, 0.0, 0.0), (5.0, 0.0, 0.0), 6.0, 10.0),

@@ -5,8 +5,8 @@ import pytest
 from matplotlib import pyplot as plt
 
 import arim
-from arim import ray
 import arim.geometry as g
+from arim import ray
 
 
 def test_find_minimum_times():
@@ -134,7 +134,7 @@ class TestRays4:
     def path(self):
         interfaces = [
             g.Points.from_xyz(
-                np.random.rand(n), np.random.rand(n), np.random.rand(n), "A{}".format(i)
+                np.random.rand(n), np.random.rand(n), np.random.rand(n), f"A{i}"
             )
             for (i, n) in enumerate(self.numpoints)
         ]
@@ -240,9 +240,7 @@ class TestRays4:
                 for k in range(self.d):
                     idx = rev_rays.indices[-k - 1, j, i]
                     expected_idx = rays.indices[k, i, j]
-                    assert idx == expected_idx, "err for i={}, j={}, k={}".format(
-                        i, j, k
-                    )
+                    assert idx == expected_idx, f"err for i={i}, j={j}, k={k}"
 
 
 class TestRays2:
@@ -257,7 +255,7 @@ class TestRays2:
     def path(self):
         interfaces = [
             g.Points.from_xyz(
-                np.random.rand(n), np.random.rand(n), np.random.rand(n), "A{}".format(i)
+                np.random.rand(n), np.random.rand(n), np.random.rand(n), f"A{i}"
             )
             for (i, n) in enumerate(self.numpoints)
         ]
@@ -400,10 +398,10 @@ def test_fermat_solver():
                     best_index = k
             assert np.isclose(
                 min_tof, rays_dict[path_1].times[i, j]
-            ), "Wrong time of flight for ray (start={}, end={}) in path 1 ".format(i, j)
+            ), f"Wrong time of flight for ray (start={i}, end={j}) in path 1 "
             assert (
                 best_index == rays_dict[path_1].indices[1, i, j]
-            ), "Wrong indices for ray (start={}, end={}) in path 1 ".format(i, j)
+            ), f"Wrong indices for ray (start={i}, end={j}) in path 1 "
 
     # Check rays for path_2:
     for i in range(n):
@@ -442,10 +440,10 @@ def test_fermat_solver():
 
             assert np.isclose(
                 min_tof, rays_dict[path_2].times[i, j]
-            ), "Wrong time of flight for ray (start={}, end={}) in path 2 ".format(i, j)
+            ), f"Wrong time of flight for ray (start={i}, end={j}) in path 2 "
             assert (best_index_1, best_index_2) == tuple(
                 rays_dict[path_2].indices[1:3, i, j]
-            ), "Wrong indices for ray (start={}, end={}) in path 2 ".format(i, j)
+            ), f"Wrong indices for ray (start={i}, end={j}) in path 2 "
 
 
 def make_incoming_angles_results():
@@ -574,10 +572,10 @@ class TestRayGeometry:
         assert len(ray_geometry._cache) == 0
 
         # Case: intermediate result promoted to final result
-        leg_points = ray_geometry.leg_points(0, is_final=False)
+        leg_points = ray_geometry.leg_points(0, is_final=False)  # noqa
         assert len(ray_geometry._cache) == 1
         # Promotion to final result:
-        leg_points = ray_geometry.leg_points(0, is_final=True)
+        leg_points = ray_geometry.leg_points(0, is_final=True)  # noqa
         assert len(ray_geometry._cache) == 1
         ray_geometry.clear_intermediate_results()
         assert len(ray_geometry._cache) == 1
@@ -586,6 +584,8 @@ class TestRayGeometry:
 
     def test_plot_cases(self, show_plots):
         if show_plots:
+            import arim.plot as aplt
+
             kwargs = dict(are_normals_zplus=False)
             path, ray_geometry = self.make_case(**kwargs)
             ax = aplt.plot_interfaces(
@@ -634,7 +634,6 @@ class TestRayGeometry:
     def test_leg_points(self, are_normals_zplus):
         path, ray_geometry = self.make_case(are_normals_zplus)
 
-        shape = len(path.interfaces[0].points), len(path.interfaces[1].points)
         ray_geometry = arim.ray.RayGeometry.from_path(path)
 
         leg_points = ray_geometry.leg_points(0)

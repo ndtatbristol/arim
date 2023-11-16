@@ -1,9 +1,8 @@
 import numpy as np
-import scipy.signal
 import pytest
+import scipy.signal
 
-from arim import signal
-from arim import Time
+from arim import Time, signal
 
 
 def test_butterworth_bandpass():
@@ -136,6 +135,7 @@ def test_composed_filters():
     assert (add3 + (multiply2 + substract1))(x) == 11.0
 
     composed = multiply2 + add3
+    assert composed(x) == 16.0
 
 
 @pytest.mark.parametrize(

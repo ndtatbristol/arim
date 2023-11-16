@@ -1,12 +1,14 @@
-import numpy as np
-import pytest
 import math
 
+import numpy as np
+import pytest
+
 import arim
-import arim.im as im
-import arim.im.tfm, arim.ray
-import arim.io
 import arim.geometry as g
+import arim.im as im
+import arim.im.tfm
+import arim.io
+import arim.ray
 
 
 def test_extrema_lookup_times_in_rectbox():

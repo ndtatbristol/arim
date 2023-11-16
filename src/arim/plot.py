@@ -29,19 +29,19 @@ Some default values are configurable via the dictionary ``arim.plot.conf``.
 
 """
 
-from warnings import warn
 import logging
+from warnings import warn
 
-from matplotlib import ticker
-from mpl_toolkits import axes_grid1
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.signal
+from matplotlib import ticker
+from mpl_toolkits import axes_grid1
 
-from . import ut
-from .exceptions import ArimWarning
 from . import geometry as g
+from . import ut
 from .config import Config
+from .exceptions import ArimWarning
 
 __all__ = [
     "micro_formatter",
@@ -61,13 +61,13 @@ __all__ = [
 
 logger = logging.getLogger(__name__)
 
-micro_formatter = ticker.FuncFormatter(lambda x, pos: "{:.1f}".format(x * 1e6))
+micro_formatter = ticker.FuncFormatter(lambda x, pos: f"{x * 1e6:.1f}")
 micro_formatter.__doc__ = "Format an axis to micro (µ).\nExample: ``ax.xaxis.set_major_formatter(micro_formatter)``"
 
-milli_formatter = ticker.FuncFormatter(lambda x, pos: "{:.1f}".format(x * 1e3))
+milli_formatter = ticker.FuncFormatter(lambda x, pos: f"{x * 1e3:.1f}")
 milli_formatter.__doc__ = "Format an axis to milli (m).\nExample: ``ax.xaxis.set_major_formatter(milli_formatter)``"
 
-mega_formatter = ticker.FuncFormatter(lambda x, pos: "{:.1f}".format(x * 1e-6))
+mega_formatter = ticker.FuncFormatter(lambda x, pos: f"{x * 1e-6:.1f}")
 mega_formatter.__doc__ = "Format an axis to mega (M).\nExample: ``ax.xaxis.set_major_formatter(mega_formatter)``"
 
 conf = Config(
@@ -322,14 +322,14 @@ def plot_psd(
         freq, pxx = scipy.signal.welch(x, fs, **welch_params)
         if pxx.ndim == 2:
             pxx = np.mean(pxx, axis=0)
-        line = ax.plot(freq, pxx, label="raw".format(idx=idx))
+        line = ax.plot(freq, pxx, label="raw".format())
         lines["raw"] = line
     if show_filtered:
         x = frame.timetraces[idx].real
         freq, pxx = scipy.signal.welch(x, fs, **welch_params)
         if pxx.ndim == 2:
             pxx = np.mean(pxx, axis=0)
-        line = ax.plot(freq, pxx, label="filtered".format(idx=idx))
+        line = ax.plot(freq, pxx, label="filtered".format())
         lines["filtered"] = line
     ax.set_xlabel("frequency (MHz)")
     ax.set_ylabel("power spectrum estimation")
@@ -449,7 +449,7 @@ def plot_oxz(
     elif scale == "db":
         data = ut.decibel(data, ref_db)
     else:
-        raise ValueError("invalid scale: {}".format(scale))
+        raise ValueError(f"invalid scale: {scale}")
 
     image = ax.imshow(
         data,
@@ -655,9 +655,9 @@ def plot_directivity_finite_width_2d(element_width, wavelength, ax=None, **kwarg
 
     """
     if ax is None:
-        fig, ax = plt.subplots()
+        _, ax = plt.subplots()
     else:
-        fig = ax.figure
+        _ = ax.figure
 
     title = kwargs.get(
         "title", "Directivity of an element (uniform sources along a straight line)"
@@ -670,7 +670,7 @@ def plot_directivity_finite_width_2d(element_width, wavelength, ax=None, **kwarg
     ax.plot(
         np.rad2deg(theta),
         directivity,
-        label=r"$a/\lambda = {:.2f}$".format(ratio),
+        label=rf"$a/\lambda = {ratio:.2f}$",
         **kwargs,
     )
     ax.set_xlabel(r"Polar angle $\theta$ (deg)")
@@ -737,7 +737,7 @@ class RayPlotter:
         for line in lines_to_clear:
             ax.lines.remove(line)
             self._lines.remove(line)
-        logger.debug("Clear {} ray(s) on figure".format(len(lines_to_clear)))
+        logger.debug(f"Clear {len(lines_to_clear)} ray(s) on figure")
         ax.figure.canvas.draw_idle()
 
     def connect(self, ax):

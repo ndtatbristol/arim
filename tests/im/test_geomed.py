@@ -1,8 +1,9 @@
-import numdifftools as nd
 from functools import partial
-from scipy import stats
+
+import numdifftools as nd
 import numpy as np
 import pytest
+from scipy import stats
 
 from arim.im import geomed
 

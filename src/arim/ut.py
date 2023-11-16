@@ -248,8 +248,8 @@ def instantaneous_phase_shift(analytic_sig, time_vect, carrier_frequency):
     dtype = analytic_sig.dtype
     if dtype.kind != "c":
         warnings.warn(
-            "Expected an analytic (complex) signal, got {}. Use a Hilbert "
-            "transform to get the analytic signal.".format(dtype),
+            f"Expected an analytic (complex) signal, got {dtype}. Use a Hilbert "
+            "transform to get the analytic signal.",
             UtWarning,
             stacklevel=2,
         )
@@ -297,7 +297,7 @@ def make_timevect(num, step, start=0.0, dtype=None):
 
     """
     if not isinstance(num, int):
-        raise TypeError("num must be an integer (got {})".format(type(num)))
+        raise TypeError(f"num must be an integer (got {type(num)})")
     if num < 0:
         raise ValueError("Number of samples, %s, must be non-negative." % num)
 

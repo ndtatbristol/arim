@@ -5,7 +5,7 @@ I/O module for BRAIN files (Matlab NDT library of Universiy of Bristol).
 Implemented as of 20/6/2016:
 - dtype of variables is according to settings.py
 
-- get element dimensions from el_x1, el_y1, el_z1, el_x2, el_y2, el_z2: 
+- get element dimensions from el_x1, el_y1, el_z1, el_x2, el_y2, el_z2:
   Information calculated is probe orientation dependent.
 
 
@@ -15,7 +15,7 @@ import numpy as np
 
 from .. import geometry as g
 from .. import settings as s
-from ..core import Probe, Time, ExaminationObject, Material, Frame
+from ..core import ExaminationObject, Frame, Material, Probe, Time
 
 __all__ = ["load_expdata"]
 

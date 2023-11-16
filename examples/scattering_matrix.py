@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -23,7 +22,7 @@ for key in ["LL", "LT", "TL", "TT"]:
     im = ax.imshow(np.abs(scat_matrices[key]), extent=extent, origin="lower")
     ax.set_xlabel("incident angle (degree)")
     ax.set_ylabel("outgoing angle (degree)")
-    ax.set_title("Scattering matrix of a SDH - {}".format(key))
+    ax.set_title(f"Scattering matrix of a SDH - {key}")
     fig.colorbar(im, ax=ax)
 
 
@@ -39,5 +38,5 @@ ax.legend()
 ax.set_xlabel("scattering angle (degree)")
 ax.set_ylabel("scattering amplitude (abs val.)")
 ax.set_title(
-    "Scattering amplitudes for a SDH (incident angle: {}°)".format(np.rad2deg(theta_in))
+    f"Scattering amplitudes for a SDH (incident angle: {np.rad2deg(theta_in)}°)"
 )

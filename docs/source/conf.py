@@ -14,7 +14,7 @@ import os
 import sys
 
 sys.path.insert(0, os.path.abspath("../.."))
-import arim
+import arim  # noqa: E402
 
 # -- Project information -----------------------------------------------------
 

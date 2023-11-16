@@ -1,17 +1,19 @@
 #!/usr/bin/env python3
-# encoding: utf-8
 """
 This script shows how to perform a basic contact TFM with arim.
 """
 
-import arim, arim.io, arim.signal, arim.im.tfm
-import arim.plot as aplt
-
-import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib as mpl
-
 from pprint import pprint as pp
+
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+import numpy as np
+
+import arim
+import arim.im.tfm
+import arim.io
+import arim.plot as aplt
+import arim.signal
 
 # %% Figure parameters
 
@@ -53,7 +55,7 @@ plt.gca().xaxis.set_minor_formatter(aplt.micro_formatter)
 plt.xlabel("time (µs)")
 plt.ylabel("amplitude (1)")
 plt.legend()
-plt.title("timetraces tx={} rx={}".format(tx, rx))
+plt.title(f"timetraces tx={tx} rx={rx}")
 plt.draw()
 
 # %% Perform TFM:

@@ -71,17 +71,17 @@ Cf. `Wikipedia article on Spherical coordinate system <https://en.wikipedia.org/
 """
 
 # Remark: declaration of constant GCS at the end of this file
+import concurrent.futures
 import math
 from collections import namedtuple
-import concurrent.futures
 from warnings import warn
 
 import numba
 import numpy as np
 
-from .helpers import Cache, NoCache, chunk_array
 from . import settings as s
 from .exceptions import ArimWarning, InvalidDimension, InvalidShape
+from .helpers import chunk_array
 
 
 class SphericalCoordinates(namedtuple("SphericalCoordinates", "r theta phi")):
@@ -206,16 +206,14 @@ class Points:
         return self.size
 
     def __str__(self):
-        return "P:{}".format(self.name)
+        return f"P:{self.name}"
 
     def __repr__(self):
         classname = self.__class__.__qualname__
         if self.name is None:
-            return "<{}{} at {}>".format(classname, self.shape, hex(id(self)))
+            return f"<{classname}{self.shape} at {hex(id(self))}>"
         else:
-            return "<{}{}: {} at {}>".format(
-                classname, self.shape, self.name, hex(id(self))
-            )
+            return f"<{classname}{self.shape}: {self.name} at {hex(id(self))}>"
 
     @property
     def x(self):
@@ -1254,7 +1252,6 @@ def direct_isometry_3d(A, i_hat, j_hat, B, u_hat, v_hat):
     # assert np.allclose(M @ baseDep, baseArr)
 
     # Y = M @ (X - A) + B
-    AB = B - A
     P = B - M @ A
 
     return M, P

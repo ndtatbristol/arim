@@ -25,21 +25,21 @@ Multiple frequency scattering matrices are defined formally as::
 
 
 """
-import math
-import warnings
-import functools
 import abc
 import contextlib
-import numba
 import ctypes
+import functools
+import math
+import warnings
 
+import numba
 import numpy as np
-from numpy.core.umath import pi, cos, sin
-from scipy.special._ufuncs import hankel1, hankel2
 import scipy.integrate
+from numpy.core.umath import cos, pi, sin
 from scipy import interpolate
+from scipy.special._ufuncs import hankel1, hankel2
 
-from . import _scat, exceptions, _scat_crack, ut
+from . import _scat, _scat_crack, exceptions, ut
 
 SCAT_KEYS = frozenset(("LL", "LT", "TL", "TT"))
 
@@ -173,7 +173,7 @@ def sdh_2d_scat(
 
     if not SCAT_KEYS.issuperset(to_compute):
         raise ValueError(
-            "Valid 'to_compute' arguments are {} (got {})".format(SCAT_KEYS, to_compute)
+            f"Valid 'to_compute' arguments are {SCAT_KEYS} (got {to_compute})"
         )
 
     # wavenumber
@@ -867,7 +867,7 @@ def scat_factory(kind, material, *args, **kwargs):
             material.longitudinal_vel, material.transverse_vel, *args, **kwargs
         )
     else:
-        raise NotImplementedError("no strategy for kind='{}'".format(kind))
+        raise NotImplementedError(f"no strategy for kind='{kind}'")
 
 
 class Scattering2d(abc.ABC):
@@ -1068,9 +1068,7 @@ class Scattering2dFromFunc(Scattering2d):
 
     def __repr__(self):
         # Returns something like 'Scattering(x=1, y=2)'
-        arg_str = ", ".join(
-            ["{}={}".format(key, val) for key, val in self._scat_kwargs.items()]
-        )
+        arg_str = ", ".join([f"{key}={val}" for key, val in self._scat_kwargs.items()])
         return self.__class__.__qualname__ + "(" + arg_str + ")"
 
 
@@ -1145,9 +1143,9 @@ class CrackCentreScat(Scattering2dFromFunc):
 
     def as_single_freq_matrices(self, frequency, numangles, to_compute=SCAT_KEYS):
         with self._scat_matrix_calculation():
-            assert self._in_matrix_calculation == True
+            assert self._in_matrix_calculation
             result = super().as_single_freq_matrices(frequency, numangles, to_compute)
-        assert self._in_matrix_calculation == False
+        assert not self._in_matrix_calculation
         return result
 
 

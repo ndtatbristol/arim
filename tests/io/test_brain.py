@@ -3,7 +3,6 @@ import pytest
 
 import arim.io.brain as mat
 from arim.core import CaptureMethod
-
 from tests.helpers import get_data_filename
 
 
@@ -12,7 +11,7 @@ def expdata(request):
     """
     Fixture for test_load_expdata
     """
-    resource = "brain/exp_data.{}.mat".format(request.param)
+    resource = f"brain/exp_data.{request.param}.mat"
     return get_data_filename(resource)
 
 

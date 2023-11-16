@@ -31,8 +31,8 @@ Data structures
 
 """
 
-import math
 import logging
+import math
 import os
 
 import numba
@@ -124,7 +124,7 @@ def delay_and_sum_numba(
     else:
         raise ValueError("invalid 'interpolation' argument")
 
-    logger.debug("Delay-and-sum function: {}".format(delay_and_sum_function.__name__))
+    logger.debug(f"Delay-and-sum function: {delay_and_sum_function.__name__}")
 
     delay_and_sum_function(
         weighted_timetraces,

@@ -1,10 +1,9 @@
-import math
 import itertools
+import math
 
 import numpy as np
 import pytest
 
-import arim
 import arim.geometry as g
 
 DATASET_1 = dict(
@@ -423,6 +422,7 @@ class TestPoints:
 
         # Test hashability
         d = {points: "toto"}
+        assert d
 
         # Test str/rep
         str(points)
@@ -557,7 +557,7 @@ class TestPoints:
         for (idx, p_in), p_out in zip(points.enumerate(), out_points):
             expected = rot @ p_in
             np.testing.assert_allclose(
-                p_out, expected, err_msg="rotation failed for idx={}".format(idx)
+                p_out, expected, err_msg=f"rotation failed for idx={idx}"
             )
 
         # Case 1b: centre is [0., 0., 0.] (should give the same answers)
@@ -572,7 +572,7 @@ class TestPoints:
         for (idx, p_in), p_out in zip(points.enumerate(), out_points):
             expected = rot @ (p_in - centre) + centre
             np.testing.assert_allclose(
-                p_out, expected, err_msg="rotation failed for idx={}".format(idx)
+                p_out, expected, err_msg=f"rotation failed for idx={idx}"
             )
 
     def test_rotate_multiple_rotations(self, points):
@@ -595,7 +595,7 @@ class TestPoints:
         for (idx, p_in), p_out in zip(points.enumerate(), out_points):
             expected = rot[idx] @ p_in
             np.testing.assert_allclose(
-                p_out, expected, err_msg="rotation failed for idx={}".format(idx)
+                p_out, expected, err_msg=f"rotation failed for idx={idx}"
             )
 
         # Case 1b: centre is [0., 0., 0.] (should give the same answers)
@@ -611,7 +611,7 @@ class TestPoints:
         for (idx, p_in), p_out in zip(points.enumerate(), out_points):
             expected = rot[idx] @ (p_in - centre[idx]) + centre[idx]
             np.testing.assert_allclose(
-                p_out, expected, err_msg="rotation failed for idx={}".format(idx)
+                p_out, expected, err_msg=f"rotation failed for idx={idx}"
             )
 
     @pytest.mark.parametrize(
@@ -891,11 +891,9 @@ def mock_euclidean_distance(points1, points2):
         for i in range(len(points1)):
             for j in range(len(points2)):
                 distance[i, j] = math.sqrt(
-                    (
-                        (points1.x[i] - points2.x[j]) ** 2
-                        + (points1.y[i] - points2.y[j]) ** 2
-                        + (points1.z[i] - points2.z[j]) ** 2
-                    )
+                    (points1.x[i] - points2.x[j]) ** 2
+                    + (points1.y[i] - points2.y[j]) ** 2
+                    + (points1.z[i] - points2.z[j]) ** 2
                 )
         EUCLIDEAN_DISTANCE_1 = distance
     return EUCLIDEAN_DISTANCE_1

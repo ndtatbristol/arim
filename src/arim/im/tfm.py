@@ -7,18 +7,18 @@ Main functions: :func:`contact_tfm`, :func:`tfm_for_view`
 
 """
 
-import numpy as np
-from collections import namedtuple
-import numba
-from concurrent.futures import ThreadPoolExecutor
 import logging
 import warnings
+from collections import namedtuple
 
-from .. import geometry as g, model, ut
+import numba
+import numpy as np
+
+from .. import geometry as g
+from .. import ut
+from ..exceptions import ArimWarning
 from ..ray import RayGeometry
 from . import das
-from ..exceptions import ArimWarning
-from ..helpers import chunk_array
 
 logger = logging.getLogger(__name__)
 

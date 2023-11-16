@@ -6,7 +6,6 @@ import logging
 import math
 import os
 import subprocess
-import sys
 import time
 from collections import Counter
 from contextlib import contextmanager
@@ -14,7 +13,7 @@ from warnings import warn
 
 import numpy as np
 
-from .exceptions import ArimWarning, NotAnArray, InvalidDimension, InvalidShape
+from .exceptions import ArimWarning, InvalidDimension, InvalidShape, NotAnArray
 
 
 def get_name(metadata):
@@ -143,7 +142,7 @@ class Cache(dict):
 
     def __setitem__(self, key, value):
         if key in self:
-            msg = "Reassigning a cached value: key={}".format(key)
+            msg = f"Reassigning a cached value: key={key}"
             warn(msg, ArimWarning, stacklevel=2)
         super().__setitem__(key, value)
 
@@ -153,10 +152,10 @@ class Cache(dict):
                 self.__class__.__name__, len(self), self.hits, self.misses
             )
         )
-        print("\tBest cached: {}".format(self.counter.most_common()))
+        print(f"\tBest cached: {self.counter.most_common()}")
 
     def get(self, key, default=None):
-        out = super(Cache, self).get(key, default)
+        out = super().get(key, default)
         if out is default:
             self.misses += 1
         else:
@@ -194,7 +193,7 @@ def get_git_version(short=True):
     try:
         githash = subprocess.check_output(cmd)
         githash = githash.decode("ascii").strip()
-    except (FileNotFoundError, subprocess.CalledProcessError) as e:
+    except (FileNotFoundError, subprocess.CalledProcessError):
         githash = ""
 
     os.chdir(curdir)
@@ -285,7 +284,7 @@ def smallest_uint_that_fits(max_value):
         if max_value <= allowed_max_value:
             return dtype
     return TypeError(
-        "Cannot stored '{}' with numpy (max: '{}')".format(max_value, allowed_max_value)
+        f"Cannot stored '{max_value}' with numpy (max: '{allowed_max_value}')"
     )
 
 
@@ -297,6 +296,6 @@ def sizeof_fmt(num, suffix="B"):
     """
     for unit in ["", "Ki", "Mi", "Gi", "Ti", "Pi", "Ei", "Zi"]:
         if abs(num) < 1024.0:
-            return "%3.1f %s%s" % (num, unit, suffix)
+            return "%3.1f %s%s" % (num, unit, suffix)  # noqa
         num /= 1024.0
-    return "%.1f %s%s" % (num, "Yi", suffix)
+    return "%.1f %s%s" % (num, "Yi", suffix)  # noqa

@@ -54,13 +54,13 @@ computationally efficient.
 
 """
 import logging
-from collections import namedtuple, OrderedDict
 import warnings
+from collections import OrderedDict, namedtuple
 
 import numpy as np
 
-from .. import model, ray, helpers, signal
 from .. import core as c
+from .. import helpers, model, ray, signal
 from ..ray import RayGeometry
 from .helpers import make_views_from_paths
 
@@ -1007,7 +1007,7 @@ def scat_unshifted_transfer_functions(
     numtimetraces = len(tx)
 
     for view in views.values():
-        logger.info("Transfer function for scatterers in view {}".format(view.name))
+        logger.info(f"Transfer function for scatterers in view {view.name}")
 
         numscatterers = view.tx_path.rays.times.shape[1]
         partial_transfer_function_f = np.zeros(

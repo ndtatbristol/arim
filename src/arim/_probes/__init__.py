@@ -13,8 +13,8 @@ Usage::
 
 """
 
-from .registry import ProbeRegistry
 from . import bristol_ndt
+from .registry import ProbeRegistry
 
 __all__ = ["probes"]
 probes = ProbeRegistry()

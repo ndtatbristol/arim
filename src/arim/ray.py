@@ -5,21 +5,19 @@ Ray tracing module
 import contextlib
 import gc
 import logging
-
 import math
+import os
 import time
 import warnings
 from concurrent.futures import ThreadPoolExecutor
-import os
 
 import numba
 import numpy as np
 
-from . import settings as s
 from . import geometry as g
-from .helpers import Cache, NoCache
-from .exceptions import InvalidDimension, ArimWarning
-from .helpers import chunk_array
+from . import settings as s
+from .exceptions import ArimWarning, InvalidDimension
+from .helpers import Cache, NoCache, chunk_array
 
 use_parallel = os.environ.get("ARIM_USE_PARALLEL", not numba.core.config.IS_32BITS)
 
@@ -556,7 +554,7 @@ class FermatPath(tuple):
     def __new__(cls, sequence):
         if len(sequence) % 2 == 0 or len(sequence) < 3:
             raise ValueError(
-                "{} expects a sequence of length odd and >= 5)".format(cls.__name__)
+                f"{cls.__name__} expects a sequence of length odd and >= 5)"
             )
         assert all(np.isfinite(sequence[1::2])), "nonfinite velocity"
         return super().__new__(cls, sequence)
@@ -714,11 +712,9 @@ class FermatSolver:
 
         """
         paths = set(
-            (
-                path
-                for v in views_list
-                for path in (v.tx_path.to_fermat_path(), v.rx_path.to_fermat_path())
-            )
+            path
+            for v in views_list
+            for path in (v.tx_path.to_fermat_path(), v.rx_path.to_fermat_path())
         )
         return cls(paths, dtype=dtype, dtype_indices=dtype_indices)
 
@@ -739,7 +735,7 @@ class FermatSolver:
         for path in self.paths:
             self.res[path] = self._solve(path)
         toc = time.perf_counter()
-        logger.info("Ray tracing: solved all in {:.3g}s".format(toc - tic))
+        logger.info(f"Ray tracing: solved all in {toc - tic:.3g}s")
         return self.res
 
     def _solve(self, path):
@@ -776,9 +772,7 @@ class FermatSolver:
         assert isinstance(res_tail, Rays)
 
         self.num_minimization += 1
-        logger.debug(
-            "Ray tracing: solve for subpaths {} and {}".format(str(head), str(tail))
-        )
+        logger.debug(f"Ray tracing: solve for subpaths {str(head)} and {str(tail)}")
         times, indices_at_interface = find_minimum_times(
             res_head.times,
             res_tail.times,
@@ -852,7 +846,7 @@ def _to_readonly(x):
         try:
             xlist = list(x)
         except TypeError:
-            raise TypeError("unhandled type: {}".format(type(x)))
+            raise TypeError(f"unhandled type: {type(x)}")
         else:
             for x in xlist:
                 _to_readonly(x)
@@ -887,7 +881,7 @@ def _cache_ray_geometry(user_func):
 
         """
         actual_interface_idx = self._interface_indices[interface_idx]
-        key = "{}:{}".format(user_func.__name__, actual_interface_idx)
+        key = f"{user_func.__name__}:{actual_interface_idx}"
         try:
             # Cache hit
             res = self._cache[key]
@@ -1211,7 +1205,7 @@ class RayGeometry:
         if are_normals_on_inc_rays_side is None:
             raise ValueError(
                 "Attribute are_normals_on_inc_rays_side must be set for the"
-                "interface {}.".format(interface_idx)
+                f"interface {interface_idx}."
             )
         elif are_normals_on_inc_rays_side:
             return self.inc_leg_polar(interface_idx, is_final=False)
@@ -1347,7 +1341,7 @@ class RayGeometry:
         if are_normals_on_out_rays_side is None:
             raise ValueError(
                 "Attribute are_normals_on_out_rays_side must be set for the"
-                "interface {}.".format(interface_idx)
+                f"interface {interface_idx}."
             )
         elif are_normals_on_out_rays_side:
             return self.out_leg_polar(interface_idx, is_final=False)

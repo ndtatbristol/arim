@@ -1,12 +1,13 @@
-import pytest
-import numpy as np
-from collections import OrderedDict
 import contextlib
+from collections import OrderedDict
+
+import numpy as np
+import pytest
 
 import arim.geometry as g
-from arim import Probe, ExaminationObject, Material, Time, Frame
 import arim.im.das as das
 import arim.im.tfm
+from arim import ExaminationObject, Frame, Material, Probe, Time
 
 
 def _random_uniform(dtype, low=0.0, high=1.0, size=None):
@@ -196,6 +197,10 @@ class TestDasDispatcher:
             dtype_float, dtype_data, amplitudes="random"
         )
         res = das.delay_and_sum(frame, focal_law, fillvalue=0.0)
+        assert res is not None
         res = das.delay_and_sum(frame, focal_law, fillvalue=np.nan)
+        assert res is not None
         res = das.delay_and_sum(frame, focal_law, interpolation="nearest")
+        assert res is not None
         res = das.delay_and_sum(frame, focal_law, interpolation="linear")
+        assert res is not None

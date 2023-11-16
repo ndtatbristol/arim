@@ -2,10 +2,10 @@
 Helper for configuring scripts
 """
 
+import collections.abc
+import copy
 import pprint
 import re
-import copy
-import collections.abc
 
 __all__ = ["Config"]
 
@@ -27,10 +27,10 @@ class Config(dict):
         indent = len(class_name) + 1
         repr_split = pprint.pformat(dict(self), indent=1, width=80 - indent).split("\n")
         repr_indented = ("\n" + " " * indent).join(repr_split)
-        return "{0}({1})".format(class_name, repr_indented)
+        return f"{class_name}({repr_indented})"
 
     def __str__(self):
-        return "\n".join("{0}: {1}".format(k, v) for k, v in sorted(self.items()))
+        return "\n".join(f"{k}: {v}" for k, v in sorted(self.items()))
 
     def keys(self):
         """

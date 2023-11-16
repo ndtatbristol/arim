@@ -4,8 +4,8 @@ import numpy as np
 import pytest
 
 import arim
-from arim import ut, scat, _scat_crack
 import tests.helpers
+from arim import _scat_crack, scat, ut
 
 
 def test_scattering_angles_grid():
@@ -443,7 +443,7 @@ class TestScattering:
             assert mat.shape == (numangles, numangles)
             assert (
                 mat[0, 0] == reference_dict[scat_key][0, 0]
-            ), "different values for phi_in = phi_out = -pi ({})".format(scat_key)
+            ), f"different values for phi_in = phi_out = -pi ({scat_key})"
 
         # test Scattering.as_multi_freq_matrices (use 2 frequencies)
         with warnings.catch_warnings():
@@ -463,7 +463,7 @@ class TestScattering:
             )
             assert (
                 mat[0, 0, 0] == reference_dict[scat_key][0, 0]
-            ), "different values for phi_in = phi_out = -pi ({})".format(scat_key)
+            ), f"different values for phi_in = phi_out = -pi ({scat_key})"
 
         # test Scattering.as_angles_funcs and Scattering.as_freq_angles_funcs
         angles_funcs = scat_obj.as_angles_funcs(freq)

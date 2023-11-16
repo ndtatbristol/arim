@@ -2,16 +2,16 @@
 Hard-code results and hope they do not evolve over time.
 
 """
+from collections import OrderedDict
+
+import numpy as np
 import pytest
+from numpy import array
+
 import arim
 import arim.model
 import arim.models.block_in_immersion
 import arim.ray
-import arim.geometry as g
-from arim import ut
-from collections import OrderedDict
-import numpy as np
-from numpy import array
 from arim import model
 
 
@@ -182,6 +182,11 @@ def test_context():
     views = context["views"]
     ray_geometry_dict = context["ray_geometry_dict"]
 
+    assert block is not None
+    assert couplant is not None
+    assert interfaces is not None
+    assert ray_geometry_dict is not None
+
     assert paths.keys() == {"L", "LL", "LT", "TL", "TT", "T"}
     for path in paths.values():
         assert path.rays is not None
@@ -207,6 +212,8 @@ def test_ray_tracing():
     """:type : dict[str, arim.path.RayGeometry]"""
     rev_ray_geometry_dict = context["rev_ray_geometry_dict"]
     """:type : dict[str, arim.path.RayGeometry]"""
+
+    assert rev_paths is not None
 
     expected_rays = OrderedDict()
 
@@ -799,11 +806,7 @@ def test_transmission_reflection_reverse_stokes():
     """:type : arim.Material"""
     paths = context["paths"]
     """:type : dict[str, arim.Path]"""
-    rev_paths = context["rev_paths"]
-    """:type : dict[str, arim.Path]"""
     ray_geometry_dict = context["ray_geometry_dict"]
-    """:type : dict[str, arim.path.RayGeometry]"""
-    rev_ray_geometry_dict = context["rev_ray_geometry_dict"]
     """:type : dict[str, arim.path.RayGeometry]"""
 
     rho_fluid = couplant.density
@@ -885,7 +888,7 @@ def test_transmission_reflection_reverse_stokes():
     alpha_fluid = np.asarray(
         ray_geometry_dict[pathname].conventional_inc_angle(1), complex
     )
-    alpha_l = arim.model.snell_angles(alpha_fluid, c_fluid, c_l)
+    alpha_l = arim.model.snell_angles(alpha_fluid, c_fluid, c_l)  # noqa
     alpha_t = arim.model.snell_angles(alpha_fluid, c_fluid, c_t)
     correction_frontwall = (z_fluid / z_t) * (np.cos(alpha_t) / np.cos(alpha_fluid))
 
@@ -1037,8 +1040,6 @@ def make_point_source_scattering_matrix(context):
 
 
 def make_random_ray_weights(context):
-    interfaces = context["interfaces"]
-    """:type : list[arim.Interface]"""
     paths = context["paths"]
     """:type : dict[str, arim.Path]"""
     ray_geometry_dict = context["ray_geometry_dict"]
@@ -1208,7 +1209,7 @@ def test_directivity_2d_rectangular_in_fluid():
     # >>> fn_calc_directivity_main(0.7, 1., 0.3, 'wooh')
     matlab_res = 0.931080327325574
     assert np.isclose(
-        arim.model.directivity_2d_rectangular_in_fluid(0.3, 0.7, 1.0), 0.931080327325574
+        arim.model.directivity_2d_rectangular_in_fluid(0.3, 0.7, 1.0), matlab_res
     )
 
 

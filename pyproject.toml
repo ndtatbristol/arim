@@ -105,44 +105,20 @@ line-length = 88
 target-version = "py38"
 line-length = 88
 select = [
-  "A",
-  "ARG",
-  "B",
-  "C",
-  "DTZ",
   "E",
-  "EM",
   "F",
-  "FBT",
-  "I",
-  "ICN",
-  "ISC",
-  "N",
-  "PLC",
-  "PLE",
-  "PLR",
-  "PLW",
-  "Q",
-  "RUF",
-  "S",
-  "T",
-  "TID",
+  "NPY",
+  "I", # isort
   "UP",
   "W",
-  "YTT",
 ]
 ignore = [
-  # Allow non-abstract empty methods in abstract base classes
-  "B027",
-  # Allow boolean positional values in function calls, like `dict.get(... True)`
-  "FBT003",
-  # Ignore checks for possible passwords
-  "S105", "S106", "S107",
-  # Ignore complexity
-  "C901", "PLR0911", "PLR0912", "PLR0913", "PLR0915",
+  "E731", # lambda are fine
+  "E501", # line too long (in practice: only in comment or docstring)
+  "NPY002", # legacy np.random API
 ]
 unfixable = [
-  # Don't touch unused imports
+  # Don't touch unused imports, because we may be reexporting the API in __init__.py
   "F401",
 ]
 

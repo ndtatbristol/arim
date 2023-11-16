@@ -1,14 +1,15 @@
 """
 Defines core objects of arim.
 """
-from collections import namedtuple
-import warnings
 import copy
 import enum
+import warnings
+from collections import namedtuple
+
 import numpy as np
 
 from . import geometry as g
-from . import ut, helpers
+from . import helpers, ut
 
 StateMatter = enum.Enum("StateMatter", "liquid solid")
 StateMatter.__doc__ = "Enumerated constants for the states of matter."
@@ -132,7 +133,7 @@ class Frame:
             time.samples
         except AttributeError:
             raise TypeError(
-                "'time' should be an object 'Time' (current: {}).".format(type(time))
+                f"'time' should be an object 'Time' (current: {type(time)})."
             )
         numsamples = len(time)
 
@@ -140,13 +141,9 @@ class Frame:
         tx = np.asarray(tx)
         rx = np.asarray(rx)
         if tx.dtype.kind not in ("i", "u"):
-            raise TypeError(
-                "transmitters must be integer indices (got {})".format(tx.dtype)
-            )
+            raise TypeError(f"transmitters must be integer indices (got {tx.dtype})")
         if rx.dtype.kind not in ("i", "u"):
-            raise TypeError(
-                "receivers must be integer indices (got {})".format(rx.dtype)
-            )
+            raise TypeError(f"receivers must be integer indices (got {rx.dtype})")
 
         (numtimetraces, _) = helpers.get_shape_safely(
             timetraces, "timetraces", (None, numsamples)
@@ -563,9 +560,7 @@ class Probe:
         )
 
     def __repr__(self):
-        return "<{}: {} at {}>".format(
-            self.__class__.__name__, str(self), hex(id(self))
-        )
+        return f"<{self.__class__.__name__}: {str(self)} at {hex(id(self))}>"
 
     @classmethod
     def make_matrix_probe(
@@ -1040,33 +1035,27 @@ class Interface:
 
     def __str__(self):
         infos = []
-        infos.append("Interface for points {}".format(self.points))
-        infos.append("Number of points: {}".format(self.points.shape))
+        infos.append(f"Interface for points {self.points}")
+        infos.append(f"Number of points: {self.points.shape}")
         if self.transmission_reflection is TransmissionReflection.transmission:
             infos.append("Transmission")
         elif self.transmission_reflection is TransmissionReflection.reflection:
-            infos.append("Reflection against {}".format(self.reflection_against))
+            infos.append(f"Reflection against {self.reflection_against}")
         if self.kind is not None:
-            infos.append("Interface kind: {}".format(self.kind.name))
+            infos.append(f"Interface kind: {self.kind.name}")
 
-        infos.append("Orientations: {}".format(self.orientations))
+        infos.append(f"Orientations: {self.orientations}")
         infos.append(
-            "Normals are on INC.. rays side: {}".format(
-                self.are_normals_on_inc_rays_side
-            )
+            f"Normals are on INC.. rays side: {self.are_normals_on_inc_rays_side}"
         )
         infos.append(
-            "Normals are on OUT. rays side: {}".format(
-                self.are_normals_on_out_rays_side
-            )
+            f"Normals are on OUT. rays side: {self.are_normals_on_out_rays_side}"
         )
         infos_str = "\n".join(["    " + x if i > 0 else x for i, x in enumerate(infos)])
         return infos_str
 
     def __repr__(self):
-        return "<{} for {} at {}>".format(
-            self.__class__.__name__, str(self.points), hex(id(self))
-        )
+        return f"<{self.__class__.__name__} for {str(self.points)} at {hex(id(self))}>"
 
     def reverse(self):
         """
@@ -1174,7 +1163,7 @@ class Path:
         return len(self.interfaces) - 1
 
     def __repr__(self):
-        return "{}({})".format(self.__class__.__name__, self.name)
+        return f"{self.__class__.__name__}({self.name})"
 
     @property
     def velocities(self):
@@ -1276,7 +1265,7 @@ class Material:
     def __repr__(self):
         name = helpers.get_name(self.metadata)
 
-        return "<{}: {} at {}>".format(self.__class__.__name__, name, hex(id(self)))
+        return f"<{self.__class__.__name__}: {name} at {hex(id(self))}>"
 
     def velocity(self, mode):
         """
@@ -1302,7 +1291,7 @@ class Material:
         elif mode is Mode.transverse:
             return self.transverse_vel
         else:
-            raise ValueError("Don'ray know what to do with mode '{}'".format(mode))
+            raise ValueError(f"Don'ray know what to do with mode '{mode}'")
 
     def attenuation(self, mode):
         """
@@ -1327,7 +1316,7 @@ class Material:
         elif mode is Mode.transverse:
             return self.transverse_att
         else:
-            raise ValueError("Don'ray know what to do with mode '{}'".format(mode))
+            raise ValueError(f"Don'ray know what to do with mode '{mode}'")
 
 
 class ExaminationObject:
@@ -1486,7 +1475,7 @@ class Time:
         )
 
     def __repr__(self):
-        return "<{} at {}>".format(str(self), hex(id(self)))
+        return f"<{str(self)} at {hex(id(self))}>"
 
     @classmethod
     def from_vect(cls, timevect, rtol=1e-2):
@@ -1551,7 +1540,7 @@ class View(namedtuple("View", ["tx_path", "rx_path", "name"])):
     __slots__ = []
 
     def __repr__(self):
-        return "{}({})".format(self.__class__.__name__, self.name)
+        return f"{self.__class__.__name__}({self.name})"
 
     def scat_key(self):
         """
