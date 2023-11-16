@@ -18,8 +18,7 @@ from .exceptions import ArimWarning, NotAnArray, InvalidDimension, InvalidShape
 
 
 def get_name(metadata):
-    """Return the name of an object based on the dictionary metadata. By preference: long_name, short_name, 'Unnamed'
-    """
+    """Return the name of an object based on the dictionary metadata. By preference: long_name, short_name, 'Unnamed'"""
     name = metadata.get("long_name", None)
     if name is not None:
         return name
@@ -222,7 +221,7 @@ def get_shape_safely(array, array_name, expected_shape=None):
     # Check shape if expected_shape was provided:
     if len(shape) != len(expected_shape):
         raise InvalidDimension.message_auto(array_name, len(expected_shape), len(shape))
-    for (dim, (expected_size, current_size)) in enumerate(
+    for dim, (expected_size, current_size) in enumerate(
         zip(expected_shape, shape), start=1
     ):
         if expected_size is None:

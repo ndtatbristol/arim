@@ -51,7 +51,7 @@ def material_attenuation_factory(kind, *args, **kwargs):
     Returns
     -------
     mat_att_func : function
-        Function that takes the frequency array as an input and returns the attenuation in Np/m as an output. 
+        Function that takes the frequency array as an input and returns the attenuation in Np/m as an output.
 
     Examples
     --------
@@ -64,7 +64,7 @@ def material_attenuation_factory(kind, *args, **kwargs):
     To use:
     >>> frequency = 5e6
     >>> mat_att_func(frequency)
-    
+
     """
     if kind == "constant":
         return _constant_mat_att(*args, **kwargs)
@@ -325,13 +325,13 @@ class Frame:
 
     def subframe(self, timetraces_idx):
         """Return a new Frame containing only a subset of the original timetraces.
-        
+
         Parameters
         ----------
         timetraces_idx : slice or tuple or list or array
             Index of the elements of the original probe to retain.
             Any valid numpy index is accepted.
-        
+
         Returns
         -------
         subframe : Frame
@@ -383,7 +383,7 @@ class Frame:
         or forward model results if multiple subframes are created.
 
         If using ``make_subprobe=True``, see also :meth:`Probe.subprobe`.
-         
+
         """
         retained_elements = np.arange(self.probe.numelements)[elements_idx]
         retained_timetraces_idx = np.logical_and(
@@ -650,7 +650,7 @@ class Probe:
 
     def subprobe(self, elements_idx, save_metadata=False):
         """Return a new Probe with only a subset of the original elements.
-        
+
         Parameters
         ----------
         elements_idx : slice or tuple or list or array
@@ -658,7 +658,7 @@ class Probe:
             Any valid numpy index is accepted.
         save_metadata : bool, optional
             Whether to retain the original metadata  (the default is False)
-        
+
         Returns
         -------
         subprobe : Probe

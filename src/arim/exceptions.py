@@ -46,7 +46,9 @@ class InvalidShape(ValueError):
 class NotAnArray(TypeError):
     def __init__(self, array_name, message=None):
         if message is None:
-            message = " '{}' must be an array. Try to convert to numpy.array first.".format(
-                array_name
+            message = (
+                " '{}' must be an array. Try to convert to numpy.array first.".format(
+                    array_name
+                )
             )
         super().__init__(message)

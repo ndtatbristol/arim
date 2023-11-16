@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 def find_probe_loc_from_frontwall(frame, couplant, tmin=None, tmax=None):
     """
     Registration process by detection of the frontwall, whose equation is
-    assumed to be ``z = 0``. 
+    assumed to be ``z = 0``.
 
     This function:
     0. reset the position of the probe,
@@ -139,11 +139,15 @@ def move_probe_over_flat_surface(frame, distance_to_surface, full_output=False):
 
     numelements = frame.probe.numelements
     dead_elements = np.asarray(range(numelements))[frame.probe.dead_elements]
-    
+
     # Consider only pulse-echo data:
     pulse_echo = frame.tx == frame.rx
-    pulse_echo[np.any(frame.tx.reshape(-1, 1) == dead_elements.reshape(1, -1), axis=1)] = False
-    pulse_echo[np.any(frame.rx.reshape(-1, 1) == dead_elements.reshape(1, -1), axis=1)] = False
+    pulse_echo[
+        np.any(frame.tx.reshape(-1, 1) == dead_elements.reshape(1, -1), axis=1)
+    ] = False
+    pulse_echo[
+        np.any(frame.rx.reshape(-1, 1) == dead_elements.reshape(1, -1), axis=1)
+    ] = False
     if sum(pulse_echo) < 2:
         raise ValueError("The frame must have at least 2 pulse echo timetraces.")
 

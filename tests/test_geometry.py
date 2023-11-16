@@ -517,7 +517,7 @@ class TestPoints:
         assert isinstance(out_points, g.Points)
 
         idx_set = set()
-        for ((idx, in_p), out_p, idx_direction) in itertools.zip_longest(
+        for (idx, in_p), out_p, idx_direction in itertools.zip_longest(
             points.enumerate(), out_points, np.ndindex(shape_directions), fillvalue=()
         ):
             idx_set.add(idx)
@@ -542,20 +542,19 @@ class TestPoints:
         """test Points.norm2"""
         norm = points.norm2()
         assert norm.shape == points.shape
-        for (idx, p) in points.enumerate():
+        for idx, p in points.enumerate():
             x, y, z = p
             np.testing.assert_allclose(norm[idx], math.sqrt(x * x + y * y + z * z))
 
     def test_rotate_one_rotation(self, points):
-        """Test Points.rotate() with one rotation for all points.
-        """
+        """Test Points.rotate() with one rotation for all points."""
         rot = g.rotation_matrix_ypr(*np.deg2rad([10, 20, 30]))
 
         # Case 1a: centre is None
         out_points = points.rotate(rot, centre=None)
         assert out_points.shape == points.shape
 
-        for ((idx, p_in), p_out) in zip(points.enumerate(), out_points):
+        for (idx, p_in), p_out in zip(points.enumerate(), out_points):
             expected = rot @ p_in
             np.testing.assert_allclose(
                 p_out, expected, err_msg="rotation failed for idx={}".format(idx)
@@ -570,7 +569,7 @@ class TestPoints:
         out_points = points.rotate(rot, centre=centre)
         assert out_points.shape == points.shape
 
-        for ((idx, p_in), p_out) in zip(points.enumerate(), out_points):
+        for (idx, p_in), p_out in zip(points.enumerate(), out_points):
             expected = rot @ (p_in - centre) + centre
             np.testing.assert_allclose(
                 p_out, expected, err_msg="rotation failed for idx={}".format(idx)
@@ -593,7 +592,7 @@ class TestPoints:
         out_points = points.rotate(rot, centre=None)
         assert out_points.shape == points.shape
 
-        for ((idx, p_in), p_out) in zip(points.enumerate(), out_points):
+        for (idx, p_in), p_out in zip(points.enumerate(), out_points):
             expected = rot[idx] @ p_in
             np.testing.assert_allclose(
                 p_out, expected, err_msg="rotation failed for idx={}".format(idx)
@@ -609,7 +608,7 @@ class TestPoints:
         assert out_points.shape == points.shape
 
         # Check point per point:
-        for ((idx, p_in), p_out) in zip(points.enumerate(), out_points):
+        for (idx, p_in), p_out in zip(points.enumerate(), out_points):
             expected = rot[idx] @ (p_in - centre[idx]) + centre[idx]
             np.testing.assert_allclose(
                 p_out, expected, err_msg="rotation failed for idx={}".format(idx)
@@ -671,7 +670,7 @@ class TestPoints:
 
     def compare_coordinates(self, coords_gcs, coords_cs, bases, origins):
         assert coords_gcs.shape == coords_cs.shape
-        for ((idx, p_gcs), p_cs) in zip(coords_gcs.enumerate(), coords_cs):
+        for (idx, p_gcs), p_cs in zip(coords_gcs.enumerate(), coords_cs):
             try:
                 # Force a IndexError if idx has not a valid dim
                 origin = origins[(*idx, slice(None))]
@@ -824,7 +823,7 @@ class TestCoordinateSystem:
         assert x.shape == y.shape == z.shape
 
         # Check the result are the same as if we convert the points "by hand".
-        for (j, origin) in enumerate(origins):
+        for j, origin in enumerate(origins):
             # Points in the j-th derived CS, computed by 'convert_from_gcs_pairwise':
             out_points = g.Points.from_xyz(
                 x[..., j].copy(), y[..., j].copy(), z[..., j].copy()

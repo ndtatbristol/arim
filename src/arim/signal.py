@@ -177,14 +177,14 @@ class ButterworthBandpass(Filter):
 
     def __repr__(self):
         return "<{} at {}>".format(str(self), hex(id(self)))
-    
+
 
 class Hanning(Filter):
-    """ 
+    """
     Hanning Filter - Apply the Hann function.
 
     Return the analytical signal
-    
+
     Parameters
     ----------
     nsamples : int
@@ -203,10 +203,7 @@ class Hanning(Filter):
 
     """
 
-    def __init__(
-        self, nsamples, centre_freq, half_bandwidth, time
-    ):
-
+    def __init__(self, nsamples, centre_freq, half_bandwidth, time):
         max_freq = 1.0 / (time.step)
         peak_pos_fract = centre_freq / max_freq
         half_width_fract = half_bandwidth / max_freq
@@ -216,7 +213,10 @@ class Hanning(Filter):
         self.centre_freq = centre_freq
         self.half_bandwidth = half_bandwidth
         self.max_freq = max_freq
-        self.filter_window = r1 * np.logical_and((r >= (peak_pos_fract - half_width_fract)), (r <= peak_pos_fract + half_width_fract))
+        self.filter_window = r1 * np.logical_and(
+            (r >= (peak_pos_fract - half_width_fract)),
+            (r <= peak_pos_fract + half_width_fract),
+        )
 
     def __str__(self):
         return "{} [{:.1f}, {:.1f}] MHz order {}".format(
@@ -259,11 +259,11 @@ class Abs(Filter):
 
 
 class Gaussian(Filter):
-    """ 
+    """
     Gaussian Filter - As applied in BRAIN **BUT** default is zero outside of filter region, BRAIN is not.
 
     Return the analytical signal
-    
+
     Parameters
     ----------
     nsamples : int
@@ -285,7 +285,6 @@ class Gaussian(Filter):
     def __init__(
         self, nsamples, centre_freq, half_bandwidth, time, force_zero=True, db_down=40.0
     ):
-
         fract = np.power(10, -db_down / 20.0)
         max_freq = 1.0 / (time.step)
         peak_pos_fract = centre_freq / max_freq

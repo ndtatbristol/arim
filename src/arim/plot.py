@@ -93,7 +93,7 @@ def plot_bscan(
     filename="bscan",
 ):
     """Plot Bscan (timetraces vs time)
-    
+
     Parameters
     ----------
     frame : Frame
@@ -114,7 +114,7 @@ def plot_bscan(
         Default: use ``conf["savefig"]``
     filename : str, optional
         Default: "bscan"
-    
+
     Returns
     -------
     ax : matplotlib axis
@@ -232,6 +232,7 @@ def plot_bscan_pulse_echo(
         filename=filename,
     )
     ax.set_ylabel("Element")
+
     # Use element index instead of timetrace index (may be different)
     def _y_formatter(i, pos):
         i = int(i)

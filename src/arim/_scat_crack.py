@@ -12,9 +12,9 @@ import scipy
 def basis_function(k):
     k_00 = 1e-1
     if abs(k) <= k_00:
-        return 1 - 1 / 18 * k ** 2 + 1 / 792 * k ** 4
+        return 1 - 1 / 18 * k**2 + 1 / 792 * k**4
     else:
-        return 105.0 / k ** 7 * (k * (k * k - 15) * cos(k) - (6 * k * k - 15) * sin(k))
+        return 105.0 / k**7 * (k * (k * k - 15) * cos(k) - (6 * k * k - 15) * sin(k))
 
 
 @numba.njit(cache=True)
@@ -30,8 +30,8 @@ def F(xi, xi2, h, beta):
     sigma_1 = sigma(beta, xi)
     sigma_2 = sigma(beta, 1)
 
-    L2 = -((beta ** 2 - 0.5) ** 2) + beta ** 2 * sigma_1 * sigma_2
-    return F ** 2 * L2
+    L2 = -((beta**2 - 0.5) ** 2) + beta**2 * sigma_1 * sigma_2
+    return F**2 * L2
 
 
 @numba.njit(cache=True)
@@ -39,17 +39,17 @@ def P(k):
     # input: float, returns a complex
     k_00 = 1e-1
     if abs(k) <= k_00:
-        F = 1 + 1j * k - 5 / 9 * k ** 2 - 2j / 9 * k ** 3
+        F = 1 + 1j * k - 5 / 9 * k**2 - 2j / 9 * k**3
     else:
         sk = (exp(2j * k) - 1) / 2j
         ck = (exp(2j * k) + 1) / 2
-        F = 105 / k ** 7 * (k * (k ** 2 - 15) * ck - (6 * k ** 2 - 15) * sk)
-    return F ** 2
+        F = 105 / k**7 * (k * (k**2 - 15) * ck - (6 * k**2 - 15) * sk)
+    return F**2
 
 
 @numba.njit(cache=True)
 def A_x_F1(x, xi, xi2, h_nodes, z):
-    return F(xi, xi2, h_nodes, 1 - x ** 2) / sqrt(2 - x ** 2) * cos((1 - x ** 2) * z)
+    return F(xi, xi2, h_nodes, 1 - x**2) / sqrt(2 - x**2) * cos((1 - x**2) * z)
 
 
 @numba.cfunc("f8(f8, voidptr)", cache=True)
@@ -66,7 +66,7 @@ def A_x_F1_imag(x, data):
 
 @numba.njit(cache=True)
 def A_x_F2(x, xi, xi2, h_nodes, z):
-    return F(xi, xi2, h_nodes, 1 + x ** 2) / sqrt(2 + x ** 2) * cos((1 + x ** 2) * z)
+    return F(xi, xi2, h_nodes, 1 + x**2) / sqrt(2 + x**2) * cos((1 + x**2) * z)
 
 
 @numba.cfunc("f8(f8, voidptr)", cache=True)
@@ -84,18 +84,18 @@ def A_x_F2_imag(x, data):
 @numba.njit(cache=True)
 def A_x_F(x, xi, xi2, h_nodes, z):
     return (
-        -(((1 + 1j * x ** 2) ** 2 - 0.5) ** 2)
-        * P(xi2 * h_nodes * (1 + 1j * x ** 2))
-        / sqrt(2 + 1j * x ** 2)
+        -(((1 + 1j * x**2) ** 2 - 0.5) ** 2)
+        * P(xi2 * h_nodes * (1 + 1j * x**2))
+        / sqrt(2 + 1j * x**2)
         * exp(-1j * pi / 4)
         * exp(1j * (z - 2 * xi2 * h_nodes))
-        + (xi + 1j * x ** 2) ** 2
-        * P(xi2 * h_nodes * (xi + 1j * x ** 2))
-        * sqrt(2 * xi + 1j * x ** 2)
-        * x ** 2
+        + (xi + 1j * x**2) ** 2
+        * P(xi2 * h_nodes * (xi + 1j * x**2))
+        * sqrt(2 * xi + 1j * x**2)
+        * x**2
         * exp(1j * pi / 4)
         * exp(1j * xi * (z - 2 * xi2 * h_nodes))
-    ) * exp(-(z - 2 * xi2 * h_nodes) * x ** 2)
+    ) * exp(-(z - 2 * xi2 * h_nodes) * x**2)
 
 
 @numba.cfunc("f8(f8, voidptr)", cache=True)
@@ -166,9 +166,9 @@ def A_x(xi, xi2, h_nodes, num_nodes):
 @numba.njit(cache=True)
 def A_z_F1(x, xi, xi2, h_nodes, z):
     return (
-        F(xi, xi2, h_nodes, xi - x ** 2)
-        / sqrt(2 * xi - x ** 2)
-        * cos((xi - x ** 2) * z)
+        F(xi, xi2, h_nodes, xi - x**2)
+        / sqrt(2 * xi - x**2)
+        * cos((xi - x**2) * z)
     )
 
 
@@ -187,9 +187,9 @@ def A_z_F1_imag(x, data):
 @numba.njit(cache=True)
 def A_z_F2(x, xi, xi2, h_nodes, z):
     return (
-        F(xi, xi2, h_nodes, xi + x ** 2)
-        / sqrt(2 * xi + x ** 2)
-        * cos((xi + x ** 2) * z)
+        F(xi, xi2, h_nodes, xi + x**2)
+        / sqrt(2 * xi + x**2)
+        * cos((xi + x**2) * z)
     )
 
 
@@ -208,18 +208,18 @@ def A_z_F2_imag(x, data):
 @numba.njit(cache=True)
 def A_z_F(x, xi, xi2, h_nodes, z):
     return (
-        -(((xi + 1j * x ** 2) ** 2 - 0.5) ** 2)
-        * P(xi2 * h_nodes * (xi + 1j * x ** 2))
-        / sqrt(2 * xi + 1j * x ** 2)
+        -(((xi + 1j * x**2) ** 2 - 0.5) ** 2)
+        * P(xi2 * h_nodes * (xi + 1j * x**2))
+        / sqrt(2 * xi + 1j * x**2)
         * exp(-1j * pi / 4)
         * exp(xi * 1j * (z - 2 * xi2 * h_nodes))
-        + (1 + 1j * x ** 2) ** 2
-        * P(xi2 * h_nodes * (1 + 1j * x ** 2))
-        * sqrt(2 + 1j * x ** 2)
-        * x ** 2
+        + (1 + 1j * x**2) ** 2
+        * P(xi2 * h_nodes * (1 + 1j * x**2))
+        * sqrt(2 + 1j * x**2)
+        * x**2
         * exp(1j * pi / 4)
         * exp(1j * (z - 2 * xi2 * h_nodes))
-    ) * exp(-(z - 2 * xi2 * h_nodes) * x ** 2)
+    ) * exp(-(z - 2 * xi2 * h_nodes) * x**2)
 
 
 @numba.cfunc("f8(f8, voidptr)", cache=True)
@@ -308,8 +308,8 @@ def crack_2d_scat_kernel(
     """
 
     # Lamé coefficients, see http://subsurfwiki.org/wiki/Template:Elastic_modulus
-    lame_lambda = density * (vel_L ** 2 - 2 * vel_T ** 2)
-    lame_mu = density * vel_T ** 2
+    lame_lambda = density * (vel_L**2 - 2 * vel_T**2)
+    lame_mu = density * vel_T**2
 
     omega = 2 * pi * frequency
     xi1 = 2 * pi * frequency / vel_L
@@ -319,8 +319,8 @@ def crack_2d_scat_kernel(
     xi = vel_T / vel_L
     k_L = xi1  # alias
     k_T = xi2  # alias
-    a_L = -1j * k_L * pi / xi2 ** 2  # incident L wave
-    a_T = -1j * k_T * pi / xi2 ** 2  # incident S wave
+    a_L = -1j * k_L * pi / xi2**2  # incident L wave
+    a_T = -1j * k_T * pi / xi2**2  # incident S wave
 
     # normal vector to the crack
     nv = np.array([0.0, 1.0], np.complex128)  # force to complex to please numba
@@ -332,7 +332,7 @@ def crack_2d_scat_kernel(
     if use_incident_L:
         b_L = exp(1j * k_L * x_nodes * sv[0]) * basis_function(-k_L * h_nodes * sv[0])
         b_x = -2 * sv[0] * sv[1] * b_L
-        b_z = -(1 / xi ** 2 - 2 * sv[0] ** 2) * b_L
+        b_z = -(1 / xi**2 - 2 * sv[0] ** 2) * b_L
         vxL = np.linalg.solve(A_x, b_x)
         vzL = np.linalg.solve(A_z, b_z)
     if use_incident_T:
@@ -359,10 +359,10 @@ def crack_2d_scat_kernel(
                 * exp(-1j * pi / 4)
                 * xi1 ** (5 / 2)
                 * (
-                    lame_lambda / (density * omega ** 2) * (np.dot(v_L, nv))
+                    lame_lambda / (density * omega**2) * (np.dot(v_L, nv))
                     + 2
                     * lame_mu
-                    / (density * omega ** 2)
+                    / (density * omega**2)
                     * np.dot(v_L, ev)
                     * np.dot(ev, nv)
                 )
@@ -375,7 +375,7 @@ def crack_2d_scat_kernel(
                 * exp(-1j * pi / 4)
                 * xi2 ** (5 / 2)
                 * lame_mu
-                / (density * omega ** 2)
+                / (density * omega**2)
                 * (np.dot(v_T, tv) * np.dot(ev, nv) + np.dot(v_T, ev) * np.dot(tv, nv))
                 / sqrt(lambda_T)
             )
@@ -394,10 +394,10 @@ def crack_2d_scat_kernel(
                 * exp(-1j * pi / 4)
                 * xi1 ** (5 / 2)
                 * (
-                    lame_lambda / (density * omega ** 2) * (np.dot(v_L, nv))
+                    lame_lambda / (density * omega**2) * (np.dot(v_L, nv))
                     + 2
                     * lame_mu
-                    / (density * omega ** 2)
+                    / (density * omega**2)
                     * np.dot(v_L, ev)
                     * np.dot(ev, nv)
                 )
@@ -410,7 +410,7 @@ def crack_2d_scat_kernel(
                 * exp(-1j * pi / 4)
                 * xi2 ** (5 / 2)
                 * lame_mu
-                / (density * omega ** 2)
+                / (density * omega**2)
                 * (np.dot(v_T, tv) * np.dot(ev, nv) + np.dot(v_T, ev) * np.dot(tv, nv))
                 / sqrt(lambda_T)
             )

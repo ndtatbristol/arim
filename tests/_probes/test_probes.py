@@ -10,7 +10,7 @@ def test_probes():
 
     assert len(probes) > 0
 
-    for (probe_key, probe) in probes.items():
+    for probe_key, probe in probes.items():
         assert isinstance(probe, arim.Probe)
         assert probe_key == probe.metadata["short_name"]
 
@@ -21,7 +21,7 @@ def test_probes():
 
 
 def test_probes_makers():
-    for (probe_key, maker) in probes._makers.items():
+    for probe_key, maker in probes._makers.items():
         probe = maker.make()
         assert probe_key == maker.short_name == probe.metadata["short_name"]
         assert maker.long_name == probe.metadata["long_name"]

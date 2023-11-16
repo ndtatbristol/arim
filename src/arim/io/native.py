@@ -53,11 +53,11 @@ class InvalidConf(Exception):
 
 def load_conf_from_str(stream):
     """Load a single configuration file from a stream or string formatted in YAML.
-    
+
     Parameters
     ----------
     stream : stream, str
-    
+
     Returns
     -------
     arim.config.Config
@@ -67,12 +67,12 @@ def load_conf_from_str(stream):
 
 def load_conf_file(filename):
     """Load a single configuration file
-    
+
     Parameters
     ----------
     filename : str
         Filename
-    
+
     Returns
     -------
     arim.config.Config

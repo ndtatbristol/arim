@@ -146,7 +146,7 @@ area_t = np.cos(alpha_t).real
 # which propagate after the critical angle.
 
 # Incoming energy
-inc_energy = 0.5 * pres_i ** 2 / (rho_fluid * c_fluid) * area_r
+inc_energy = 0.5 * pres_i**2 / (rho_fluid * c_fluid) * area_r
 
 # Outgoing energy
 energy_refl = 0.5 * (np.abs(reflection) * pres_i) ** 2 / (rho_fluid * c_fluid) * area_r

@@ -116,7 +116,7 @@ def test_detect_surface_from_extrema():
 
     times_to_surface_expected = np.array([25.0, 26.0, 27.0, 28.0, 29.0, 30.0])
 
-    for (i, t) in enumerate(times_to_surface_expected):
+    for i, t in enumerate(times_to_surface_expected):
         timetraces[i, time.closest_index(t)] = t
 
     frame = Frame(timetraces, time, tx, rx, probe, ExaminationObject(Material(1.0)))

@@ -110,10 +110,10 @@ def make_toneburst(
 
 def _rotate_array(arr, n):
     """
-        >>> _rotate_array([1, 2, 3, 4, 5, 6, 7], 2)
-        array([3, 4, 5, 6, 7, 1, 2])
-        >>> _rotate_array([1, 2, 3, 4, 5, 6, 7], -2)
-        array([6, 7, 1, 2, 3, 4, 5])
+    >>> _rotate_array([1, 2, 3, 4, 5, 6, 7], 2)
+    array([3, 4, 5, 6, 7, 1, 2])
+    >>> _rotate_array([1, 2, 3, 4, 5, 6, 7], -2)
+    array([6, 7, 1, 2, 3, 4, 5])
 
     """
     return np.concatenate([arr[n:], arr[:n]])
@@ -300,7 +300,7 @@ def directivity_2d_rectangular_on_solid_l(
     The sinc results of the integration of MP (90) with far field
     approximation.
 
-    Normalisation coefficients are ignored, but the values are consistent with 
+    Normalisation coefficients are ignored, but the values are consistent with
     :func:`directivity_2d_rectangular_on_solid_t`.
 
     References
@@ -326,7 +326,7 @@ def directivity_2d_rectangular_on_solid_l(
     S = sin(theta)
     C = cos(theta)
     return (
-        ((k2 - 2 * S ** 2) * C)
+        ((k2 - 2 * S**2) * C)
         / _f0(S, k2)
         * np.sinc((element_width / wavelength_l) * S)
     )
@@ -338,7 +338,7 @@ def directivity_2d_rectangular_on_solid_t(
     """
     T-wave directivity of rectangular element on solid
 
-    See :func:`directivity_2d_rectangular_on_solid_l` for further information. 
+    See :func:`directivity_2d_rectangular_on_solid_l` for further information.
 
     Parameters
     ----------
@@ -368,7 +368,7 @@ def directivity_2d_rectangular_on_solid_t(
     S = sin(theta)
     C = cos(theta)
     return (
-        k ** 2.5
+        k**2.5
         * (np.sqrt(k2 * S * S - 1) * sin(2 * theta))
         / _f0(k * S, k2)
         * np.sinc((element_width / wavelength_t) * S)

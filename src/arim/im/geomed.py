@@ -14,7 +14,7 @@ _numba_opts = dict(nogil=True, fastmath=True, error_model="numpy")
 def _f(data, z):
     """
     Function to minimise
-    
+
     data : (n, d)
     z: (d, )
     out : 1
@@ -61,13 +61,13 @@ def _gradf_and_inv_hessf(data, z):
     for i in range(len(data)):
         tx = x - data[i][0]
         ty = y - data[i][1]
-        inv_l2_t = 1 / math.sqrt(tx ** 2 + ty ** 2)
+        inv_l2_t = 1 / math.sqrt(tx**2 + ty**2)
         gx += inv_l2_t * tx
         gy += inv_l2_t * ty
-        inv_l2_t3 = inv_l2_t ** 3
-        a11 += inv_l2_t - inv_l2_t3 * tx ** 2
+        inv_l2_t3 = inv_l2_t**3
+        a11 += inv_l2_t - inv_l2_t3 * tx**2
         a12 -= (tx * ty) * inv_l2_t3
-        a22 += inv_l2_t - inv_l2_t3 * ty ** 2
+        a22 += inv_l2_t - inv_l2_t3 * ty**2
 
     # Calculate invert:
     invdet = 1 / (a11 * a22 - a12 * a12)
@@ -79,28 +79,28 @@ def _gradf_and_inv_hessf(data, z):
 def _backtracking_line_search(data, x, gradval, p, rho, c):
     """
     Backtracking line search
-    
+
     Find largest alpha that satisfies the sufficient decrease criterion::
-        
+
         f(x + alpha * p) <= f(x) + c * alpha * dot(grad(f)(x), p)
-        
+
     using backtracking method described in algorithm 3.1 p 37 from Nocedal & Wright.
-    
+
     Parameters
     ----------
-    
+
     x : ndarray
         Parameter of f
     gradval : ndarray
         grad(f)(x)
     p : ndarray
-        Descent direction vector 
-    rho : 
+        Descent direction vector
+    rho :
         contraction factor, 0 < p < 1
     c : float
         factor, 0 < c < 1.
         Recommended value: 10^-4 (Nocebal & Wright p 33)
-        
+
     Returns
     -------
     alpha : float
@@ -129,7 +129,7 @@ def _backtracking_line_search(data, x, gradval, p, rho, c):
 def geomed(data, xtol=1e-9, maxiter=200, c=1e-4, rho=0.5):
     """
     Calculate geometric median using Newton's descent
-    
+
     Parameters
     ----------
     data : (n, 2)
@@ -137,12 +137,12 @@ def geomed(data, xtol=1e-9, maxiter=200, c=1e-4, rho=0.5):
     maxiter
     c
     rho
-    
+
     Returns
     -------
     xsol
     numiter
-    
+
     """
     # x0 has to be a ndarray
     #    if maxiter is None:

@@ -168,7 +168,7 @@ def test_chunk_array():
     x = np.arange(10)
     size = 3
     res = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [9]]
-    for (sel, w2) in zip(arim.helpers.chunk_array(x.shape, size), res):
+    for sel, w2 in zip(arim.helpers.chunk_array(x.shape, size), res):
         w1 = x[sel]
         assert np.all(w1 == w2)
 
@@ -176,7 +176,7 @@ def test_chunk_array():
     x = np.arange(9)
     size = 3
     res = [[0, 1, 2], [3, 4, 5], [6, 7, 8]]
-    for (sel, w2) in zip(arim.helpers.chunk_array(x.shape, size), res):
+    for sel, w2 in zip(arim.helpers.chunk_array(x.shape, size), res):
         w1 = x[sel]
         assert np.all(w1 == w2)
 
@@ -184,7 +184,7 @@ def test_chunk_array():
     x = np.arange(20).reshape((10, 2))
     size = 3
     res = [x[0:3, :], x[3:6, :], x[6:9, :], x[9:, :]]
-    for (sel, w2) in zip(arim.helpers.chunk_array(x.shape, size), res):
+    for sel, w2 in zip(arim.helpers.chunk_array(x.shape, size), res):
         w1 = x[sel]
         assert np.all(w1 == w2)
 
@@ -192,7 +192,7 @@ def test_chunk_array():
     x = np.arange(20).reshape((2, 10))
     size = 3
     res = [x[:, 0:3], x[:, 3:6], x[:, 6:9], x[:, 9:]]
-    for (sel, w2) in zip(arim.helpers.chunk_array(x.shape, size, axis=1), res):
+    for sel, w2 in zip(arim.helpers.chunk_array(x.shape, size, axis=1), res):
         w1 = x[sel]
         assert np.all(w1 == w2)
 
@@ -200,19 +200,19 @@ def test_chunk_array():
     x = np.arange(5 * 10 * 3).reshape((5, 10, 3))
     size = 3
     res = [x[:, 0:3, :], x[:, 3:6, :], x[:, 6:9, :], x[:, 9:, :]]
-    for (sel, w2) in zip(arim.helpers.chunk_array(x.shape, size, axis=1), res):
+    for sel, w2 in zip(arim.helpers.chunk_array(x.shape, size, axis=1), res):
         w1 = x[sel]
         assert np.all(w1 == w2)
 
 
 def test_smallest_uint_that_fits():
-    assert arim.helpers.smallest_uint_that_fits(2 ** 8 - 1) is np.uint8
-    assert arim.helpers.smallest_uint_that_fits(2 ** 8) is np.uint16
-    assert arim.helpers.smallest_uint_that_fits(2 ** 64 - 1) is np.uint64
+    assert arim.helpers.smallest_uint_that_fits(2**8 - 1) is np.uint8
+    assert arim.helpers.smallest_uint_that_fits(2**8) is np.uint16
+    assert arim.helpers.smallest_uint_that_fits(2**64 - 1) is np.uint64
 
 
 def test_sizeof_fmt():
     assert arim.helpers.sizeof_fmt(1) == "1.0 B"
     assert arim.helpers.sizeof_fmt(1024) == "1.0 KiB"
     assert arim.helpers.sizeof_fmt(2 * 1024) == "2.0 KiB"
-    assert arim.helpers.sizeof_fmt(5 * 1024 ** 2) == "5.0 MiB"
+    assert arim.helpers.sizeof_fmt(5 * 1024**2) == "5.0 MiB"

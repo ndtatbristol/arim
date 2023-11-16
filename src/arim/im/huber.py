@@ -34,7 +34,7 @@ def huber_m_estimate(data, tau, xtol=1e-9, maxiter=600):
     """
     M-estimate of location using Huber's loss
 
-    Reference: 
+    Reference:
 
     Parameters
     ----------
@@ -42,7 +42,7 @@ def huber_m_estimate(data, tau, xtol=1e-9, maxiter=600):
     tau : threshold
     xtol
     maxiter
-    
+
     Returns
     -------
     xsol

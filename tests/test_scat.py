@@ -480,8 +480,8 @@ class TestScattering:
         LT = matrices["LT"]
         TL = matrices["TL"]
 
-        lhs_func = lambda x: self.v_T ** 2 * x
-        rhs_func = lambda x: -self.v_L ** 2 * x
+        lhs_func = lambda x: self.v_T**2 * x
+        rhs_func = lambda x: -self.v_L**2 * x
 
         if show_plots:
             import matplotlib.pyplot as plt

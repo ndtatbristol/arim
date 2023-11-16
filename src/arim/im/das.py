@@ -463,7 +463,7 @@ def delay_and_sum_numba_noamp(
         fillvalue,
         *interpolation_args,
         *aggregation_args,
-        result
+        result,
     )
     return result
 

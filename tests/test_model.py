@@ -1255,7 +1255,7 @@ def test_fluid_solid_real():
     area_t = np.cos(alpha_t)
 
     # Conservation of energy
-    inc_energy = 0.5 * pres_i ** 2 / (rho_fluid * c_fluid) * area_fluid
+    inc_energy = 0.5 * pres_i**2 / (rho_fluid * c_fluid) * area_fluid
     energy_refl = 0.5 * (reflection * pres_i) ** 2 / (rho_fluid * c_fluid) * area_fluid
     energy_l = 0.5 * (transmission_l * pres_i) ** 2 / (rho_solid * c_l) * area_l
     energy_t = 0.5 * (transmission_t * pres_i) ** 2 / (rho_solid * c_t) * area_t
@@ -1301,7 +1301,7 @@ def test_fluid_solid_complex():
     area_l = np.cos(alpha_l.real)
     area_t = np.cos(alpha_t.real)
 
-    inc_energy = 0.5 * pres_i ** 2 / (rho_fluid * c_fluid) * area_fluid
+    inc_energy = 0.5 * pres_i**2 / (rho_fluid * c_fluid) * area_fluid
     energy_refl = (
         0.5 * (np.abs(reflection) * pres_i) ** 2 / (rho_fluid * c_fluid) * area_fluid
     )
@@ -1348,7 +1348,7 @@ def test_solid_l_fluid():
     area_l = np.cos(alpha_l)
     area_t = np.cos(alpha_t)
 
-    inc_energy = 0.5 * pres_i ** 2 / (rho_solid * c_l) * area_l
+    inc_energy = 0.5 * pres_i**2 / (rho_solid * c_l) * area_l
     energy_trans = (
         0.5 * (transmission * pres_i) ** 2 / (rho_fluid * c_fluid) * area_fluid
     )
@@ -1396,7 +1396,7 @@ def test_solid_t_fluid_complex():
     area_l = np.cos(alpha_l.real)
     area_t = np.cos(alpha_t.real)
 
-    inc_energy = 0.5 * pres_i ** 2 / (rho_solid * c_t) * area_t
+    inc_energy = 0.5 * pres_i**2 / (rho_solid * c_t) * area_t
     energy_trans = (
         0.5 * (np.abs(transmission) * pres_i) ** 2 / (rho_fluid * c_fluid) * area_fluid
     )

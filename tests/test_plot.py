@@ -12,7 +12,7 @@ from collections import OrderedDict
 def test_plot_oxz_many(show_plots):
     grid = arim.Grid(-5e-3, 5e-3, 0, 0, 0, 15e-3, 0.1e-3)
     k = 0.01e-3
-    data = np.exp(-grid.x ** 2 / k - (grid.z - 5e-3) ** 2 / (2 * k))
+    data = np.exp(-grid.x**2 / k - (grid.z - 5e-3) ** 2 / (2 * k))
 
     nrows = 2
     ncols = 3
@@ -45,7 +45,7 @@ def test_plot_oxz_many(show_plots):
 def test_plot_oxz(show_plots):
     grid = arim.Grid(-5e-3, 5e-3, 0, 0, 0, 15e-3, 0.1e-3)
     k = 2 * np.pi / 10e-3
-    data = (np.cos(grid.x * 2 * k) * np.sin(grid.z * k)) * (grid.z ** 2)
+    data = (np.cos(grid.x * 2 * k) * np.sin(grid.z * k)) * (grid.z**2)
 
     # check it works without error
     ax, im = aplt.plot_oxz(data, grid)

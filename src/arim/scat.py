@@ -50,8 +50,7 @@ def make_angles(numpoints):
 
 
 def make_angles_grid(numpoints):
-    """Return angles for scattering matrices as a grid of incident and outgoing angles.
-    """
+    """Return angles for scattering matrices as a grid of incident and outgoing angles."""
     theta = make_angles(numpoints)
     inc_theta, out_theta = np.meshgrid(theta, theta, indexing="xy")
     return inc_theta, out_theta
@@ -467,8 +466,8 @@ def crack_2d_scat(
 def _crack_tip_integrand(x, data):
     alpha, k_p, k_s = numba.carray(data, 3, dtype=numba.float64)
     return -math.atan(
-        (4 * x ** 2 * math.sqrt(x ** 2 - k_p ** 2) * math.sqrt(k_s ** 2 - x ** 2))
-        / (2 * x ** 2 - k_s ** 2) ** 2
+        (4 * x**2 * math.sqrt(x**2 - k_p**2) * math.sqrt(k_s**2 - x**2))
+        / (2 * x**2 - k_s**2) ** 2
     ) / ((x + alpha) * math.pi)
 
 
@@ -504,7 +503,7 @@ def _crack_tip_k_plus_integral(alpha, k_p, k_s, eps=1e-3, **quad_kwargs):
         )
 
         integral = integral_left + integral_right
-        error = np.sqrt(error_left ** 2 + error_right ** 2)
+        error = np.sqrt(error_left**2 + error_right**2)
     else:
         integral, error = scipy.integrate.quad(integrand_c, k_p, k_s)
 
@@ -568,8 +567,8 @@ def crack_tip_2d(
         rayleigh_vel = ut.rayleigh_vel(longitudinal_vel, transverse_vel)
     k_0 = 1e7 / rayleigh_vel
 
-    k_p2 = k_p ** 2
-    k_s2 = k_s ** 2
+    k_p2 = k_p**2
+    k_s2 = k_s**2
 
     beta = inc_theta
     theta = out_theta
@@ -612,10 +611,10 @@ def crack_tip_2d(
             * sin(beta / 2)
             * (
                 sin(theta / 2)
-                * (2 * k_p2 * cos_beta ** 2 - k_s2)
-                * (2 * k_p2 * cos_theta ** 2 - k_s2)
+                * (2 * k_p2 * cos_beta**2 - k_s2)
+                * (2 * k_p2 * cos_theta**2 - k_s2)
                 + 2
-                * k_p ** 3
+                * k_p**3
                 * cos(beta / 2)
                 * cos_beta
                 * sin(2 * theta)
@@ -643,7 +642,7 @@ def crack_tip_2d(
                 * sin(beta / 2)
                 * (
                     sqrt(2 * k_p)
-                    * (2 * k_p2 * cos_beta ** 2 - k_s2)
+                    * (2 * k_p2 * cos_beta**2 - k_s2)
                     * sin(2 * theta)
                     * sqrt((k_p - k_s * cos_theta).astype(complex))
                     - 4
@@ -686,7 +685,7 @@ def crack_tip_2d(
                     * cos(beta / 2)
                     * cos(beta)
                     * sin(theta / 2)
-                    * (2 * k_p2 * cos_theta ** 2 - k_s2)
+                    * (2 * k_p2 * cos_theta**2 - k_s2)
                     * sqrt((k_p - k_s * cos_beta).astype(complex))
                 )
             )
@@ -705,7 +704,7 @@ def crack_tip_2d(
         # F_s(theta, beta)
         res["TT"] = (
             e_ipi4
-            * k_s ** 3
+            * k_s**3
             * sin(beta / 2)
             * (
                 k_s * cos(2 * beta) * cos(2 * theta) * sin(theta / 2)

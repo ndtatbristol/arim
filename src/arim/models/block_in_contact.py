@@ -34,7 +34,8 @@ logger = logging.getLogger(__name__)
 
 
 _RayWeightsCommon = namedtuple(
-    "_RayWeightsCommon", ["numgridpoints", "wavelengths_in_block"],
+    "_RayWeightsCommon",
+    ["numgridpoints", "wavelengths_in_block"],
 )
 
 
@@ -263,7 +264,7 @@ def backwall_paths(
     Make backwall paths LL, LT, TL, TT
 
     Probe -> block -> backwall > block -> probe
-    
+
     Parameters
     ----------
     block_material : Material
@@ -287,8 +288,15 @@ def backwall_paths(
         for mode2 in (c.Mode.L, c.Mode.T):
             key = mode1.key() + mode2.key()
             paths[key] = c.Path(
-                interfaces=(probe_start, backwall_refl, probe_end,),
-                materials=(block_material, block_material,),
+                interfaces=(
+                    probe_start,
+                    backwall_refl,
+                    probe_end,
+                ),
+                materials=(
+                    block_material,
+                    block_material,
+                ),
                 modes=(mode1, mode2),
                 name="Backwall " + key,
             )
@@ -703,7 +711,7 @@ def scat_unshifted_transfer_functions(
         0 to disable. See module documentation.
     first_nonzero_freq_idx : int or None
         Default: assumes first freq is zero, except if only one freq is given.
-    
+
     Yields
     ------
     partial_transfer_function_f : ndarray
@@ -839,7 +847,7 @@ def wall_unshifted_transfer_functions(
     use_attenuation : bool
     first_nonzero_freq_idx : int or None
         Default: assumes first freq is zero, except if only one freq is given.
-        
+
     Yields
     ------
     partial_transfer_function_f : ndarray
@@ -979,7 +987,7 @@ def singlefreq_wall_transfer_functions(
 ):
     """
     Compute transfer functions for wall echoes (single-frequency model).
- 
+
     Parameters
     ----------
     wall_paths : Dict[Path]
@@ -1003,7 +1011,7 @@ def singlefreq_wall_transfer_functions(
         Key of `wall_paths`
     partial_transfer_function_f : ndarray
         Shape: (numtimetraces, numfreq). Complex. Contribution for one path.
-    
+
     Notes
     -----
     Legacy function, superseeded by :func:`wall_unshifted_transfer_functions`

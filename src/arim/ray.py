@@ -23,6 +23,7 @@ from .helpers import chunk_array
 
 use_parallel = os.environ.get("ARIM_USE_PARALLEL", not numba.core.config.IS_32BITS)
 
+
 def find_minimum_times(
     time_1, time_2, dtype=None, dtype_indices=None, block_size=None, numthreads=None
 ):
@@ -415,7 +416,7 @@ class Rays:
         x = np.zeros(num_points_sets, s.FLOAT)
         y = np.zeros(num_points_sets, s.FLOAT)
         z = np.zeros(num_points_sets, s.FLOAT)
-        for (i, (points, j)) in enumerate(zip(self.fermat_path.points, indices)):
+        for i, (points, j) in enumerate(zip(self.fermat_path.points, indices)):
             x[i] = points.x[j]
             y[i] = points.y[j]
             z[i] = points.z[j]
@@ -445,7 +446,7 @@ class Rays:
 
         interior_indices = self.interior_indices
         middle_points = tuple(self.fermat_path.points)[1:-1]
-        for (d, points) in enumerate(middle_points):
+        for d, points in enumerate(middle_points):
             np.logical_or(out, interior_indices[d, ...] == 0, out=out)
             np.logical_or(out, interior_indices[d, ...] == (len(points) - 1), out=out)
         return out

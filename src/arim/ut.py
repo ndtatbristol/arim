@@ -401,7 +401,7 @@ def filter_unique_views(viewnames):
     be in the filtered list. Order is unchanged.
 
     Remove views that would give the same result because of time reciprocity
-    (under linear assumption). 
+    (under linear assumption).
 
     Parameters
     ----------
@@ -483,8 +483,8 @@ def rayleigh_vel(longitudinal_vel, transverse_vel):
 
 
     """
-    poisson = (longitudinal_vel ** 2 - 2 * transverse_vel ** 2) / (
-        2 * (longitudinal_vel ** 2 - transverse_vel ** 2)
+    poisson = (longitudinal_vel**2 - 2 * transverse_vel**2) / (
+        2 * (longitudinal_vel**2 - transverse_vel**2)
     )
     if poisson <= 0:
         raise ValueError

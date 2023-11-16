@@ -375,7 +375,7 @@ class Points:
 
         """
         return self.reshape(self.size)
-    
+
     def reshape(self, new_shape):
         """
         Returns the reshaped coordinates.
@@ -860,8 +860,7 @@ class Grid(Points):
 
 
 def spherical_coordinates_r(x, y, z, out=None):
-    """radial distance
-    """
+    """radial distance"""
     return norm2(x, y, z, out=out)
 
 
