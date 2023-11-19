@@ -468,11 +468,7 @@ def plot_oxz(
     ax.yaxis.set_major_formatter(milli_formatter)
     ax.yaxis.set_minor_formatter(milli_formatter)
     if draw_cbar:
-        # necessary magic to make the colorbar the same height as the image
-        divider = axes_grid1.make_axes_locatable(ax)
-        cax = divider.append_axes("right", size="5%", pad=0.05)
-        cax.set_aspect(aspect=20, adjustable="box")
-        fig.colorbar(image, ax=ax, cax=cax)
+        fig.colorbar(image, ax=ax)
     if clim is not None:
         image.set_clim(clim)
     if title is not None:
@@ -480,9 +476,7 @@ def plot_oxz(
     for p in patches:
         ax.add_patch(p)
 
-    # Like axis('equal') but mitigates https://github.com/matplotlib/matplotlib/issues/11416
-    # adjustable=box to avoid white space (default in matplotlib 3)
-    ax.set_aspect(aspect=1, adjustable="box")
+    ax.set_aspect(aspect="equal", adjustable="box")
     ax.axis([grid.xmin, grid.xmax, grid.zmax, grid.zmin])
     if savefig:
         if filename is None:
@@ -595,7 +589,6 @@ def plot_oxz_many(
     if draw_colorbar:
         cax = axes_grid.cbar_axes[0]
         fig.colorbar(im, cax=cax)
-        cax.set_aspect(20, adjustable="box")
     if savefig:
         if filename is None:
             raise ValueError("filename must be provided when savefig is true")
