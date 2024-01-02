@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 import arim
+import arim.datasets
 import arim.im.tfm
 import arim.io
 import arim.plot as aplt
@@ -21,7 +22,7 @@ mpl.rcParams["image.cmap"] = "viridis"
 
 # %% Load datafile (exported from BRAIN)
 
-expdata_filename = r"example-datasets/contact_notch_aluminium.mat"
+expdata_filename = arim.datasets.EXAMPLES.fetch("contact_notch_aluminium.mat")
 frame = arim.io.load_expdata(expdata_filename)
 
 print("Frame:")

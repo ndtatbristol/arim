@@ -1,3 +1,4 @@
+import arim.datasets
 import arim.io
 
 PROBE_1 = """
@@ -90,6 +91,13 @@ backwall:
   z: 40.e-3
 """
 
+FRAME_FROM_DSET = """
+frame:
+  dataset_name: examples
+  dataset_item: contact_notch_aluminium.mat
+  instrument_delay: 0.
+"""
+
 
 def test_probe_from_conf():
     for conf_str in (PROBE_1, PROBE_2):
@@ -120,3 +128,22 @@ def test_material_attenuation_from_conf():
         conf = arim.io.load_conf_from_str(conf_str)
         att = arim.io.material_attenuation_from_conf(conf["longitudinal_att"])
         assert att(10) == 777.0
+
+
+def test_frame_from_conf():
+    # Load frame using arim.datasets:
+    conf = arim.io.load_conf_from_str(FRAME_FROM_DSET)
+    frame = arim.io.frame_from_conf(
+        conf, use_probe_from_conf=False, use_examination_object_from_conf=False
+    )
+    assert frame.numtimetraces == (64 * 65) // 2
+
+
+def test_frame_from_conf2():
+    # Load frame using absolute path:
+    fname = arim.datasets.EXAMPLES.fetch("contact_notch_aluminium.mat")
+    conf = {"frame": {"datafile": str(fname)}}
+    frame = arim.io.frame_from_conf(
+        conf, use_probe_from_conf=False, use_examination_object_from_conf=False
+    )
+    assert frame.numtimetraces == (64 * 65) // 2
