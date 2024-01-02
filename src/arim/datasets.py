@@ -8,6 +8,8 @@ Usage::
 
 """
 
+from typing import Dict
+
 import pooch
 
 EXAMPLES = pooch.create(
@@ -22,4 +24,4 @@ EXAMPLES = pooch.create(
 )
 
 # Dictionary of all datasets
-DATASETS: dict[str, pooch.Pooch] = {"examples": EXAMPLES}
+DATASETS: Dict[str, pooch.Pooch] = {"examples": EXAMPLES}
