@@ -22,16 +22,31 @@ The files are conf.d are read in alphabetical order.
 If a configuration entry is present in two files, only the entry from the file
 read the latest will be kept.
 
+
+conf.yaml format
+----------------
+
+The ultrasonic data is provided using either:
+
+1. ``frame.datafile``: path to the data file, either absolute or relative to
+   ``conf.yaml``,
+2. ``frame.dataset_name`` and ``frame.dataset_item``: a dataset name
+   (``arim.datasets``) and the path of the item to fetch
+
+
 """
 
 import copy
+import logging
 import pathlib
 
 import numpy as np
 import yaml
 
-from .. import _probes, config, core, geometry
+from .. import _probes, config, core, datasets, geometry
 from . import brain
+
+LOGGER = logger = logging.getLogger(__name__)
 
 __all__ = [
     "load_conf",
@@ -379,7 +394,25 @@ def frame_from_conf(
 
     """
     frame_conf = conf["frame"]
-    frame = brain.load_expdata(frame_conf["datafile"])
+    if "datafile" in frame_conf:
+        # Load from absolute or relative path:
+        fname = frame_conf["datafile"]
+        if "dataset_name" in frame_conf:
+            LOGGER.warning("ignoring frame.dataset_name")
+        if "dataset_item" in frame_conf:
+            LOGGER.warning("ignoring frame.dataset_item")
+    else:
+        # Load from arim.datasets:
+        dataset_name = frame_conf["dataset_name"]
+        try:
+            dataset_pooch = datasets.DATASETS[dataset_name]
+        except (KeyError, TypeError):
+            raise ValueError(
+                f"Unknown dataset: '{dataset_name}'. Valid values are: {tuple(datasets.DATASETS.keys())}"
+            )
+        fname = dataset_pooch.fetch(frame_conf["dataset_item"])
+
+    frame = brain.load_expdata(fname)
 
     instrument_delay = None
     try:

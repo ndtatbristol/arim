@@ -1,5 +1,6 @@
 frame:
-  datafile: ../example-datasets/immersion_notch_aluminium.mat
+  dataset_name: examples
+  dataset_item: immersion_notch_aluminium.mat
   instrument_delay: 500.e-9 # shift the t=0 defined in datafile by this number.
 
 probe:
