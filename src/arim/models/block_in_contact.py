@@ -455,9 +455,7 @@ def make_interfaces(
 
 
 def make_paths(
-        block_material,
-        interface_dict,
-        max_number_of_reflection=0,
+        block_material, interface_dict, max_number_of_reflection=0
     ):
     """
     Creates a dictionary a Paths for the block-in-contact model.
@@ -560,13 +558,12 @@ def make_views(
         # Plan B
         block_material = examination_object.material
     try:
-        frontwall = examination_object.frontwall
+        walls = [examination_object.walls[i]
+                 for i in examination_object.wall_idxs_for_imaging]
+        if max_number_of_reflection > 0 and len(walls) < 1:
+            raise ValueError("Not enough walls available for reflection.")
     except AttributeError:
-        frontwall = None
-    try:
-        backwall = examination_object.backwall
-    except AttributeError:
-        backwall = None
+        walls = None
     try:
         under_material = examination_object.under_material
     except AttributeError:
@@ -574,8 +571,7 @@ def make_views(
     interfaces = make_interfaces(
         probe_oriented_points,
         grid_oriented_points,
-        frontwall=frontwall,
-        backwall=backwall,
+        walls=walls,
         under_material=under_material,
     )
     paths = make_paths(block_material, interfaces, max_number_of_reflection)
