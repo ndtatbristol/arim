@@ -1516,17 +1516,17 @@ def make_contiguous_geometry(coords, numpoints, names=None, dtype=None):
         if names is None:
             # Frontwall is first and has z == 0.0
             if idx == 0 and abs(start[-1]) < np.finfo(float).eps and abs(end[-1]) < np.finfo(float).eps:
-                name = "Frontwall"
+                name = "frontwall"
             # Backwall has constant z.
             elif abs(start[-1] - end[-1]) < np.finfo(float).eps:
-                name = "Backwall_{}".format(bw_idx)
+                name = "backwall_{}".format(bw_idx)
                 bw_idx += 1
             # Sidewall has constant x.
             elif abs(start[0] - end[0]) < np.finfo(float).eps:
-                name = "Sidewall_{}".format(sw_idx)
+                name = "sidewall_{}".format(sw_idx)
                 sw_idx += 1
             else:
-                name = "Otherwall_{}".format(ow_idx)
+                name = "otherwall_{}".format(ow_idx)
                 ow_idx += 1
         
         walls.append(points_1d_wall(start, end, n, name=name, dtype=dtype))
