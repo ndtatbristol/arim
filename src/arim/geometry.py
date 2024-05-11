@@ -1513,7 +1513,7 @@ def make_contiguous_geometry(coords, numpoints, names=None, dtype=None):
         else:
             n = numpoints[idx]
         
-        if names is not None:
+        if names is None:
             # Frontwall is first and has z == 0.0
             if idx == 0 and abs(start[-1]) < np.finfo(float).eps and abs(end[-1]) < np.finfo(float).eps:
                 name = "Frontwall"
@@ -1574,7 +1574,7 @@ def points_1d_wall(start, end, numpoints, name=None, dtype=None):
     
     basis = CoordinateSystem(
         [0.0, 0.0, 0.0],
-        (end - start) / np.linald.norm(end - start), 
+        (end - start) / np.linalg.norm(end - start), 
         [0.0, 1.0, 0.0],
     ).basis_matrix
     
