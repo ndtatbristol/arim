@@ -53,6 +53,7 @@ evaluate, precomputing the scattering matrices (option 2) is often more
 computationally efficient.
 
 """
+from itertools import product
 import logging
 import warnings
 from collections import OrderedDict, namedtuple
@@ -506,7 +507,7 @@ def backwall_paths(
                 name="Backwall " + key,
             )
 
-    if max_number_of_reflection == 1:
+    if max_number_of_reflection <= 1:
         return paths
 
     for mode1 in (c.Mode.L, c.Mode.T):
@@ -686,7 +687,7 @@ def ray_weights_for_wall(
 
 
 def make_interfaces(
-    couplant_material, probe_oriented_points, frontwall, backwall, grid_oriented_points
+    couplant_material, probe_oriented_points, walls, grid_oriented_points
 ):
     """
     Construct Interface objects for the case of a solid block in immersion
@@ -703,47 +704,46 @@ def make_interfaces(
     couplant_material: Material
     couplant_material: Material
     probe_oriented_points : OrientedPoints
-    frontwall: OrientedPoints
-    backwall: OrientedPoints
+    walls: list[OrientedPoints]
     grid_oriented_points: OrientedPoints
 
     Returns
     -------
     interface_dict : dict[Interface]
-        Keys: probe, frontwall_trans, backwall_refl, grid, frontwall_refl
+        Keys: probe, frontwall_trans, grid, wall_name_1 (optional), ...
     """
     interface_dict = OrderedDict()
 
     interface_dict["probe"] = c.Interface(
         *probe_oriented_points, are_normals_on_out_rays_side=True
     )
-    interface_dict["frontwall_trans"] = c.Interface(
-        *frontwall,
-        "fluid_solid",
-        "transmission",
-        are_normals_on_inc_rays_side=False,
-        are_normals_on_out_rays_side=True,
-    )
-    if backwall is not None:
-        interface_dict["backwall_refl"] = c.Interface(
-            *backwall,
-            "solid_fluid",
-            "reflection",
-            reflection_against=couplant_material,
-            are_normals_on_inc_rays_side=False,
-            are_normals_on_out_rays_side=False,
-        )
     interface_dict["grid"] = c.Interface(
         *grid_oriented_points, are_normals_on_inc_rays_side=True
     )
-    interface_dict["frontwall_refl"] = c.Interface(
-        *frontwall,
-        "solid_fluid",
-        "reflection",
-        reflection_against=couplant_material,
-        are_normals_on_inc_rays_side=True,
-        are_normals_on_out_rays_side=True,
-    )
+    for wall in walls:
+        name = wall.points.name
+        if name == "Frontwall":
+            # Need both transmission and reflection for frontwall
+            name = wall.points.name + "_trans"
+            interface_dict[name+"_trans"] = c.Interface(
+                *wall,
+                kind="fluid_solid",
+                transmission_reflection="transmission",
+                reflection_against=None,
+                are_normals_on_inc_rays_side=False,
+                are_normals_on_out_rays_side=True,
+            )
+        else:
+            # Ideally want to allow front wall to be reflected as well for later reflections.
+            # Too much of a headache for now, when ready remove this else block.
+            interface_dict[name] = c.Interface(
+                *wall,
+                kind="solid_fluid",
+                transmission_reflection="reflection",
+                reflection_against=couplant_material,
+                are_normals_on_inc_rays_side=True,
+                are_normals_on_out_rays_side=True,
+            )
 
     return interface_dict
 
