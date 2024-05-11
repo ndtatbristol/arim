@@ -240,9 +240,10 @@ def examination_object_from_conf(conf):
     arim.core.ExaminationObject
 
     """
-    if (
-        "frontwall" in conf.keys()
-        and "backwall" in conf.keys()
+    if ((
+            ("frontwall" in conf.keys() and "backwall" in conf.keys())
+            or "contiguous_geometry" in conf.keys()
+        )
         and "couplant_material" in conf.keys()
         and "block_material" in conf.keys()
     ):
@@ -323,29 +324,79 @@ def block_in_immersion_from_conf(conf):
     """
     couplant = material_from_conf(conf["couplant_material"])
     block = material_from_conf(conf["block_material"])
-    frontwall = geometry.points_1d_wall_z(**conf["frontwall"], name="Frontwall")
-    backwall = geometry.points_1d_wall_z(**conf["backwall"], name="Backwall")
-    return core.BlockInImmersion(block, couplant, frontwall, backwall)
+    # Initialise geometry storage
+    walls, imaging = [], []
+    
+    # Simple geometry
+    if "frontwall" in conf.keys() or "backwall" in conf.keys():
+        frontwall_conf = conf.get("frontwall", None)
+        backwall_conf  = conf.get("backwall", None)
+        if frontwall_conf is not None:
+            walls.append(geometry.points_1d_wall_z(**frontwall_conf, name="Frontwall"))
+            imaging.append(0)
+        if backwall_conf is not None:
+            walls.append(geometry.points_1d_wall_z(**backwall_conf, name="Backwall"))
+            imaging.append(1)
+    
+    # Contiguous (polygonal) geometry.
+    # By convention, if not already defined then frontwall is first and move clockwise.
+    if "contiguous_geometry" in conf.keys():
+        geom_conf = conf["contiguous_geometry"]
+        geom_coords = np.squeeze(geom_conf["coords"])
+        geom_walls = geometry.make_contiguous_geometry(
+            geom_coords,
+            geom_conf["numpoints"],
+            geom_conf["names"],
+        )
+        for wall in geom_walls:
+            walls.append(wall)
+        if (
+            0 not in imaging
+            or 0 not in geom_conf["wall_idxs"]
+        ):
+            imaging.append(wall)
+    return core.BlockInImmersion(block, couplant, walls, imaging)
 
 
 def block_in_contact_from_conf(conf):
     block = material_from_conf(conf["block_material"])
-    frontwall_conf = conf.get("frontwall", None)
-    if frontwall_conf is None:
-        frontwall = None
-    else:
-        frontwall = geometry.points_1d_wall_z(**frontwall_conf, name="Frontwall")
-    backwall_conf = conf.get("backwall", None)
-    if backwall_conf is None:
-        backwall = None
-    else:
-        backwall = geometry.points_1d_wall_z(**backwall_conf, name="Backwall")
+    # Initialise geometry storage
+    walls, imaging = [], []
+    
+    # Simple geometry
+    if "frontwall" in conf.keys() or "backwall" in conf.keys():
+        frontwall_conf = conf.get("frontwall", None)
+        backwall_conf  = conf.get("backwall", None)
+        if frontwall_conf is not None:
+            walls.append(geometry.points_1d_wall_z(**frontwall_conf, name="Frontwall"))
+            imaging.append(0)
+        if backwall_conf is not None:
+            walls.append(geometry.points_1d_wall_z(**backwall_conf, name="Backwall"))
+            imaging.append(1)
+    
+    # Polygonal geometry.
+    # By convention, if not already defined then frontwall is first and move clockwise.
+    if "contiguous_geometry" in conf.keys():
+        geom_conf = conf["contiguous_geometry"]
+        geom_coords = np.squeeze(geom_conf["coords"])
+        geom_walls = geometry.make_contiguous_geometry(
+            geom_coords,
+            geom_conf["numpoints"],
+            geom_conf["names"],
+        )
+        for wall in geom_walls:
+            walls.append(wall)
+        if (
+            0 not in imaging
+            or 0 not in geom_conf["wall_idxs"]
+        ):
+            imaging.append(wall)
     under_material_conf = conf.get("under_material", None)
     if under_material_conf is None:
         under_material = None
     else:
         under_material = material_from_conf(under_material_conf)
-    return core.BlockInContact(block, frontwall, backwall, under_material)
+    return core.BlockInContact(block, walls, imaging, under_material)
 
 
 def grid_from_conf(conf):
