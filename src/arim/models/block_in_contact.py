@@ -398,19 +398,26 @@ def ray_weights_for_wall(
 def make_interfaces(
     probe_oriented_points,
     grid_oriented_points,
-    walls=None,
+    reflecting_walls=None,
     under_material=None,
 ):
-    """
-    Construct interfaces
+    """    
+    Construct interfaces for the case of a solid block in contact with the
+    probe.
 
-    This function is a placeholder for the to-be-implemented forward model.
+    The interfaces are for rays starting from the probe and arriving in the
+    grid. Additional walls can be included to allow reflections.
+    
+    Assumes that walls are provided in the order that reflection is expected
+    (i.e. for 2 reflections from the backwall and then the frontwall, then
+    walls should contain them in this order). Assumes all that walls have
+    orientation facing into the solid.
 
     Parameters
     ----------
     probe_oriented_points : OrientedPoints
     grid_oriented_points: OrientedPoints
-    walls: list[OrientedPoints] or None
+    reflecting_walls: list[OrientedPoints] or None
     under_material : Material or None
 
     Returns
@@ -426,10 +433,10 @@ def make_interfaces(
     interface_dict["grid"] = c.Interface(
         *grid_oriented_points, are_normals_on_inc_rays_side=True
     )
-    if walls is not None:
-        for wall in walls:
+    if reflecting_walls is not None:
+        for wall in reflecting_walls:
             name = wall.points.name
-            if name != "Frontwall" and under_material is not None:
+            if name != "frontwall" and under_material is not None:
                 kind = "solid_fluid"
                 transmission_reflection = "reflection"
             else:
@@ -447,7 +454,11 @@ def make_interfaces(
     return interface_dict
 
 
-def make_paths(block_material, interface_dict, max_number_of_reflection=0):
+def make_paths(
+        block_material,
+        interface_dict,
+        max_number_of_reflection=0,
+    ):
     """
     Creates a dictionary a Paths for the block-in-contact model.
 
@@ -476,48 +487,40 @@ def make_paths(block_material, interface_dict, max_number_of_reflection=0):
     paths = OrderedDict()
     probe = interface_dict["probe"]
     grid = interface_dict["grid"]
-    if max_number_of_reflection >= 1:
-        try:
-            backwall = interface_dict["backwall_refl"]
-        except KeyError:
-            raise ValueError("Backwall must be defined to use skip paths")
-    if max_number_of_reflection >= 2:
-        try:
-            frontwall_refl = interface_dict["frontwall_refl"]
-        except KeyError:
-            raise ValueError("Frontwall must be defined to use double-skip paths")
-
-    paths["L"] = c.Path(
-        interfaces=(probe, grid),
-        materials=(block_material,),
-        modes=(c.Mode.L,),
-        name="L",
-    )
-    paths["T"] = c.Path(
-        interfaces=(probe, grid),
-        materials=(block_material,),
-        modes=(c.Mode.T,),
-        name="T",
-    )
-
-    mode_dict = {"L": c.Mode.longitudinal, "T": c.Mode.transverse}
-    if max_number_of_reflection >= 1:
-        keys = ["LL", "LT", "TL", "TT"]
-        for key in keys:
-            paths[key] = c.Path(
-                interfaces=(probe, backwall, grid),
-                materials=(block_material, block_material),
-                modes=(mode_dict[key[0]], mode_dict[key[1]]),
-                name=key,
-            )
-    if max_number_of_reflection >= 2:
-        keys = ["LLL", "LLT", "LTL", "LTT", "TLL", "TLT", "TTL", "TTT"]
-        for key in keys:
-            paths[key] = c.Path(
-                interfaces=(probe, backwall, frontwall_refl, grid),
-                materials=(block_material, block_material, block_material),
-                modes=(mode_dict[key[0]], mode_dict[key[1]], mode_dict[key[2]]),
-                name=key,
+    wall_dict = OrderedDict((key, value) for key, value in interface_dict.items()
+                            if key not in ["probe", "grid"])
+    wall_names = list(wall_dict.keys())
+    
+    mode_names = ("L", "T")
+    modes = (c.Mode.longitudinal. c.Mode.transverse)
+    for no_reflections in range(max_number_of_reflection+1):
+        # For this number of reflections, make all the combinations of paths.
+        path_idxs_up_to_refl = list(product(range(2), repeat=no_reflections+1))
+        for path_idxs in path_idxs_up_to_refl:
+            # For each path with this number of reflections.
+            path_name = ""
+            path_modes = []
+            path_interfaces = [probe]
+            path_materials = []
+            
+            for i, mode in enumerate(path_idxs):
+                if i == 0:
+                    path_name += mode_names[mode]
+                else:
+                    # Have to settle on a naming convention.
+                    # Published work to date (~2023) joins wave modes and assumes a constant wall (typically back wall).
+                    # To generalise, include wall names between wave modes. This isn't particularly elegant, should try to come up with something better.
+                    path_name += " {} {}".format(wall_names[i-1], mode_names[mode])
+                    path_interfaces.append(wall_dict[wall_names[i-1]])
+                path_modes.append(modes[mode])
+                path_materials.append(block_material)
+            path_interfaces.append(grid)
+            
+            paths[path_name] = c.Path(
+                interfaces=path_interfaces,
+                materials=path_materials,
+                modes=path_modes,
+                name=path_name,
             )
     return paths
 
