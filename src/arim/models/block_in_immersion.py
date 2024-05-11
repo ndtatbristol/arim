@@ -868,13 +868,20 @@ def make_views(
     try:
         couplant = examination_object.couplant_material
         block = examination_object.block_material
-        frontwall = examination_object.frontwall
-        backwall = examination_object.backwall
+        frontwall = None
+        walls = []
+        for i, wall in enumerate(examination_object.walls):
+            if i in examination_object.wall_idxs_for_imaging:
+                walls.append(wall)
+            if wall.points.name == "frontwall":
+                frontwall = wall
+        if max_number_of_reflection > 0 and len(walls) < 1:
+            raise ValueError("Not enough walls for reflection.")
     except AttributeError as e:
         raise ValueError("Examination object should be a BlockInImmersion") from e
 
     interfaces = make_interfaces(
-        couplant, probe_oriented_points, frontwall, backwall, scatterers_oriented_points
+        couplant, probe_oriented_points, frontwall, scatterers_oriented_points, walls,
     )
 
     paths = make_paths(block, couplant, interfaces, max_number_of_reflection)
