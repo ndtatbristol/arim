@@ -20,6 +20,7 @@ Limits of the forward model:
 See also :mod:`arim.models.model.block_in_immersion`
 
 """
+from itertools import product
 import logging
 from collections import OrderedDict, namedtuple
 
@@ -397,8 +398,7 @@ def ray_weights_for_wall(
 def make_interfaces(
     probe_oriented_points,
     grid_oriented_points,
-    frontwall=None,
-    backwall=None,
+    walls=None,
     under_material=None,
 ):
     """
@@ -410,14 +410,13 @@ def make_interfaces(
     ----------
     probe_oriented_points : OrientedPoints
     grid_oriented_points: OrientedPoints
-    frontwall: OrientedPoints or None
-    backwall: OrientedPoints or None
+    walls: list[OrientedPoints] or None
     under_material : Material or None
 
     Returns
     -------
     interface_dict : dict[Interface]
-        Keys: probe, grid, backwall_refl (optional), frontwall_refl (optional)
+        Keys: probe, grid, wall_name_1 (optional), ...
     """
     interface_dict = OrderedDict()
 
@@ -427,16 +426,24 @@ def make_interfaces(
     interface_dict["grid"] = c.Interface(
         *grid_oriented_points, are_normals_on_inc_rays_side=True
     )
-    if backwall is not None:
-        interface_dict["backwall_refl"] = _make_backwall_refl_interface(
-            backwall, under_material
-        )
-    if frontwall is not None:
-        interface_dict["frontwall_refl"] = c.Interface(
-            *frontwall,
-            are_normals_on_inc_rays_side=True,
-            are_normals_on_out_rays_side=True,
-        )
+    if walls is not None:
+        for wall in walls:
+            name = wall.points.name
+            if name != "Frontwall" and under_material is not None:
+                kind = "solid_fluid"
+                transmission_reflection = "reflection"
+            else:
+                kind = None
+                transmission_reflection = None
+            
+            interface_dict[name] = c.Interface(
+                *wall,
+                kind,
+                transmission_reflection,
+                are_normals_on_inc_rays_side=True,
+                are_normals_on_out_rays_side=True,
+                reflection_against=under_material,
+            )
     return interface_dict
 
 
