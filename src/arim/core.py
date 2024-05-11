@@ -1344,19 +1344,21 @@ class BlockInImmersion(ExaminationObject):
     material : Material
         Alias for block_material
     couplant_material : Material
-    frontwall : OrientedPoints
-    backwall : OrientedPoints or None
+    walls : list[OrientedPoints]
+    wall_idxs_for_imaging : list[int]
+        List of indices in `walls` which are used for simulation or imaging.
+        Frontwall not required.
 
     """
 
     def __init__(
-        self, block_material, couplant_material, frontwall, backwall=None, metadata=None
+        self, block_material, couplant_material, walls, wall_idxs_for_imaging, metadata=None
     ):
         self.block_material = block_material
         self.material = block_material  # alias
         self.couplant_material = couplant_material
-        self.frontwall = frontwall
-        self.backwall = backwall
+        self.walls = walls
+        self.wall_idxs_for_imaging = wall_idxs_for_imaging
 
         if metadata is None:
             metadata = {}
@@ -1370,16 +1372,18 @@ class BlockInContact(ExaminationObject):
     Parameters
     ----------
     block_material : Material
-    frontwall : OrientedPoints or None
-    backwall : OrientedPoints or None
+    walls : list[OrientedPoints]
+    wall_idxs_for_imaging : list[int]
+        List of indices in `walls` which are used for simulation or imaging.
+        Frontwall not required.
     under_material : Material
     metadata : dict or None
 
     Attributes
     ----------
     block_material : Material
-    frontwall : OrientedPoints
-    backwall : OrientedPoints
+    walls : list[OrientedPoints]
+    wall_idxs_for_imaging : list[int]
     under_material : Material
     metadata : dict
 
@@ -1388,14 +1392,14 @@ class BlockInContact(ExaminationObject):
     def __init__(
         self,
         block_material,
-        frontwall=None,
-        backwall=None,
+        walls=None,
+        wall_idxs_for_imaging=None,
         under_material=None,
         metadata=None,
     ):
         self.material = block_material
-        self.frontwall = frontwall
-        self.backwall = backwall
+        self.walls = walls
+        self.wall_idxs_for_imaging = wall_idxs_for_imaging
         self.under_material = under_material
         if metadata is None:
             metadata = {}
