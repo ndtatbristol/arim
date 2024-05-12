@@ -110,6 +110,7 @@ def tx_ray_weights(
     use_beamspread=True,
     use_transrefl=True,
     use_attenuation=True,
+    turn_off_invalid_rays=False,
 ):
     """
     Coefficients Q_i(r, omega) in forward model.
@@ -166,12 +167,17 @@ def tx_ray_weights(
         )
     else:
         weights_dict["attenuation"] = one
+    if turn_off_invalid_rays:
+        weights_dict["invalid"] = (~np.isnan(path.rays.times)).astype(float)
+    else:
+        weights_dict["invalid"] = one
 
     weights = (
         weights_dict["directivity"]
         * weights_dict["transrefl"]
         * weights_dict["beamspread"]
         * weights_dict["attenuation"]
+        * weights_dict["invalid"]
     )
     return weights, weights_dict
 
@@ -185,6 +191,7 @@ def rx_ray_weights(
     use_beamspread=True,
     use_transrefl=True,
     use_attenuation=True,
+    turn_off_invalid_rays=False,
 ):
     """
     Coefficients Q'_i(r, omega) in forward model.
@@ -241,6 +248,10 @@ def rx_ray_weights(
         )
     else:
         weights_dict["attenuation"] = one
+    if turn_off_invalid_rays:
+        weights_dict["invalid"] = (~np.isnan(path.rays.times)).astype(float)
+    else:
+        weights_dict["invalid"] = one
 
     # the coefficient accounts for the normalisation convention of the scattering in Bristol's literature
     scat_normalisation = np.sqrt(d.wavelengths_in_block[path.modes[-1]])
@@ -250,6 +261,7 @@ def rx_ray_weights(
         * weights_dict["transrefl"]
         * weights_dict["beamspread"]
         * weights_dict["attenuation"]
+        * weights_dict["invalid"]
     )
     weights *= scat_normalisation
     return weights, weights_dict
@@ -263,6 +275,7 @@ def ray_weights_for_views(
     use_beamspread=True,
     use_transrefl=True,
     use_attenuation=True,
+    turn_off_invalid_rays=False,
     save_debug=False,
 ):
     """
@@ -309,6 +322,7 @@ def ray_weights_for_views(
         use_directivity=use_directivity,
         use_transrefl=use_transrefl,
         use_attenuation=use_attenuation,
+        turn_off_invalid_rays=turn_off_invalid_rays,
     )
 
     # By proceeding this way, geometrical computations can be reused for both
