@@ -507,8 +507,9 @@ def make_paths(
                 else:
                     # Have to settle on a naming convention.
                     # Published work to date (~2023) joins wave modes and assumes a constant wall (typically back wall).
-                    # To generalise, include wall names between wave modes. This isn't particularly elegant, should try to come up with something better.
-                    path_name += " {} {}".format(wall_names[i-1], mode_names[mode])
+                    # New `Path` method `longname` splices wall names into the mode names to indicate which wall was skipped from. Preserve simple naming convention for path dict keys.
+                    # If multiple paths with the same modes but different wall skips are needed, they will need to be stored in different dicts. Edit this string if this is inconvenient.
+                    path_name += "{}".format(mode_names[mode])
                     path_interfaces.append(wall_dict[wall_names[i-1]])
                 path_modes.append(modes[mode])
                 path_materials.append(block_material)

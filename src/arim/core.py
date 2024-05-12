@@ -1157,6 +1157,18 @@ class Path:
     @property
     def numinterfaces(self):
         return len(self.interfaces)
+    
+    @property
+    def longname(self):
+        longname = self.modes[0].key()
+        for interface, mode in zip(self.interfaces[1:-1], self.modes[1:]):
+            longname += " {} {}".format(interface.points.name, mode.key())
+        return longname
+    
+    @property
+    def reverse_longname(self):
+        pieces = self.longname().split(' ')
+        return ' '.join(pieces[::-1])
 
     @property
     def numlegs(self):
