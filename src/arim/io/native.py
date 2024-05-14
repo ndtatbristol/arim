@@ -331,12 +331,12 @@ def block_in_immersion_from_conf(conf):
     if "frontwall" in conf.keys() or "backwall" in conf.keys():
         frontwall_conf = conf.get("frontwall", None)
         backwall_conf  = conf.get("backwall", None)
-        if frontwall_conf is not None:
-            walls.append(geometry.points_1d_wall_z(**frontwall_conf, name="Frontwall"))
-            imaging.append(0)
         if backwall_conf is not None:
             walls.append(geometry.points_1d_wall_z(**backwall_conf, name="Backwall"))
             imaging.append(1)
+        if frontwall_conf is not None:
+            walls.append(geometry.points_1d_wall_z(**frontwall_conf, name="Frontwall"))
+            imaging.append(0)
     
     # Contiguous (polygonal) geometry.
     # By convention, if not already defined then frontwall is first and move clockwise.

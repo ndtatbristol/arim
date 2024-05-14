@@ -276,7 +276,7 @@ def ray_weights_for_views(
     use_transrefl=True,
     use_attenuation=True,
     turn_off_invalid_rays=False,
-    save_debug=False,
+    save_debug=True,
 ):
     """
     Compute coefficients Q_i(r, omega) and Q'_j(r, omega) from the forward model for
@@ -731,11 +731,10 @@ def make_interfaces(
     Parameters
     ----------
     couplant_material: Material
-    couplant_material: Material
     probe_oriented_points : OrientedPoints
     frontwall: OrientedPoints
-    walls: list[OrientedPoints]
     grid_oriented_points: OrientedPoints
+    reflecting_walls: list[OrientedPoints] or None
 
     Returns
     -------
@@ -760,7 +759,7 @@ def make_interfaces(
     )
     if reflecting_walls is not None:
         for wall in reflecting_walls:
-            name = wall.points.name
+            name = wall[0].name.lower() + "_refl"
             interface_dict[name] = c.Interface(
                 *wall,
                 kind="solid_fluid",
@@ -816,6 +815,10 @@ def make_paths(
     wall_dict = OrderedDict((key, val) for key, val in interface_dict.items()
                             if key not in ["probe", "grid", "frontwall_trans"])
     wall_names = list(wall_dict.keys())
+    
+    if ((max_number_of_reflection > 0 and len(wall_names) == 0)
+        or (max_number_of_reflection > 1 and len(wall_names) < 2)):
+        raise ValueError("Not enough walls to reflect from.")
     
     mode_names = ("L", "T")
     modes = (c.Mode.longitudinal, c.Mode.transverse)
@@ -888,7 +891,7 @@ def make_views(
         for i, wall in enumerate(examination_object.walls):
             if i in examination_object.wall_idxs_for_imaging:
                 walls.append(wall)
-            if wall.points.name == "frontwall":
+            if wall[0].name.lower() == "frontwall":
                 frontwall = wall
         if max_number_of_reflection > 0 and len(walls) < 1:
             raise ValueError("Not enough walls for reflection.")
