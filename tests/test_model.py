@@ -74,8 +74,8 @@ def make_context(couplant_att=None, block_l_att=None, block_t_att=None):
         couplant,
         probe_oriented_points,
         frontwall_oriented_points,
-        backwall_oriented_points,
         scatterer_oriented_points,
+        [backwall_oriented_points],
     )
 
     paths = arim.models.block_in_immersion.make_paths(block, couplant, interfaces)
@@ -122,8 +122,8 @@ def make_context(couplant_att=None, block_l_att=None, block_t_att=None):
     exam_obj = arim.BlockInImmersion(
         block,
         couplant,
-        (frontwall_points, frontwall_orientations),
-        (backwall_points, backwall_orientations),
+        [(frontwall_points, frontwall_orientations), (backwall_points, backwall_orientations)],
+        [1],
         (scatterer_points, scatterer_orientations),
     )
 

@@ -449,7 +449,7 @@ def make_interfaces(
     )
     if reflecting_walls is not None:
         for wall in reflecting_walls:
-            name = wall.points.name
+            name = wall[0].name.lower() + "_refl"
             if name != "frontwall" and under_material is not None:
                 kind = "solid_fluid"
                 transmission_reflection = "reflection"
@@ -502,9 +502,12 @@ def make_paths(
     wall_dict = OrderedDict((key, value) for key, value in interface_dict.items()
                             if key not in ["probe", "grid"])
     wall_names = list(wall_dict.keys())
+    if ((max_number_of_reflection > 0 and len(wall_names) == 0)
+        or (max_number_of_reflection > 1 and len(wall_names) < 2)):
+        raise ValueError("Not enough walls to reflect from.")
     
     mode_names = ("L", "T")
-    modes = (c.Mode.longitudinal. c.Mode.transverse)
+    modes = (c.Mode.longitudinal, c.Mode.transverse)
     for no_reflections in range(max_number_of_reflection+1):
         # For this number of reflections, make all the combinations of paths.
         path_idxs_up_to_refl = list(product(range(2), repeat=no_reflections+1))
@@ -586,7 +589,7 @@ def make_views(
     interfaces = make_interfaces(
         probe_oriented_points,
         grid_oriented_points,
-        walls=walls,
+        reflecting_walls=walls,
         under_material=under_material,
     )
     paths = make_paths(block_material, interfaces, max_number_of_reflection)

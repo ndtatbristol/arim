@@ -130,8 +130,8 @@ def test_path_in_immersion():
         couplant,
         (probe_points, probe_orientations),
         (frontwall_points, frontwall_orientations),
-        (backwall_points, backwall_orientations),
         (grid_points, grid_orientation),
+        [(backwall_points, backwall_orientations), (frontwall_points, frontwall_orientations)],
     )
     assert interfaces["probe"].points is probe_points
     assert interfaces["probe"].orientations is probe_orientations
@@ -286,7 +286,7 @@ def test_model(scat_specs, show_plots):
     #                      show_orientations=True)
     # aplt.plt.show()
 
-    exam_obj = arim.BlockInImmersion(block, couplant, frontwall, backwall, scatterer_p)
+    exam_obj = arim.BlockInImmersion(block, couplant, [backwall, frontwall], [0, 1], scatterer_p)
     scat_obj = arim.scat.scat_factory(material=block, **scat_specs)
     scat_funcs = scat_obj.as_angles_funcs(probe.frequency)
 
@@ -311,9 +311,7 @@ def test_model(scat_specs, show_plots):
     for i, viewname in enumerate(views):
         viewname_r = arim.ut.reciprocal_viewname(viewname)
         lhs = lti_coefficients[viewname][: probe.numelements]  # (tx=k, rx=0) for all k
-        rhs = lti_coefficients[viewname_r][
-            probe.numelements :
-        ]  # (tx=0, rx=k) for all k
+        rhs = lti_coefficients[viewname_r][probe.numelements :]  # (tx=0, rx=k) for all k
 
         max_err = np.max(np.abs(lhs - rhs))
         err_msg = f"view {viewname} (#{i}) - max_err={max_err}"
@@ -467,3 +465,6 @@ def test_fulltime_model(use_multifreq, show_plots):
         plt.title(f"test_fulltime_model - use_multifreq={use_multifreq}")
         plt.legend()
         plt.show()
+
+if __name__ == '__main__':
+    test_model(SCATTERERS_SPECS[0], True)
