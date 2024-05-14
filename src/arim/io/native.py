@@ -332,20 +332,13 @@ def block_in_immersion_from_conf(conf):
         frontwall_conf = conf.get("frontwall", None)
         backwall_conf  = conf.get("backwall", None)
         if backwall_conf is not None:
-            # Start with maximum x-point to ensure that basis points the right way.
-            walls.append(geometry.points_1d_wall(
-                [backwall_conf["xmax"], backwall_conf["z"]],
-                [backwall_conf["xmin"], backwall_conf["z"]],
-                backwall_conf["numpoints"],
-                name="Backwall",
+            walls.append(geometry.points_1d_wall_z(
+                **backwall_conf, name="Backwall", is_block_above=False
             ))
             imaging.append(0)
         if frontwall_conf is not None:
-            walls.append(geometry.points_1d_wall(
-                [frontwall_conf["xmin"], frontwall_conf["z"]],
-                [frontwall_conf["xmax"], frontwall_conf["z"]],
-                frontwall_conf["numpoints"],
-                name="Frontwall",
+            walls.append(geometry.points_1d_wall_z(
+                **frontwall_conf, name="Frontwall"
             ))
             imaging.append(1)
     
@@ -380,19 +373,13 @@ def block_in_contact_from_conf(conf):
         backwall_conf  = conf.get("backwall", None)
         if backwall_conf is not None:
             # Start with maximum x-point to ensure that basis points the right way.
-            walls.append(geometry.points_1d_wall(
-                [backwall_conf["xmax"], backwall_conf["z"]],
-                [backwall_conf["xmin"], backwall_conf["z"]],
-                backwall_conf["numpoints"],
-                name="Backwall",
+            walls.append(geometry.points_1d_wall_z(
+                **backwall_conf, name="Backwall", is_block_above=False
             ))
             imaging.append(0)
         if frontwall_conf is not None:
-            walls.append(geometry.points_1d_wall(
-                [frontwall_conf["xmin"], frontwall_conf["z"]],
-                [frontwall_conf["xmax"], frontwall_conf["z"]],
-                frontwall_conf["numpoints"],
-                name="Frontwall",
+            walls.append(geometry.points_1d_wall_z(
+                **frontwall_conf, name="Frontwall",
             ))
             imaging.append(1)
     
