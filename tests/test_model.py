@@ -58,7 +58,7 @@ def make_context(couplant_att=None, block_l_att=None, block_t_att=None):
     frontwall_points, frontwall_orientations = frontwall_oriented_points
 
     backwall_oriented_points = arim.geometry.points_1d_wall_z(
-        numpoints=1000, xmin=-5.0e-3, xmax=50.0e-3, z=30.0e-3, name="Backwall"
+        numpoints=1000, xmin=-5.0e-3, xmax=50.0e-3, z=30.0e-3, name="Backwall", is_block_above=False
     )
     backwall_points, backwall_orientations = backwall_oriented_points
 

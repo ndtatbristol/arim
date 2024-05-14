@@ -333,6 +333,8 @@ def ray_weights_for_views(
         scat_angle_dict[path].flags.writeable = False
 
         if path in all_tx_paths:
+            if path.name == 'LTL':
+                pass
             ray_weights, ray_weights_debug = tx_ray_weights(
                 path, ray_geometry, **model_options
             )
