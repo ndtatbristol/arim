@@ -292,7 +292,9 @@ class Points:
 
         Cf. :func:`rotate`
         """
-        return Points(rotate(self.coords, rotation_matrix, centre), self.name)
+        if centre is not None:
+            centre = np.asarray(centre)
+        return Points(rotate(self.coords, np.asarray(rotation_matrix), centre), self.name)
 
     def to_gcs(self, bases, origins):
         """Returns the coordinates of the points expressed in the global coordinate system.
@@ -1586,11 +1588,13 @@ def points_1d_wall(start, end, numpoints, name=None, dtype=None):
     return OrientedPoints(points, orientations)
 
 
-def points_1d_wall_z(xmin, xmax, z, numpoints, y=0.0, name=None, dtype=None):
+def points_1d_wall_z(xmin, xmax, z, numpoints, y=0.0, name=None, is_block_above=True, dtype=None):
     """
     Returns a set of regularly spaced points between (xmin, y, z) and (xmax, y, z).
 
-    Orientation of the point: (0., 0., 1.)
+    Orientation of the point depends on `is_block_above`:
+        (0., 0., 1.) if True (i.e. frontwall)
+        (0., 0., -1.) if False (i.e. backwall)
 
     Parameters
     ----------
@@ -1601,6 +1605,7 @@ def points_1d_wall_z(xmin, xmax, z, numpoints, y=0.0, name=None, dtype=None):
     y : float
         Default 0
     name : str or None
+    is_block_above : bool
     dtype : numpy.dtype
 
     Returns
@@ -1619,6 +1624,13 @@ def points_1d_wall_z(xmin, xmax, z, numpoints, y=0.0, name=None, dtype=None):
     )
 
     orientations = default_orientations(points)
+    # Rotate by pi radians in x-z plane if block is below.
+    if not is_block_above:
+        orientations = orientations.rotate([
+            [ np.cos(np.pi), 0.0, np.sin(np.pi)],
+            [           0.0, 1.0,           0.0],
+            [-np.sin(np.pi), 0.0, np.cos(np.pi)],
+        ])
 
     return OrientedPoints(points, orientations)
 
@@ -1655,7 +1667,7 @@ def combine_walls(walls, name=None):
     """
     Combines multiple walls into one as a simple concatenation. No checks are
     made that combination makes physical sense (i.e. walls are next to each
-    other). Use at your own discretion. Duplicate points are removed.
+    other). Use at your own discretion. Duplicate points are (not) removed.
 
     Parameters
     ----------

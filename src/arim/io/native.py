@@ -332,11 +332,22 @@ def block_in_immersion_from_conf(conf):
         frontwall_conf = conf.get("frontwall", None)
         backwall_conf  = conf.get("backwall", None)
         if backwall_conf is not None:
-            walls.append(geometry.points_1d_wall_z(**backwall_conf, name="Backwall"))
-            imaging.append(1)
-        if frontwall_conf is not None:
-            walls.append(geometry.points_1d_wall_z(**frontwall_conf, name="Frontwall"))
+            # Start with maximum x-point to ensure that basis points the right way.
+            walls.append(geometry.points_1d_wall(
+                [backwall_conf["xmax"], backwall_conf["z"]],
+                [backwall_conf["xmin"], backwall_conf["z"]],
+                backwall_conf["numpoints"],
+                name="Backwall",
+            ))
             imaging.append(0)
+        if frontwall_conf is not None:
+            walls.append(geometry.points_1d_wall(
+                [frontwall_conf["xmin"], frontwall_conf["z"]],
+                [frontwall_conf["xmax"], frontwall_conf["z"]],
+                frontwall_conf["numpoints"],
+                name="Frontwall",
+            ))
+            imaging.append(1)
     
     # Contiguous (polygonal) geometry.
     # By convention, if not already defined then frontwall is first and move clockwise.
@@ -367,11 +378,22 @@ def block_in_contact_from_conf(conf):
     if "frontwall" in conf.keys() or "backwall" in conf.keys():
         frontwall_conf = conf.get("frontwall", None)
         backwall_conf  = conf.get("backwall", None)
-        if frontwall_conf is not None:
-            walls.append(geometry.points_1d_wall_z(**frontwall_conf, name="Frontwall"))
-            imaging.append(0)
         if backwall_conf is not None:
-            walls.append(geometry.points_1d_wall_z(**backwall_conf, name="Backwall"))
+            # Start with maximum x-point to ensure that basis points the right way.
+            walls.append(geometry.points_1d_wall(
+                [backwall_conf["xmax"], backwall_conf["z"]],
+                [backwall_conf["xmin"], backwall_conf["z"]],
+                backwall_conf["numpoints"],
+                name="Backwall",
+            ))
+            imaging.append(0)
+        if frontwall_conf is not None:
+            walls.append(geometry.points_1d_wall(
+                [frontwall_conf["xmin"], frontwall_conf["z"]],
+                [frontwall_conf["xmax"], frontwall_conf["z"]],
+                frontwall_conf["numpoints"],
+                name="Frontwall",
+            ))
             imaging.append(1)
     
     # Polygonal geometry.
