@@ -72,7 +72,7 @@ class TxRxAmplitudes:
         yield self.amplitudes_rx
 
 
-def angle_limit(theta, phi, limit, elev=0.0, azim=np.pi / 2):
+def angle_limit(theta, phi, limit, elev=0.0, azim=np.pi/2, window='hanning'):
     """
     Apply an angle limit to the provided angles. Hanning window applied over
     limit centred on elevation. Assumes 2D.
@@ -98,9 +98,15 @@ def angle_limit(theta, phi, limit, elev=0.0, azim=np.pi / 2):
     ).transpose(1, 2, 0)
     gamma = np.dot(radial, lookvec)
     amplitudes = np.zeros(gamma.shape)
-    amplitudes[np.abs(gamma) >= limit] = (
-        np.cos(gamma[np.abs(gamma) >= limit] * np.pi / limit) + 1
-    ) / 2
+    if window == 'hanning':
+        amplitudes[np.abs(gamma) <= limit] = (
+            np.cos(gamma[np.abs(gamma) <= limit] * np.pi / limit) + 1
+        ) / 2
+    elif window == 'rectangular':
+        amplitudes[np.abs(gamma) <= limit] = 1
+    else:
+        raise NotImplementedError('Invalid angle limit window.')
+        
     return amplitudes
 
 
