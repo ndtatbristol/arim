@@ -1167,7 +1167,7 @@ class Path:
     
     @property
     def reverse_longname(self):
-        pieces = self.longname().split(' ')
+        pieces = self.longname.split(' ')
         return ' '.join(pieces[::-1])
 
     @property
@@ -1568,3 +1568,16 @@ class View(namedtuple("View", ["tx_path", "rx_path", "name"])):
 
         """
         return self.tx_path.modes[-1].key() + self.rx_path.modes[-1].key()
+    
+    @property
+    def longname(self):
+        """
+        Return a string containing the tx-path longname and the rx-path reverse
+        longname.
+
+        Returns
+        -------
+        str
+
+        """
+        return f"{self.tx_path.longname} - {self.rx_path.reverse_longname}"

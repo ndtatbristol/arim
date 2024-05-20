@@ -74,7 +74,7 @@ views = bic.make_views(
 )
 
 arim.ray.ray_tracing(
-    views.values(), convert_to_fortran_order=True, walls=frame.examination_object.walls, turn_off_invalid_rays=True
+    views.values(), convert_to_fortran_order=True, walls=frame.examination_object.walls, turn_off_invalid_rays=False
 )
 
 # %% Compute TFM
@@ -104,7 +104,7 @@ scale = aplt.common_dynamic_db_scale(
     [tfm.res for tfm in tfms.values()], reference_area, db_range=40.0
 )
 
-for i, (viewname, tfm) in enumerate(tfms.items()):
+for i, ((viewname, tfm), (_, view)) in enumerate(zip(tfms.items(), views.items())):
     assert tfm.grid is grid
 
     ref_db, clim = next(scale)
@@ -127,7 +127,7 @@ for i, (viewname, tfm) in enumerate(tfms.items()):
         clim=clim,
         scale="db",
         ref_db=ref_db,
-        title=f"TFM {viewname}",
+        title=f"TFM {view.longname}",
         savefig=False,
         patches=patches,
         draw_cbar=True,
@@ -136,7 +136,7 @@ for i, (viewname, tfm) in enumerate(tfms.items()):
     ax.set_adjustable("box")
     ax.axis([grid.xmin, grid.xmax, grid.zmax, 0])
     if save:
-        ax.figure.savefig(str(result_dir / f"tfm_{i:02}_{viewname}"))
+        ax.figure.savefig(str(result_dir / f"tfm_{i:02}_{view.longname}"))
 
 # Block script until windows are closed.
 plt.show()
