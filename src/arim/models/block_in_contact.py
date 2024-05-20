@@ -141,7 +141,7 @@ def tx_ray_weights(
     else:
         weights_dict["attenuation"] = one
     if turn_off_invalid_rays:
-        weights_dict["invalid"] = (~np.isnan(path.rays.times)).astype(float)
+        weights_dict["invalid"] = (~path.rays._invalid_rays).astype(float)
     else:
         weights_dict["invalid"] = one
 
@@ -184,6 +184,8 @@ def rx_ray_weights(
         Default: True
     use_attenuation : bool
         Default: True
+    turn_off_invalid_rays : bool
+        Default: False
 
     Returns
     -------
@@ -229,7 +231,7 @@ def rx_ray_weights(
     else:
         weights_dict["attenuation"] = one
     if turn_off_invalid_rays:
-        weights_dict["invalid"] = (~np.isnan(path.rays.times)).astype(float)
+        weights_dict["invalid"] = (~path.rays._invalid_rays).astype(float)
     else:
         weights_dict["invalid"] = one
 
@@ -326,6 +328,8 @@ def ray_weights_for_wall(
     use_beamspread=True,
     use_transrefl=True,
     use_attenuation=True,
+    turn_off_invalid_rays=False,
+    walls=None,
 ):
     """
     Compute model coefficients for wall echoes.
@@ -339,6 +343,8 @@ def ray_weights_for_wall(
     use_beamspread
     use_transrefl
     use_attenuation
+    turn_off_invalid_rays
+    walls
 
     Returns
     -------
@@ -350,7 +356,7 @@ def ray_weights_for_wall(
     """
     # perform ray tracing if needed
     if path.rays is None:
-        ray.ray_tracing_for_paths([path])
+        ray.ray_tracing_for_paths([path], walls=walls, turn_off_invalid_rays=turn_off_invalid_rays)
 
     ray_geometry = RayGeometry.from_path(path)
 
@@ -399,12 +405,17 @@ def ray_weights_for_wall(
         )
     else:
         weights_dict["attenuation"] = one
+    if turn_off_invalid_rays:
+        weights_dict["invalid"] = (~path.rays._invalid_rays).astype(float)
+    else:
+        weights_dict["invalid"] = one
 
     weights = (
         weights_dict["directivity"]
         * weights_dict["transrefl"]
         * weights_dict["beamspread"]
         * weights_dict["attenuation"]
+        * weights_dict["invalid"]
     )
     return weights, weights_dict
 
@@ -629,6 +640,7 @@ def ray_weights_for_views(
     use_beamspread : bool
     use_transrefl : bool
     use_attenuation : bool
+    turn_off_invalid_rays : bool
     save_debug : bool
 
     Returns
@@ -708,6 +720,7 @@ def scat_unshifted_transfer_functions(
     scat_angle=0.0,
     numangles_for_scat_precomp=0,
     first_nonzero_freq_idx=None,
+    turn_off_invalid_rays=False,
 ):
     """
     Compute unshifted transfer functions for scatterer echoes (multi-frequency model).
@@ -737,6 +750,7 @@ def scat_unshifted_transfer_functions(
         0 to disable. See module documentation.
     first_nonzero_freq_idx : int or None
         Default: assumes first freq is zero, except if only one freq is given.
+    turn_off_invalid_rays : bool
 
     Yields
     ------
@@ -775,6 +789,7 @@ def scat_unshifted_transfer_functions(
                 use_directivity=use_directivity,
                 use_transrefl=use_transrefl,
                 use_attenuation=use_attenuation,
+                turn_off_invalid_rays=turn_off_invalid_rays,
             )
             ray_weights_allfreq.append(ray_weights)
 
@@ -850,6 +865,8 @@ def wall_unshifted_transfer_functions(
     use_transrefl=True,
     use_attenuation=True,
     first_nonzero_freq_idx=None,
+    turn_off_invalid_rays=False,
+    walls=None,
 ):
     """Compute unshifted transfer functions for walls echoes.
 
@@ -873,6 +890,8 @@ def wall_unshifted_transfer_functions(
     use_attenuation : bool
     first_nonzero_freq_idx : int or None
         Default: assumes first freq is zero, except if only one freq is given.
+    turn_off_invalid_rays : bool
+    walls : list[OrientedPoints]
 
     Yields
     ------
@@ -910,6 +929,8 @@ def wall_unshifted_transfer_functions(
                 use_directivity=use_directivity,
                 use_transrefl=use_transrefl,
                 use_attenuation=use_attenuation,
+                turn_off_invalid_rays=turn_off_invalid_rays,
+                walls=walls,
             )
 
             # Fancy indexing:
@@ -933,6 +954,7 @@ def singlefreq_scat_transfer_functions(
     use_attenuation=True,
     scat_angle=0.0,
     numangles_for_scat_precomp=0,
+    turn_off_invalid_rays=False,
 ):
     """
     Compute transfer functions for scatterer echoes (single-frequency model).
@@ -959,6 +981,7 @@ def singlefreq_scat_transfer_functions(
     numangles_for_scat_precomp : int
         Number of angles in [-pi, pi] for scattering precomputation.
         0 to disable. See module documentation.
+    turn_off_invalid_rays : bool
 
     Yields
     ------
@@ -985,6 +1008,7 @@ def singlefreq_scat_transfer_functions(
         use_attenuation=use_attenuation,
         scat_angle=scat_angle,
         numangles_for_scat_precomp=numangles_for_scat_precomp,
+        turn_off_invalid_rays=turn_off_invalid_rays,
     )
 
     for viewname, (unshifted_tf, delays) in zip(views.keys(), unshifted_tfs):
@@ -1010,6 +1034,8 @@ def singlefreq_wall_transfer_functions(
     use_beamspread=True,
     use_transrefl=True,
     use_attenuation=True,
+    turn_off_invalid_rays=False,
+    walls=None,
 ):
     """
     Compute transfer functions for wall echoes (single-frequency model).
@@ -1030,6 +1056,8 @@ def singlefreq_wall_transfer_functions(
     use_beamspread : bool
     use_transrefl : bool
     use_attenuation : bool
+    turn_off_invalid_rays : bool
+    walls : list[OrientedPoints]
 
     Yields
     ------
@@ -1054,6 +1082,8 @@ def singlefreq_wall_transfer_functions(
         use_beamspread=use_beamspread,
         use_transrefl=use_transrefl,
         use_attenuation=use_attenuation,
+        turn_off_invalid_rays=turn_off_invalid_rays,
+        walls=walls,
     )
 
     for pathname, (unshifted_tf, delays) in zip(wall_paths.keys(), unshifted_tfs):
@@ -1074,6 +1104,7 @@ def multifreq_scat_transfer_functions(
     use_attenuation=True,
     scat_angle=0.0,
     numangles_for_scat_precomp=0,
+    turn_off_invalid_rays=False,
 ):
     """
     Compute transfer functions for scatterer echoes (multi-frequency model).
@@ -1099,6 +1130,7 @@ def multifreq_scat_transfer_functions(
     numangles_for_scat_precomp : int
         Number of angles in [-pi, pi] for scattering precomputation.
         0 to disable. See module documentation.
+    turn_off_invalid_rays : bool
 
     Yields
     ------
@@ -1125,6 +1157,7 @@ def multifreq_scat_transfer_functions(
         use_attenuation=use_attenuation,
         scat_angle=scat_angle,
         numangles_for_scat_precomp=numangles_for_scat_precomp,
+        turn_off_invalid_rays=turn_off_invalid_rays,
     )
 
     for viewname, (unshifted_tf, delays) in zip(views.keys(), unshifted_tfs):
@@ -1149,6 +1182,8 @@ def multifreq_wall_transfer_functions(
     use_beamspread=True,
     use_transrefl=True,
     use_attenuation=True,
+    turn_off_invalid_rays=False,
+    walls=None,
 ):
     """
     Compute transfer functions for scatterer echoes (multi-frequency model).
@@ -1167,6 +1202,8 @@ def multifreq_wall_transfer_functions(
     use_beamspread : bool
     use_transrefl : bool
     use_attenuation : bool
+    turn_off_invalid_rays : bool
+    walls : list[OrientedPoints]
 
     Yields
     ------
@@ -1190,6 +1227,8 @@ def multifreq_wall_transfer_functions(
         use_beamspread=use_beamspread,
         use_transrefl=use_transrefl,
         use_attenuation=use_attenuation,
+        turn_off_invalid_rays=turn_off_invalid_rays,
+        walls=walls,
     )
 
     for pathname, (unshifted_tf, delays) in zip(wall_paths.keys(), unshifted_tfs):
