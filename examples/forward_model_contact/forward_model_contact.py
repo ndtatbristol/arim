@@ -141,6 +141,7 @@ model_options = dict(
     use_beamspread=True,
     use_transrefl=True,
     use_attenuation=True,
+    turn_off_invalid_rays=False,
 )
 
 # %% Compute transfer functions for scatterers
