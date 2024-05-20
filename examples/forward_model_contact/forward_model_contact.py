@@ -63,7 +63,7 @@ grid = arim.geometry.Grid(**conf["grid"], ymin=0.0, ymax=0.0)
 grid_p = grid.to_oriented_points()
 
 aplt.plot_interfaces(
-    [probe.to_oriented_points(), examination_object.backwall, scatterer, grid_p],
+    [probe.to_oriented_points(), *examination_object.walls, scatterer, grid_p],
     show_last=False,
     markers=[".", "-", "d", ".k"],
 )
@@ -84,7 +84,7 @@ arim.ray.ray_tracing(views.values(), convert_to_fortran_order=True)
 backwall_paths = bic.backwall_paths(
     examination_object.block_material,
     probe.to_oriented_points(),
-    examination_object.backwall,
+    examination_object.walls[0],
     examination_object.under_material,
 )
 # backwall_paths = {pathname: path for pathname, path in backwall_paths.items() if pathname in {"LL"}} # debug

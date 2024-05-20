@@ -61,6 +61,3 @@ def test_make_views():
         tfm_unique_only=False,
     )
     assert len(views) == 196
-
-if __name__ == '__main__':
-    test_make_views()

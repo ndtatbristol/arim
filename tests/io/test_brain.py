@@ -35,6 +35,3 @@ def test_load_expdata(expdata):
     assert np.allclose(frame.probe.locations[-1], [+0.0198450, 0, 0])  # last element
 
     assert frame.capture_method == CaptureMethod.hmc
-
-if __name__ == '__main__':
-    test_load_expdata("brain/exp_data.mat73.mat")
