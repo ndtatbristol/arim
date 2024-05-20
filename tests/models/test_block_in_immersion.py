@@ -274,7 +274,7 @@ def test_model(scat_specs, show_plots):
         numpoints=1000, xmin=-5.0e-3, xmax=20.0e-3, z=0.0, name="Frontwall"
     )
     backwall = arim.geometry.points_1d_wall_z(
-        numpoints=1000, xmin=-5.0e-3, xmax=20.0e-3, z=30.0e-3, name="Backwall"
+        numpoints=1000, xmin=-5.0e-3, xmax=20.0e-3, z=30.0e-3, name="Backwall", is_block_above=False
     )
     scatterer_p = arim.geometry.default_oriented_points(
         arim.Points([[19e-3, 0.0, 20e-3]])
@@ -384,7 +384,7 @@ def test_fulltime_model(use_multifreq, show_plots):
     #     )
     #     aplt.plt.show()
 
-    exam_obj = arim.BlockInImmersion(block, couplant, frontwall, backwall, scatterer_p)
+    exam_obj = arim.BlockInImmersion(block, couplant, [backwall, frontwall], [0], scatterer_p)
     scat_obj = arim.scat.scat_factory(material=block, kind="sdh", radius=0.5e-3)
     scat_angle = 0.0
 
@@ -465,6 +465,3 @@ def test_fulltime_model(use_multifreq, show_plots):
         plt.title(f"test_fulltime_model - use_multifreq={use_multifreq}")
         plt.legend()
         plt.show()
-
-if __name__ == '__main__':
-    test_model(SCATTERERS_SPECS[0], True)

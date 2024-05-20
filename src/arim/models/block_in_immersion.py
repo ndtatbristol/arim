@@ -276,7 +276,7 @@ def ray_weights_for_views(
     use_transrefl=True,
     use_attenuation=True,
     turn_off_invalid_rays=False,
-    save_debug=True,
+    save_debug=False,
 ):
     """
     Compute coefficients Q_i(r, omega) and Q'_j(r, omega) from the forward model for
