@@ -46,6 +46,67 @@ def test_extrema_lookup_times_in_rectbox():
     assert out.rx_elt_for_tmax == 1
 
 
+def test_angle_limiter_contact():
+    grid = g.Grid(-10.0e-3, 10.0e-3, 0.0, 0.0, 10.0e-3, 10.0e-3, 2.0e-3)
+    probe = arim.Probe.make_matrix_probe(1, 0.5e-3, 1, np.nan, 1e6)
+    probe.set_reference_element("first")
+    probe.reset_position()
+    
+    expected_vals = np.asarray([
+        0.0, 0.0, 0.0, 0.17323383, 0.68843878, 1.0, 0.68843878, 0.17323383, 0.0, 0.0, 0.0
+    ]).reshape((11, 1))
+    amplitudes = arim.im.tfm.angle_limit_in_contact(grid, probe, np.radians(30))
+    
+    np.testing.assert_allclose(amplitudes.amplitudes_tx, amplitudes.amplitudes_rx)
+    np.testing.assert_allclose(amplitudes.amplitudes_tx, expected_vals)
+    
+    expected_vals = np.asarray([
+        0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0
+    ]).reshape((11, 1))
+    amplitudes = arim.im.tfm.angle_limit_in_contact(grid, probe, np.radians(30), window="rectangular")
+    
+    np.testing.assert_allclose(amplitudes.amplitudes_tx, amplitudes.amplitudes_rx)
+    np.testing.assert_allclose(amplitudes.amplitudes_tx, expected_vals)
+    
+    with pytest.raises(NotImplementedError):
+        amplitudes = arim.im.tfm.angle_limit_in_contact(grid, probe, np.radians(30), window="fancywindow")
+
+
+def test_angle_limiter_view():
+    grid = g.Grid(-10.0e-3, 10.0e-3, 0.0, 0.0, 10.0e-3, 10.0e-3, 2.0e-3)
+    grid_interface = arim.Interface(*grid.to_oriented_points())
+    
+    probe = arim.Probe.make_matrix_probe(1, 0.5e-3, 1, np.nan, 1e6)
+    probe.set_reference_element("first")
+    probe.reset_position()
+    probe_interface = arim.Interface(*probe.to_oriented_points(), are_normals_on_out_rays_side=True)
+    
+    backwall = arim.geometry.points_1d_wall_z(-10e-3, 10e-3, 15e-3, 200, name="Backwall", is_block_above=False)
+    backwall_interface = arim.Interface(*backwall, are_normals_on_inc_rays_side=True, are_normals_on_out_rays_side=True)
+    
+    block = arim.Material(6300, 3100)
+
+    path_LL = arim.Path(
+        [probe_interface, backwall_interface, grid_interface],
+        [block, block],
+        ["L", "L"],
+    )
+    path_T = arim.Path([probe_interface, grid_interface], [block], ["T"])
+    view = arim.View(path_LL, path_T, "LL-T")
+    arim.ray.ray_tracing([view], convert_to_fortran_order=True)
+    
+    tx_expected_vals = np.asarray([
+        0.02991354, 0.16544644, 0.39658914, 0.66951746, 0.89842992, 0.99909127, 0.89842992, 0.66951746, 0.39658914, 0.16544644, 0.02991354
+    ]).reshape((11, 1))
+    rx_expected_vals = np.asarray([
+        0.0, 0.0, 0.0, 0.17323383, 0.68843878, 1.0, 0.68843878, 0.17323383, 0.0, 0.0, 0.0
+    ]).reshape((11, 1))
+    amplitudes = arim.im.tfm.angle_limit_for_view(view, np.radians(30))
+    
+    np.testing.assert_allclose(amplitudes.amplitudes_tx, tx_expected_vals)
+    np.testing.assert_allclose(amplitudes.amplitudes_rx, rx_expected_vals)
+
+
 @pytest.mark.parametrize("use_real_grid", [True, False])
 def test_multiview_tfm(use_real_grid):
     # make probe
@@ -77,7 +138,7 @@ def test_multiview_tfm(use_real_grid):
             *arim.geometry.default_oriented_points(grid.to_1d_points())
         )
 
-    backwall = arim.geometry.points_1d_wall_z(-1e-3, 1e-3, 10e-3, 200)
+    backwall = arim.geometry.points_1d_wall_z(-1e-3, 1e-3, 10e-3, 200, is_block_above=False)
     backwall_interface = arim.Interface(*backwall)
     probe_interface = arim.Interface(*probe.to_oriented_points())
 

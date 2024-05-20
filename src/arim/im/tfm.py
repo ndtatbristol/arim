@@ -96,7 +96,7 @@ def angle_limit(theta, phi, limit, elev=0.0, azim=np.pi/2, window='hanning'):
     radial = np.asarray(
         [np.cos(phi) * np.sin(theta), np.sin(phi) * np.cos(theta), np.cos(theta)]
     ).transpose(1, 2, 0)
-    gamma = np.dot(radial, lookvec)
+    gamma = np.arccos(np.dot(radial, lookvec))
     amplitudes = np.zeros(gamma.shape)
     if window == 'hanning':
         amplitudes[np.abs(gamma) <= limit] = (
@@ -110,7 +110,7 @@ def angle_limit(theta, phi, limit, elev=0.0, azim=np.pi/2, window='hanning'):
     return amplitudes
 
 
-def angle_limit_in_contact(grid, probe, limit, elev=0.0, azim=np.pi / 2):
+def angle_limit_in_contact(grid, probe, limit, elev=0.0, azim=np.pi/2, window='hanning'):
     """
     Calculates the amplitudes required to implement an amplitude limit for the
     focal law when the grid is in contact with the probe (i.e. one leg, no
@@ -137,15 +137,21 @@ def angle_limit_in_contact(grid, probe, limit, elev=0.0, azim=np.pi / 2):
 
     theta = np.arctan2(np.sqrt(x * x + y * y), z)
     phi = np.arctan2(y, x)
-    amplitudes = angle_limit(theta, phi, limit, elev, azim)
+    amplitudes = angle_limit(theta, phi, limit, elev, azim, window=window)
     return TxRxAmplitudes(amplitudes, amplitudes)
 
 
-def angle_limit_for_view(view, limit, elev=0.0, azim=np.pi / 2):
+def angle_limit_for_view(view, limit, tx_elev=0.0, tx_azim=np.pi/2, rx_elev=0.0, rx_azim=np.pi/2, window='hanning'):
     """
     Calculates the amplitudes required to implement an amplitude limit for the
     focal law for a provided view (i.e. angle limit applied to the final leg of
     the view).
+    
+    Note that `elev` and `azim` are defined in terms of the basis of the last
+    interface. For view LL-T with transmit path reflecting from the backwall,
+    `tx_elev = 0.0` points in the opposite direction to `rx_elev` because the
+    basis of the backwall should have `z_hat = [0, 0, -1]`, and the basis of
+    the probe should have `z_hat = [0, 0, 1]`.
 
     Parameters
     ----------
@@ -163,10 +169,10 @@ def angle_limit_for_view(view, limit, elev=0.0, azim=np.pi / 2):
     rx_ray = RayGeometry.from_path(view[1])
 
     tx_amps = angle_limit(
-        tx_ray.out_leg_polar(-2), tx_ray.out_leg_azimuth(-2), limit, elev, azim
+        tx_ray.out_leg_polar(-2), tx_ray.out_leg_azimuth(-2), limit, tx_elev, tx_azim, window=window
     ).transpose()
     rx_amps = angle_limit(
-        rx_ray.out_leg_polar(-2), rx_ray.out_leg_azimuth(-2), limit, elev, azim
+        rx_ray.out_leg_polar(-2), rx_ray.out_leg_azimuth(-2), limit, rx_elev, rx_azim, window=window
     ).transpose()
 
     return TxRxAmplitudes(tx_amps, rx_amps)
