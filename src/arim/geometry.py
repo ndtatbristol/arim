@@ -1495,9 +1495,9 @@ def make_contiguous_geometry(coords, numpoints, names=None, dtype=None):
     if coords.shape[1] not in [2, 3]:
         raise ValueError("Coordinates should be 2D or 3D.")
     
-    numpoints = np.squeeze(numpoints)
+    numpoints = np.squeeze(numpoints).ravel().astype(int)
     if numpoints.shape[0] == 1:
-        numpoints = numpoints[0] * np.ones(coords.shape[0] - 1)
+        numpoints = numpoints[0] * np.ones(coords.shape[0] - 1, dtype=int)
     else:
         if numpoints.shape[0] != coords.shape[0] - 1:
             raise ValueError("Too many / few values of `numpoints` provided.")
@@ -1530,6 +1530,8 @@ def make_contiguous_geometry(coords, numpoints, names=None, dtype=None):
             else:
                 name = "otherwall_{}".format(ow_idx)
                 ow_idx += 1
+        else:
+            name = names[idx]
         
         walls.append(points_1d_wall(start, end, n, name=name, dtype=dtype))
         

@@ -241,9 +241,9 @@ def examination_object_from_conf(conf):
 
     """
     if ((
-            ("frontwall" in conf.keys() and "backwall" in conf.keys())
-            or "contiguous_geometry" in conf.keys()
-        )
+        ("frontwall" in conf.keys() and "backwall" in conf.keys())
+        or "contiguous_geometry" in conf.keys()
+    )
         and "couplant_material" in conf.keys()
         and "block_material" in conf.keys()
     ):
@@ -326,11 +326,11 @@ def block_in_immersion_from_conf(conf):
     block = material_from_conf(conf["block_material"])
     # Initialise geometry storage
     walls, imaging = [], []
-    
+
     # Simple geometry
     if "frontwall" in conf.keys() or "backwall" in conf.keys():
         frontwall_conf = conf.get("frontwall", None)
-        backwall_conf  = conf.get("backwall", None)
+        backwall_conf = conf.get("backwall", None)
         if backwall_conf is not None:
             walls.append(geometry.points_1d_wall_z(
                 **backwall_conf, name="Backwall", is_block_above=False
@@ -341,7 +341,7 @@ def block_in_immersion_from_conf(conf):
                 **frontwall_conf, name="Frontwall"
             ))
             imaging.append(1)
-    
+
     # Contiguous (polygonal) geometry.
     # By convention, if not already defined then frontwall is first and move clockwise.
     if "contiguous_geometry" in conf.keys():
@@ -366,11 +366,11 @@ def block_in_contact_from_conf(conf):
     block = material_from_conf(conf["block_material"])
     # Initialise geometry storage
     walls, imaging = [], []
-    
+
     # Simple geometry
     if "frontwall" in conf.keys() or "backwall" in conf.keys():
         frontwall_conf = conf.get("frontwall", None)
-        backwall_conf  = conf.get("backwall", None)
+        backwall_conf = conf.get("backwall", None)
         if backwall_conf is not None:
             # Start with maximum x-point to ensure that basis points the right way.
             walls.append(geometry.points_1d_wall_z(
@@ -382,7 +382,7 @@ def block_in_contact_from_conf(conf):
                 **frontwall_conf, name="Frontwall",
             ))
             imaging.append(1)
-    
+
     # Polygonal geometry.
     # By convention, if not already defined then frontwall is first and move clockwise.
     if "contiguous_geometry" in conf.keys():
@@ -393,13 +393,9 @@ def block_in_contact_from_conf(conf):
             geom_conf["numpoints"],
             geom_conf["names"],
         )
-        for wall in geom_walls:
+        imaging = geom_conf["imaging_walls"]
+        for i, wall in enumerate(geom_walls):
             walls.append(wall)
-        if (
-            0 not in imaging
-            or 0 not in geom_conf["wall_idxs"]
-        ):
-            imaging.append(wall)
     under_material_conf = conf.get("under_material", None)
     if under_material_conf is None:
         under_material = None
@@ -483,7 +479,8 @@ def frame_from_conf(
     if instrument_delay is not None:
         # Adjust time vector
         frame.time = core.Time(
-            frame.time.start - instrument_delay, frame.time.step, len(frame.time)
+            frame.time.start -
+            instrument_delay, frame.time.step, len(frame.time)
         )
 
     if use_probe_from_conf:
