@@ -72,7 +72,7 @@ if save:
 # %% Plot interfaces
 
 aplt.plot_interfaces(
-    [probe_p, frame.examination_object.frontwall, frame.examination_object.backwall],
+    [probe_p, *frame.examination_object.walls],
     show_orientations=False,
     show_last=True,
     markers=[".", "-", "-"],
