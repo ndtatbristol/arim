@@ -11,16 +11,22 @@ There are many way you can contribute to arim, including:
 
 ## Developer installation
 
-A developer installation requires extra packages for testing, the documentation and code quality.
-The recommended method is to use an [editable installation](https://pip.pypa.io/en/stable/reference/pip_install/), as follows:
+A developer installation requires extra packages for testing, running the code formatter and linter, and building the documentation.
 
-1) Duplicate code from git repository
-2) In the root directory which contains ``setup.py``, type in a console:
+The recommended instructions are as follows.
+
+[Install hatch.](https://hatch.pypa.io/latest/install/)
+
+Clone arim repository locally.
+
+Create a new virtual environment and install the dependencies:
+
 ```
-pip install -e .[dev]
+cd arim
+hatch env create
 ```
 
-The ``[dev]`` flags installs recommended packages for developement, as defined in ``extras_require`` in the file ``setup.py``.
+To activate the virtual environment, use `hatch shell`. Refer to [Hatch documentation](https://hatch.pypa.io/latest/intro/) for further details.
 
 
 ## Code quality guidelines
@@ -32,13 +38,18 @@ Meaningful variable and function names, with no or little abbreviation, are in p
 
 arim code follows the general guidelines defined in [Python PEP-8](https://www.python.org/dev/peps/pep-0008/), with the amendments defined in the following sections.
 
-### Code formatting
+### Code formatting and linting
 
-Python code must be formatted using [black](https://black.readthedocs.io/en/stable/).
-To format a Python file named ``myfile.py``, type in a terminal:
+arim uses [black](https://black.readthedocs.io/en/stable/) code formatter and [ruff](https://docs.astral.sh/ruff/) linter.
+
+Format and lint:
 ```
-black myfile.py
+hatch run lint:fmt
 ```
+To only check, without changing the code, use `hatch run lint:check`.
+
+The linter configuration is defined in `pyproject.toml`.
+
 
 ### Docstring
 
@@ -86,10 +97,11 @@ Unit tests ensure that a given function returns intended results at the time of 
 Unit testing in arim is powered by [pytest](https://docs.pytest.org).
 The tests are defined in directory ``tests``. Consider adding new tests!
 
-To run the tests, type in a terminal in the root directory which contains ``tests`` and ``arim``:
+To run the unit tests, use the following command:
 
-    pytest
-
+```
+hatch run test
+```
 All tests must pass.
 
 ## Releasing
@@ -103,7 +115,7 @@ To create a release:
 5. Create a wheel package with 
 
 ```
-python setup.py bdist_wheel
+hatch build
 ```
 
 The result is a `.whl` file in the directory ``dist``, for example ``arim-0.8-py3-none-any.whl``.

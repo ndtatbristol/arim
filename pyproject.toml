@@ -78,25 +78,28 @@ python = ["3.8", "3.9", "3.10", "3.11"]
 [tool.hatch.envs.lint]
 detached = true
 dependencies = [
-  "black>=23.1.0",
-  "mypy>=1.0.0",
-  "ruff>=0.0.243",
+  "black~=23.0",
+  "mypy==1.10.0",
+  "ruff==0.4.7",
 ]
 [tool.hatch.envs.lint.scripts]
-typing = "mypy --install-types --non-interactive {args:src/arim tests}"
-style = [
-  "ruff {args:.}",
+# typing = "mypy --install-types --non-interactive {args:src/arim tests}"
+check = [
+  "ruff check {args:.}",
+  "black --check --diff {args:.}",
+]
+check-gh = [
+  "ruff check --output-format=github {args:.}",
   "black --check --diff {args:.}",
 ]
 fmt = [
   "black {args:.}",
-  "ruff --fix {args:.}",
-  "style",
+  "ruff check --fix {args:.}",
 ]
-all = [
-  "style",
-  "typing",
-]
+# all = [
+#   "check",
+#   "typing",
+# ]
 
 [tool.black]
 target-version = ["py38"]
@@ -105,7 +108,7 @@ line-length = 88
 [tool.ruff]
 target-version = "py38"
 line-length = 88
-select = [
+lint.select = [
   "E",
   "F",
   "NPY",
@@ -113,23 +116,23 @@ select = [
   "UP",
   "W",
 ]
-ignore = [
+lint.ignore = [
   "E731", # lambda are fine
   "E501", # line too long (in practice: only in comment or docstring)
   "NPY002", # legacy np.random API
+  "NPY201", # Temporary: np.complex_ will be removed in numpy 2.0
+  "UP032", # Use f-string instead of `format` call
+  "UP031", # Use format specifiers instead of percent format
 ]
-unfixable = [
+lint.unfixable = [
   # Don't touch unused imports, because we may be reexporting the API in __init__.py
   "F401",
 ]
 
-[tool.ruff.isort]
+[tool.ruff.lint.isort]
 known-first-party = ["arim"]
 
-[tool.ruff.flake8-tidy-imports]
-ban-relative-imports = "all"
-
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint.per-file-ignores]
 # Tests can use magic values, assertions, and relative imports
 "tests/**/*" = ["PLR2004", "S101", "TID252"]
 
