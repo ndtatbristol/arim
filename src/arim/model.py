@@ -1166,7 +1166,6 @@ def reverse_beamspread_2d_for_path(ray_geometry):
     rev_beamspread : ndarray
         Shape: (numelements, numgridpoints)
 
-
     """
     velocities = ray_geometry.rays.fermat_path.velocities
     # import pdb; pdb.set_trace()

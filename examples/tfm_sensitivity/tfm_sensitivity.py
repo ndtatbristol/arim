@@ -66,7 +66,7 @@ def compute_sensitivity(dataset_name, save):
     )
 
     aplt.plot_interfaces(
-        [probe_p, examination_object.frontwall, examination_object.backwall, grid_p],
+        [probe_p, *examination_object.walls, grid_p],
         show_orientations=False,
         show_last=True,
         # markers=[".", "-", "-"],

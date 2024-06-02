@@ -29,11 +29,11 @@ def make_views_from_paths(paths_dict, tfm_unique_only=False):
     views = OrderedDict()
     for view_name_tuple in viewnames:
         tx_name, rx_name = view_name_tuple
-        view_name = f"{tx_name}-{rx_name}"
-
+        view_name = "{}-{}".format(tx_name, rx_name)
+    
         tx_path = paths_dict[tx_name]
         # to get the receive path: return the string of the corresponding transmit path
         rx_path = paths_dict[rx_name[::-1]]
-
+    
         views[view_name] = c.View(tx_path, rx_path, view_name)
     return views

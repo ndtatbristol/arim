@@ -292,7 +292,9 @@ class Points:
 
         Cf. :func:`rotate`
         """
-        return Points(rotate(self.coords, rotation_matrix, centre), self.name)
+        if centre is not None:
+            centre = np.asarray(centre)
+        return Points(rotate(self.coords, np.asarray(rotation_matrix), centre), self.name)
 
     def to_gcs(self, bases, origins):
         """Returns the coordinates of the points expressed in the global coordinate system.
@@ -1457,11 +1459,144 @@ GCS = CoordinateSystem(
 )
 
 
-def points_1d_wall_z(xmin, xmax, z, numpoints, y=0.0, name=None, dtype=None):
+def make_contiguous_geometry(coords, numpoints, names=None, dtype=None):
+    """
+    Returns a list of OrientedPoints with length m which are uniquely named.
+    Default naming convention defines the frontwall as the wall drawn between
+    the first pair of points iff z=0.0; backwalls have constant z; sidewalls 
+    have constant x; and otherwalls are anything else.
+
+    Parameters
+    ----------
+    coords : ndarray[float]
+        Walls drawn between each point in coords. Shape must be (m+1, 2) or
+        (m+1, 3).
+    numpoints : int or ndarray[int]
+        Number of points which each wall is split into. If ndarray, shape must
+        be (m,) a list of values for each wall individually.
+    names : list[str] or None, optional
+        List of names for each wall, which must be unique. If None, the default
+        naming convention will be used.
+    dtype : numpy.dtype, optional
+
+    Returns
+    -------
+    list[OrientedPoints].
+
+    """
+    if dtype is None:
+        dtype = s.FLOAT
+    
+    coords = np.squeeze(coords)
+    if coords.shape[0] < 2:
+        raise ValueError(
+            "Not enough coordinates provided to draw lines for geometry."
+        )
+    if coords.shape[1] not in [2, 3]:
+        raise ValueError("Coordinates should be 2D or 3D.")
+    
+    numpoints = np.squeeze(numpoints).ravel().astype(int)
+    if numpoints.shape[0] == 1:
+        numpoints = numpoints[0] * np.ones(coords.shape[0] - 1, dtype=int)
+    else:
+        if numpoints.shape[0] != coords.shape[0] - 1:
+            raise ValueError("Too many / few values of `numpoints` provided.")
+        
+    if names is not None:
+        if len(names) != coords.shape[0] - 1:
+            raise ValueError("Too many / few wall names provided.")
+    else:
+        bw_idx, sw_idx, ow_idx = 0, 0, 0
+    
+    walls = []
+    for idx, (start, end) in enumerate(zip(coords[:-1, :], coords[1:, :])):
+        if numpoints.shape[0] == 1:
+            n = numpoints[0]
+        else:
+            n = numpoints[idx]
+        
+        if names is None:
+            # Frontwall is first and has z == 0.0
+            if idx == 0 and abs(start[-1]) < np.finfo(float).eps and abs(end[-1]) < np.finfo(float).eps:
+                name = "frontwall"
+            # Backwall has constant z.
+            elif abs(start[-1] - end[-1]) < np.finfo(float).eps:
+                name = "backwall_{}".format(bw_idx)
+                bw_idx += 1
+            # Sidewall has constant x.
+            elif abs(start[0] - end[0]) < np.finfo(float).eps:
+                name = "sidewall_{}".format(sw_idx)
+                sw_idx += 1
+            else:
+                name = "otherwall_{}".format(ow_idx)
+                ow_idx += 1
+        else:
+            name = names[idx]
+        
+        walls.append(points_1d_wall(start, end, n, name=name, dtype=dtype))
+        
+    return walls
+
+
+def points_1d_wall(start, end, numpoints, name=None, dtype=None):
+    """
+    Returns a set of regularly spaced points between `start` and `end`.
+    
+    Orientation will always have x_hat in the direction of wall start -> end,
+    y_hat = j and z_hat = x_hat ^ j.
+
+    Parameters
+    ----------
+    start : ndarray[float]
+        1D array of length 2 or 3.
+    end : ndarray[float]
+        1D array of length 2 or 3.
+    numpoints : int
+    name : str or None, optional
+    dtype : type or None, optional
+
+    Returns
+    -------
+    OrientedPoints.
+
+    """        
+    if dtype is None:
+        dtype = s.FLOAT
+    start, end = np.squeeze(start), np.squeeze(end)
+    if start.shape[0] == 2:
+        start = np.asarray([start[0], 0.0, start[1]])
+    if end.shape[0] == 2:
+        end = np.asarray([end[0], 0.0, end[1]])
+    
+    # Make points and orientations
+    points = Points.from_xyz(
+        x = np.linspace(start[0], end[0], numpoints, dtype=dtype),
+        y = np.linspace(start[1], end[1], numpoints, dtype=dtype),
+        z = np.linspace(start[2], end[2], numpoints, dtype=dtype),
+        name=name,
+    )
+    
+    basis = CoordinateSystem(
+        [0.0, 0.0, 0.0],
+        (end - start) / np.linalg.norm(end - start), 
+        [0.0, 1.0, 0.0],
+    ).basis_matrix
+    
+    orientations_arr = np.broadcast_to(
+        basis, (*points.shape, 3, 3)
+    )
+    orientations = Points(orientations_arr)
+    
+    return OrientedPoints(points, orientations)
+
+
+def points_1d_wall_z(xmin, xmax, z, numpoints, y=0.0, name=None, is_block_above=True, dtype=None):
     """
     Returns a set of regularly spaced points between (xmin, y, z) and (xmax, y, z).
 
-    Orientation of the point: (0., 0., 1.)
+    Orientation of the point depends on `is_block_above`:
+        (0., 0., 1.) if True (i.e. frontwall)
+        (0., 0., -1.) if False (i.e. backwall)
 
     Parameters
     ----------
@@ -1472,6 +1607,7 @@ def points_1d_wall_z(xmin, xmax, z, numpoints, y=0.0, name=None, dtype=None):
     y : float
         Default 0
     name : str or None
+    is_block_above : bool
     dtype : numpy.dtype
 
     Returns
@@ -1490,6 +1626,13 @@ def points_1d_wall_z(xmin, xmax, z, numpoints, y=0.0, name=None, dtype=None):
     )
 
     orientations = default_orientations(points)
+    # Rotate by pi radians in x-z plane if block is below.
+    if not is_block_above:
+        orientations = orientations.rotate([
+            [ np.cos(np.pi), 0.0, np.sin(np.pi)],
+            [           0.0, 1.0,           0.0],
+            [-np.sin(np.pi), 0.0, np.cos(np.pi)],
+        ])
 
     return OrientedPoints(points, orientations)
 
@@ -1520,6 +1663,38 @@ def default_orientations(points):
     )
     orientations = Points(orientations_arr)
     return orientations
+
+
+def combine_walls(walls, name=None):
+    """
+    Combines multiple walls into one as a simple concatenation. No checks are
+    made that combination makes physical sense (i.e. walls are next to each
+    other). Use at your own discretion. Duplicate points are (not) removed.
+
+    Parameters
+    ----------
+    walls : list[OrientedPoints]
+        
+    name : str or None, optional
+        New name for the wall. If None, the name of the first wall is used.
+
+    Returns
+    -------
+    OrientedPoints.
+
+    """
+    if name is None:
+        name = walls[0].points.name
+    points = Points(np.concatenate(
+        [wall.points.coords for wall in walls],
+        axis=0,
+    ), name=name)
+    orientations = Points(np.concatenate(
+        [wall.orientations.coords for wall in walls],
+        axis=0,
+    ))
+    
+    return OrientedPoints(points, orientations)
 
 
 def default_oriented_points(points):

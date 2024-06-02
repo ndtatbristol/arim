@@ -53,6 +53,7 @@ evaluate, precomputing the scattering matrices (option 2) is often more
 computationally efficient.
 
 """
+from itertools import product
 import logging
 import warnings
 from collections import OrderedDict, namedtuple
@@ -109,6 +110,7 @@ def tx_ray_weights(
     use_beamspread=True,
     use_transrefl=True,
     use_attenuation=True,
+    turn_off_invalid_rays=False,
 ):
     """
     Coefficients Q_i(r, omega) in forward model.
@@ -128,6 +130,8 @@ def tx_ray_weights(
         Default: True
     use_attenuation : bool
         Default: True
+    turn_off_invalid_rays : bool
+        Default: False
 
     Returns
     -------
@@ -165,12 +169,17 @@ def tx_ray_weights(
         )
     else:
         weights_dict["attenuation"] = one
+    if turn_off_invalid_rays:
+        weights_dict["invalid"] = (~path.rays._invalid_rays).astype(float)
+    else:
+        weights_dict["invalid"] = one
 
     weights = (
         weights_dict["directivity"]
         * weights_dict["transrefl"]
         * weights_dict["beamspread"]
         * weights_dict["attenuation"]
+        * weights_dict["invalid"]
     )
     return weights, weights_dict
 
@@ -184,6 +193,7 @@ def rx_ray_weights(
     use_beamspread=True,
     use_transrefl=True,
     use_attenuation=True,
+    turn_off_invalid_rays=False,
 ):
     """
     Coefficients Q'_i(r, omega) in forward model.
@@ -203,6 +213,8 @@ def rx_ray_weights(
         Default: True
     use_attenuation : bool
         Default: True
+    turn_off_invalid_rays : bool
+        Default False
 
     Returns
     -------
@@ -240,6 +252,10 @@ def rx_ray_weights(
         )
     else:
         weights_dict["attenuation"] = one
+    if turn_off_invalid_rays:
+        weights_dict["invalid"] = (~path.rays._invalid_rays).astype(float)
+    else:
+        weights_dict["invalid"] = one
 
     # the coefficient accounts for the normalisation convention of the scattering in Bristol's literature
     scat_normalisation = np.sqrt(d.wavelengths_in_block[path.modes[-1]])
@@ -249,6 +265,7 @@ def rx_ray_weights(
         * weights_dict["transrefl"]
         * weights_dict["beamspread"]
         * weights_dict["attenuation"]
+        * weights_dict["invalid"]
     )
     weights *= scat_normalisation
     return weights, weights_dict
@@ -262,6 +279,7 @@ def ray_weights_for_views(
     use_beamspread=True,
     use_transrefl=True,
     use_attenuation=True,
+    turn_off_invalid_rays=False,
     save_debug=False,
 ):
     """
@@ -281,6 +299,7 @@ def ray_weights_for_views(
     use_beamspread : bool
     use_transrefl : bool
     use_attenuation : bool
+    turn_off_invalid_rays : bool
     save_debug : bool
 
     Returns
@@ -308,6 +327,7 @@ def ray_weights_for_views(
         use_directivity=use_directivity,
         use_transrefl=use_transrefl,
         use_attenuation=use_attenuation,
+        turn_off_invalid_rays=turn_off_invalid_rays,
     )
 
     # By proceeding this way, geometrical computations can be reused for both
@@ -318,6 +338,8 @@ def ray_weights_for_views(
         scat_angle_dict[path].flags.writeable = False
 
         if path in all_tx_paths:
+            if path.name == 'LTL':
+                pass
             ray_weights, ray_weights_debug = tx_ray_weights(
                 path, ray_geometry, **model_options
             )
@@ -506,7 +528,7 @@ def backwall_paths(
                 name="Backwall " + key,
             )
 
-    if max_number_of_reflection == 1:
+    if max_number_of_reflection <= 1:
         return paths
 
     for mode1 in (c.Mode.L, c.Mode.T):
@@ -618,6 +640,8 @@ def ray_weights_for_wall(
     use_beamspread=True,
     use_transrefl=True,
     use_attenuation=True,
+    turn_off_invalid_rays=False,
+    walls=None,
 ):
     """
     Compute model coefficients for wall echoes.
@@ -631,6 +655,8 @@ def ray_weights_for_wall(
     use_beamspread
     use_transrefl
     use_attenuation
+    turn_off_invalid_rays
+    walls
 
     Returns
     -------
@@ -642,7 +668,7 @@ def ray_weights_for_wall(
     """
     # perform ray tracing if needed
     if path.rays is None:
-        ray.ray_tracing_for_paths([path])
+        ray.ray_tracing_for_paths([path], turn_off_invalid_rays=turn_off_invalid_rays, walls=walls)
 
     ray_geometry = RayGeometry.from_path(path)
 
@@ -675,84 +701,104 @@ def ray_weights_for_wall(
         )
     else:
         weights_dict["attenuation"] = one
+    if turn_off_invalid_rays:
+        weights_dict["invalid"] = (~path.rays._invalid_rays).astype(float)
+    else:
+        weights_dict["invalid"] = one
 
     weights = (
         weights_dict["directivity"]
         * weights_dict["transrefl"]
         * weights_dict["beamspread"]
         * weights_dict["attenuation"]
+        * weights_dict["invalid"]
     )
     return weights, weights_dict
 
 
 def make_interfaces(
-    couplant_material, probe_oriented_points, frontwall, backwall, grid_oriented_points
+    couplant_material,
+    probe_oriented_points,
+    frontwall,
+    grid_oriented_points,
+    reflecting_walls=None,
 ):
     """
     Construct Interface objects for the case of a solid block in immersion
     (couplant is liquid).
 
     The interfaces are for rays starting from the probe and arriving in the
-    grid. There is at the frontwall interface a liquid-to-solid transmission.
-    There is at the backwall interface a solid-against-liquid reflection.
-
-    Assumes all normals are pointing roughly towards the same direction (example: (0, 0, 1) or so).
+    grid. There must be a frontwall interface to allow liquid-to-solid
+    transmission. Additional walls can be included to allow solid-against-
+    liquid reflection.
+    
+    Assumes that walls are provided in the order that the ray reflects. For
+    example, if no reflections:
+        `walls = None`
+    If 1 reflection from the backwall:
+        `walls = [backwall]`
+    If 2 reflections from the backwall and then the frontwall:
+        `walls = [backwall, frontwall]`
+    Note that in this final example, the frontwall must be provided in `walls`
+    as well as in the input variable.
+        
+    Assumes all that walls have orientation facing into the solid.
 
     Parameters
     ----------
     couplant_material: Material
-    couplant_material: Material
     probe_oriented_points : OrientedPoints
     frontwall: OrientedPoints
-    backwall: OrientedPoints
     grid_oriented_points: OrientedPoints
+    reflecting_walls: list[OrientedPoints] or None
 
     Returns
     -------
     interface_dict : dict[Interface]
-        Keys: probe, frontwall_trans, backwall_refl, grid, frontwall_refl
-    """
+        Keys: probe, frontwall_trans, grid, wall_name_1 (optional), ...
+    """        
     interface_dict = OrderedDict()
-
     interface_dict["probe"] = c.Interface(
         *probe_oriented_points, are_normals_on_out_rays_side=True
     )
-    interface_dict["frontwall_trans"] = c.Interface(
-        *frontwall,
-        "fluid_solid",
-        "transmission",
-        are_normals_on_inc_rays_side=False,
-        are_normals_on_out_rays_side=True,
-    )
-    if backwall is not None:
-        interface_dict["backwall_refl"] = c.Interface(
-            *backwall,
-            "solid_fluid",
-            "reflection",
-            reflection_against=couplant_material,
-            are_normals_on_inc_rays_side=False,
-            are_normals_on_out_rays_side=False,
-        )
     interface_dict["grid"] = c.Interface(
         *grid_oriented_points, are_normals_on_inc_rays_side=True
     )
-    interface_dict["frontwall_refl"] = c.Interface(
+    # Need both transmission and reflection for frontwall
+    interface_dict["frontwall_trans"] = c.Interface(
         *frontwall,
-        "solid_fluid",
-        "reflection",
-        reflection_against=couplant_material,
-        are_normals_on_inc_rays_side=True,
+        kind="fluid_solid",
+        transmission_reflection="transmission",
+        reflection_against=None,
+        are_normals_on_inc_rays_side=False,
         are_normals_on_out_rays_side=True,
     )
-
+    if reflecting_walls is not None:
+        for wall in reflecting_walls:
+            name = wall[0].name.lower() + "_refl"
+            interface_dict[name] = c.Interface(
+                *wall,
+                kind="solid_fluid",
+                transmission_reflection="reflection",
+                reflection_against=couplant_material,
+                are_normals_on_inc_rays_side=True,
+                are_normals_on_out_rays_side=True,
+            )
     return interface_dict
 
 
 def make_paths(
-    block_material, couplant_material, interface_dict, max_number_of_reflection=1
+    block_material,
+    couplant_material, 
+    interface_dict,
+    max_number_of_reflection=1,
 ):
     """
-    Creates the paths L, T, LL, LT, TL, TT (in this order).
+    Creates all iterations of paths up with max_number_of_reflection. Path
+    names are defined as the wave modes of the ray in transmit convention,
+    separated by the wall which is skipped from. If 1 reflection is allowed
+    from a wall "backwall", then the paths returned will be named "L", "T",
+    "L backwall L", "L backwall T", "T backwall L", "T backwall T".
 
     Paths are returned in transmit convention: for the path XY, X is the mode
     before reflection against the backwall and Y is the mode after reflection.
@@ -782,75 +828,46 @@ def make_paths(
     probe = interface_dict["probe"]
     frontwall = interface_dict["frontwall_trans"]
     grid = interface_dict["grid"]
-    if max_number_of_reflection >= 1:
-        backwall = interface_dict["backwall_refl"]
-    if max_number_of_reflection >= 2:
-        frontwall_refl = interface_dict["frontwall_refl"]
-
-    paths["L"] = c.Path(
-        interfaces=(probe, frontwall, grid),
-        materials=(couplant_material, block_material),
-        modes=(c.Mode.L, c.Mode.L),
-        name="L",
-    )
-
-    paths["T"] = c.Path(
-        interfaces=(probe, frontwall, grid),
-        materials=(couplant_material, block_material),
-        modes=(c.Mode.L, c.Mode.T),
-        name="T",
-    )
-
-    if max_number_of_reflection >= 1:
-        paths["LL"] = c.Path(
-            interfaces=(probe, frontwall, backwall, grid),
-            materials=(couplant_material, block_material, block_material),
-            modes=(c.Mode.L, c.Mode.L, c.Mode.L),
-            name="LL",
-        )
-
-        paths["LT"] = c.Path(
-            interfaces=(probe, frontwall, backwall, grid),
-            materials=(couplant_material, block_material, block_material),
-            modes=(c.Mode.L, c.Mode.L, c.Mode.T),
-            name="LT",
-        )
-
-        paths["TL"] = c.Path(
-            interfaces=(probe, frontwall, backwall, grid),
-            materials=(couplant_material, block_material, block_material),
-            modes=(c.Mode.L, c.Mode.T, c.Mode.L),
-            name="TL",
-        )
-
-        paths["TT"] = c.Path(
-            interfaces=(probe, frontwall, backwall, grid),
-            materials=(couplant_material, block_material, block_material),
-            modes=(c.Mode.L, c.Mode.T, c.Mode.T),
-            name="TT",
-        )
-
-    if max_number_of_reflection >= 2:
-        keys = ["LLL", "LLT", "LTL", "LTT", "TLL", "TLT", "TTL", "TTT"]
-
-        for key in keys:
-            paths[key] = c.Path(
-                interfaces=(probe, frontwall, backwall, frontwall_refl, grid),
-                materials=(
-                    couplant_material,
-                    block_material,
-                    block_material,
-                    block_material,
-                ),
-                modes=(
-                    c.Mode.L,
-                    helpers.parse_enum_constant(key[0], c.Mode),
-                    helpers.parse_enum_constant(key[1], c.Mode),
-                    helpers.parse_enum_constant(key[2], c.Mode),
-                ),
-                name=key,
+    wall_dict = OrderedDict((key, val) for key, val in interface_dict.items()
+                            if key not in ["probe", "grid", "frontwall_trans"])
+    wall_names = list(wall_dict.keys())
+    
+    if ((max_number_of_reflection > 0 and len(wall_names) == 0)
+        or (max_number_of_reflection > 1 and len(wall_names) < 2)):
+        raise ValueError("Not enough walls to reflect from.")
+    
+    mode_names = ("L", "T")
+    modes = (c.Mode.longitudinal, c.Mode.transverse)
+    for no_reflections in range(max_number_of_reflection+1):
+        # For this number of reflections, make all the combinations of paths.
+        path_idxs_up_to_refl = list(product(range(2), repeat=no_reflections+1))
+        for path_idxs in path_idxs_up_to_refl:
+            # For each path with this number of reflections.
+            path_name = "" # Current convention does not include frontwall transmission in path name, so start with empty string.
+            path_modes = [c.Mode.longitudinal]
+            path_interfaces = [probe, frontwall]
+            path_materials = [couplant_material]
+            
+            for i, mode in enumerate(path_idxs):
+                if i == 0:
+                    path_name += mode_names[mode]
+                else:
+                    # Have to settle on a naming convention.
+                    # Published work to date (~2023) joins wave modes and assumes a constant wall (typically back wall).
+                    # New `Path` method `longname` splices wall names into the mode names to indicate which wall was skipped from. Preserve simple naming convention for path dict keys.
+                    # If multiple paths with the same modes but different wall skips are needed, they will need to be stored in different dicts. Edit this string if this is inconvenient.
+                    path_name += "{}".format(mode_names[mode])
+                    path_interfaces.append(wall_dict[wall_names[i-1]])
+                path_modes.append(modes[mode])
+                path_materials.append(block_material)
+            path_interfaces.append(grid)
+            
+            paths[path_name] = c.Path(
+                interfaces=path_interfaces,
+                materials=path_materials,
+                modes=path_modes,
+                name=path_name,
             )
-
     return paths
 
 
@@ -885,13 +902,20 @@ def make_views(
     try:
         couplant = examination_object.couplant_material
         block = examination_object.block_material
-        frontwall = examination_object.frontwall
-        backwall = examination_object.backwall
+        frontwall = None
+        walls = []
+        for i, wall in enumerate(examination_object.walls):
+            if i in examination_object.wall_idxs_for_imaging:
+                walls.append(wall)
+            if wall[0].name.lower() == "frontwall":
+                frontwall = wall
+        if max_number_of_reflection > 0 and len(walls) < 1:
+            raise ValueError("Not enough walls for reflection.")
     except AttributeError as e:
         raise ValueError("Examination object should be a BlockInImmersion") from e
 
     interfaces = make_interfaces(
-        couplant, probe_oriented_points, frontwall, backwall, scatterers_oriented_points
+        couplant, probe_oriented_points, frontwall, scatterers_oriented_points, walls,
     )
 
     paths = make_paths(block, couplant, interfaces, max_number_of_reflection)
@@ -913,6 +937,7 @@ def scat_unshifted_transfer_functions(
     scat_angle=0.0,
     numangles_for_scat_precomp=0,
     first_nonzero_freq_idx=None,
+    turn_off_invalid_rays=False,
 ):
     """
     Compute unshifted transfer functions for scatterer echoes (multi-frequency model).
@@ -942,6 +967,7 @@ def scat_unshifted_transfer_functions(
         0 to disable. See module documentation.
     first_nonzero_freq_idx : int or None
         Default: assumes first freq is zero, except if only one freq is given.
+    turn_off_invalid_rays : bool
 
     Yields
     ------
@@ -980,6 +1006,7 @@ def scat_unshifted_transfer_functions(
                 use_directivity=use_directivity,
                 use_transrefl=use_transrefl,
                 use_attenuation=use_attenuation,
+                turn_off_invalid_rays=turn_off_invalid_rays,
             )
             ray_weights_allfreq.append(ray_weights)
 
@@ -1055,6 +1082,8 @@ def wall_unshifted_transfer_functions(
     use_transrefl=True,
     use_attenuation=True,
     first_nonzero_freq_idx=None,
+    turn_off_invalid_rays=False,
+    walls=None,
 ):
     """Compute unshifted transfer functions for walls echoes.
 
@@ -1078,6 +1107,8 @@ def wall_unshifted_transfer_functions(
     use_attenuation : bool
     first_nonzero_freq_idx : int or None
         Default: assumes first freq is zero, except if only one freq is given.
+    turn_off_invalid_rays : bool
+    walls : list[OrientedPoints]
 
     Yields
     ------
@@ -1115,6 +1146,8 @@ def wall_unshifted_transfer_functions(
                 use_directivity=use_directivity,
                 use_transrefl=use_transrefl,
                 use_attenuation=use_attenuation,
+                turn_off_invalid_rays=turn_off_invalid_rays,
+                walls=walls,
             )
 
             # Fancy indexing:
@@ -1138,6 +1171,7 @@ def singlefreq_scat_transfer_functions(
     use_attenuation=True,
     scat_angle=0.0,
     numangles_for_scat_precomp=0,
+    turn_off_invalid_rays=False
 ):
     """
     Compute transfer functions for scatterer echoes (single-frequency model).
@@ -1164,6 +1198,7 @@ def singlefreq_scat_transfer_functions(
     numangles_for_scat_precomp : int
         Number of angles in [-pi, pi] for scattering precomputation.
         0 to disable. See module documentation.
+    turn_off_invalid_rays : bool
 
     Yields
     ------
@@ -1190,6 +1225,7 @@ def singlefreq_scat_transfer_functions(
         use_attenuation=use_attenuation,
         scat_angle=scat_angle,
         numangles_for_scat_precomp=numangles_for_scat_precomp,
+        turn_off_invalid_rays=turn_off_invalid_rays,
     )
 
     for viewname, (unshifted_tf, delays) in zip(views.keys(), unshifted_tfs):
@@ -1215,6 +1251,8 @@ def singlefreq_wall_transfer_functions(
     use_beamspread=True,
     use_transrefl=True,
     use_attenuation=True,
+    turn_off_invalid_rays=False,
+    walls=None,
 ):
     """
     Compute transfer functions for wall echoes (single-frequency model).
@@ -1235,6 +1273,8 @@ def singlefreq_wall_transfer_functions(
     use_beamspread : bool
     use_transrefl : bool
     use_attenuation : bool
+    turn_off_invalid_rays : bool
+    walls : list[OrientedPoints]
 
     Yields
     ------
@@ -1259,6 +1299,8 @@ def singlefreq_wall_transfer_functions(
         use_beamspread=use_beamspread,
         use_transrefl=use_transrefl,
         use_attenuation=use_attenuation,
+        turn_off_invalid_rays=turn_off_invalid_rays,
+        walls=walls,
     )
 
     for pathname, (unshifted_tf, delays) in zip(wall_paths.keys(), unshifted_tfs):
@@ -1279,6 +1321,7 @@ def multifreq_scat_transfer_functions(
     use_attenuation=True,
     scat_angle=0.0,
     numangles_for_scat_precomp=0,
+    turn_off_invalid_rays=False
 ):
     """
     Compute transfer functions for scatterer echoes (multi-frequency model).
@@ -1304,6 +1347,7 @@ def multifreq_scat_transfer_functions(
     numangles_for_scat_precomp : int
         Number of angles in [-pi, pi] for scattering precomputation.
         0 to disable. See module documentation.
+    turn_off_invalid_rays : bool
 
     Yields
     ------
@@ -1330,6 +1374,7 @@ def multifreq_scat_transfer_functions(
         use_attenuation=use_attenuation,
         scat_angle=scat_angle,
         numangles_for_scat_precomp=numangles_for_scat_precomp,
+        turn_off_invalid_rays=turn_off_invalid_rays,
     )
 
     for viewname, (unshifted_tf, delays) in zip(views.keys(), unshifted_tfs):
@@ -1354,6 +1399,8 @@ def multifreq_wall_transfer_functions(
     use_beamspread=True,
     use_transrefl=True,
     use_attenuation=True,
+    turn_off_invalid_rays=False,
+    walls=None,
 ):
     """
     Compute transfer functions for scatterer echoes (multi-frequency model).
@@ -1372,6 +1419,8 @@ def multifreq_wall_transfer_functions(
     use_beamspread : bool
     use_transrefl : bool
     use_attenuation : bool
+    turn_off_invalid_rays : bool
+    walls : list[OrientedPoints]
 
     Yields
     ------
@@ -1395,6 +1444,8 @@ def multifreq_wall_transfer_functions(
         use_beamspread=use_beamspread,
         use_transrefl=use_transrefl,
         use_attenuation=use_attenuation,
+        turn_off_invalid_rays=turn_off_invalid_rays,
+        walls=walls,
     )
 
     for pathname, (unshifted_tf, delays) in zip(wall_paths.keys(), unshifted_tfs):
