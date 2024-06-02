@@ -1,7 +1,11 @@
-arim.im.das
+﻿arim.im.das
 ===========
 
 .. automodule:: arim.im.das
+
+   
+   
+   
 
    
    
@@ -13,6 +17,8 @@ arim.im.das
       delay_and_sum_naive
       delay_and_sum_numba
       delay_and_sum_numba_noamp
+      lanczos_interpolation
+      sinc
    
    
 
@@ -29,3 +35,6 @@ arim.im.das
       NotImplementedTyping
    
    
+
+
+

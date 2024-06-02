@@ -1,7 +1,11 @@
-arim.model
+﻿arim.model
 ==========
 
 .. automodule:: arim.model
+
+   
+   
+   
 
    
    
@@ -48,3 +52,6 @@ arim.model
    
    
    
+
+
+

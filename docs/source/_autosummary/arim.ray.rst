@@ -1,7 +1,11 @@
-arim.ray
+﻿arim.ray
 ========
 
 .. automodule:: arim.ray
+
+   
+   
+   
 
    
    
@@ -31,3 +35,6 @@ arim.ray
    
    
    
+
+
+

@@ -1,7 +1,11 @@
-arim.io.native
+﻿arim.io.native
 ==============
 
 .. automodule:: arim.io.native
+
+   
+   
+   
 
    
    
@@ -36,3 +40,6 @@ arim.io.native
       InvalidConf
    
    
+
+
+

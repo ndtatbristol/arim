@@ -1,7 +1,11 @@
-arim.scat
+﻿arim.scat
 =========
 
 .. automodule:: arim.scat
+
+   
+   
+   
 
    
    
@@ -41,3 +45,6 @@ arim.scat
    
    
    
+
+
+

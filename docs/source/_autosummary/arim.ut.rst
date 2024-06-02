@@ -1,7 +1,11 @@
-arim.ut
+﻿arim.ut
 =======
 
 .. automodule:: arim.ut
+
+   
+   
+   
 
    
    
@@ -39,3 +43,6 @@ arim.ut
       UtWarning
    
    
+
+
+

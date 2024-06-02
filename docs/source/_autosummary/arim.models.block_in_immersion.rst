@@ -5,6 +5,10 @@ arim.models.block\_in\_immersion
 
    
    
+   
+
+   
+   
    .. rubric:: Functions
 
    .. autosummary::
@@ -35,3 +39,6 @@ arim.models.block\_in\_immersion
    
    
    
+
+
+

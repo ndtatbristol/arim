@@ -1,7 +1,11 @@
-arim.exceptions
+﻿arim.exceptions
 ===============
 
 .. automodule:: arim.exceptions
+
+   
+   
+   
 
    
    
@@ -23,3 +27,6 @@ arim.exceptions
       NotAnArray
    
    
+
+
+

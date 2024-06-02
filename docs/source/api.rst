@@ -41,6 +41,7 @@ arim reference
 .. autosummary::
    :toctree: _autosummary
 
+   datasets
    io
    io.native
    io.brain

@@ -1,7 +1,11 @@
-arim.signal
+﻿arim.signal
 ===========
 
 .. automodule:: arim.signal
+
+   
+   
+   
 
    
    
@@ -25,6 +29,7 @@ arim.signal
       ComposedFilter
       Filter
       Gaussian
+      Hanning
       Hilbert
       NoFilter
    
@@ -33,3 +38,6 @@ arim.signal
    
    
    
+
+
+

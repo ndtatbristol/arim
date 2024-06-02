@@ -12,15 +12,17 @@
 #
 import os
 import sys
+from datetime import datetime
 
 sys.path.insert(0, os.path.abspath("../.."))
 import arim  # noqa: E402
 
 # -- Project information -----------------------------------------------------
 
+# Keep identical to pyproject.toml
 project = "arim"
-copyright = arim.__copyright__
-author = arim.__author__
+author = "arim contributors"
+copyright = f"2016–{datetime.now().year}, {author}"
 release = arim.__version__
 
 

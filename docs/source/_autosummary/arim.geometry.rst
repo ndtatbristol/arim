@@ -1,7 +1,11 @@
-arim.geometry
+﻿arim.geometry
 =============
 
 .. automodule:: arim.geometry
+
+   
+   
+   
 
    
    
@@ -55,3 +59,6 @@ arim.geometry
    
    
    
+
+
+

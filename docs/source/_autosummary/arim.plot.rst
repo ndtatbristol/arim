@@ -1,7 +1,11 @@
-arim.plot
+﻿arim.plot
 =========
 
 .. automodule:: arim.plot
+
+   
+   
+   
 
    
    
@@ -35,3 +39,6 @@ arim.plot
    
    
    
+
+
+

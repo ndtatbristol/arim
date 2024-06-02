@@ -73,6 +73,7 @@ For academic references, please use the author-date style from the Chicago Manua
 1. Delete the cache of autosummary by deleting the directory ``docs/source/_autosummary``
 2. In the directory ``docs``, type in a terminal:
 ```
+hatch shell default
 make html
 ```
 

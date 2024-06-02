@@ -1,7 +1,7 @@
-﻿arim.settings
+﻿arim.datasets
 =============
 
-.. automodule:: arim.settings
+.. automodule:: arim.datasets
 
    
    
