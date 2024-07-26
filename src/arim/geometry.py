@@ -1670,7 +1670,7 @@ def combine_oriented_points(oriented_points, name=None):
     Combines multiple walls (oriented points) into one as a simple
     concatenation. No checks are made that combination makes physical sense
     (i.e. walls are next to each other). Use at your own discretion. Duplicate
-    points are (not) removed.
+    points are removed.
 
     Parameters
     ----------
@@ -1686,14 +1686,18 @@ def combine_oriented_points(oriented_points, name=None):
     """
     if name is None:
         name = oriented_points[0].points.name
-    points = Points(np.concatenate(
+    coords = np.concatenate(
         [wall.points.coords for wall in oriented_points],
         axis=0,
-    ), name=name)
-    orientations = Points(np.concatenate(
+    )
+    bases = np.concatenate(
         [wall.orientations.coords for wall in oriented_points],
         axis=0,
-    ))
+    )
+    _, idxs = np.unique(coords, return_index=True, axis=0)
+    
+    points = Points([coords[i] for i in np.sort(idxs)], name=name)
+    orientations = Points([bases[i] for i in np.sort(idxs)])
     
     return OrientedPoints(points, orientations)
 
