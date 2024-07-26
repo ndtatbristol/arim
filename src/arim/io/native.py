@@ -36,10 +36,10 @@ The ultrasonic data is provided using either:
 
 """
 
-from collections import OrderedDict
 import copy
 import logging
 import pathlib
+from collections import OrderedDict
 
 import numpy as np
 import yaml
@@ -241,10 +241,11 @@ def examination_object_from_conf(conf):
     arim.core.ExaminationObject
 
     """
-    if ((
-        ("frontwall" in conf.keys() and "backwall" in conf.keys())
-        or "contiguous_geometry" in conf.keys()
-    )
+    if (
+        (
+            ("frontwall" in conf.keys() and "backwall" in conf.keys())
+            or "contiguous_geometry" in conf.keys()
+        )
         and "couplant_material" in conf.keys()
         and "block_material" in conf.keys()
     ):
@@ -355,10 +356,7 @@ def block_in_immersion_from_conf(conf):
         )
         for wall in geom_walls:
             walls.append(wall)
-        if (
-            0 not in imaging
-            or 0 not in geom_conf["wall_idxs"]
-        ):
+        if 0 not in imaging or 0 not in geom_conf["wall_idxs"]:
             imaging.append(wall)
     return core.BlockInImmersion(block, couplant, walls, imaging)
 
@@ -380,7 +378,8 @@ def block_in_contact_from_conf(conf):
             imaging.append(0)
         if frontwall_conf is not None:
             walls["Frontwall"] = geometry.points_1d_wall_z(
-                **frontwall_conf, name="Frontwall",
+                **frontwall_conf,
+                name="Frontwall",
             )
             imaging.append(1)
 
@@ -480,8 +479,7 @@ def frame_from_conf(
     if instrument_delay is not None:
         # Adjust time vector
         frame.time = core.Time(
-            frame.time.start -
-            instrument_delay, frame.time.step, len(frame.time)
+            frame.time.start - instrument_delay, frame.time.step, len(frame.time)
         )
 
     if use_probe_from_conf:

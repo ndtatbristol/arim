@@ -30,11 +30,16 @@ def test_make_views():
     with pytest.raises(ValueError):
         # Undefined backwall
         views = bic.make_views(
-            examination_object, probe_p, grid_p, walls_for_imaging=["Backwall", "Frontwall"]
+            examination_object,
+            probe_p,
+            grid_p,
+            walls_for_imaging=["Backwall", "Frontwall"],
         )
 
     # BlockInContact with a backwall
-    examination_object = arim.BlockInContact(block_material, walls={"Backwall":backwall})
+    examination_object = arim.BlockInContact(
+        block_material, walls={"Backwall": backwall}
+    )
     views = bic.make_views(
         examination_object,
         probe_p,
@@ -47,11 +52,17 @@ def test_make_views():
     with pytest.raises(ValueError):
         # Undefined frontwall
         views = bic.make_views(
-            examination_object, probe_p, grid_p, walls_for_imaging=["Backwall", "Frontwall"]
+            examination_object,
+            probe_p,
+            grid_p,
+            walls_for_imaging=["Backwall", "Frontwall"],
         )
 
     # BlockInContact with a backwall and a frontwall
-    examination_object = arim.BlockInContact(block_material, walls={"Backwall":backwall, "Frontwall":frontwall}, )
+    examination_object = arim.BlockInContact(
+        block_material,
+        walls={"Backwall": backwall, "Frontwall": frontwall},
+    )
     views = bic.make_views(
         examination_object,
         probe_p,

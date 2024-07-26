@@ -32,7 +32,7 @@ def compute_sensitivity(dataset_name, save):
     examination_object = arim.io.block_in_contact_from_conf(conf)
     tx, rx = arim.ut.fmc(probe.numelements)
     numtimetraces = len(tx)
-    
+
     imaging_walls = ["Backwall"]
 
     model_options = dict(

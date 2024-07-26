@@ -21,15 +21,14 @@ TFM images
 """
 import matplotlib as mpl
 import matplotlib.pyplot as plt
-import numpy as np
 
 import arim
-import arim.ray
-import arim.io
-import arim.signal
 import arim.im
+import arim.io
 import arim.models.block_in_contact as bic
 import arim.plot as aplt
+import arim.ray
+import arim.signal
 
 # %% Load configuration
 
@@ -57,7 +56,7 @@ aplt.plot_interfaces(
     [probe_p, *frame.examination_object.walls.values()],
     show_orientations=False,
     show_last=True,
-    markers=["."] + ["-"]*len(frame.examination_object.walls),
+    markers=["."] + ["-"] * len(frame.examination_object.walls),
     filename=str(result_dir / "interfaces"),
     savefig=save,
 )
@@ -75,7 +74,10 @@ views = bic.make_views(
 )
 
 arim.ray.ray_tracing(
-    views.values(), convert_to_fortran_order=True, walls=frame.examination_object.walls, turn_off_invalid_rays=False
+    views.values(),
+    convert_to_fortran_order=True,
+    walls=frame.examination_object.walls,
+    turn_off_invalid_rays=False,
 )
 
 # %% Compute TFM
@@ -83,12 +85,17 @@ arim.ray.ray_tracing(
 tfms = dict()
 for viewname, view in views.items():
     with arim.helpers.timeit(f"TFM {view.name}"):
-        amplitudes = None # arim.im.tfm.TxRxAmplitudes(
+        amplitudes = None  # arim.im.tfm.TxRxAmplitudes(
         #     (~view.tx_path.rays._invalid_rays.T).astype(float),
         #     (~view.rx_path.rays._invalid_rays.T).astype(float),
         # )
         tfms[viewname] = arim.im.tfm.tfm_for_view(
-            frame, grid, view, fillvalue=0.0, interpolation="nearest", amplitudes=amplitudes
+            frame,
+            grid,
+            view,
+            fillvalue=0.0,
+            interpolation="nearest",
+            amplitudes=amplitudes,
         )
 
 # %% Plot TFM
@@ -138,8 +145,10 @@ for i, ((viewname, tfm), (_, view)) in enumerate(zip(tfms.items(), views.items()
     )
     aplt.plot_interfaces(
         [probe_p, *frame.examination_object.walls.values()],
-        markers=['.']+['r-']*len(frame.examination_object.walls),
-        ax=ax, show_legend=False, title=None,
+        markers=["."] + ["r-"] * len(frame.examination_object.walls),
+        ax=ax,
+        show_legend=False,
+        title=None,
     )
     ax.plot(defect_centre["x"], defect_centre["z"], "ow")
     ax.set_adjustable("box")

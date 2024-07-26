@@ -58,7 +58,12 @@ def make_context(couplant_att=None, block_l_att=None, block_t_att=None):
     frontwall_points, frontwall_orientations = frontwall_oriented_points
 
     backwall_oriented_points = arim.geometry.points_1d_wall_z(
-        numpoints=1000, xmin=-5.0e-3, xmax=50.0e-3, z=30.0e-3, name="Backwall", is_block_above=False
+        numpoints=1000,
+        xmin=-5.0e-3,
+        xmax=50.0e-3,
+        z=30.0e-3,
+        name="Backwall",
+        is_block_above=False,
     )
     backwall_points, backwall_orientations = backwall_oriented_points
 
@@ -75,7 +80,7 @@ def make_context(couplant_att=None, block_l_att=None, block_t_att=None):
         probe_oriented_points,
         frontwall_oriented_points,
         scatterer_oriented_points,
-        {backwall_oriented_points.points.name:backwall_oriented_points},
+        {backwall_oriented_points.points.name: backwall_oriented_points},
     )
 
     paths = arim.models.block_in_immersion.make_paths(block, couplant, interfaces)
@@ -122,7 +127,10 @@ def make_context(couplant_att=None, block_l_att=None, block_t_att=None):
     exam_obj = arim.BlockInImmersion(
         block,
         couplant,
-        {"Frontwall":(frontwall_points, frontwall_orientations), "Backwall":(backwall_points, backwall_orientations)},
+        {
+            "Frontwall": (frontwall_points, frontwall_orientations),
+            "Backwall": (backwall_points, backwall_orientations),
+        },
         (scatterer_points, scatterer_orientations),
     )
 

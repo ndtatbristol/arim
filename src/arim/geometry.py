@@ -294,7 +294,9 @@ class Points:
         """
         if centre is not None:
             centre = np.asarray(centre)
-        return Points(rotate(self.coords, np.asarray(rotation_matrix), centre), self.name)
+        return Points(
+            rotate(self.coords, np.asarray(rotation_matrix), centre), self.name
+        )
 
     def to_gcs(self, bases, origins):
         """Returns the coordinates of the points expressed in the global coordinate system.
@@ -1463,7 +1465,7 @@ def make_contiguous_geometry(coords, numpoints, names=None, dtype=None):
     """
     Returns a list of OrientedPoints with length m which are uniquely named.
     Default naming convention defines the frontwall as the wall drawn between
-    the first pair of points iff z=0.0; backwalls have constant z; sidewalls 
+    the first pair of points iff z=0.0; backwalls have constant z; sidewalls
     have constant x; and otherwalls are anything else.
 
     Parameters
@@ -1486,50 +1488,48 @@ def make_contiguous_geometry(coords, numpoints, names=None, dtype=None):
     """
     if dtype is None:
         dtype = s.FLOAT
-    
+
     coords = np.squeeze(coords)
     if coords.shape[0] < 2:
-        raise ValueError(
-            "Not enough coordinates provided to draw lines for geometry."
-        )
+        raise ValueError("Not enough coordinates provided to draw lines for geometry.")
     if coords.shape[1] not in [2, 3]:
         raise ValueError("Coordinates should be 2D or 3D.")
-    
+
     numpoints = np.squeeze(numpoints).ravel().astype(int)
     if numpoints.shape[0] == 1:
         numpoints = numpoints[0] * np.ones(coords.shape[0] - 1, dtype=int)
     else:
         if numpoints.shape[0] != coords.shape[0] - 1:
             raise ValueError("Too many / few values of `numpoints` provided.")
-        
+
     if names is not None:
         if len(names) != coords.shape[0] - 1:
             raise ValueError("Too many / few wall names provided.")
     else:
         idx = 0
-    
+
     walls = OrderedDict()
     for idx, (start, end) in enumerate(zip(coords[:-1, :], coords[1:, :])):
         if numpoints.shape[0] == 1:
             n = numpoints[0]
         else:
             n = numpoints[idx]
-        
+
         if names is None:
             name = "wall_{}".format(idx)
             idx += 1
         else:
             name = names[idx]
-        
+
         walls[name] = points_1d_wall(start, end, n, name=name, dtype=dtype)
-        
+
     return walls
 
 
 def points_1d_wall(start, end, numpoints, name=None, dtype=None):
     """
     Returns a set of regularly spaced points between `start` and `end`.
-    
+
     Orientation will always have x_hat in the direction of wall start -> end,
     y_hat = j and z_hat = x_hat ^ j.
 
@@ -1547,7 +1547,7 @@ def points_1d_wall(start, end, numpoints, name=None, dtype=None):
     -------
     OrientedPoints.
 
-    """        
+    """
     if dtype is None:
         dtype = s.FLOAT
     start, end = np.squeeze(start), np.squeeze(end)
@@ -1555,30 +1555,30 @@ def points_1d_wall(start, end, numpoints, name=None, dtype=None):
         start = np.asarray([start[0], 0.0, start[1]])
     if end.shape[0] == 2:
         end = np.asarray([end[0], 0.0, end[1]])
-    
+
     # Make points and orientations
     points = Points.from_xyz(
-        x = np.linspace(start[0], end[0], numpoints, dtype=dtype),
-        y = np.linspace(start[1], end[1], numpoints, dtype=dtype),
-        z = np.linspace(start[2], end[2], numpoints, dtype=dtype),
+        x=np.linspace(start[0], end[0], numpoints, dtype=dtype),
+        y=np.linspace(start[1], end[1], numpoints, dtype=dtype),
+        z=np.linspace(start[2], end[2], numpoints, dtype=dtype),
         name=name,
     )
-    
+
     basis = CoordinateSystem(
         [0.0, 0.0, 0.0],
-        (end - start) / np.linalg.norm(end - start), 
+        (end - start) / np.linalg.norm(end - start),
         [0.0, 1.0, 0.0],
     ).basis_matrix
-    
-    orientations_arr = np.broadcast_to(
-        basis, (*points.shape, 3, 3)
-    )
+
+    orientations_arr = np.broadcast_to(basis, (*points.shape, 3, 3))
     orientations = Points(orientations_arr)
-    
+
     return OrientedPoints(points, orientations)
 
 
-def points_1d_wall_z(xmin, xmax, z, numpoints, y=0.0, name=None, is_block_above=True, dtype=None):
+def points_1d_wall_z(
+    xmin, xmax, z, numpoints, y=0.0, name=None, is_block_above=True, dtype=None
+):
     """
     Returns a set of regularly spaced points between (xmin, y, z) and (xmax, y, z).
 
@@ -1616,11 +1616,13 @@ def points_1d_wall_z(xmin, xmax, z, numpoints, y=0.0, name=None, is_block_above=
     orientations = default_orientations(points)
     # Rotate by pi radians in x-z plane if block is below.
     if not is_block_above:
-        orientations = orientations.rotate([
-            [ np.cos(np.pi), 0.0, np.sin(np.pi)],
-            [           0.0, 1.0,           0.0],
-            [-np.sin(np.pi), 0.0, np.cos(np.pi)],
-        ])
+        orientations = orientations.rotate(
+            [
+                [np.cos(np.pi), 0.0, np.sin(np.pi)],
+                [0.0, 1.0, 0.0],
+                [-np.sin(np.pi), 0.0, np.cos(np.pi)],
+            ]
+        )
 
     return OrientedPoints(points, orientations)
 
@@ -1663,7 +1665,7 @@ def combine_oriented_points(oriented_points, name=None):
     Parameters
     ----------
     oriented_points : list[OrientedPoints]
-        
+
     name : str or None, optional
         New name for the wall. If None, the name of the first wall is used.
 
@@ -1683,10 +1685,10 @@ def combine_oriented_points(oriented_points, name=None):
         axis=0,
     )
     _, idxs = np.unique(coords, return_index=True, axis=0)
-    
+
     points = Points([coords[i] for i in np.sort(idxs)], name=name)
     orientations = Points([bases[i] for i in np.sort(idxs)])
-    
+
     return OrientedPoints(points, orientations)
 
 
