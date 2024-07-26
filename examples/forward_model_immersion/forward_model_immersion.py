@@ -74,6 +74,8 @@ probe = arim.io.probe_from_conf(conf)
 tx_list, rx_list = arim.ut.fmc(probe.numelements)
 numtimetraces = len(tx_list)
 
+imaging_walls = ["Backwall"]
+
 examination_object = arim.io.block_in_immersion_from_conf(conf)
 for name, wall in examination_object.walls.items():
     if name.lower() == "frontwall":
@@ -114,8 +116,8 @@ views = bim.make_views(
     examination_object,
     probe.to_oriented_points(),
     scatterer,
-    max_number_of_reflection,
-    tfm_unique_only,
+    walls_for_imaging=imaging_walls,
+    tfm_unique_only=tfm_unique_only,
 )
 # views = {viewname: view for viewname, view in views.items() if viewname in {"L-T", "T-L"}}  # debug
 print("Views: " + ", ".join(views.keys()))
@@ -337,7 +339,7 @@ views_imaging = bim.make_views(
     examination_object,
     probe.to_oriented_points(),
     grid.to_oriented_points(),
-    max_number_of_reflection,
+    walls_for_imaging=imaging_walls,
     tfm_unique_only=True,
 )
 # views_imaging = {viewname: view for viewname, view in views_imaging.items() if viewname in ["L-L", "L-T", "T]}# debug

@@ -51,6 +51,8 @@ def compute_sensitivity(dataset_name, save):
     model_options = dict(
         frequency=probe.frequency, probe_element_width=probe.dimensions.x[0]
     )
+    
+    imaging_walls = ["Backwall"]
 
     tic = time.time()
     grid = arim.io.grid_from_conf(conf)
@@ -61,7 +63,7 @@ def compute_sensitivity(dataset_name, save):
         examination_object,
         probe_p,
         grid_p,
-        max_number_of_reflection=1,
+        walls_for_imaging=imaging_walls,
         tfm_unique_only=True,
     )
 

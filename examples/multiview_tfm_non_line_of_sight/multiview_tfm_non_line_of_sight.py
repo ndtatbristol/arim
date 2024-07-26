@@ -37,6 +37,7 @@ conf = arim.io.load_conf(".")
 save = False
 aplt.conf["savefig"] = save
 result_dir = conf["result_dir"]
+imaging_walls = conf["contiguous_geometry"]["imaging_walls"]
 
 # %% Load frame
 frame = arim.io.frame_from_conf(conf)
@@ -70,7 +71,7 @@ views = bic.make_views(
     probe_p,
     grid_p,
     tfm_unique_only=True,
-    max_number_of_reflection=1,
+    walls_for_imaging=imaging_walls,
 )
 
 arim.ray.ray_tracing(
@@ -104,6 +105,8 @@ scale = aplt.common_dynamic_db_scale(
     [tfm.res for tfm in tfms.values()], reference_area, db_range=40.0
 )
 
+defect_centre = conf["scatterer"]["location"]
+
 for i, ((viewname, tfm), (_, view)) in enumerate(zip(tfms.items(), views.items())):
     assert tfm.grid is grid
 
@@ -133,6 +136,12 @@ for i, ((viewname, tfm), (_, view)) in enumerate(zip(tfms.items(), views.items()
         draw_cbar=True,
         interpolation="none",
     )
+    aplt.plot_interfaces(
+        [probe_p, *frame.examination_object.walls.values()],
+        markers=['.']+['r-']*len(frame.examination_object.walls),
+        ax=ax, show_legend=False, title=None,
+    )
+    ax.plot(defect_centre["x"], defect_centre["z"], "ow")
     ax.set_adjustable("box")
     ax.axis([grid.xmin, grid.xmax, grid.zmax, 0])
     if save:

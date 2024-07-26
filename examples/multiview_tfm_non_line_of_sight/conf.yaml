@@ -35,12 +35,12 @@ contiguous_geometry:
   numpoints: 1000
   coords:
   - [-20.0e-3,   0.0   ]
-  - [ 55.5e-3,   0.0   ]
-  - [ 55.5e-3,  46.0e-3]
-  - [ 35.5e-3,  46.0e-3]
-  - [ 35.5e-3,  26.0e-3]
-  - [-20.0e-3,  26.0e-3]
-  - [-20.0e-3,   0.0   ]
+  - [ 48.5e-3,   0.0   ]
+  - [ 48.5e-3,  46.0e-3]
+  - [ 28.5e-3,  46.0e-3]
+  - [ 28.5e-3,  26.0e-3]
+  - [-25.0e-3,  26.0e-3]
+  - [-25.0e-3,   0.0   ]
   names:
   - Frontwall
   - Sidewall
@@ -49,7 +49,20 @@ contiguous_geometry:
   - Backwall
   - Sidewall_left
   imaging_walls:
-  - 1
+  - Sidewall
+
+scatterer:
+  angle_deg: 90.
+  location:
+    x: 33.5e-3
+    y: 0.0
+    z: 36.e-3
+
+  # Uncomment and edit the desired specs
+  specs:
+    kind: sdh
+    radius: 0.5e-3
+
 
 grid:
   xmin: -25.0e-3
