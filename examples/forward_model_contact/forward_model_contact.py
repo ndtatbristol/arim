@@ -37,6 +37,7 @@ logger.setLevel(logging.INFO)
 logging.getLogger("arim").setLevel(logging.INFO)
 
 conf = arim.io.load_conf(".")
+imaging_walls = ["Backwall"]
 
 # %% Define inspection set-up
 probe = arim.io.probe_from_conf(conf)
@@ -73,8 +74,8 @@ views = bic.make_views(
     examination_object,
     probe.to_oriented_points(),
     scatterer,
-    max_number_of_reflection,
-    tfm_unique_only,
+    walls_for_imaging=imaging_walls,
+    tfm_unique_only=tfm_unique_only,
 )
 # views = {viewname: view for viewname, view in views.items() if viewname in {"L-T", "T-L"}}  # debug
 print("Views: " + ", ".join(views.keys()))
@@ -282,8 +283,8 @@ views_imaging = bic.make_views(
     examination_object,
     probe.to_oriented_points(),
     grid.to_oriented_points(),
-    max_number_of_reflection,
     tfm_unique_only=True,
+    walls_for_imaging=imaging_walls,
 )
 # views_imaging = {viewname: view for viewname, view in views_imaging.items() if viewname in ["L-L", "L-T", "T]}# debug
 arim.ray.ray_tracing(views_imaging.values(), convert_to_fortran_order=True)

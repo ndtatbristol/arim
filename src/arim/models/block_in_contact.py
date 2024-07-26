@@ -556,7 +556,7 @@ def make_views(
     examination_object,
     probe_oriented_points,
     grid_oriented_points,
-    max_number_of_reflection=0,
+    walls_for_imaging=None,
     tfm_unique_only=False,
 ):
     """
@@ -569,9 +569,11 @@ def make_views(
     probe_oriented_points : OrientedPoints
     grid_oriented_points : OrientedPoints
         Scatterers (for forward model) or grid (for imaging)
-    max_number_of_reflection : int
-        Number of internal reflections. Default: 1. If this number is 1 or above, the
-        backwall must be defined in ``frame.examination_object``.
+    walls_for_imaging : list[str]
+        Keys of the walls in examination_object.walls which will be used to reflected
+        from when imaging. Must be provided in the order that they are reflected
+        from on the transmit path. The length of this list will be used as the max
+        number of reflections. The default is None, i.e. no reflections.
     tfm_unique_only : bool
         Default False. If True, returns only the views that give *different* imaging
         results with TFM (AB-CD and DC-BA give the same imaging result).
@@ -587,14 +589,15 @@ def make_views(
         # Plan B
         block_material = examination_object.material
     try:
+        if walls_for_imaging is None:
+            walls_for_imaging = []
         if examination_object.walls is not None:
             walls = OrderedDict()
-            for i, (name, wall) in enumerate(examination_object.walls.items()):
-                walls[name] = wall
+            for name in walls_for_imaging:
+                walls[name] = examination_object.walls[name]
         else:
             walls = None
-        if max_number_of_reflection > 0 and len(walls) < 1:
-            raise ValueError("Not enough walls available for reflection.")
+        max_number_of_reflection = len(walls_for_imaging)
     except AttributeError:
         walls = None
     try:

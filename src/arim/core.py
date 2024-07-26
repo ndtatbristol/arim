@@ -1370,7 +1370,6 @@ class BlockInImmersion(ExaminationObject):
         self.material = block_material  # alias
         self.couplant_material = couplant_material
         self.walls = walls
-        self.wall_idxs_for_imaging = wall_idxs_for_imaging
 
         if metadata is None:
             metadata = {}
@@ -1411,7 +1410,6 @@ class BlockInContact(ExaminationObject):
     ):
         self.material = block_material
         self.walls = walls
-        self.wall_idxs_for_imaging = wall_idxs_for_imaging
         self.under_material = under_material
         if metadata is None:
             metadata = {}

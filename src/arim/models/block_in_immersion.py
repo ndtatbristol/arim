@@ -875,7 +875,7 @@ def make_views(
     examination_object,
     probe_oriented_points,
     scatterers_oriented_points,
-    max_number_of_reflection=1,
+    walls_for_imaging=None,
     tfm_unique_only=False,
 ):
     """
@@ -887,9 +887,14 @@ def make_views(
     examination_object : arim.core.BlockInImmersion
     probe_oriented_points : OrientedPoints
     scatterers_oriented_points : OrientedPoints
-    max_number_of_reflection : int
-        Number of internal reflections. Default: 1. If this number is 1 or above, the
-        backwall must be defined in ``frame.examination_object``.
+    walls_for_imaging : list[str]
+        Keys of the walls in examination_object.walls which will be used to reflected
+        from when imaging. Must be provided in the order that they are reflected
+        from on the transmit path. The front wall transmission should not be provided
+        in this list, it is assumed to exist in the examination object because this
+        is an immersion configuration. Subsequent reflections from the front wall
+        may be included. The length of this list will be used as the max number of
+        reflections. The default is None, i.e. no reflections.
     tfm_unique_only : bool
         Default False. If True, returns only the views that give *different* imaging
         results with TFM (AB-CD and DC-BA give the same imaging result).
@@ -904,13 +909,12 @@ def make_views(
         block = examination_object.block_material
         frontwall = None
         walls = OrderedDict()
-        for i, (name, wall) in enumerate(examination_object.walls.items()):
-            if i in examination_object.wall_idxs_for_imaging:
-                walls[name] = wall
-            if name.lower() == "frontwall":
-                frontwall = wall
-        if max_number_of_reflection > 0 and len(walls) < 1:
-            raise ValueError("Not enough walls for reflection.")
+        if walls_for_imaging is None:
+            walls_for_imaging = []
+        frontwall = examination_object.walls["Frontwall"]
+        for name in walls_for_imaging:
+            walls[name] = examination_object.walls[name]
+        max_number_of_reflection = len(walls_for_imaging)
     except AttributeError as e:
         raise ValueError("Examination object should be a BlockInImmersion") from e
 

@@ -45,6 +45,8 @@ frame = frame.apply_filter(
 frame = frame.expand_frame_assuming_reciprocity()
 probe_p = frame.probe.to_oriented_points()
 
+imaging_walls = ["Backwall", "Frontwall"]
+
 # %% Plot interfaces
 aplt.plot_interfaces(
     [probe_p, *frame.examination_object.walls.values()],
@@ -64,7 +66,7 @@ views = bic.make_views(
     probe_p,
     grid_p,
     tfm_unique_only=True,
-    max_number_of_reflection=2,
+    walls_for_imaging=imaging_walls,
 )
 views_to_use = conf.get("views_to_use", "all")
 if views_to_use != "all":

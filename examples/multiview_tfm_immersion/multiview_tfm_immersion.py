@@ -35,6 +35,8 @@ save = True
 aplt.conf["savefig"] = save
 result_dir = conf["result_dir"]
 
+imaging_walls = ["Backwall"]
+
 # %% Load frame
 frame = arim.io.frame_from_conf(conf)
 frame = frame.apply_filter(
@@ -89,7 +91,7 @@ views = bim.make_views(
     probe_p,
     grid_p,
     tfm_unique_only=True,
-    max_number_of_reflection=1,
+    walls_for_imaging=imaging_walls,
 )
 
 arim.ray.ray_tracing(views.values(), convert_to_fortran_order=True)
