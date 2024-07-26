@@ -1506,7 +1506,7 @@ def make_contiguous_geometry(coords, numpoints, names=None, dtype=None):
         if len(names) != coords.shape[0] - 1:
             raise ValueError("Too many / few wall names provided.")
     else:
-        bw_idx, sw_idx, ow_idx = 0, 0, 0
+        idx = 0
     
     walls = OrderedDict()
     for idx, (start, end) in enumerate(zip(coords[:-1, :], coords[1:, :])):
@@ -1516,20 +1516,8 @@ def make_contiguous_geometry(coords, numpoints, names=None, dtype=None):
             n = numpoints[idx]
         
         if names is None:
-            # Frontwall is first and has z == 0.0
-            if idx == 0 and abs(start[-1]) < np.finfo(float).eps and abs(end[-1]) < np.finfo(float).eps:
-                name = "frontwall"
-            # Backwall has constant z.
-            elif abs(start[-1] - end[-1]) < np.finfo(float).eps:
-                name = "backwall_{}".format(bw_idx)
-                bw_idx += 1
-            # Sidewall has constant x.
-            elif abs(start[0] - end[0]) < np.finfo(float).eps:
-                name = "sidewall_{}".format(sw_idx)
-                sw_idx += 1
-            else:
-                name = "otherwall_{}".format(ow_idx)
-                ow_idx += 1
+            name = "wall_{}".format(idx)
+            idx += 1
         else:
             name = names[idx]
         
