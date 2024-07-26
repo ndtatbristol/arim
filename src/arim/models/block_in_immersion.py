@@ -750,7 +750,7 @@ def make_interfaces(
     probe_oriented_points : OrientedPoints
     frontwall: OrientedPoints
     grid_oriented_points: OrientedPoints
-    reflecting_walls: list[OrientedPoints] or None
+    reflecting_walls: OrderedDict[OrientedPoints] or None
 
     Returns
     -------
@@ -774,8 +774,8 @@ def make_interfaces(
         are_normals_on_out_rays_side=True,
     )
     if reflecting_walls is not None:
-        for wall in reflecting_walls:
-            name = wall[0].name.lower() + "_refl"
+        for name, wall in reflecting_walls.items():
+            name = name.lower() + "_refl"
             interface_dict[name] = c.Interface(
                 *wall,
                 kind="solid_fluid",
@@ -903,11 +903,11 @@ def make_views(
         couplant = examination_object.couplant_material
         block = examination_object.block_material
         frontwall = None
-        walls = []
-        for i, wall in enumerate(examination_object.walls):
+        walls = OrderedDict()
+        for i, (name, wall) in enumerate(examination_object.walls.items()):
             if i in examination_object.wall_idxs_for_imaging:
-                walls.append(wall)
-            if wall[0].name.lower() == "frontwall":
+                walls[name] = wall
+            if name.lower() == "frontwall":
                 frontwall = wall
         if max_number_of_reflection > 0 and len(walls) < 1:
             raise ValueError("Not enough walls for reflection.")
@@ -1274,7 +1274,7 @@ def singlefreq_wall_transfer_functions(
     use_transrefl : bool
     use_attenuation : bool
     turn_off_invalid_rays : bool
-    walls : list[OrientedPoints]
+    walls : OrderedDict[OrientedPoints]
 
     Yields
     ------
@@ -1420,7 +1420,7 @@ def multifreq_wall_transfer_functions(
     use_transrefl : bool
     use_attenuation : bool
     turn_off_invalid_rays : bool
-    walls : list[OrientedPoints]
+    walls : OrderedDict[OrientedPoints]
 
     Yields
     ------
