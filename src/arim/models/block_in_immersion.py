@@ -53,10 +53,10 @@ evaluate, precomputing the scattering matrices (option 2) is often more
 computationally efficient.
 
 """
-from itertools import product
 import logging
 import warnings
 from collections import OrderedDict, namedtuple
+from itertools import product
 
 import numpy as np
 
@@ -338,7 +338,7 @@ def ray_weights_for_views(
         scat_angle_dict[path].flags.writeable = False
 
         if path in all_tx_paths:
-            if path.name == 'LTL':
+            if path.name == "LTL":
                 pass
             ray_weights, ray_weights_debug = tx_ray_weights(
                 path, ray_geometry, **model_options
@@ -668,7 +668,9 @@ def ray_weights_for_wall(
     """
     # perform ray tracing if needed
     if path.rays is None:
-        ray.ray_tracing_for_paths([path], turn_off_invalid_rays=turn_off_invalid_rays, walls=walls)
+        ray.ray_tracing_for_paths(
+            [path], turn_off_invalid_rays=turn_off_invalid_rays, walls=walls
+        )
 
     ray_geometry = RayGeometry.from_path(path)
 
@@ -731,7 +733,7 @@ def make_interfaces(
     grid. There must be a frontwall interface to allow liquid-to-solid
     transmission. Additional walls can be included to allow solid-against-
     liquid reflection.
-    
+
     Assumes that walls are provided in the order that the ray reflects. For
     example, if no reflections:
         `walls = None`
@@ -741,7 +743,7 @@ def make_interfaces(
         `walls = [backwall, frontwall]`
     Note that in this final example, the frontwall must be provided in `walls`
     as well as in the input variable.
-        
+
     Assumes all that walls have orientation facing into the solid.
 
     Parameters
@@ -756,7 +758,7 @@ def make_interfaces(
     -------
     interface_dict : dict[Interface]
         Keys: probe, frontwall_trans, grid, wall_name_1 (optional), ...
-    """        
+    """
     interface_dict = OrderedDict()
     interface_dict["probe"] = c.Interface(
         *probe_oriented_points, are_normals_on_out_rays_side=True
@@ -789,7 +791,7 @@ def make_interfaces(
 
 def make_paths(
     block_material,
-    couplant_material, 
+    couplant_material,
     interface_dict,
     max_number_of_reflection=1,
 ):
@@ -828,26 +830,30 @@ def make_paths(
     probe = interface_dict["probe"]
     frontwall = interface_dict["frontwall_trans"]
     grid = interface_dict["grid"]
-    wall_dict = OrderedDict((key, val) for key, val in interface_dict.items()
-                            if key not in ["probe", "grid", "frontwall_trans"])
+    wall_dict = OrderedDict(
+        (key, val)
+        for key, val in interface_dict.items()
+        if key not in ["probe", "grid", "frontwall_trans"]
+    )
     wall_names = list(wall_dict.keys())
-    
-    if ((max_number_of_reflection > 0 and len(wall_names) == 0)
-        or (max_number_of_reflection > 1 and len(wall_names) < 2)):
+
+    if (max_number_of_reflection > 0 and len(wall_names) == 0) or (
+        max_number_of_reflection > 1 and len(wall_names) < 2
+    ):
         raise ValueError("Not enough walls to reflect from.")
-    
+
     mode_names = ("L", "T")
     modes = (c.Mode.longitudinal, c.Mode.transverse)
-    for no_reflections in range(max_number_of_reflection+1):
+    for no_reflections in range(max_number_of_reflection + 1):
         # For this number of reflections, make all the combinations of paths.
-        path_idxs_up_to_refl = list(product(range(2), repeat=no_reflections+1))
+        path_idxs_up_to_refl = list(product(range(2), repeat=no_reflections + 1))
         for path_idxs in path_idxs_up_to_refl:
             # For each path with this number of reflections.
-            path_name = "" # Current convention does not include frontwall transmission in path name, so start with empty string.
+            path_name = ""  # Current convention does not include frontwall transmission in path name, so start with empty string.
             path_modes = [c.Mode.longitudinal]
             path_interfaces = [probe, frontwall]
             path_materials = [couplant_material]
-            
+
             for i, mode in enumerate(path_idxs):
                 if i == 0:
                     path_name += mode_names[mode]
@@ -857,11 +863,11 @@ def make_paths(
                     # New `Path` method `longname` splices wall names into the mode names to indicate which wall was skipped from. Preserve simple naming convention for path dict keys.
                     # If multiple paths with the same modes but different wall skips are needed, they will need to be stored in different dicts. Edit this string if this is inconvenient.
                     path_name += "{}".format(mode_names[mode])
-                    path_interfaces.append(wall_dict[wall_names[i-1]])
+                    path_interfaces.append(wall_dict[wall_names[i - 1]])
                 path_modes.append(modes[mode])
                 path_materials.append(block_material)
             path_interfaces.append(grid)
-            
+
             paths[path_name] = c.Path(
                 interfaces=path_interfaces,
                 materials=path_materials,
@@ -919,7 +925,11 @@ def make_views(
         raise ValueError("Examination object should be a BlockInImmersion") from e
 
     interfaces = make_interfaces(
-        couplant, probe_oriented_points, frontwall, scatterers_oriented_points, walls,
+        couplant,
+        probe_oriented_points,
+        frontwall,
+        scatterers_oriented_points,
+        walls,
     )
 
     paths = make_paths(block, couplant, interfaces, max_number_of_reflection)
@@ -1175,7 +1185,7 @@ def singlefreq_scat_transfer_functions(
     use_attenuation=True,
     scat_angle=0.0,
     numangles_for_scat_precomp=0,
-    turn_off_invalid_rays=False
+    turn_off_invalid_rays=False,
 ):
     """
     Compute transfer functions for scatterer echoes (single-frequency model).
@@ -1325,7 +1335,7 @@ def multifreq_scat_transfer_functions(
     use_attenuation=True,
     scat_angle=0.0,
     numangles_for_scat_precomp=0,
-    turn_off_invalid_rays=False
+    turn_off_invalid_rays=False,
 ):
     """
     Compute transfer functions for scatterer echoes (multi-frequency model).

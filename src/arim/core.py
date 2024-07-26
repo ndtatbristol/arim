@@ -1157,18 +1157,18 @@ class Path:
     @property
     def numinterfaces(self):
         return len(self.interfaces)
-    
+
     @property
     def longname(self):
         longname = self.modes[0].key()
         for interface, mode in zip(self.interfaces[1:-1], self.modes[1:]):
             longname += " {} {}".format(interface.points.name, mode.key())
         return longname
-    
+
     @property
     def reverse_longname(self):
-        pieces = self.longname.split(' ')
-        return ' '.join(pieces[::-1])
+        pieces = self.longname.split(" ")
+        return " ".join(pieces[::-1])
 
     @property
     def numlegs(self):
@@ -1364,7 +1364,12 @@ class BlockInImmersion(ExaminationObject):
     """
 
     def __init__(
-        self, block_material, couplant_material, walls, wall_idxs_for_imaging, metadata=None
+        self,
+        block_material,
+        couplant_material,
+        walls,
+        wall_idxs_for_imaging,
+        metadata=None,
     ):
         self.block_material = block_material
         self.material = block_material  # alias
@@ -1566,7 +1571,7 @@ class View(namedtuple("View", ["tx_path", "rx_path", "name"])):
 
         """
         return self.tx_path.modes[-1].key() + self.rx_path.modes[-1].key()
-    
+
     @property
     def longname(self):
         """

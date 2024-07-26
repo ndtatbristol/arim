@@ -140,8 +140,8 @@ logger = logging.getLogger(__name__)
 
 
 def ray_tracing_for_paths(
-        paths_list, walls=None, turn_off_invalid_rays=False, convert_to_fortran_order=False
-    ):
+    paths_list, walls=None, turn_off_invalid_rays=False, convert_to_fortran_order=False
+):
     """
     Perform the ray tracing for different paths. Save the result in ``Path.rays``.
 
@@ -171,7 +171,9 @@ def ray_tracing_for_paths(
                 "the interface limits. Extend limits."
             )
         if turn_off_invalid_rays:
-            rays_dict[fermat_path]._invalid_rays = rays.gone_through_interface(path.interfaces, walls)
+            rays_dict[fermat_path]._invalid_rays = rays.gone_through_interface(
+                path.interfaces, walls
+            )
 
     if convert_to_fortran_order:
         old_rays_dict = rays_dict
@@ -183,8 +185,8 @@ def ray_tracing_for_paths(
 
 
 def ray_tracing(
-        views_list, walls=None, turn_off_invalid_rays=False, convert_to_fortran_order=False
-    ):
+    views_list, walls=None, turn_off_invalid_rays=False, convert_to_fortran_order=False
+):
     """
     Perform the ray tracing for different views. Save the result in ``Path.rays``.
 
@@ -299,7 +301,9 @@ class Rays:
 
     # __slots__ = []
 
-    def __init__(self, times, interior_indices, fermat_path, invalid_rays=None, order=None):
+    def __init__(
+        self, times, interior_indices, fermat_path, invalid_rays=None, order=None
+    ):
         assert times.ndim == 2
         assert interior_indices.ndim == 3
         assert (
@@ -467,7 +471,7 @@ class Rays:
             np.logical_or(out, interior_indices[d, ...] == 0, out=out)
             np.logical_or(out, interior_indices[d, ...] == (len(points) - 1), out=out)
         return out
-    
+
     def gone_through_interface(self, path_interfaces, walls):
         """
         Returns the rays which are going through at least one interface (i.e. in the line).
@@ -488,19 +492,15 @@ class Rays:
             other interface in the middle.
 
         """
-        order= "F" if self.indices.flags.f_contiguous else "C"
-        
+        order = "F" if self.indices.flags.f_contiguous else "C"
+
         shape = self.indices.shape[1:]
         out = np.zeros(shape, order=order, dtype=bool)
-        
+
         if walls is not None:
-            walls = {
-                wall.name : wall for wall, _ in walls
-            }
-            interface_names = [
-                interface.points.name for interface in path_interfaces
-            ]
-            
+            walls = {wall.name: wall for wall, _ in walls}
+            interface_names = [interface.points.name for interface in path_interfaces]
+
             loc_wrt_line = lambda a1, a2, y: (
                 (a2[0] - a1[0]) * (y[2] - a1[2]) - (y[0] - a1[0]) * (a2[2] - a1[2])
             )
@@ -510,45 +510,92 @@ class Rays:
                 coords = np.stack(coords)
                 if d != 0:
                     for name, wall in walls.items():
-                        if (name in interface_names) or (name.lower() == "frontwall" and "Probe" in interface_names):
+                        if (name in interface_names) or (
+                            name.lower() == "frontwall" and "Probe" in interface_names
+                        ):
                             continue
                         wall = wall.points
                         # Check if bounding boxes intersect.
                         is_overlap = (
-                            (np.min((last[0, :, :], coords[0, :, :]), axis=0) <= np.max(wall[:, 0]))
-                            & (np.max((last[0, :, :], coords[0, :, :]), axis=0) >= np.min(wall[:, 0]))
-                            & (np.min((last[1, :, :], coords[1, :, :]), axis=0) <= np.max(wall[:, 1]))
-                            & (np.max((last[1, :, :], coords[1, :, :]), axis=0) >= np.min(wall[:, 1]))
-                            & (np.min((last[2, :, :], coords[2, :, :]), axis=0) <= np.max(wall[:, 2]))
-                            & (np.max((last[2, :, :], coords[2, :, :]), axis=0) >= np.min(wall[:, 2]))
+                            (
+                                np.min((last[0, :, :], coords[0, :, :]), axis=0)
+                                <= np.max(wall[:, 0])
+                            )
+                            & (
+                                np.max((last[0, :, :], coords[0, :, :]), axis=0)
+                                >= np.min(wall[:, 0])
+                            )
+                            & (
+                                np.min((last[1, :, :], coords[1, :, :]), axis=0)
+                                <= np.max(wall[:, 1])
+                            )
+                            & (
+                                np.max((last[1, :, :], coords[1, :, :]), axis=0)
+                                >= np.min(wall[:, 1])
+                            )
+                            & (
+                                np.min((last[2, :, :], coords[2, :, :]), axis=0)
+                                <= np.max(wall[:, 2])
+                            )
+                            & (
+                                np.max((last[2, :, :], coords[2, :, :]), axis=0)
+                                >= np.min(wall[:, 2])
+                            )
                         )
                         # If any bboxes are overlapping, check the rest.
                         if is_overlap.any():
                             # Prep to check if segments overlap
                             for segment_start, segment_end in zip(wall[:-1], wall[1:]):
-                                whereis_last_wrt_wall   = loc_wrt_line(segment_start, segment_end, last)
-                                whereis_coords_wrt_wall = loc_wrt_line(segment_start, segment_end, coords)
-                                whereis_wallmin_wrt_ray = loc_wrt_line(last, coords, segment_start)
-                                whereis_wallmax_wrt_ray = loc_wrt_line(last, coords, segment_end)
-                                
-                                ray_touches_or_crosses_wall = ((
-                                    (whereis_last_wrt_wall < 0) ^ (whereis_coords_wrt_wall < 0)
+                                whereis_last_wrt_wall = loc_wrt_line(
+                                    segment_start, segment_end, last
+                                )
+                                whereis_coords_wrt_wall = loc_wrt_line(
+                                    segment_start, segment_end, coords
+                                )
+                                whereis_wallmin_wrt_ray = loc_wrt_line(
+                                    last, coords, segment_start
+                                )
+                                whereis_wallmax_wrt_ray = loc_wrt_line(
+                                    last, coords, segment_end
+                                )
+
+                                ray_touches_or_crosses_wall = (
+                                    (whereis_last_wrt_wall < 0)
+                                    ^ (whereis_coords_wrt_wall < 0)
                                 ) | (
-                                    (np.abs(whereis_last_wrt_wall) < np.finfo(float).eps) | (np.abs(whereis_coords_wrt_wall) < np.finfo(float).eps)
-                                ))
-                                wall_touches_or_crosses_ray = ((
-                                    (whereis_wallmin_wrt_ray < 0) ^ (whereis_wallmax_wrt_ray < 0)
+                                    (
+                                        np.abs(whereis_last_wrt_wall)
+                                        < np.finfo(float).eps
+                                    )
+                                    | (
+                                        np.abs(whereis_coords_wrt_wall)
+                                        < np.finfo(float).eps
+                                    )
+                                )
+                                wall_touches_or_crosses_ray = (
+                                    (whereis_wallmin_wrt_ray < 0)
+                                    ^ (whereis_wallmax_wrt_ray < 0)
                                 ) | (
-                                    (np.abs(whereis_wallmin_wrt_ray) < np.finfo(float).eps) | (np.abs(whereis_wallmax_wrt_ray) < np.finfo(float).eps)
-                                ))
-                                
-                                is_intersection = is_overlap & ray_touches_or_crosses_wall & wall_touches_or_crosses_ray
+                                    (
+                                        np.abs(whereis_wallmin_wrt_ray)
+                                        < np.finfo(float).eps
+                                    )
+                                    | (
+                                        np.abs(whereis_wallmax_wrt_ray)
+                                        < np.finfo(float).eps
+                                    )
+                                )
+
+                                is_intersection = (
+                                    is_overlap
+                                    & ray_touches_or_crosses_wall
+                                    & wall_touches_or_crosses_ray
+                                )
                                 np.logical_or(out, is_intersection, out=out)
                         # If no overlaps at all, return early as the above is quite slow.
                         else:
                             np.logical_or(out, is_overlap, out=out)
-                            
-                        
+
                 last = coords
         return out
 

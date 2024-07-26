@@ -51,7 +51,7 @@ def compute_sensitivity(dataset_name, save):
     model_options = dict(
         frequency=probe.frequency, probe_element_width=probe.dimensions.x[0]
     )
-    
+
     imaging_walls = ["Backwall"]
 
     tic = time.time()

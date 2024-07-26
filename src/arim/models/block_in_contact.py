@@ -20,9 +20,9 @@ Limits of the forward model:
 See also :mod:`arim.models.model.block_in_immersion`
 
 """
-from itertools import product
 import logging
 from collections import OrderedDict, namedtuple
+from itertools import product
 
 import numpy as np
 
@@ -356,7 +356,9 @@ def ray_weights_for_wall(
     """
     # perform ray tracing if needed
     if path.rays is None:
-        ray.ray_tracing_for_paths([path], walls=walls, turn_off_invalid_rays=turn_off_invalid_rays)
+        ray.ray_tracing_for_paths(
+            [path], walls=walls, turn_off_invalid_rays=turn_off_invalid_rays
+        )
 
     ray_geometry = RayGeometry.from_path(path)
 
@@ -426,13 +428,13 @@ def make_interfaces(
     reflecting_walls=None,
     under_material=None,
 ):
-    """    
+    """
     Construct interfaces for the case of a solid block in contact with the
     probe.
 
     The interfaces are for rays starting from the probe and arriving in the
     grid. Additional walls can be included to allow reflections.
-    
+
     Assumes that walls are provided in the order that reflection is expected
     (i.e. for 2 reflections from the backwall and then the frontwall, then
     walls should contain them in this order). Assumes all that walls have
@@ -467,7 +469,7 @@ def make_interfaces(
             else:
                 kind = None
                 transmission_reflection = None
-            
+
             interface_dict[name] = c.Interface(
                 *wall,
                 kind,
@@ -479,9 +481,7 @@ def make_interfaces(
     return interface_dict
 
 
-def make_paths(
-        block_material, interface_dict, max_number_of_reflection=0
-    ):
+def make_paths(block_material, interface_dict, max_number_of_reflection=0):
     """
     Creates a dictionary a Paths for the block-in-contact model.
 
@@ -510,25 +510,29 @@ def make_paths(
     paths = OrderedDict()
     probe = interface_dict["probe"]
     grid = interface_dict["grid"]
-    wall_dict = OrderedDict((key, value) for key, value in interface_dict.items()
-                            if key not in ["probe", "grid"])
+    wall_dict = OrderedDict(
+        (key, value)
+        for key, value in interface_dict.items()
+        if key not in ["probe", "grid"]
+    )
     wall_names = list(wall_dict.keys())
-    if ((max_number_of_reflection > 0 and len(wall_names) == 0)
-        or (max_number_of_reflection > 1 and len(wall_names) < 2)):
+    if (max_number_of_reflection > 0 and len(wall_names) == 0) or (
+        max_number_of_reflection > 1 and len(wall_names) < 2
+    ):
         raise ValueError("Not enough walls to reflect from.")
-    
+
     mode_names = ("L", "T")
     modes = (c.Mode.longitudinal, c.Mode.transverse)
-    for no_reflections in range(max_number_of_reflection+1):
+    for no_reflections in range(max_number_of_reflection + 1):
         # For this number of reflections, make all the combinations of paths.
-        path_idxs_up_to_refl = list(product(range(2), repeat=no_reflections+1))
+        path_idxs_up_to_refl = list(product(range(2), repeat=no_reflections + 1))
         for path_idxs in path_idxs_up_to_refl:
             # For each path with this number of reflections.
             path_name = ""
             path_modes = []
             path_interfaces = [probe]
             path_materials = []
-            
+
             for i, mode in enumerate(path_idxs):
                 if i == 0:
                     path_name += mode_names[mode]
@@ -538,11 +542,11 @@ def make_paths(
                     # New `Path` method `longname` splices wall names into the mode names to indicate which wall was skipped from. Preserve simple naming convention for path dict keys.
                     # If multiple paths with the same modes but different wall skips are needed, they will need to be stored in different dicts. Edit this string if this is inconvenient.
                     path_name += "{}".format(mode_names[mode])
-                    path_interfaces.append(wall_dict[wall_names[i-1]])
+                    path_interfaces.append(wall_dict[wall_names[i - 1]])
                 path_modes.append(modes[mode])
                 path_materials.append(block_material)
             path_interfaces.append(grid)
-            
+
             paths[path_name] = c.Path(
                 interfaces=path_interfaces,
                 materials=path_materials,
@@ -600,7 +604,7 @@ def make_views(
     except AttributeError:
         walls = None
     except KeyError:
-        raise ValueError('Not enough walls to reflect from.')
+        raise ValueError("Not enough walls to reflect from.")
     max_number_of_reflection = len(walls_for_imaging)
     try:
         under_material = examination_object.under_material

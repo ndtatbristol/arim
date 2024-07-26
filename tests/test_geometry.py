@@ -935,14 +935,16 @@ def test_points_1d_wall_z():
 
 
 def test_combine_walls():
-    coords = np.asarray([
-        [-10.0, 0.0,  0.0],
-        [-10.0, 0.0, 10.0],
-        [ 10.0, 0.0, 10.0],
-        [ 10.0, 0.0,  0.0],
-    ])
+    coords = np.asarray(
+        [
+            [-10.0, 0.0, 0.0],
+            [-10.0, 0.0, 10.0],
+            [10.0, 0.0, 10.0],
+            [10.0, 0.0, 0.0],
+        ]
+    )
     walls = g.make_contiguous_geometry(coords, numpoints=5)
-    
+
     assert len(walls) == 3
     np.testing.assert_allclose(walls["wall_0"].points.x, -10)
     np.testing.assert_allclose(walls["wall_0"].points.y, 0)
@@ -953,22 +955,49 @@ def test_combine_walls():
     np.testing.assert_allclose(walls["wall_2"].points.x, 10)
     np.testing.assert_allclose(walls["wall_2"].points.y, 0)
     np.testing.assert_allclose(walls["wall_2"].points.z, [10.0, 7.5, 5.0, 2.5, 0.0])
-    
-    single_contiguous_wall = g.combine_oriented_points(walls.values(), name='new_wall')
-    
+
+    single_contiguous_wall = g.combine_oriented_points(walls.values(), name="new_wall")
+
     assert single_contiguous_wall.points.shape == (13,)
     assert single_contiguous_wall.orientations.shape == (13, 3)
-    
-    np.testing.assert_allclose(single_contiguous_wall.points.x, [-10.0, -10.0, -10.0, -10.0, -10.0, -5.0, 0.0, 5.0, 10.0, 10.0, 10.0, 10.0, 10.0])
+
+    np.testing.assert_allclose(
+        single_contiguous_wall.points.x,
+        [
+            -10.0,
+            -10.0,
+            -10.0,
+            -10.0,
+            -10.0,
+            -5.0,
+            0.0,
+            5.0,
+            10.0,
+            10.0,
+            10.0,
+            10.0,
+            10.0,
+        ],
+    )
     np.testing.assert_allclose(single_contiguous_wall.points.y, 0)
-    np.testing.assert_allclose(single_contiguous_wall.points.z, [0.0, 2.5, 5.0, 7.5, 10.0, 10.0, 10.0, 10.0, 10.0, 7.5, 5.0, 2.5, 0.0])
-    
-    left_and_right_wall = g.combine_oriented_points([walls["wall_0"], walls["wall_2"]], name='opposite_wall')
-    
+    np.testing.assert_allclose(
+        single_contiguous_wall.points.z,
+        [0.0, 2.5, 5.0, 7.5, 10.0, 10.0, 10.0, 10.0, 10.0, 7.5, 5.0, 2.5, 0.0],
+    )
+
+    left_and_right_wall = g.combine_oriented_points(
+        [walls["wall_0"], walls["wall_2"]], name="opposite_wall"
+    )
+
     assert left_and_right_wall.points.shape == (10,)
     assert left_and_right_wall.orientations.shape == (10, 3)
-    
-    np.testing.assert_allclose(left_and_right_wall.points.x, [-10.0, -10.0, -10.0, -10.0, -10.0, 10.0, 10.0, 10.0, 10.0, 10.0])
+
+    np.testing.assert_allclose(
+        left_and_right_wall.points.x,
+        [-10.0, -10.0, -10.0, -10.0, -10.0, 10.0, 10.0, 10.0, 10.0, 10.0],
+    )
     np.testing.assert_allclose(left_and_right_wall.points.y, 0)
-    np.testing.assert_allclose(left_and_right_wall.points.z, [0.0, 2.5, 5.0, 7.5, 10.0, 10.0, 7.5, 5.0, 2.5, 0.0])
-    
+    np.testing.assert_allclose(
+        left_and_right_wall.points.z,
+        [0.0, 2.5, 5.0, 7.5, 10.0, 10.0, 7.5, 5.0, 2.5, 0.0],
+    )

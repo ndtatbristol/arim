@@ -131,7 +131,10 @@ def test_path_in_immersion():
         (probe_points, probe_orientations),
         (frontwall_points, frontwall_orientations),
         (grid_points, grid_orientation),
-        {"backwall":(backwall_points, backwall_orientations), "frontwall":(frontwall_points, frontwall_orientations)},
+        {
+            "backwall": (backwall_points, backwall_orientations),
+            "frontwall": (frontwall_points, frontwall_orientations),
+        },
     )
     assert interfaces["probe"].points is probe_points
     assert interfaces["probe"].orientations is probe_orientations
@@ -233,7 +236,12 @@ def test_make_views():
     scatterer_oriented_points = context["scatterer_oriented_points"]
     exam_obj = context["exam_obj"]
 
-    views = bim.make_views(exam_obj, probe_oriented_points, scatterer_oriented_points, walls_for_imaging=["Backwall"])
+    views = bim.make_views(
+        exam_obj,
+        probe_oriented_points,
+        scatterer_oriented_points,
+        walls_for_imaging=["Backwall"],
+    )
 
     assert list(views.keys()) == list(context["views"].keys())
 
@@ -274,7 +282,12 @@ def test_model(scat_specs, show_plots):
         numpoints=1000, xmin=-5.0e-3, xmax=20.0e-3, z=0.0, name="Frontwall"
     )
     backwall = arim.geometry.points_1d_wall_z(
-        numpoints=1000, xmin=-5.0e-3, xmax=20.0e-3, z=30.0e-3, name="Backwall", is_block_above=False
+        numpoints=1000,
+        xmin=-5.0e-3,
+        xmax=20.0e-3,
+        z=30.0e-3,
+        name="Backwall",
+        is_block_above=False,
     )
     scatterer_p = arim.geometry.default_oriented_points(
         arim.Points([[19e-3, 0.0, 20e-3]])
@@ -286,7 +299,9 @@ def test_model(scat_specs, show_plots):
     #                      show_orientations=True)
     # aplt.plt.show()
 
-    exam_obj = arim.BlockInImmersion(block, couplant, {"Backwall":backwall, "Frontwall":frontwall}, scatterer_p)
+    exam_obj = arim.BlockInImmersion(
+        block, couplant, {"Backwall": backwall, "Frontwall": frontwall}, scatterer_p
+    )
     scat_obj = arim.scat.scat_factory(material=block, **scat_specs)
     scat_funcs = scat_obj.as_angles_funcs(probe.frequency)
 
@@ -297,7 +312,9 @@ def test_model(scat_specs, show_plots):
     rx[probe.numelements :] = np.arange(probe.numelements)
 
     # Compute model
-    views = bim.make_views(exam_obj, probe_p, scatterer_p, walls_for_imaging=["Backwall", "Frontwall"])
+    views = bim.make_views(
+        exam_obj, probe_p, scatterer_p, walls_for_imaging=["Backwall", "Frontwall"]
+    )
     arim.ray.ray_tracing(views.values())
     ray_weights = bim.ray_weights_for_views(views, probe.frequency, probe_element_width)
     lti_coefficients = collections.OrderedDict()
@@ -311,7 +328,9 @@ def test_model(scat_specs, show_plots):
     for i, viewname in enumerate(views):
         viewname_r = arim.ut.reciprocal_viewname(viewname)
         lhs = lti_coefficients[viewname][: probe.numelements]  # (tx=k, rx=0) for all k
-        rhs = lti_coefficients[viewname_r][probe.numelements :]  # (tx=0, rx=k) for all k
+        rhs = lti_coefficients[viewname_r][
+            probe.numelements :
+        ]  # (tx=0, rx=k) for all k
 
         max_err = np.max(np.abs(lhs - rhs))
         err_msg = f"view {viewname} (#{i}) - max_err={max_err}"
@@ -384,7 +403,9 @@ def test_fulltime_model(use_multifreq, show_plots):
     #     )
     #     aplt.plt.show()
 
-    exam_obj = arim.BlockInImmersion(block, couplant, {"Backwall":backwall, "Frontwall":frontwall}, scatterer_p)
+    exam_obj = arim.BlockInImmersion(
+        block, couplant, {"Backwall": backwall, "Frontwall": frontwall}, scatterer_p
+    )
     scat_obj = arim.scat.scat_factory(material=block, kind="sdh", radius=0.5e-3)
     scat_angle = 0.0
 
