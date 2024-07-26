@@ -1665,15 +1665,16 @@ def default_orientations(points):
     return orientations
 
 
-def combine_walls(walls, name=None):
+def combine_oriented_points(oriented_points, name=None):
     """
-    Combines multiple walls into one as a simple concatenation. No checks are
-    made that combination makes physical sense (i.e. walls are next to each
-    other). Use at your own discretion. Duplicate points are (not) removed.
+    Combines multiple walls (oriented points) into one as a simple
+    concatenation. No checks are made that combination makes physical sense
+    (i.e. walls are next to each other). Use at your own discretion. Duplicate
+    points are (not) removed.
 
     Parameters
     ----------
-    walls : list[OrientedPoints]
+    oriented_points : list[OrientedPoints]
         
     name : str or None, optional
         New name for the wall. If None, the name of the first wall is used.
@@ -1684,13 +1685,13 @@ def combine_walls(walls, name=None):
 
     """
     if name is None:
-        name = walls[0].points.name
+        name = oriented_points[0].points.name
     points = Points(np.concatenate(
-        [wall.points.coords for wall in walls],
+        [wall.points.coords for wall in oriented_points],
         axis=0,
     ), name=name)
     orientations = Points(np.concatenate(
-        [wall.orientations.coords for wall in walls],
+        [wall.orientations.coords for wall in oriented_points],
         axis=0,
     ))
     
