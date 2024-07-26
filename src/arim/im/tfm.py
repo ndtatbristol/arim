@@ -460,7 +460,7 @@ def contact_tfm(
     return TfmResult(res, grid)
 
 
-def tfm_for_view(frame, grid, view, amplitudes=None, **kwargs_delay_and_sum):
+def tfm_for_view(frame, grid, view, amplitudes=None, mask=None, **kwargs_delay_and_sum):
     """
     TFM for a view
 
@@ -470,6 +470,8 @@ def tfm_for_view(frame, grid, view, amplitudes=None, **kwargs_delay_and_sum):
     grid : Points
     velocity : float
     amplitudes : None or ndarray or TxRxAmplitudes
+    mask : ndarray[bool]
+        Mask which is applied to `grid.to_oriented_points()` when making views.
     kwargs_delay_and_sum : dict
 
     Returns
@@ -495,7 +497,18 @@ def tfm_for_view(frame, grid, view, amplitudes=None, **kwargs_delay_and_sum):
     focal_law = FocalLaw(lookup_times_tx, lookup_times_rx, amplitudes)
 
     res = das.delay_and_sum(frame, focal_law, **kwargs_delay_and_sum)
-    res = res.reshape(grid.shape)
+    if np.prod(grid.shape) == res.size:
+        res = res.reshape(grid.shape)
+    else:
+        # N.B. `mask` could be a new attribute of `grid`. Only used in this function so leave it for now.
+        res_all = np.zeros(
+            [
+                grid.size,
+            ],
+            dtype=res.dtype,
+        )
+        res_all[mask.ravel()] = res
+        res = res_all.reshape(grid.shape)
     return TfmResult(res, grid)
 
 
