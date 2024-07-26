@@ -56,7 +56,7 @@ aplt.plot_interfaces(
     [probe_p, *frame.examination_object.walls],
     show_orientations=False,
     show_last=True,
-    markers=[".", "-", "-"],
+    markers=["."] + ["-"]*len(frame.examination_object.walls),
     filename=str(result_dir / "interfaces"),
     savefig=save,
 )
