@@ -53,7 +53,7 @@ probe_p = frame.probe.to_oriented_points()
 # %% Plot interfaces
 
 aplt.plot_interfaces(
-    [probe_p, *frame.examination_object.walls],
+    [probe_p, *frame.examination_object.walls.values()],
     show_orientations=False,
     show_last=True,
     markers=["."] + ["-"]*len(frame.examination_object.walls),

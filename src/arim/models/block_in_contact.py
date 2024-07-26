@@ -442,7 +442,7 @@ def make_interfaces(
     ----------
     probe_oriented_points : OrientedPoints
     grid_oriented_points: OrientedPoints
-    reflecting_walls: list[OrientedPoints] or None
+    reflecting_walls: OrderedDict[str, OrientedPoints] or None
     under_material : Material or None
 
     Returns
@@ -459,8 +459,8 @@ def make_interfaces(
         *grid_oriented_points, are_normals_on_inc_rays_side=True
     )
     if reflecting_walls is not None:
-        for wall in reflecting_walls:
-            name = wall[0].name.lower() + "_refl"
+        for name, wall in reflecting_walls.items():
+            name = name.lower() + "_refl"
             if name != "frontwall" and under_material is not None:
                 kind = "solid_fluid"
                 transmission_reflection = "reflection"
@@ -588,8 +588,9 @@ def make_views(
         block_material = examination_object.material
     try:
         if examination_object.walls is not None:
-            walls = [examination_object.walls[i]
-                     for i in examination_object.wall_idxs_for_imaging]
+            walls = OrderedDict()
+            for i, (name, wall) in enumerate(examination_object.walls.items()):
+                walls[name] = wall
         else:
             walls = None
         if max_number_of_reflection > 0 and len(walls) < 1:
@@ -894,7 +895,7 @@ def wall_unshifted_transfer_functions(
     first_nonzero_freq_idx : int or None
         Default: assumes first freq is zero, except if only one freq is given.
     turn_off_invalid_rays : bool
-    walls : list[OrientedPoints]
+    walls : OrderedDict[OrientedPoints]
 
     Yields
     ------
@@ -1060,7 +1061,7 @@ def singlefreq_wall_transfer_functions(
     use_transrefl : bool
     use_attenuation : bool
     turn_off_invalid_rays : bool
-    walls : list[OrientedPoints]
+    walls : OrderedDict[OrientedPoints]
 
     Yields
     ------
@@ -1206,7 +1207,7 @@ def multifreq_wall_transfer_functions(
     use_transrefl : bool
     use_attenuation : bool
     turn_off_invalid_rays : bool
-    walls : list[OrientedPoints]
+    walls : OrderedDict[OrientedPoints]
 
     Yields
     ------

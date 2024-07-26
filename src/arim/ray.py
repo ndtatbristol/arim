@@ -512,6 +512,7 @@ class Rays:
                     for name, wall in walls.items():
                         if (name in interface_names) or (name.lower() == "frontwall" and "Probe" in interface_names):
                             continue
+                        wall = wall.points
                         # Check if bounding boxes intersect.
                         is_overlap = (
                             (np.min((last[0, :, :], coords[0, :, :]), axis=0) <= np.max(wall[:, 0]))

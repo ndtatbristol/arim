@@ -73,7 +73,7 @@ Cf. `Wikipedia article on Spherical coordinate system <https://en.wikipedia.org/
 # Remark: declaration of constant GCS at the end of this file
 import concurrent.futures
 import math
-from collections import namedtuple
+from collections import OrderedDict, namedtuple
 from warnings import warn
 
 import numba
@@ -1481,7 +1481,7 @@ def make_contiguous_geometry(coords, numpoints, names=None, dtype=None):
 
     Returns
     -------
-    list[OrientedPoints].
+    OrderedDict[OrientedPoints].
 
     """
     if dtype is None:
@@ -1508,7 +1508,7 @@ def make_contiguous_geometry(coords, numpoints, names=None, dtype=None):
     else:
         bw_idx, sw_idx, ow_idx = 0, 0, 0
     
-    walls = []
+    walls = OrderedDict()
     for idx, (start, end) in enumerate(zip(coords[:-1, :], coords[1:, :])):
         if numpoints.shape[0] == 1:
             n = numpoints[0]
@@ -1533,7 +1533,7 @@ def make_contiguous_geometry(coords, numpoints, names=None, dtype=None):
         else:
             name = names[idx]
         
-        walls.append(points_1d_wall(start, end, n, name=name, dtype=dtype))
+        walls[name] = points_1d_wall(start, end, n, name=name, dtype=dtype)
         
     return walls
 

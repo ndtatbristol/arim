@@ -75,10 +75,10 @@ tx_list, rx_list = arim.ut.fmc(probe.numelements)
 numtimetraces = len(tx_list)
 
 examination_object = arim.io.block_in_immersion_from_conf(conf)
-for wall in examination_object.walls:
-    if wall[0].name.lower() == "frontwall":
+for name, wall in examination_object.walls.items():
+    if name.lower() == "frontwall":
         frontwall = wall
-    elif wall[0].name.lower() == "backwall":
+    elif name.lower() == "backwall":
         backwall = wall
 
 defect_centre = conf["scatterer"]["location"]
@@ -101,7 +101,7 @@ grid_p = grid.to_oriented_points()
 aplt.plot_interfaces(
     [
         probe.to_oriented_points(),
-        *examination_object.walls,
+        *examination_object.walls.values(),
         scatterer,
         grid_p,
     ],

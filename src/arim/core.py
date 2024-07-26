@@ -1356,7 +1356,7 @@ class BlockInImmersion(ExaminationObject):
     material : Material
         Alias for block_material
     couplant_material : Material
-    walls : list[OrientedPoints]
+    walls : dict[str, OrientedPoints]
     wall_idxs_for_imaging : list[int]
         List of indices in `walls` which are used for simulation or imaging.
         Frontwall not required.
@@ -1384,7 +1384,7 @@ class BlockInContact(ExaminationObject):
     Parameters
     ----------
     block_material : Material
-    walls : list[OrientedPoints]
+    walls : dict[str, OrientedPoints]
     wall_idxs_for_imaging : list[int]
         List of indices in `walls` which are used for simulation or imaging.
         Frontwall not required.

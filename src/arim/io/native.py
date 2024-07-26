@@ -36,6 +36,7 @@ The ultrasonic data is provided using either:
 
 """
 
+from collections import OrderedDict
 import copy
 import logging
 import pathlib
@@ -325,21 +326,21 @@ def block_in_immersion_from_conf(conf):
     couplant = material_from_conf(conf["couplant_material"])
     block = material_from_conf(conf["block_material"])
     # Initialise geometry storage
-    walls, imaging = [], []
+    walls, imaging = OrderedDict(), []
 
     # Simple geometry
     if "frontwall" in conf.keys() or "backwall" in conf.keys():
         frontwall_conf = conf.get("frontwall", None)
         backwall_conf = conf.get("backwall", None)
         if backwall_conf is not None:
-            walls.append(geometry.points_1d_wall_z(
+            walls["Backwall"] = geometry.points_1d_wall_z(
                 **backwall_conf, name="Backwall", is_block_above=False
-            ))
+            )
             imaging.append(0)
         if frontwall_conf is not None:
-            walls.append(geometry.points_1d_wall_z(
+            walls["Frontwall"] = geometry.points_1d_wall_z(
                 **frontwall_conf, name="Frontwall"
-            ))
+            )
             imaging.append(1)
 
     # Contiguous (polygonal) geometry.
@@ -365,7 +366,7 @@ def block_in_immersion_from_conf(conf):
 def block_in_contact_from_conf(conf):
     block = material_from_conf(conf["block_material"])
     # Initialise geometry storage
-    walls, imaging = [], []
+    walls, imaging = OrderedDict(), []
 
     # Simple geometry
     if "frontwall" in conf.keys() or "backwall" in conf.keys():
@@ -373,14 +374,14 @@ def block_in_contact_from_conf(conf):
         backwall_conf = conf.get("backwall", None)
         if backwall_conf is not None:
             # Start with maximum x-point to ensure that basis points the right way.
-            walls.append(geometry.points_1d_wall_z(
+            walls["Backwall"] = geometry.points_1d_wall_z(
                 **backwall_conf, name="Backwall", is_block_above=False
-            ))
+            )
             imaging.append(0)
         if frontwall_conf is not None:
-            walls.append(geometry.points_1d_wall_z(
+            walls["Frontwall"] = geometry.points_1d_wall_z(
                 **frontwall_conf, name="Frontwall",
-            ))
+            )
             imaging.append(1)
 
     # Polygonal geometry.
@@ -394,8 +395,8 @@ def block_in_contact_from_conf(conf):
             geom_conf["names"],
         )
         imaging = geom_conf["imaging_walls"]
-        for i, wall in enumerate(geom_walls):
-            walls.append(wall)
+        for i, (name, wall) in enumerate(geom_walls.items()):
+            walls[name] = wall
     under_material_conf = conf.get("under_material", None)
     if under_material_conf is None:
         under_material = None
