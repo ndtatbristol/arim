@@ -131,7 +131,7 @@ def test_path_in_immersion():
         (probe_points, probe_orientations),
         (frontwall_points, frontwall_orientations),
         (grid_points, grid_orientation),
-        [(backwall_points, backwall_orientations), (frontwall_points, frontwall_orientations)],
+        {"backwall":(backwall_points, backwall_orientations), "frontwall":(frontwall_points, frontwall_orientations)},
     )
     assert interfaces["probe"].points is probe_points
     assert interfaces["probe"].orientations is probe_orientations
@@ -233,7 +233,7 @@ def test_make_views():
     scatterer_oriented_points = context["scatterer_oriented_points"]
     exam_obj = context["exam_obj"]
 
-    views = bim.make_views(exam_obj, probe_oriented_points, scatterer_oriented_points)
+    views = bim.make_views(exam_obj, probe_oriented_points, scatterer_oriented_points, walls_for_imaging=["Backwall"])
 
     assert list(views.keys()) == list(context["views"].keys())
 
@@ -286,7 +286,7 @@ def test_model(scat_specs, show_plots):
     #                      show_orientations=True)
     # aplt.plt.show()
 
-    exam_obj = arim.BlockInImmersion(block, couplant, [backwall, frontwall], [0, 1], scatterer_p)
+    exam_obj = arim.BlockInImmersion(block, couplant, {"Backwall":backwall, "Frontwall":frontwall}, scatterer_p)
     scat_obj = arim.scat.scat_factory(material=block, **scat_specs)
     scat_funcs = scat_obj.as_angles_funcs(probe.frequency)
 
@@ -297,7 +297,7 @@ def test_model(scat_specs, show_plots):
     rx[probe.numelements :] = np.arange(probe.numelements)
 
     # Compute model
-    views = bim.make_views(exam_obj, probe_p, scatterer_p, max_number_of_reflection=2)
+    views = bim.make_views(exam_obj, probe_p, scatterer_p, walls_for_imaging=["Backwall", "Frontwall"])
     arim.ray.ray_tracing(views.values())
     ray_weights = bim.ray_weights_for_views(views, probe.frequency, probe_element_width)
     lti_coefficients = collections.OrderedDict()
@@ -384,7 +384,7 @@ def test_fulltime_model(use_multifreq, show_plots):
     #     )
     #     aplt.plt.show()
 
-    exam_obj = arim.BlockInImmersion(block, couplant, [backwall, frontwall], [0], scatterer_p)
+    exam_obj = arim.BlockInImmersion(block, couplant, {"Backwall":backwall, "Frontwall":frontwall}, scatterer_p)
     scat_obj = arim.scat.scat_factory(material=block, kind="sdh", radius=0.5e-3)
     scat_angle = 0.0
 
@@ -403,7 +403,6 @@ def test_fulltime_model(use_multifreq, show_plots):
         exam_obj,
         probe_p,
         scatterer_p,
-        max_number_of_reflection=0,
         tfm_unique_only=False,
     )
     arim.ray.ray_tracing(views.values())

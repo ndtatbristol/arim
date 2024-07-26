@@ -597,9 +597,11 @@ def make_views(
                 walls[name] = examination_object.walls[name]
         else:
             walls = None
-        max_number_of_reflection = len(walls_for_imaging)
     except AttributeError:
         walls = None
+    except KeyError:
+        raise ValueError('Not enough walls to reflect from.')
+    max_number_of_reflection = len(walls_for_imaging)
     try:
         under_material = examination_object.under_material
     except AttributeError:

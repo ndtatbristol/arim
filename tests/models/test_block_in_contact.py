@@ -23,7 +23,6 @@ def test_make_views():
         examination_object,
         probe_p,
         grid_p,
-        max_number_of_reflection=0,
         tfm_unique_only=False,
     )
     assert len(views) == 4
@@ -31,16 +30,16 @@ def test_make_views():
     with pytest.raises(ValueError):
         # Undefined backwall
         views = bic.make_views(
-            examination_object, probe_p, grid_p, max_number_of_reflection=2
+            examination_object, probe_p, grid_p, walls_for_imaging=["Backwall", "Frontwall"]
         )
 
     # BlockInContact with a backwall
-    examination_object = arim.BlockInContact(block_material, walls=[backwall], wall_idxs_for_imaging=[0])
+    examination_object = arim.BlockInContact(block_material, walls={"Backwall":backwall})
     views = bic.make_views(
         examination_object,
         probe_p,
         grid_p,
-        max_number_of_reflection=1,
+        walls_for_imaging=["Backwall"],
         tfm_unique_only=False,
     )
     assert len(views) == 36
@@ -48,16 +47,16 @@ def test_make_views():
     with pytest.raises(ValueError):
         # Undefined frontwall
         views = bic.make_views(
-            examination_object, probe_p, grid_p, max_number_of_reflection=2
+            examination_object, probe_p, grid_p, walls_for_imaging=["Backwall", "Frontwall"]
         )
 
     # BlockInContact with a backwall and a frontwall
-    examination_object = arim.BlockInContact(block_material, walls=[backwall, frontwall], wall_idxs_for_imaging=[0, 1])
+    examination_object = arim.BlockInContact(block_material, walls={"Backwall":backwall, "Frontwall":frontwall}, )
     views = bic.make_views(
         examination_object,
         probe_p,
         grid_p,
-        max_number_of_reflection=2,
+        walls_for_imaging=["Backwall", "Frontwall"],
         tfm_unique_only=False,
     )
     assert len(views) == 196
