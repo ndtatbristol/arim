@@ -587,8 +587,11 @@ def make_views(
         # Plan B
         block_material = examination_object.material
     try:
-        walls = [examination_object.walls[i]
-                 for i in examination_object.wall_idxs_for_imaging]
+        if examination_object.walls is not None:
+            walls = [examination_object.walls[i]
+                     for i in examination_object.wall_idxs_for_imaging]
+        else:
+            walls = None
         if max_number_of_reflection > 0 and len(walls) < 1:
             raise ValueError("Not enough walls available for reflection.")
     except AttributeError:
