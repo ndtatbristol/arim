@@ -791,7 +791,7 @@ def plot_interfaces(
 
     Parameters
     ----------
-    oriented_points_dict : list[OrientedPoints]
+    oriented_points_list : list[OrientedPoints]
     ax : matplotlib.axis.Axis
     show_probe : boolean
         Default True

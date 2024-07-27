@@ -1,5 +1,6 @@
 frame:
-  datafile: ../example-datasets/contact_sdh_aluminium_nlos.mat
+  dataset_name: examples
+  dataset_item: contact_sdh_aluminium_nlos.mat
   instrument_delay: 40.e-9 # shift the t=0 defined in datafile by this number.
 
 probe:
