@@ -327,7 +327,7 @@ def block_in_immersion_from_conf(conf):
     couplant = material_from_conf(conf["couplant_material"])
     block = material_from_conf(conf["block_material"])
     # Initialise geometry storage
-    walls, imaging = OrderedDict(), []
+    walls = OrderedDict()
 
     # Simple geometry
     if "frontwall" in conf.keys() or "backwall" in conf.keys():
@@ -337,12 +337,10 @@ def block_in_immersion_from_conf(conf):
             walls["Backwall"] = geometry.points_1d_wall_z(
                 **backwall_conf, name="Backwall", is_block_above=False
             )
-            imaging.append(0)
         if frontwall_conf is not None:
             walls["Frontwall"] = geometry.points_1d_wall_z(
                 **frontwall_conf, name="Frontwall"
             )
-            imaging.append(1)
 
     # Contiguous (polygonal) geometry.
     # By convention, if not already defined then frontwall is first and move clockwise.
@@ -356,15 +354,13 @@ def block_in_immersion_from_conf(conf):
         )
         for wall in geom_walls:
             walls.append(wall)
-        if 0 not in imaging or 0 not in geom_conf["wall_idxs"]:
-            imaging.append(wall)
-    return core.BlockInImmersion(block, couplant, walls, imaging)
+    return core.BlockInImmersion(block, couplant, walls)
 
 
 def block_in_contact_from_conf(conf):
     block = material_from_conf(conf["block_material"])
     # Initialise geometry storage
-    walls, imaging = OrderedDict(), []
+    walls = OrderedDict()
 
     # Simple geometry
     if "frontwall" in conf.keys() or "backwall" in conf.keys():
@@ -375,13 +371,11 @@ def block_in_contact_from_conf(conf):
             walls["Backwall"] = geometry.points_1d_wall_z(
                 **backwall_conf, name="Backwall", is_block_above=False
             )
-            imaging.append(0)
         if frontwall_conf is not None:
             walls["Frontwall"] = geometry.points_1d_wall_z(
                 **frontwall_conf,
                 name="Frontwall",
             )
-            imaging.append(1)
 
     # Polygonal geometry.
     # By convention, if not already defined then frontwall is first and move clockwise.
@@ -393,7 +387,6 @@ def block_in_contact_from_conf(conf):
             geom_conf["numpoints"],
             geom_conf["names"],
         )
-        imaging = geom_conf["imaging_walls"]
         for i, (name, wall) in enumerate(geom_walls.items()):
             walls[name] = wall
     under_material_conf = conf.get("under_material", None)
@@ -401,7 +394,7 @@ def block_in_contact_from_conf(conf):
         under_material = None
     else:
         under_material = material_from_conf(under_material_conf)
-    return core.BlockInContact(block, walls, imaging, under_material)
+    return core.BlockInContact(block, walls, under_material)
 
 
 def grid_from_conf(conf):

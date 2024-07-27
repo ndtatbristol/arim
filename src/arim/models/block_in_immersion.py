@@ -338,8 +338,6 @@ def ray_weights_for_views(
         scat_angle_dict[path].flags.writeable = False
 
         if path in all_tx_paths:
-            if path.name == "LTL":
-                pass
             ray_weights, ray_weights_debug = tx_ray_weights(
                 path, ray_geometry, **model_options
             )
@@ -467,6 +465,11 @@ def backwall_paths(
         msg = "The maximum number of backwall reflections exceeds coding limit (3)"
         raise ValueError(msg)
 
+    paths = OrderedDict()
+    
+    if max_number_of_reflection == 0:
+        return paths
+
     probe_start = c.Interface(*probe_oriented_points, are_normals_on_out_rays_side=True)
 
     frontwall_couplant_to_block = c.Interface(
@@ -505,8 +508,6 @@ def backwall_paths(
 
     probe_end = c.Interface(*probe_oriented_points, are_normals_on_inc_rays_side=True)
 
-    paths = OrderedDict()
-
     for mode1 in (c.Mode.L, c.Mode.T):
         for mode2 in (c.Mode.L, c.Mode.T):
             key = mode1.key() + mode2.key()
@@ -528,7 +529,7 @@ def backwall_paths(
                 name="Backwall " + key,
             )
 
-    if max_number_of_reflection <= 1:
+    if max_number_of_reflection == 1:
         return paths
 
     for mode1 in (c.Mode.L, c.Mode.T):

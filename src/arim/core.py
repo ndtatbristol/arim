@@ -1357,9 +1357,6 @@ class BlockInImmersion(ExaminationObject):
         Alias for block_material
     couplant_material : Material
     walls : OrderedDict[str, OrientedPoints]
-    wall_idxs_for_imaging : list[int]
-        List of indices in `walls` which are used for simulation or imaging.
-        Frontwall not required.
 
     """
 
@@ -1368,7 +1365,6 @@ class BlockInImmersion(ExaminationObject):
         block_material,
         couplant_material,
         walls,
-        wall_idxs_for_imaging,
         metadata=None,
     ):
         self.block_material = block_material
@@ -1389,9 +1385,6 @@ class BlockInContact(ExaminationObject):
     ----------
     block_material : Material
     walls : OrderedDict[str, OrientedPoints]
-    wall_idxs_for_imaging : list[int]
-        List of indices in `walls` which are used for simulation or imaging.
-        Frontwall not required.
     under_material : Material
     metadata : dict or None
 
@@ -1409,7 +1402,6 @@ class BlockInContact(ExaminationObject):
         self,
         block_material,
         walls=None,
-        wall_idxs_for_imaging=None,
         under_material=None,
         metadata=None,
     ):
