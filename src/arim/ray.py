@@ -498,7 +498,6 @@ class Rays:
         out = np.zeros(shape, order=order, dtype=bool)
 
         if walls is not None:
-            walls = {wall.name: wall for wall, _ in walls}
             interface_names = [interface.points.name for interface in path_interfaces]
 
             loc_wrt_line = lambda a1, a2, y: (
