@@ -142,7 +142,7 @@ def _load_frame(exp_data, probe):
             # Accept nested array
             velocity = velocity[()]
     # Old version of brain saves phase velocity, new version has it saved in material.
-    except ValueError:
+    except (ValueError, KeyError):
         velocity = np.squeeze(exp_data["ph_velocity"])
 
     velocity = velocity.astype(s.FLOAT)
