@@ -77,12 +77,6 @@ def load_expdata(file):
         raise InvalidExpData(e) from e
 
     frame.metadata["from_brain"] = filename
-    # Sometimes have location saved in `exp_data`. Useful to have access to this info.
-    if 'location' in exp_data.keys():
-        frame.metadata["location"] = {
-            k: float(v[0][0])
-            for k, v in exp_data['location'].items()
-        }
     frame.probe.metadata["from_brain"] = filename
     frame.examination_object.metadata["from_brain"] = filename
     return frame
@@ -150,12 +144,24 @@ def _load_frame(exp_data, probe):
     # Old version of brain saves phase velocity, new version has it saved in material.
     except (ValueError, KeyError):
         velocity = np.squeeze(exp_data["ph_velocity"])
+        
+    # Sometimes have location saved in `exp_data`. Useful to have access to this info.
+    metadata = None
+    try:
+        if metadata is None:
+            metadata = {}
+        metadata["location"] = {
+            k: float(v[0][0])
+            for k, v in exp_data['location'].items()
+        }
+    except ValueError:
+        pass
 
     velocity = velocity.astype(s.FLOAT)
     material = Material(velocity)
     examination_object = ExaminationObject(material)
 
-    return Frame(timetraces, time, tx, rx, probe, examination_object)
+    return Frame(timetraces, time, tx, rx, probe, examination_object, metadata)
 
 
 def _load_from_scipy(file):
