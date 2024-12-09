@@ -77,6 +77,12 @@ def load_expdata(file):
         raise InvalidExpData(e) from e
 
     frame.metadata["from_brain"] = filename
+    # Sometimes have location saved in `exp_data`. Useful to have access to this info.
+    if 'location' in exp_data.keys():
+        frame.metadata["location"] = {
+            k: float(v[0][0])
+            for k, v in exp_data['location'].items()
+        }
     frame.probe.metadata["from_brain"] = filename
     frame.examination_object.metadata["from_brain"] = filename
     return frame
