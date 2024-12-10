@@ -154,7 +154,7 @@ def _load_frame(exp_data, probe):
             k: float(v[0][0])
             for k, v in exp_data['location'].items()
         }
-    except ValueError:
+    except (KeyError, ValueError):
         pass
 
     velocity = velocity.astype(s.FLOAT)
