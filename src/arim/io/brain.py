@@ -148,13 +148,22 @@ def _load_frame(exp_data, probe):
     # Sometimes have location saved in `exp_data`. Useful to have access to this info.
     metadata = None
     try:
-        if metadata is None:
-            metadata = {}
-        metadata["location"] = {
-            k: float(v[0][0])
+        location = {
+            k: float(exp_data['location'][k][0, 0])
+            for k in exp_data['location'].dtype.names
+        }
+        metadata = {
+            'location': location
+        }
+    except AttributeError:
+        location = {
+            k: float(v[0, 0])
             for k, v in exp_data['location'].items()
         }
-    except (KeyError, ValueError):
+        metadata = {
+            'location': location
+        }
+    else:
         pass
 
     velocity = velocity.astype(s.FLOAT)
