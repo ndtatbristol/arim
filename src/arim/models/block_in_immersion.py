@@ -466,7 +466,7 @@ def backwall_paths(
         raise ValueError(msg)
 
     paths = OrderedDict()
-    
+
     if max_number_of_reflection == 0:
         return paths
 
