@@ -941,7 +941,7 @@ class MaskedGrid(Grid):
         Points
 
         """
-        return self.reshape(self.size)[~self.mask.ravel()]
+        return Points(self.reshape(self.size)[~self.mask.ravel()], self.name)
 
 
 def spherical_coordinates_r(x, y, z, out=None):

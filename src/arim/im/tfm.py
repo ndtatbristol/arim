@@ -456,7 +456,20 @@ def contact_tfm(
     focal_law = FocalLaw(lookup_times, lookup_times, amplitudes, timetrace_weights)
 
     res = das.delay_and_sum(frame, focal_law, **kwargs_delay_and_sum)
-    res = res.reshape(grid.shape)
+    if type(grid) is g.Grid:
+        res = res.reshape(grid.shape)
+    elif type(grid) is g.MaskedGrid:
+        res_all = np.zeros(
+            [
+                grid.size,
+            ],
+            dtype=res.dtype,
+        )
+        res_all[~grid.mask.ravel()] = res
+        res = res_all.reshape(grid.shape)
+    else:
+        raise NotImplementedError("Invalid grid type.")
+        
     return TfmResult(res, grid)
 
 
@@ -497,18 +510,20 @@ def tfm_for_view(frame, grid, view, amplitudes=None, mask=None, **kwargs_delay_a
     focal_law = FocalLaw(lookup_times_tx, lookup_times_rx, amplitudes)
 
     res = das.delay_and_sum(frame, focal_law, **kwargs_delay_and_sum)
-    if np.prod(grid.shape) == res.size:
+    if type(grid) is g.Grid:
         res = res.reshape(grid.shape)
-    else:
-        # N.B. `mask` could be a new attribute of `grid`. Only used in this function so leave it for now.
+    elif type(grid) is g.MaskedGrid:
         res_all = np.zeros(
             [
                 grid.size,
             ],
             dtype=res.dtype,
         )
-        res_all[mask.ravel()] = res
+        res_all[~grid.mask.ravel()] = res
         res = res_all.reshape(grid.shape)
+    else:
+        raise NotImplementedError("Invalid grid type.")
+        
     return TfmResult(res, grid)
 
 
