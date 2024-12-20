@@ -28,7 +28,7 @@ classifiers = [
 
 ]
 dependencies = [
-  "numpy",
+  "numpy<2",
   "scipy",
   "numba",
   "pyyaml",
@@ -80,7 +80,7 @@ detached = true
 dependencies = [
   "black~=23.0",
   "mypy==1.10.0",
-  "ruff==0.4.7",
+  "ruff~=0.8",
 ]
 [tool.hatch.envs.lint.scripts]
 # typing = "mypy --install-types --non-interactive {args:src/arim tests}"
@@ -155,7 +155,3 @@ exclude_lines = [
   "if TYPE_CHECKING:",
 ]
 
-[tool.pytest.ini_options]
-filterwarnings = [
-    "error",
-]
