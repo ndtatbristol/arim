@@ -333,12 +333,14 @@ def reciprocal_viewname(viewname):
 
     Examples
     --------
-    >>> reciprocal_viewname('L-LT')
-    'TL-L'
+    >>> reciprocal_viewname('L - L Backwall T')
+    'T Backwall L - L'
 
     """
-    tx_path, rx_path = viewname.split("-")
-    return rx_path[::-1] + "-" + tx_path[::-1]
+    tx_path, rx_path = viewname.split(" - ")
+    tx_pieces = tx_path.split(" ")
+    rx_pieces = rx_path.split(" ")
+    return " ".join(rx_pieces[::-1]) + " - " + " ".join(tx_pieces[::-1])
 
 
 IMAGING_MODES = [
@@ -391,78 +393,6 @@ def default_viewname_order(tx_rx_tuple):
     """
     tx, rx = tx_rx_tuple
     return (len(tx) + len(rx), max(len(tx), len(rx)), len(rx), len(tx), tx, rx)
-
-
-# def filter_unique_views(viewnames):
-#     """
-#     Returns the view names that that give different results in linear imaging.
-
-#     If views AB-CD and DC-BA are in 'viewnames' in this order, DC-BA will not
-#     be in the filtered list. Order is unchanged.
-
-#     Remove views that would give the same result because of time reciprocity
-#     (under linear assumption).
-
-#     Parameters
-#     ----------
-#     viewnames : list[tuple[str]]
-
-#     Returns
-#     -------
-#     list[tuple[str]]
-
-#     Examples
-#     --------
-
-#     >>> filter_unique_views([('AB', 'CD'), ('DC', 'BA'), ('X', 'YZ'), ('ZY', 'X')])
-#     ... [('AB', 'CD'), ('X', 'YZ')]
-
-#     """
-#     unique_views = []
-#     seen_so_far = set()
-#     for view in viewnames:
-#         tx, rx = view
-#         rev_view = (rx[::-1], tx[::-1])
-#         if rev_view in seen_so_far:
-#             continue
-#         else:
-#             seen_so_far.add(view)
-#             unique_views.append(view)
-#     return unique_views
-
-
-# def make_viewnames(paths, tfm_unique_only=False, order_func=default_viewname_order):
-#     """
-#     Make all view names from the paths given as arguments.
-
-#     Parameters
-#     ----------
-#     pathnames : list[str]
-#     tfm_unique_only : bool
-#         Default: False. If True, returns only the views that give *different* imaging
-#         results with TFM (AB-CD and DC-BA give the same imaging result).
-#     order_func : func
-#         Function for sorting the views.
-
-#     Returns
-#     -------
-#     list[tuple[str]
-
-#     """
-#     viewnames = []
-#     tx_pathnames = [path.longname for path in paths]
-#     rx_pathnames = [path.reverse_longname for path in paths]
-#     for tx in tx_pathnames:
-#         for rx in rx_pathnames:
-#             viewnames.append((tx, rx))
-
-#     if order_func is not None:
-#         viewnames = list(sorted(viewnames, key=default_viewname_order))
-
-#     if tfm_unique_only:
-#         viewnames = filter_unique_views(viewnames)
-
-#     return viewnames
 
 
 def rayleigh_vel(longitudinal_vel, transverse_vel):
