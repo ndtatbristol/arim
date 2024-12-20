@@ -151,7 +151,8 @@ def test_composed_filters():
     ],
 )
 def test_rfft_to_hilbert(shape, axis):
-    x = np.random.uniform(size=shape)
+    rng = np.random.default_rng(seed=0)
+    x = rng.uniform(size=shape)
 
     y = np.fft.rfft(x, axis=axis)
     n = np.atleast_1d(shape)[axis]

@@ -1016,8 +1016,8 @@ def bak_test_sensitivity():
     np.testing.assert_almost_equal(result, result2)
 
 
-def random_uniform_complex(low=0.0, high=1.0, size=None):
-    return np.random.uniform(low, high, size) + 1j * np.random.uniform(low, high, size)
+def random_uniform_complex(rng, low=0.0, high=1.0, size=None):
+    return rng.uniform(low, high, size) + 1j * rng.uniform(low, high, size)
 
 
 def make_point_source_scattering_func(context):
@@ -1046,7 +1046,7 @@ def make_point_source_scattering_matrix(context):
     }
 
 
-def make_random_ray_weights(context):
+def make_random_ray_weights(rng: np.random.Generator, context):
     paths = context["paths"]
     """:type : dict[str, arim.Path]"""
     ray_geometry_dict = context["ray_geometry_dict"]
@@ -1062,10 +1062,10 @@ def make_random_ray_weights(context):
     scattering_angles_dict = {}
     for pathname, path in paths.items():
         tx_ray_weights_dict[path] = np.asfortranarray(
-            random_uniform_complex(size=(numelements, numpoints))
+            random_uniform_complex(rng, size=(numelements, numpoints))
         )
         rx_ray_weights_dict[path] = np.asfortranarray(
-            random_uniform_complex(size=(numelements, numpoints))
+            random_uniform_complex(rng, size=(numelements, numpoints))
         )
         ray_geometry = ray_geometry_dict[pathname]
         scattering_angles_dict[path] = np.asfortranarray(
@@ -1085,7 +1085,8 @@ def test_model_amplitudes_factory():
     context = make_context()
     views = context["views"]
 
-    ray_weights = make_random_ray_weights(context)
+    rng = np.random.default_rng(seed=0)
+    ray_weights = make_random_ray_weights(rng, context)
     scattering_funcs = make_point_source_scattering_func(context)
     scattering_matrices = make_point_source_scattering_matrix(context)
 
@@ -1155,7 +1156,8 @@ def test_sensitivity_tfm():
     context = make_context()
     views = context["views"]
 
-    ray_weights = make_random_ray_weights(context)
+    rng = np.random.default_rng(seed=1)
+    ray_weights = make_random_ray_weights(rng, context)
     scattering_dict = make_point_source_scattering_func(context)
 
     # we have only one element, duplicate timetrace to check the sum is actually performed

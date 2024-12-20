@@ -121,8 +121,9 @@ def test_is_orthonormal():
 
 @pytest.mark.parametrize("shape", [(), (5,), (5, 4), (5, 6, 7)])
 def test_norm2_2d(shape):
-    x = np.random.uniform(size=shape)
-    y = np.random.uniform(size=shape)
+    rng = np.random.default_rng(seed=1234 + sum(shape))
+    x = rng.uniform(size=shape)
+    y = rng.uniform(size=shape)
     z = np.zeros(shape)
 
     # without out
@@ -227,7 +228,8 @@ def test_direct_isometry_3d(points):
     assert np.allclose(M @ j_hat, v_hat)
     assert np.allclose(M @ np.cross(i_hat, j_hat), np.cross(M @ i_hat, M @ j_hat))
 
-    k1, k2, k3 = np.random.uniform(size=3)
+    rng = np.random.default_rng(seed=0)
+    k1, k2, k3 = rng.uniform(size=3)
     Q1 = A + k1 * i_hat + k2 * j_hat + k3 * k_hat
     Q2 = B + k1 * u_hat + k2 * v_hat + k3 * w_hat
 
@@ -506,8 +508,9 @@ class TestPoints:
         Test Points.translate for different shapes of Points and directions.
 
         """
-        coords = np.random.uniform(size=((*shape, 3)))
-        directions = np.random.uniform(size=((*shape_directions, 3)))
+        rng = np.random.default_rng(seed=100)
+        coords = rng.uniform(size=((*shape, 3)))
+        directions = rng.uniform(size=((*shape_directions, 3)))
 
         points = g.Points(coords.copy())
 
@@ -583,9 +586,10 @@ class TestPoints:
         # Create rotation matrix:
         rot_shape = (*points.shape, 3, 3)
         rot = np.zeros(rot_shape, dtype=points.dtype)
+        rng = np.random.default_rng(seed=1000)
         for idx in np.ndindex(points.shape):
             rot[idx] = g.rotation_matrix_ypr(
-                *np.random.uniform(-2 * np.pi, 2 * np.pi, size=(3,))
+                *rng.uniform(-2 * np.pi, 2 * np.pi, size=(3,))
             )
 
         # Case 1a: centre is None
@@ -603,7 +607,7 @@ class TestPoints:
         assert g.are_points_close(out_points, out_points_b)
 
         # Case 2: centre is not trivial
-        centre = np.random.uniform(size=(*points.shape, 3))
+        centre = rng.uniform(size=(*points.shape, 3))
         out_points = points.rotate(rot, centre=centre)
         assert out_points.shape == points.shape
 
@@ -646,18 +650,19 @@ class TestPoints:
         Test the function to_gcs and from_gcs using various combinations of points, basis and origins.
         """
         # Generate points:
-        points_gcs = g.Points(np.random.uniform(-10, 10.0, size=(*points_shape, 3)))
+        rng = np.random.default_rng(seed=0)
+        points_gcs = g.Points(rng.uniform(-10, 10.0, size=(*points_shape, 3)))
 
         # Generate bases:
         bases = np.zeros((*bases_shape, 3, 3))
         for idx in np.ndindex(bases_shape):
             bases[idx] = g.rotation_matrix_ypr(
-                *np.random.uniform(-2 * np.pi, 2 * np.pi, size=(3,))
+                *rng.uniform(-2 * np.pi, 2 * np.pi, size=(3,))
             )
             assert g.is_orthonormal_direct(bases[idx])
 
         # Generate origins:
-        origins = np.random.uniform(-100, 100, size=(*origins_shape, 3))
+        origins = rng.uniform(-100, 100, size=(*origins_shape, 3))
 
         # PART 1/ GCS TO CS ===================================================================
         out_points_cs = points_gcs.from_gcs(bases, origins)
@@ -815,7 +820,8 @@ class TestCoordinateSystem:
             np.array([0.0, 1.0, 2.0]),
             np.array([0.0, 3.0, 4.0]),
         )
-        points_gcs = g.Points(np.random.uniform(size=(10, 3)))
+        rng = np.random.default_rng(seed=0)
+        points_gcs = g.Points(rng.uniform(size=(10, 3)))
 
         # This is the tested function.
         x, y, z = cs.convert_from_gcs_pairwise(points_gcs, origins)

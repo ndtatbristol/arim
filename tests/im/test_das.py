@@ -10,13 +10,13 @@ import arim.im.tfm
 from arim import ExaminationObject, Frame, Material, Probe, Time
 
 
-def _random_uniform(dtype, low=0.0, high=1.0, size=None):
+def _random_uniform(rng: np.random.Generator, dtype, low=0.0, high=1.0, size=None):
     z = np.zeros(size, dtype)
     if np.issubdtype(dtype, np.complexfloating):
-        z.real = np.random.uniform(low, high, size)
-        z.imag = np.random.uniform(low, high, size)
+        z.real = rng.uniform(low, high, size)
+        z.imag = rng.uniform(low, high, size)
     elif np.issubdtype(dtype, np.floating):
-        z[...] = np.random.uniform(low, high, size)
+        z[...] = rng.uniform(low, high, size)
     else:
         raise NotImplementedError
     return z
@@ -48,20 +48,22 @@ def make_delay_and_sum_case_random(dtype_float, dtype_data, amplitudes="random")
     start_lookup = time.start / 2
     stop_lookup = (time.end - time.step) / 2
 
-    np.random.seed(31031596)
+    rng = np.random.RandomState(seed=31031596)
     timetraces = _random_uniform(
-        dtype_data, 100.0, 101.0, size=(numtimetraces, len(time))
+        rng, dtype_data, 100.0, 101.0, size=(numtimetraces, len(time))
     )
-    amplitudes_tx = _random_uniform(dtype_data, 1.0, 1.1, size=(numpoints, numelements))
+    amplitudes_tx = _random_uniform(
+        rng, dtype_data, 1.0, 1.1, size=(numpoints, numelements)
+    )
     amplitudes_rx = _random_uniform(
-        dtype_data, -1.0, -1.1, size=(numpoints, numelements)
+        rng, dtype_data, -1.0, -1.1, size=(numpoints, numelements)
     )
-    timetrace_weights = _random_uniform(dtype_data, size=(numtimetraces))
+    timetrace_weights = _random_uniform(rng, dtype_data, size=(numtimetraces))
     lookup_times_tx = _random_uniform(
-        dtype_float, start_lookup, stop_lookup, (numpoints, numelements)
+        rng, dtype_float, start_lookup, stop_lookup, (numpoints, numelements)
     )
     lookup_times_rx = _random_uniform(
-        dtype_float, start_lookup, stop_lookup, (numpoints, numelements)
+        rng, dtype_float, start_lookup, stop_lookup, (numpoints, numelements)
     )
     if amplitudes == "random":
         amplitudes = arim.im.tfm.TxRxAmplitudes(amplitudes_tx, amplitudes_rx)
