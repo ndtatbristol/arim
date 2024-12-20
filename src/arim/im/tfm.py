@@ -162,13 +162,18 @@ def angle_limit_for_view(
     `tx_elev = 0.0` points in the opposite direction to `rx_elev` because the
     basis of the backwall should have `z_hat = [0, 0, -1]`, and the basis of
     the probe should have `z_hat = [0, 0, 1]`.
+    
+    Valid windows are `hanning` (i.e. ensure a smooth transition) and `rectangular` (i.e. a sharp transition).
 
     Parameters
     ----------
     view : View
     limit : float
-    elev : float, optional
-    azim : float, optional
+    tx_elev : float, optional
+    tx_azim : float, optional
+    rx_elev : float, optional
+    rx_azim : float, optional
+    window : str, optional
 
     Returns
     -------
@@ -456,7 +461,7 @@ def contact_tfm(
     focal_law = FocalLaw(lookup_times, lookup_times, amplitudes, timetrace_weights)
 
     res = das.delay_and_sum(frame, focal_law, **kwargs_delay_and_sum)
-    if type(grid) is g.Grid:
+    if type(grid) in (g.Grid, g.Points):
         res = res.reshape(grid.shape)
     elif type(grid) is g.MaskedGrid:
         res_all = np.zeros(
@@ -510,7 +515,7 @@ def tfm_for_view(frame, grid, view, amplitudes=None, mask=None, **kwargs_delay_a
     focal_law = FocalLaw(lookup_times_tx, lookup_times_rx, amplitudes)
 
     res = das.delay_and_sum(frame, focal_law, **kwargs_delay_and_sum)
-    if type(grid) is g.Grid:
+    if type(grid) in (g.Grid, g.Points):
         res = res.reshape(grid.shape)
     elif type(grid) is g.MaskedGrid:
         res_all = np.zeros(
