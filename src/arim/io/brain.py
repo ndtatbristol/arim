@@ -144,26 +144,19 @@ def _load_frame(exp_data, probe):
     # Old version of brain saves phase velocity, new version has it saved in material.
     except (ValueError, KeyError):
         velocity = np.squeeze(exp_data["ph_velocity"])
-        
+
     # Sometimes have location saved in `exp_data`. Useful to have access to this info.
     metadata = None
     try:
         location = {
-            k: float(exp_data['location'][k][0, 0])
-            for k in exp_data['location'].dtype.names
+            k: float(exp_data["location"][k][0, 0])
+            for k in exp_data["location"].dtype.names
         }
-        metadata = {
-            'location': location
-        }
+        metadata = {"location": location}
     except AttributeError:
-        location = {
-            k: float(v[0, 0])
-            for k, v in exp_data['location'].items()
-        }
-        metadata = {
-            'location': location
-        }
-    else:
+        location = {k: float(v[0, 0]) for k, v in exp_data["location"].items()}
+        metadata = {"location": location}
+    except (ValueError, KeyError):
         pass
 
     velocity = velocity.astype(s.FLOAT)
