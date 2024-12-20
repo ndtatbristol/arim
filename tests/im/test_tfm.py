@@ -167,8 +167,8 @@ def test_multiview_tfm(use_real_grid):
     # use random data but ensure reciprocity
     timetraces = np.zeros((len(tx_arr), len(time)))
     for i, (tx, rx) in enumerate(zip(tx_arr, rx_arr)):
-        np.random.seed((tx * rx) ** 2)  # symmetric in tx and rx
-        timetraces[i] = np.random.rand(len(time))
+        rng = np.random.RandomState(seed=(tx * rx) ** 2)  # symmetric in tx and rx
+        timetraces[i] = rng.uniform(size=len(time))
     block = arim.Material(6300, 3100)
     frame = arim.Frame(
         timetraces, time, tx_arr, rx_arr, probe, arim.ExaminationObject(block)
@@ -239,8 +239,8 @@ def test_contact_tfm(use_hmc):
     # use random data but ensure reciprocity
     timetraces = np.zeros((len(tx_arr), len(time)))
     for i, (tx, rx) in enumerate(zip(tx_arr, rx_arr)):
-        np.random.seed((tx * rx) ** 2)  # symmetric in tx and rx
-        timetraces[i] = np.random.rand(len(time))
+        rng = np.random.RandomState(seed=(tx * rx) ** 2)  # symmetric in tx and rx
+        timetraces[i] = rng.uniform(size=len(time))
 
     # check reciprocity
     if not use_hmc:

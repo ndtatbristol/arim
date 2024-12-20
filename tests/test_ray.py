@@ -132,9 +132,10 @@ class TestRays4:
 
     @pytest.fixture
     def path(self):
+        rng = np.random.default_rng(seed=1)
         interfaces = [
             g.Points.from_xyz(
-                np.random.rand(n), np.random.rand(n), np.random.rand(n), f"A{i}"
+                rng.uniform(size=n), rng.uniform(size=n), rng.uniform(size=n), f"A{i}"
             )
             for (i, n) in enumerate(self.numpoints)
         ]
@@ -159,7 +160,8 @@ class TestRays4:
     def rays(self, path, interior_indices):
         n, m, p, q = self.numpoints
 
-        times = np.random.uniform(10.0, 20.0, size=(n, q))
+        rng = np.random.default_rng(seed=10)
+        times = rng.uniform(10.0, 20.0, size=(n, q))
         rays = ray.Rays(times, interior_indices, path)
         assert np.all(interior_indices == rays.interior_indices)
         return rays
@@ -253,9 +255,10 @@ class TestRays2:
 
     @pytest.fixture
     def path(self):
+        rng = np.random.default_rng(seed=12)
         interfaces = [
             g.Points.from_xyz(
-                np.random.rand(n), np.random.rand(n), np.random.rand(n), f"A{i}"
+                rng.uniform(size=n), rng.uniform(size=n), rng.uniform(size=n), f"A{i}"
             )
             for (i, n) in enumerate(self.numpoints)
         ]
@@ -268,7 +271,8 @@ class TestRays2:
         """Test alternative constructor of Rays"""
         dtype_indices = arim.settings.INT
         n, m = self.numpoints
-        times = np.random.uniform(10.0, 20.0, size=(n, m))
+        rng = np.random.default_rng(seed=20)
+        times = rng.uniform(10.0, 20.0, size=(n, m))
         rays = ray.Rays.make_rays_two_interfaces(times, path, dtype_indices)
         return rays
 

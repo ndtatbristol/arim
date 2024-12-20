@@ -638,7 +638,8 @@ def test_mode():
 class TestInterface:
     def test_interface_probe(self):
         n = 10
-        points = g.Points(np.random.uniform(size=(n, 3)))
+        rng = np.random.default_rng(seed=77)
+        points = g.Points(rng.uniform(size=(n, 3)))
         orientations = g.Points(np.eye(3), "coordinate system")
 
         interface = c.Interface(
@@ -657,7 +658,8 @@ class TestInterface:
 
     def test_interface_grid(self):
         n = 10
-        points = g.Points(np.random.uniform(size=(n, 3)))
+        rng = np.random.default_rng(seed=66)
+        points = g.Points(rng.uniform(size=(n, 3)))
         orientations = g.Points(np.eye(3), "coordinate system")
 
         interface = c.Interface(
@@ -686,7 +688,8 @@ class TestInterface:
 
     def test_interface_transmission(self, water):
         n = 10
-        points = g.Points(np.random.uniform(size=(n, 3)))
+        rng = np.random.default_rng(seed=55)
+        points = g.Points(rng.uniform(size=(n, 3)))
         orientations = g.Points(np.eye(3), "coordinate system")
 
         interface = c.Interface(
@@ -721,7 +724,8 @@ class TestInterface:
 
     def test_interface_reflection(self):
         n = 10
-        points = g.Points(np.random.uniform(size=(n, 3)))
+        rng = np.random.default_rng(seed=99)
+        points = g.Points(rng.uniform(size=(n, 3)))
         orientations = g.Points(np.eye(3), "coordinate system")
 
         interface = c.Interface(

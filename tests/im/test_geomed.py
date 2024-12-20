@@ -7,8 +7,8 @@ from scipy import stats
 
 from arim.im import geomed
 
-np.random.seed(123)
-dist = stats.multivariate_normal([0.5, 2.0], [[2.0, 0.3], [0.3, 0.5]])
+rng = np.random.RandomState(seed=123)
+dist = stats.multivariate_normal([0.5, 2.0], [[2.0, 0.3], [0.3, 0.5]], seed=rng)
 data = dist.rvs(100)
 zval = np.array([0.5, 2.0])
 

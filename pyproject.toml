@@ -7,7 +7,7 @@ name = "arim"
 dynamic = ["version"]
 description = 'A Python 3 library for modelling and imaging in ultrasonic testing'
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 license = "MIT"
 keywords = []
 authors = [
@@ -17,10 +17,10 @@ authors = [
 classifiers = [
   "Development Status :: 4 - Beta",
   "Programming Language :: Python",
-  "Programming Language :: Python :: 3.8",
   "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: Implementation :: CPython",
   "Intended Audience :: Education",
   "Intended Audience :: Science/Research",
@@ -73,7 +73,7 @@ cov = [
 ]
 
 [[tool.hatch.envs.all.matrix]]
-python = ["3.8", "3.9", "3.10", "3.11"]
+python = ["3.9", "3.10", "3.11", "3.12"]
 
 [tool.hatch.envs.lint]
 detached = true
@@ -119,7 +119,6 @@ lint.select = [
 lint.ignore = [
   "E731", # lambda are fine
   "E501", # line too long (in practice: only in comment or docstring)
-  "NPY002", # legacy np.random API
   "NPY201", # Temporary: np.complex_ will be removed in numpy 2.0
   "UP032", # Use f-string instead of `format` call
   "UP031", # Use format specifiers instead of percent format

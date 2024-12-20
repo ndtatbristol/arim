@@ -111,7 +111,8 @@ def test_detect_surface_from_extrema():
     tx = np.array([0, 0, 1, 1, 2, 2])
     rx = np.array([0, 1, 1, 0, 2, 0])
 
-    timetraces = np.random.uniform(high=10.0, size=(len(tx), len(time)))
+    rng = np.random.default_rng(seed=0)
+    timetraces = rng.uniform(high=10.0, size=(len(tx), len(time)))
 
     times_to_surface_expected = np.array([25.0, 26.0, 27.0, 28.0, 29.0, 30.0])
 
