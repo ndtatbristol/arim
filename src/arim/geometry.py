@@ -861,6 +861,89 @@ class Grid(Points):
         return default_oriented_points(self.to_1d_points())
 
 
+class MaskedGrid(Grid):
+    """
+    Regularly spaced 3d grid, which may be masked to switch off certain pixels in ray-tracing and TFM computation.
+    
+    The conventions of numpy masked arrays are followed here, i.e. ``False`` if a point is valid and ``True`` if it is invalid.
+
+    Attributes
+    ----------
+    xvect: ndarray
+        Unique points along first axis
+    yvect: ndarray
+        Unique points along second axis
+    zvect: ndarray
+        Unique points along third axis
+    x: ndarray
+        First coordinate of all points. Shape: ``(numx, numy, numz)``
+    y: ndarray
+        Second coordinate of all points. Shape: ``(numx, numy, numz)``
+    z: ndarray
+        Third coordinate of all points. Shape: ``(numx, numy, numz)``
+    dx, dy, dz: float or None
+        Exact distance between points. None if only one point along the axis
+    numx, numy, numz, numpoints
+        Number of pixels in x, y, and z axes, as well as total number of points.
+    mask: ndarray[bool]
+        Boolean array corresponding to inclusion of corresponding pixel in final image. Note that ``__init__()`` assumes that all points are valid. Either use a class method, or edit the ``mask`` attribute directly (not recommended).
+
+    Parameters
+    ----------
+    xmin : float
+    xmax : float
+    xmin : float
+    ymax : float
+    zmin : float
+    zmax  : float
+    pixel_size: float
+        *Approximative* distance between points to use. Either one or three floats.
+
+    """
+    
+    __slots__ = ("coords", "name", "xvect", "yvect", "zvect", "mask")
+    def __init__(self, xmin, xmax, ymin, ymax, zmin, zmax, pixel_size):
+        super().__init__(xmin, xmax, ymin, ymax, zmin, zmax, pixel_size)
+        self.mask = np.full((self.numx, self.numy, self.numz), False)
+    
+    @classmethod
+    def mask_grid_where(cls, grid, condition):
+        """
+        Mask an existing Grid where a condition is met.
+
+        Parameters
+        ----------
+        grid : Grid
+        condition : ndarray[bool]
+            Shape ``(numx, numy, numz)``
+
+        Returns
+        -------
+        MaskedGrid.
+
+        """
+        result = cls(grid.xmin, grid.xmax, grid.ymin, grid.ymax, grid.zmin, grid.zmax, (grid.dx, grid.dy, grid.dz))
+        
+        if result.shape != condition.shape:
+            raise ValueError("Shape of ``grid`` is not compatible with ``condition`` shape.")
+        if condition.dtype.kind != "b":
+            raise ValueError("``condition`` is not boolean.")
+            
+        result.mask = condition
+        return result
+    
+    def to_1d_points(self):
+        """
+        Returns a new 1d Points object (shape: (numpoints, ))
+
+        Returns
+        -------
+        Points
+
+        """
+        return self.reshape(self.size)[~self.mask.ravel()]
+
+
 def spherical_coordinates_r(x, y, z, out=None):
     """radial distance"""
     return norm2(x, y, z, out=out)
