@@ -151,7 +151,7 @@ scat_obj = arim.scat.scat_factory(
 )
 scat_angle = np.deg2rad(conf["scatterer"]["angle_deg"])
 
-transfer_function_f = np.zeros((numtimetraces, numfreq), np.complex_)
+transfer_function_f = np.zeros((numtimetraces, numfreq), complex)
 tfms_scat = OrderedDict()
 
 
@@ -188,7 +188,7 @@ with arim.helpers.timeit("Main loop for scatterer"):
 
 # %% Compute transfer functions for walls
 
-transfer_function_wall_f = np.zeros((numtimetraces, numfreq), np.complex_)
+transfer_function_wall_f = np.zeros((numtimetraces, numfreq), complex)
 
 if use_multifreq:
     transfer_function_iterator = bic.multifreq_wall_transfer_functions(

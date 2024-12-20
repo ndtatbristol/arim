@@ -24,12 +24,11 @@ import numpy as np
 # ------------------------------------------------------------------------------
 ## Standard types
 # Unreliable, because inconsistently used in this library. In the future, using
-# the platform's default, i.e. np.float_, np.int_, np.uint, np.complex_, seems
-# more realistic.
-FLOAT = np.float64
+# numpy's default, i.e. np.dtype(float), np.dtype(int), etcseems more realistic.
+FLOAT = np.dtype(float)
 INT = np.int32
 UINT = np.uint32
-COMPLEX = np.complex128
+COMPLEX = np.dtype(complex)
 DATETIME = "%Y-%m-%d %H:%M:%S"  # call: datetime.datetime.now().strftime(DATETIME)
 
 # ------------------------------------------------------------------------------

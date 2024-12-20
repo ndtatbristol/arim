@@ -323,7 +323,7 @@ def directivity_2d_rectangular_on_solid_l(
     """
     k = wavelength_l / wavelength_t
     k2 = k * k
-    theta = np.asarray(theta).astype(np.complex_)
+    theta = np.asarray(theta).astype(complex)
     S = sin(theta)
     C = cos(theta)
     return (
@@ -365,7 +365,7 @@ def directivity_2d_rectangular_on_solid_t(
     """
     k = wavelength_l / wavelength_t
     k2 = k * k
-    theta = np.asarray(theta).astype(np.complex_)
+    theta = np.asarray(theta).astype(complex)
     S = sin(theta)
     return (
         k**2.5
@@ -1487,7 +1487,7 @@ class _ModelAmplitudesWithScatFunction(ModelAmplitudes):
         self.numpoints, self.numelements = tx_ray_weights.shape
         self.numtimetraces = self.tx.shape[0]
         self.scat_angle = scat_angle
-        self.dtype = np.complex_
+        self.dtype = complex
 
     def __getitem__(self, grid_slice):
         # Nota bene: arrays' shape is (numpoints, numtimetrace), i.e. the transpose
@@ -1714,7 +1714,7 @@ def transfer_func_to_timetraces(
     dt = timetraces_time.step
 
     if timetraces is None:
-        timetraces = np.zeros((numtimetraces, len(timetraces_time)), np.complex_)
+        timetraces = np.zeros((numtimetraces, len(timetraces_time)), complex)
 
     # Account for the timetraces t0
     delays = delays - timetraces_time.start
