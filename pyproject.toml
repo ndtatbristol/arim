@@ -28,7 +28,7 @@ classifiers = [
 
 ]
 dependencies = [
-  "numpy<2",
+  "numpy",
   "scipy",
   "numba",
   "pyyaml",
@@ -119,7 +119,6 @@ lint.select = [
 lint.ignore = [
   "E731", # lambda are fine
   "E501", # line too long (in practice: only in comment or docstring)
-  "NPY201", # Temporary: np.complex_ will be removed in numpy 2.0
   "UP032", # Use f-string instead of `format` call
   "UP031", # Use format specifiers instead of percent format
 ]

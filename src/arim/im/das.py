@@ -433,7 +433,7 @@ def delay_and_sum_numba_noamp(
         else:
             raise ValueError("invalid interpolation")
     elif aggregation_name == "median":
-        if dtype_data != np.complex_:
+        if dtype_data != np.complex128:
             raise NotImplementedTyping
         if interpolation_name == "lanczos":
             das_func = _delay_and_sum_noamp_median_lanczos
@@ -444,7 +444,7 @@ def delay_and_sum_numba_noamp(
         else:
             raise NotImplementedError
     elif aggregation_name == "huber":
-        if dtype_data != np.complex_:
+        if dtype_data != np.complex128:
             raise NotImplementedTyping
         if interpolation_name == "lanczos":
             das_func = _delay_and_sum_noamp_huber_lanczos
@@ -532,8 +532,8 @@ def _delay_and_sum_noamp_median_nearest(
         # I don't know how to statically cast complex64 to float32, and
         # complex128 to float64 :(
         # Have to impose dtype meanwhile.
-        res, _ = geomed.geomed(datapoints.view(np.float_).reshape((numtimetraces, 2)))
-        result[point] = res.view(np.complex_)[0]
+        res, _ = geomed.geomed(datapoints.view(np.float64).reshape((numtimetraces, 2)))
+        result[point] = res.view(np.complex128)[0]
 
 
 @numba.jit(nopython=True, nogil=True, parallel=use_parallel, fastmath=True)
@@ -669,8 +669,8 @@ def _delay_and_sum_noamp_median_lanczos(
         # I don't know how to statically cast complex64 to float32, and
         # complex128 to float64 :(
         # Have to impose dtype meanwhile.
-        res, _ = geomed.geomed(datapoints.view(np.float_).reshape((numtimetraces, 2)))
-        result[point] = res.view(np.complex_)[0]
+        res, _ = geomed.geomed(datapoints.view(np.float64).reshape((numtimetraces, 2)))
+        result[point] = res.view(np.complex128)[0]
 
 
 @numba.jit(nopython=True, nogil=True, parallel=use_parallel, fastmath=True)
@@ -710,9 +710,9 @@ def _delay_and_sum_noamp_huber_lanczos(
         # complex128 to float64 :(
         # Have to impose dtype meanwhile.
         res, _ = huber.huber_m_estimate(
-            datapoints.view(np.float_).reshape((numtimetraces, 2)), tau
+            datapoints.view(np.float64).reshape((numtimetraces, 2)), tau
         )
-        result[point] = res.view(np.complex_)[0]
+        result[point] = res.view(np.complex128)[0]
 
 
 @numba.jit(nopython=True, nogil=True, cache=True, fastmath=True)
