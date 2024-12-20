@@ -140,7 +140,7 @@ logger = logging.getLogger(__name__)
 
 
 def ray_tracing_for_paths(
-    paths_list, walls=None, turn_off_invalid_rays=False, convert_to_fortran_order=False
+    paths_list, walls=None, turn_off_invalid_rays=True, convert_to_fortran_order=False
 ):
     """
     Perform the ray tracing for different paths. Save the result in ``Path.rays``.
