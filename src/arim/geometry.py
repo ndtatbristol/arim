@@ -1767,10 +1767,10 @@ def combine_oriented_points(oriented_points, name=None):
         [wall.orientations.coords for wall in oriented_points],
         axis=0,
     )
-    _, idxs = np.unique(coords, return_index=True, axis=0)
+    _, indices = np.unique(coords, return_index=True, axis=0)
 
-    points = Points([coords[i] for i in np.sort(idxs)], name=name)
-    orientations = Points([bases[i] for i in np.sort(idxs)])
+    points = Points([coords[i] for i in np.sort(indices)], name=name)
+    orientations = Points([bases[i] for i in np.sort(indices)])
 
     return OrientedPoints(points, orientations)
 

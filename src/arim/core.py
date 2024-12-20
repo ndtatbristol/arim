@@ -1415,7 +1415,6 @@ class BlockInContact(ExaminationObject):
     ----------
     block_material : Material
     walls : OrderedDict[str, OrientedPoints]
-    wall_idxs_for_imaging : list[int]
     under_material : Material
     metadata : dict
 

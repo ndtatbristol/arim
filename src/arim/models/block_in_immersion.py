@@ -847,15 +847,15 @@ def make_paths(
     modes = (c.Mode.longitudinal, c.Mode.transverse)
     for no_reflections in range(max_number_of_reflection + 1):
         # For this number of reflections, make all the combinations of paths.
-        path_idxs_up_to_refl = list(product(range(2), repeat=no_reflections + 1))
-        for path_idxs in path_idxs_up_to_refl:
+        path_indices_up_to_refl = list(product(range(2), repeat=no_reflections + 1))
+        for path_indices in path_indices_up_to_refl:
             # For each path with this number of reflections.
             # path_name = ""  # Current convention does not include frontwall transmission in path name, so start with empty string.
             path_modes = [c.Mode.longitudinal]
             path_interfaces = [probe, frontwall]
             path_materials = [couplant_material]
 
-            for i, mode in enumerate(path_idxs):
+            for i, mode in enumerate(path_indices):
                 if i == 0:
                     # path_name += mode_names[mode]
                     pass

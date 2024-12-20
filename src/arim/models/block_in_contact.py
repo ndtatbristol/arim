@@ -525,15 +525,15 @@ def make_paths(block_material, interface_dict, max_number_of_reflection=0):
     modes = (c.Mode.longitudinal, c.Mode.transverse)
     for no_reflections in range(max_number_of_reflection + 1):
         # For this number of reflections, make all the combinations of paths.
-        path_idxs_up_to_refl = list(product(range(2), repeat=no_reflections + 1))
-        for path_idxs in path_idxs_up_to_refl:
+        path_indices_up_to_refl = list(product(range(2), repeat=no_reflections + 1))
+        for path_indices in path_indices_up_to_refl:
             # For each path with this number of reflections.
             # path_name = ""
             path_modes = []
             path_interfaces = [probe]
             path_materials = []
 
-            for i, mode in enumerate(path_idxs):
+            for i, mode in enumerate(path_indices):
                 if i == 0:
                     # path_name += mode_names[mode]
                     pass
