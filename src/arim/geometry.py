@@ -863,9 +863,11 @@ class Grid(Points):
 
 class MaskedGrid(Grid):
     """
-    Regularly spaced 3d grid, which may be masked to switch off certain pixels in ray-tracing and TFM computation.
-    
-    The conventions of numpy masked arrays are followed here, i.e. ``False`` if a point is valid and ``True`` if it is invalid.
+    Regularly spaced 3d grid, which may be masked to switch off certain pixels
+    in ray-tracing and TFM computation.
+
+    The conventions of numpy masked arrays are followed here, i.e. ``False`` if
+    a point is valid and ``True`` if it is invalid.
 
     Attributes
     ----------
@@ -886,7 +888,9 @@ class MaskedGrid(Grid):
     numx, numy, numz, numpoints
         Number of pixels in x, y, and z axes, as well as total number of points.
     mask: ndarray[bool]
-        Boolean array corresponding to inclusion of corresponding pixel in final image. Note that ``__init__()`` assumes that all points are valid. Either use a class method, or edit the ``mask`` attribute directly (not recommended).
+        Boolean array corresponding to inclusion of corresponding pixel in final
+        image. Note that ``__init__()`` assumes that all points are valid. Either
+        use a class method, or edit the ``mask`` attribute directly (not recommended).
 
     Parameters
     ----------
@@ -900,12 +904,13 @@ class MaskedGrid(Grid):
         *Approximative* distance between points to use. Either one or three floats.
 
     """
-    
+
     __slots__ = ("coords", "name", "xvect", "yvect", "zvect", "mask")
+
     def __init__(self, xmin, xmax, ymin, ymax, zmin, zmax, pixel_size):
         super().__init__(xmin, xmax, ymin, ymax, zmin, zmax, pixel_size)
         self.mask = np.full((self.numx, self.numy, self.numz), False)
-    
+
     @classmethod
     def mask_grid_where(cls, grid, condition):
         """
@@ -922,16 +927,26 @@ class MaskedGrid(Grid):
         MaskedGrid.
 
         """
-        result = cls(grid.xmin, grid.xmax, grid.ymin, grid.ymax, grid.zmin, grid.zmax, (grid.dx, grid.dy, grid.dz))
-        
+        result = cls(
+            grid.xmin,
+            grid.xmax,
+            grid.ymin,
+            grid.ymax,
+            grid.zmin,
+            grid.zmax,
+            (grid.dx, grid.dy, grid.dz),
+        )
+
         if result.shape != condition.shape:
-            raise ValueError("Shape of ``grid`` is not compatible with ``condition`` shape.")
+            raise ValueError(
+                "Shape of ``grid`` is not compatible with ``condition`` shape."
+            )
         if condition.dtype.kind != "b":
             raise ValueError("``condition`` is not boolean.")
-            
+
         result.mask = condition
         return result
-    
+
     def to_1d_points(self):
         """
         Returns a new 1d Points object (shape: (numpoints, ))

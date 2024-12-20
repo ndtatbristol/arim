@@ -162,7 +162,7 @@ def angle_limit_for_view(
     `tx_elev = 0.0` points in the opposite direction to `rx_elev` because the
     basis of the backwall should have `z_hat = [0, 0, -1]`, and the basis of
     the probe should have `z_hat = [0, 0, 1]`.
-    
+
     Valid windows are `hanning` (i.e. ensure a smooth transition) and `rectangular` (i.e. a sharp transition).
 
     Parameters
@@ -474,7 +474,7 @@ def contact_tfm(
         res = res_all.reshape(grid.shape)
     else:
         raise NotImplementedError("Invalid grid type.")
-        
+
     return TfmResult(res, grid)
 
 
@@ -528,7 +528,7 @@ def tfm_for_view(frame, grid, view, amplitudes=None, mask=None, **kwargs_delay_a
         res = res_all.reshape(grid.shape)
     else:
         raise NotImplementedError("Invalid grid type.")
-        
+
     return TfmResult(res, grid)
 
 

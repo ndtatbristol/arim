@@ -843,28 +843,20 @@ def make_paths(
     ):
         raise ValueError("Not enough walls to reflect from.")
 
-    mode_names = ("L", "T")
     modes = (c.Mode.longitudinal, c.Mode.transverse)
     for no_reflections in range(max_number_of_reflection + 1):
         # For this number of reflections, make all the combinations of paths.
         path_indices_up_to_refl = list(product(range(2), repeat=no_reflections + 1))
         for path_indices in path_indices_up_to_refl:
             # For each path with this number of reflections.
-            # path_name = ""  # Current convention does not include frontwall transmission in path name, so start with empty string.
             path_modes = [c.Mode.longitudinal]
             path_interfaces = [probe, frontwall]
             path_materials = [couplant_material]
 
             for i, mode in enumerate(path_indices):
-                if i == 0:
-                    # path_name += mode_names[mode]
-                    pass
-                else:
-                    # Have to settle on a naming convention.
-                    # Published work to date (~2023) joins wave modes and assumes a constant wall (typically back wall).
-                    # New `Path` method `longname` splices wall names into the mode names to indicate which wall was skipped from. Preserve simple naming convention for path dict keys.
-                    # If multiple paths with the same modes but different wall skips are needed, they will need to be stored in different dicts. Edit this string if this is inconvenient.
-                    # path_name += "{}".format(mode_names[mode])
+                if i != 0:
+                    # Settled on naming convention which includes wall name with
+                    # spaces in between (MC 20/12/24)
                     path_interfaces.append(wall_dict[wall_names[i - 1]])
                 path_modes.append(modes[mode])
                 path_materials.append(block_material)

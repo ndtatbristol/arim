@@ -89,16 +89,16 @@ def make_context(couplant_att=None, block_l_att=None, block_t_att=None):
     # Do the ray tracing manually
     # Hardcode the result of ray-tracing in order to write tests with lower coupling
     expected_ray_indices = {
-        "L":            [[[200, 288]]],
-        "T":            [[[200, 391]]],
+        "L": [[[200, 288]]],
+        "T": [[[200, 391]]],
         "L Backwall L": [[[200, 273]], [[91, 780]]],
         "L Backwall T": [[[200, 278]], [[91, 918]]],
         "T Backwall L": [[[200, 291]], [[91, 424]]],
         "T Backwall T": [[[200, 353]], [[91, 789]]],
     }
     expected_ray_times = {
-        "L":            array([[9.92131466e-06, 1.51169800e-05]]),
-        "T":            array([[1.31465342e-05, 2.32862381e-05]]),
+        "L": array([[9.92131466e-06, 1.51169800e-05]]),
+        "T": array([[1.31465342e-05, 2.32862381e-05]]),
         "L Backwall L": array([[1.30858724e-05, 1.67760353e-05]]),
         "L Backwall T": array([[1.46984829e-05, 1.87550216e-05]]),
         "T Backwall L": array([[1.79237015e-05, 2.30552458e-05]]),
@@ -194,7 +194,14 @@ def test_context():
     assert interfaces is not None
     assert ray_geometry_dict is not None
 
-    assert paths.keys() == {"L", "L Backwall L", "L Backwall T", "T Backwall L", "T Backwall T", "T"}
+    assert paths.keys() == {
+        "L",
+        "L Backwall L",
+        "L Backwall T",
+        "T Backwall L",
+        "T Backwall T",
+        "T",
+    }
     for path in paths.values():
         assert path.rays is not None
 
@@ -564,7 +571,9 @@ def test_beamspread_2d_direct():
     beamspread_LL = 1.0 / np.sqrt(
         first_leg + second_leg / beta + third_leg / (gamma * beta)
     )
-    np.testing.assert_allclose(beamspread["L Backwall L"][0][0], beamspread_LL, rtol=1e-5)
+    np.testing.assert_allclose(
+        beamspread["L Backwall L"][0][0], beamspread_LL, rtol=1e-5
+    )
 
     # Path LT - scat 0:
     first_leg = 10e-3
@@ -578,7 +587,9 @@ def test_beamspread_2d_direct():
     beamspread_LT = 1.0 / np.sqrt(
         first_leg + second_leg / beta + third_leg / (gamma * beta)
     )
-    np.testing.assert_allclose(beamspread["L Backwall T"][0][0], beamspread_LT, rtol=1e-5)
+    np.testing.assert_allclose(
+        beamspread["L Backwall T"][0][0], beamspread_LT, rtol=1e-5
+    )
 
 
 def test_beamspread_2d_reverse():
@@ -647,7 +658,9 @@ def test_beamspread_2d_reverse():
     beamspread_LL = 1.0 / np.sqrt(
         first_leg + second_leg / beta + third_leg / (gamma * beta)
     )
-    np.testing.assert_allclose(beamspread["L Backwall L"][0][0], beamspread_LL, rtol=1e-5)
+    np.testing.assert_allclose(
+        beamspread["L Backwall L"][0][0], beamspread_LL, rtol=1e-5
+    )
 
     # Path LT - scat 0:
     first_leg = 10e-3
@@ -661,7 +674,9 @@ def test_beamspread_2d_reverse():
     beamspread_LT = 1.0 / np.sqrt(
         first_leg + second_leg / beta + third_leg / (gamma * beta)
     )
-    np.testing.assert_allclose(beamspread["L Backwall T"][0][0], beamspread_LT, rtol=1e-5)
+    np.testing.assert_allclose(
+        beamspread["L Backwall T"][0][0], beamspread_LT, rtol=1e-5
+    )
 
 
 def test_transmission_reflection_direct():
@@ -711,9 +726,15 @@ def test_transmission_reflection_direct():
     np.testing.assert_allclose(transrefl["L"][0][0], transrefl_L)
     np.testing.assert_allclose(transrefl["T"][0][0], transrefl_T, **tol)
     np.testing.assert_allclose(transrefl["L Backwall L"][0][0], transrefl_L * refl_LL)
-    np.testing.assert_allclose(transrefl["L Backwall T"][0][0], transrefl_L * refl_LT, **tol)
-    np.testing.assert_allclose(transrefl["T Backwall L"][0][0], transrefl_T * refl_LL, **tol)
-    np.testing.assert_allclose(transrefl["T Backwall T"][0][0], transrefl_T * refl_LT, **tol)
+    np.testing.assert_allclose(
+        transrefl["L Backwall T"][0][0], transrefl_L * refl_LT, **tol
+    )
+    np.testing.assert_allclose(
+        transrefl["T Backwall L"][0][0], transrefl_T * refl_LL, **tol
+    )
+    np.testing.assert_allclose(
+        transrefl["T Backwall T"][0][0], transrefl_T * refl_LT, **tol
+    )
 
 
 def test_transmission_reflection_reverse_hardcode():
@@ -775,10 +796,18 @@ def test_transmission_reflection_reverse_hardcode():
     refl_TL, refl_TT, trans_T = arim.model.solid_t_fluid(*params)
     np.testing.assert_allclose(rev_transrefl["L"][0][0], trans_L, **tol)
     np.testing.assert_allclose(rev_transrefl["T"][0][0], trans_T, **tol)
-    np.testing.assert_allclose(rev_transrefl["L Backwall L"][0][0], trans_L * refl_LL, **tol)
-    np.testing.assert_allclose(rev_transrefl["L Backwall T"][0][0], trans_L * refl_TL, **tol)
-    np.testing.assert_allclose(rev_transrefl["T Backwall L"][0][0], trans_T * refl_LT, **tol)
-    np.testing.assert_allclose(rev_transrefl["T Backwall T"][0][0], trans_T * refl_TT, **tol)
+    np.testing.assert_allclose(
+        rev_transrefl["L Backwall L"][0][0], trans_L * refl_LL, **tol
+    )
+    np.testing.assert_allclose(
+        rev_transrefl["L Backwall T"][0][0], trans_L * refl_TL, **tol
+    )
+    np.testing.assert_allclose(
+        rev_transrefl["T Backwall L"][0][0], trans_T * refl_LT, **tol
+    )
+    np.testing.assert_allclose(
+        rev_transrefl["T Backwall T"][0][0], trans_T * refl_TT, **tol
+    )
 
     # ====================================================================================
     # Check that the direct transmission-reflection coefficients for the reversed path are

@@ -1,7 +1,6 @@
 import numpy as np
 import pytest
 
-import arim
 from arim import ut
 
 
@@ -212,7 +211,7 @@ def test_make_timevect():
         np.testing.assert_allclose(x[0], start)
         np.testing.assert_allclose(x[-1], end)
         assert x.dtype == dtype
-        
+
 
 def test_reciprocal_viewname():
     assert ut.reciprocal_viewname("L - L Backwall T") == "T Backwall L - L"

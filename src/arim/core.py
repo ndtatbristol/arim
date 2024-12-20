@@ -1159,7 +1159,7 @@ class Path:
     @property
     def numinterfaces(self):
         return len(self.interfaces)
-    
+
     @property
     def is_immersion(self):
         return self.materials[0].state_of_matter == StateMatter.liquid
@@ -1171,7 +1171,9 @@ class Path:
         """
         first_idx = 1 if self.is_immersion else 0
         longname = self.modes[first_idx].key()
-        for interface, mode in zip(self.interfaces[first_idx+1:-1], self.modes[first_idx+1:]):
+        for interface, mode in zip(
+            self.interfaces[first_idx + 1 : -1], self.modes[first_idx + 1 :]
+        ):
             longname += " {} {}".format(interface.points.name, mode.key())
         return longname
 
@@ -1184,7 +1186,7 @@ class Path:
     def shortname(self):
         first_idx = 1 if self.is_immersion else 0
         shortname = self.modes[first_idx].key()
-        for mode in self.modes[first_idx+1:]:
+        for mode in self.modes[first_idx + 1 :]:
             shortname += " {}".format(mode.key())
         return shortname
 
