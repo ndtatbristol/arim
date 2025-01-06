@@ -92,18 +92,10 @@ def make_delay_and_sum_case_random(dtype_float, dtype_data, amplitudes="random")
 
 DATATYPES = OrderedDict()
 # dtype_float, dtype_data
-DATATYPES["f"] = (np.float32, np.float32)
-DATATYPES["c"] = (np.float32, np.complex64)
-DATATYPES["d"] = (np.float64, np.float64)
-DATATYPES["z"] = (np.float64, np.complex128)
-
-
-# DATATYPES = [
-#     dict(code='f', dtype_float=np.float32, dtype_data=np.float32),
-#     dict(code='c', dtype_float=np.float32, dtype_data=np.complex64),
-#     dict(code='d', dtype_float=np.float64, dtype_data=np.float32),
-#     dict(code='z', dtype_float=np.float64, dtype_data=np.complex128),
-# ]
+DATATYPES["f32"] = (np.float32, np.float32)
+DATATYPES["c64"] = (np.float32, np.complex64)
+DATATYPES["f64"] = (np.float64, np.float64)
+DATATYPES["c128"] = (np.float64, np.complex128)
 
 
 @pytest.fixture(params=["naive", "numba"])
@@ -169,31 +161,41 @@ class TestDasDispatcher:
             dtype_float, dtype_data, amplitudes="none"
         )
         res = das.delay_and_sum(frame, focal_law, fillvalue=0.0)
+        assert res.dtype == dtype_data
         res = das.delay_and_sum(frame, focal_law, fillvalue=np.nan)
+        assert res.dtype == dtype_data
         res = das.delay_and_sum(frame, focal_law, interpolation="nearest")
+        assert res.dtype == dtype_data
         res = das.delay_and_sum(frame, focal_law, interpolation=("nearest",))
+        assert res.dtype == dtype_data
         res = das.delay_and_sum(frame, focal_law, interpolation="linear")
+        assert res.dtype == dtype_data
         res = das.delay_and_sum(frame, focal_law, interpolation=("linear",))
+        assert res.dtype == dtype_data
         res = das.delay_and_sum(frame, focal_law, interpolation=("lanczos", 3))
-        if dtype_data == np.complex_:
-            # If complex, run normally
+        assert res.dtype == dtype_data
+        if dtype_data == np.complex128:
+            # If complex128, run normally
             not_impl_typing = contextlib.nullcontext()
         else:
-            # If not complex, run but expect NotImplementedTyping exception
+            # Otherwise, run but expect NotImplementedTyping exception
             not_impl_typing = pytest.raises(das.NotImplementedTyping)
         with not_impl_typing:
             res = das.delay_and_sum(
                 frame, focal_law, aggregation="median", interpolation="nearest"
             )
+            assert res.dtype == dtype_data
             res = das.delay_and_sum(
                 frame, focal_law, aggregation="median", interpolation=("lanczos", 3)
             )
+            assert res.dtype == dtype_data
             res = das.delay_and_sum(
                 frame,
                 focal_law,
                 aggregation=("huber", 1.5),
                 interpolation=("lanczos", 3),
             )
+            assert res.dtype == dtype_data
 
         frame, focal_law = make_delay_and_sum_case_random(
             dtype_float, dtype_data, amplitudes="random"

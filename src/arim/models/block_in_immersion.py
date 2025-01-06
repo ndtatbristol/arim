@@ -1046,7 +1046,7 @@ def scat_unshifted_transfer_functions(
 
         numscatterers = view.tx_path.rays.times.shape[1]
         partial_transfer_function_f = np.zeros(
-            (numscatterers, numtimetraces, numfreq), np.complex_
+            (numscatterers, numtimetraces, numfreq), complex
         )
 
         # shape: (numscatterers, numtimetraces)
@@ -1140,7 +1140,7 @@ def wall_unshifted_transfer_functions(
     for pathname, path in wall_paths.items():
         logger.info(f"Transfer function for wall {pathname}")
 
-        partial_transfer_function_f = np.zeros((len(tx), len(freq_array)), np.complex_)
+        partial_transfer_function_f = np.zeros((len(tx), len(freq_array)), complex)
 
         for freq_idx, frequency in enumerate(nonzero_freq_array):
             freq_idx2 = first_nonzero_freq_idx + freq_idx
