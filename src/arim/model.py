@@ -1142,7 +1142,7 @@ def beamspread_2d_for_path(ray_geometry):
         virtual_distance += r / gamma
     # Note: beyond the critical angle, virtual ditance is often -ve, leading to nan
     # values in resulting sensitivity. Use this to set to zero instead of nan.
-    # virtual_distance[virtual_distance < 0] = np.inf
+    virtual_distance[virtual_distance < 0] = np.inf
 
     return np.reciprocal(np.sqrt(virtual_distance))
 

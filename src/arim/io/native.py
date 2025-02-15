@@ -221,6 +221,13 @@ def probe_from_conf(conf, apply_probe_location=True):
                 )
             )
 
+        if "angle_rad" in probe_location:
+            probe.rotate(
+                geometry.rotation_matrix_y(
+                    conf["probe_location"]["angle_rad"]
+                )
+            )
+
         if "standoff" in probe_location:
             probe.translate([0, 0, conf["probe_location"]["standoff"]])
 
