@@ -328,7 +328,9 @@ def directivity_2d_rectangular_on_solid_l(
     S = sin(theta)
     C = cos(theta)
     return (
-        ((k2 - 2 * S**2) * C) / _f0(S, k2) * np.sinc((element_width / wavelength_l) * S)
+        ((k2 - 2 * S**2) * C)
+        / _f0(S, k2)
+        * np.sinc((element_width / wavelength_l) * S)
     )
 
 
@@ -1448,7 +1450,8 @@ class ModelAmplitudes(abc.ABC):
     """
 
     @abc.abstractmethod
-    def __getitem__(self, grid_slice): ...
+    def __getitem__(self, grid_slice):
+        ...
 
     @property
     def shape(self):
