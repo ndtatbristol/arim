@@ -938,11 +938,11 @@ def test_points_1d_wall_z():
     np.testing.assert_allclose(points.z, args["z"])
     for i in range(6):
         np.testing.assert_allclose(orientations[i], np.eye(3))
-    
+
     points1, orientations1 = g.points_1d_wall(
         [args["xmin"], args["y"], args["z"]],
         [args["xmax"], args["y"], args["z"]],
-        args["numpoints"]
+        args["numpoints"],
     )
     assert points1.shape == (6,)
     assert orientations1.shape == (6, 3)

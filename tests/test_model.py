@@ -2,6 +2,7 @@
 Hard-code results and hope they do not evolve over time.
 
 """
+
 from collections import OrderedDict
 
 import numpy as np
@@ -469,35 +470,43 @@ def test_ray_tracing():
 
 
 probe_params = [
-    (0., 5.),
-    (5., -5.),
-    (10., 15.),
-    (0., 180.),
+    (0.0, 5.0),
+    (5.0, -5.0),
+    (10.0, 15.0),
+    (0.0, 180.0),
 ]
+
+
 @pytest.mark.parametrize("probe_angle, global_angle", probe_params)
 def test_rotational_invariance(probe_angle, global_angle):
     context = make_context()
-    probe_args = dict(numx=5, pitch_x=.6e-3, numy=1, pitch_y=None, frequency=2.5e6)
+    probe_args = dict(numx=5, pitch_x=0.6e-3, numy=1, pitch_y=None, frequency=2.5e6)
     standoff = -10e-3
-    frontwall_args = dict(xmin=-5e-3, xmax=5e-3, z=0., numpoints=1000)
-    scatterer_args = dict(x=1e-3, y=0., z=2.5e-3, kind="sdh", radius=0.25e-3)
-    
+    frontwall_args = dict(xmin=-5e-3, xmax=5e-3, z=0.0, numpoints=1000)
+    scatterer_args = dict(x=1e-3, y=0.0, z=2.5e-3, kind="sdh", radius=0.25e-3)
+
     probe_rotation_matrix = g.rotation_matrix_y(np.deg2rad(probe_angle))
     global_rotation_matrix = g.rotation_matrix_y(np.deg2rad(global_angle))
-    
+
     # Frontwall coordinate system (fcs)
     probe_fcs = arim.Probe.make_matrix_probe(**probe_args)
-    probe_fcs.rotate(probe_rotation_matrix).translate([0., 0., standoff])
-    
+    probe_fcs.rotate(probe_rotation_matrix).translate([0.0, 0.0, standoff])
+
     frontwall_fcs = g.points_1d_wall_z(**frontwall_args)
-    scatterer_fcs = g.default_oriented_points(g.Points([[
-        scatterer_args["x"], scatterer_args["y"], scatterer_args["z"], 
-    ]]))
-    
+    scatterer_fcs = g.default_oriented_points(
+        g.Points(
+            [
+                [
+                    scatterer_args["x"],
+                    scatterer_args["y"],
+                    scatterer_args["z"],
+                ]
+            ]
+        )
+    )
+
     examination_object_fcs = arim.BlockInImmersion(
-        context["block"],
-        context["couplant"],
-        {"Frontwall": frontwall_fcs}
+        context["block"], context["couplant"], {"Frontwall": frontwall_fcs}
     )
     views_fcs = arim.models.block_in_immersion.make_views(
         examination_object_fcs,
@@ -509,25 +518,33 @@ def test_rotational_invariance(probe_angle, global_angle):
         views_fcs.values(),
         convert_to_fortran_order=True,
     )
-    
+
     # Probe coordinate system (pcs)
     probe_pcs = arim.Probe.make_matrix_probe(**probe_args)
-    probe_pcs.rotate(probe_rotation_matrix).translate([0., 0., standoff]).rotate(global_rotation_matrix)
-    
+    probe_pcs.rotate(probe_rotation_matrix).translate([0.0, 0.0, standoff]).rotate(
+        global_rotation_matrix
+    )
+
     frontwall_pcs_pts = frontwall_fcs.points.rotate(global_rotation_matrix)
     frontwall_pcs = g.points_1d_wall(
-        frontwall_pcs_pts.coords[ 0, :],
+        frontwall_pcs_pts.coords[0, :],
         frontwall_pcs_pts.coords[-1, :],
         frontwall_args["numpoints"],
     )
-    scatterer_pcs = g.default_oriented_points(g.Points([[
-        scatterer_args["x"], scatterer_args["y"], scatterer_args["z"], 
-    ]]).rotate(global_rotation_matrix))
-    
+    scatterer_pcs = g.default_oriented_points(
+        g.Points(
+            [
+                [
+                    scatterer_args["x"],
+                    scatterer_args["y"],
+                    scatterer_args["z"],
+                ]
+            ]
+        ).rotate(global_rotation_matrix)
+    )
+
     examination_object_pcs = arim.BlockInImmersion(
-        context["block"],
-        context["couplant"],
-        {"Frontwall": frontwall_pcs}
+        context["block"], context["couplant"], {"Frontwall": frontwall_pcs}
     )
     views_pcs = arim.models.block_in_immersion.make_views(
         examination_object_pcs,
@@ -539,65 +556,99 @@ def test_rotational_invariance(probe_angle, global_angle):
         views_pcs.values(),
         convert_to_fortran_order=True,
     )
-    
+
     all_fcs_paths = {
-        path.longname: path for path in
-        {view.tx_path for view in views_fcs.values()} | {view.rx_path for view in views_fcs.values()}
+        path.longname: path
+        for path in {view.tx_path for view in views_fcs.values()}
+        | {view.rx_path for view in views_fcs.values()}
     }
     all_pcs_paths = {
-        path.longname: path for path in
-        {view.tx_path for view in views_pcs.values()} | {view.rx_path for view in views_pcs.values()}
+        path.longname: path
+        for path in {view.tx_path for view in views_pcs.values()}
+        | {view.rx_path for view in views_pcs.values()}
     }
     (
-          tx_weights_fcs,
-          rx_weights_fcs,
-          tx_debug_fcs,
-          rx_debug_fcs,
-          scat_angles_fcs,
+        tx_weights_fcs,
+        rx_weights_fcs,
+        tx_debug_fcs,
+        rx_debug_fcs,
+        scat_angles_fcs,
     ) = arim.models.block_in_immersion.ray_weights_for_views(
-        views_fcs, probe_args["frequency"], probe_element_width=.35e-3, save_debug=True
+        views_fcs, probe_args["frequency"], probe_element_width=0.35e-3, save_debug=True
     )
     (
-          tx_weights_pcs,
-          rx_weights_pcs,
-          tx_debug_pcs,
-          rx_debug_pcs,
-          scat_angles_pcs,
+        tx_weights_pcs,
+        rx_weights_pcs,
+        tx_debug_pcs,
+        rx_debug_pcs,
+        scat_angles_pcs,
     ) = arim.models.block_in_immersion.ray_weights_for_views(
-        views_pcs, probe_args["frequency"], probe_element_width=.35e-3, save_debug=True
+        views_pcs, probe_args["frequency"], probe_element_width=0.35e-3, save_debug=True
     )
-    
+
     for pathname in all_fcs_paths.keys():
         # Test angles
         path_fcs = all_fcs_paths[pathname]
         ray_fcs = arim.ray.RayGeometry.from_path(path_fcs)
         path_pcs = all_pcs_paths[pathname]
         ray_pcs = arim.ray.RayGeometry.from_path(path_pcs)
-        
+
         # Not worried about angles incident on scatterer, as these are handled in ray weights.
-        np.testing.assert_allclose(ray_fcs.conventional_inc_angle(1), ray_pcs.conventional_inc_angle(1))
-        np.testing.assert_allclose(ray_fcs.conventional_out_angle(0),   ray_pcs.conventional_out_angle(0))
-        np.testing.assert_allclose(ray_fcs.conventional_out_angle(1),   ray_pcs.conventional_out_angle(1))
-        np.testing.assert_allclose(ray_fcs.signed_inc_angle(1), ray_pcs.signed_inc_angle(1))
-        np.testing.assert_allclose(ray_fcs.signed_out_angle(0),   ray_pcs.signed_out_angle(0))
-        np.testing.assert_allclose(ray_fcs.signed_out_angle(1),   ray_pcs.signed_out_angle(1))
-    
+        np.testing.assert_allclose(
+            ray_fcs.conventional_inc_angle(1), ray_pcs.conventional_inc_angle(1)
+        )
+        np.testing.assert_allclose(
+            ray_fcs.conventional_out_angle(0), ray_pcs.conventional_out_angle(0)
+        )
+        np.testing.assert_allclose(
+            ray_fcs.conventional_out_angle(1), ray_pcs.conventional_out_angle(1)
+        )
+        np.testing.assert_allclose(
+            ray_fcs.signed_inc_angle(1), ray_pcs.signed_inc_angle(1)
+        )
+        np.testing.assert_allclose(
+            ray_fcs.signed_out_angle(0), ray_pcs.signed_out_angle(0)
+        )
+        np.testing.assert_allclose(
+            ray_fcs.signed_out_angle(1), ray_pcs.signed_out_angle(1)
+        )
+
         # Test model ray weights
         np.testing.assert_allclose(tx_weights_fcs[path_fcs], tx_weights_pcs[path_pcs])
         np.testing.assert_allclose(rx_weights_fcs[path_fcs], rx_weights_pcs[path_pcs])
-        np.testing.assert_allclose(tx_debug_fcs[path_fcs]["directivity"], tx_debug_pcs[path_pcs]["directivity"])
-        np.testing.assert_allclose(rx_debug_fcs[path_fcs]["directivity"], rx_debug_pcs[path_pcs]["directivity"])
-        np.testing.assert_allclose(tx_debug_fcs[path_fcs]["transrefl"], tx_debug_pcs[path_pcs]["transrefl"])
-        np.testing.assert_allclose(rx_debug_fcs[path_fcs]["transrefl"], rx_debug_pcs[path_pcs]["transrefl"])
-        np.testing.assert_allclose(tx_debug_fcs[path_fcs]["beamspread"], tx_debug_pcs[path_pcs]["beamspread"])
-        np.testing.assert_allclose(rx_debug_fcs[path_fcs]["beamspread"], rx_debug_pcs[path_pcs]["beamspread"])
-        np.testing.assert_allclose(tx_debug_fcs[path_fcs]["attenuation"], tx_debug_pcs[path_pcs]["attenuation"])
-        np.testing.assert_allclose(rx_debug_fcs[path_fcs]["attenuation"], rx_debug_pcs[path_pcs]["attenuation"])
-        np.testing.assert_allclose(tx_debug_fcs[path_fcs]["invalid"], tx_debug_pcs[path_pcs]["invalid"])
-        np.testing.assert_allclose(rx_debug_fcs[path_fcs]["invalid"], rx_debug_pcs[path_pcs]["invalid"])
         np.testing.assert_allclose(
-            np.mod(scat_angles_pcs[path_pcs] - scat_angles_fcs[path_fcs], 2*np.pi),
-            np.mod(np.deg2rad(global_angle), 2*np.pi),
+            tx_debug_fcs[path_fcs]["directivity"], tx_debug_pcs[path_pcs]["directivity"]
+        )
+        np.testing.assert_allclose(
+            rx_debug_fcs[path_fcs]["directivity"], rx_debug_pcs[path_pcs]["directivity"]
+        )
+        np.testing.assert_allclose(
+            tx_debug_fcs[path_fcs]["transrefl"], tx_debug_pcs[path_pcs]["transrefl"]
+        )
+        np.testing.assert_allclose(
+            rx_debug_fcs[path_fcs]["transrefl"], rx_debug_pcs[path_pcs]["transrefl"]
+        )
+        np.testing.assert_allclose(
+            tx_debug_fcs[path_fcs]["beamspread"], tx_debug_pcs[path_pcs]["beamspread"]
+        )
+        np.testing.assert_allclose(
+            rx_debug_fcs[path_fcs]["beamspread"], rx_debug_pcs[path_pcs]["beamspread"]
+        )
+        np.testing.assert_allclose(
+            tx_debug_fcs[path_fcs]["attenuation"], tx_debug_pcs[path_pcs]["attenuation"]
+        )
+        np.testing.assert_allclose(
+            rx_debug_fcs[path_fcs]["attenuation"], rx_debug_pcs[path_pcs]["attenuation"]
+        )
+        np.testing.assert_allclose(
+            tx_debug_fcs[path_fcs]["invalid"], tx_debug_pcs[path_pcs]["invalid"]
+        )
+        np.testing.assert_allclose(
+            rx_debug_fcs[path_fcs]["invalid"], rx_debug_pcs[path_pcs]["invalid"]
+        )
+        np.testing.assert_allclose(
+            np.mod(scat_angles_pcs[path_pcs] - scat_angles_fcs[path_fcs], 2 * np.pi),
+            np.mod(np.deg2rad(global_angle), 2 * np.pi),
         )
 
 
