@@ -614,7 +614,8 @@ class CoordinateSystem:
 
     @property
     def basis_matrix(self):
-        # i_hat, j_hat and k_hat stored in columns
+        # i_hat, j_hat and k_hat stored in columns.
+        # Note that `from_gcs()` and `to_gcs()` require i_hat, j_hat, k_hat in rows. Transpose externally.
         return np.stack((self.i_hat, self.j_hat, self.k_hat), axis=1)
 
     def copy(self):
@@ -1672,7 +1673,9 @@ def points_1d_wall(start, end, numpoints, name=None, dtype=None):
         [0.0, 1.0, 0.0],
     ).basis_matrix
 
-    orientations_arr = np.broadcast_to(basis, (*points.shape, 3, 3))
+    # Note transposed: `CoordinateSystem.basis_matrix` stores basis in columns;
+    # `from_gcs()` requires basis stored in rows.
+    orientations_arr = np.broadcast_to(basis.transpose(), (*points.shape, 3, 3))
     orientations = Points(orientations_arr)
 
     return OrientedPoints(points, orientations)

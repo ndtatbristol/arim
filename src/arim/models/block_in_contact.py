@@ -20,6 +20,7 @@ Limits of the forward model:
 See also :mod:`arim.models.model.block_in_immersion`
 
 """
+
 import logging
 from collections import OrderedDict, namedtuple
 from itertools import product

@@ -1,6 +1,7 @@
 """
 Toolbox of functions for ultrasonic testing/acoustics.
 """
+
 # Only function that does not require any arim-specific logic should be put here.
 # This module must be kept free of any arim dependencies because so that it could be used
 # without arim.

@@ -2,6 +2,7 @@
 Contains common functions to arim.scat and arim.model, to avoid always importing
 arim.scat from arim.model.
 """
+
 import numba
 import numpy as np
 

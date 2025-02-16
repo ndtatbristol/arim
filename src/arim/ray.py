@@ -2,6 +2,7 @@
 Ray tracing module
 
 """
+
 import contextlib
 import gc
 import logging
