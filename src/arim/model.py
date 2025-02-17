@@ -1207,6 +1207,9 @@ def reverse_beamspread_2d_for_path(ray_geometry):
             gamma *= gamma_list[i]
         virtual_distance += r / gamma
 
+    # See `beamspread_2d_for_path()` about the need for this.
+    virtual_distance[virtual_distance < 0] = np.inf
+
     return np.reciprocal(np.sqrt(virtual_distance))
 
 

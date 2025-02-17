@@ -1721,13 +1721,7 @@ def points_1d_wall_z(
     orientations = default_orientations(points)
     # Rotate by pi radians in x-z plane if block is below.
     if not is_block_above:
-        orientations = orientations.rotate(
-            [
-                [np.cos(np.pi), 0.0, np.sin(np.pi)],
-                [0.0, 1.0, 0.0],
-                [-np.sin(np.pi), 0.0, np.cos(np.pi)],
-            ]
-        )
+        orientations = orientations.rotate(rotation_matrix_y(np.pi))
 
     return OrientedPoints(points, orientations)
 
