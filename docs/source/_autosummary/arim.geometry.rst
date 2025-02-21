@@ -16,6 +16,7 @@
       are_points_aligned
       are_points_close
       aspoints
+      combine_oriented_points
       default_orientations
       default_oriented_points
       direct_isometry_2d
@@ -24,8 +25,10 @@
       from_gcs
       is_orthonormal
       is_orthonormal_direct
+      make_contiguous_geometry
       norm2
       norm2_2d
+      points_1d_wall
       points_1d_wall_z
       points_from_probe
       points_in_rectbox
@@ -50,6 +53,7 @@
    
       CoordinateSystem
       Grid
+      MaskedGrid
       OrientedPoints
       Points
       SphericalCoordinates
