@@ -1,38 +1,117 @@
-.. _user_install:
+.. _dev_install:
 
 ============
-Installation
+Contributing
 ============
 
-This section described how to install arim for the end-user. For developer installation,
-see `the CONTRIBUTING guide <https://github.com/ndtatbristol/arim/blob/master/CONTRIBUTING.md>`_ in arim's git repository.
+This section describes how to install arim for an end-user. For developer installation,
+see the `developer install guide <installation/developer>`_ or
+`Contributing.md <https://github.com/ndtatbristol/arim/blob/master/CONTRIBUTING.md>`_ in arim's git repository.
 
 .. _reqs_user_install:
 
-Requirements for user installation
-==================================
+Requirements
+============
 
 Dependencies for arim itself:
 
 - Python 3
-- `numpy <http://www.numpy.org/>`_
+- `numpy <https://www.numpy.org/>`_
 - `scipy <https://www.scipy.org/>`_
-- `numba <http://numba.pydata.org/>`_: efficient computation
-- `matplotlib <http://matplotlib.org/>`_: plotting library used in :mod:`arim.plot` and in scripts
-- `pyyaml <http://pyyaml.org/>`_: used for reading configuration files
+- `numba <https://numba.pydata.org/>`_: efficient computation
+- `matplotlib <https://matplotlib.org/>`_: plotting library used in :mod:`arim.plot` and in scripts
+- `pyyaml <https://pyyaml.org/>`_: used for reading configuration files
 
 Dependencies for the example scripts (not used by arim *per se*):
 
-- `pandas <http://pyyaml.org/>`_: data analysis tools
+- `pandas <https://pandas.pydata.org/>`_: data analysis tools
+- `pooch <https://www.fatiando.org/pooch/latest/>`_: for downloading data files
 
 Optional dependency:
 
-- `h5py <http://www.h5py.org/>`_: for reading MATLAB v7 datafile (used in :mod:`arim.io`)
+- `h5py <https://www.h5py.org/>`_: for reading MATLAB v7 datafile (used in :mod:`arim.io`)
 
-Installation
-============
+.. _stable_intall:
 
-Installation from a stable release (recommended)
+Installation (stable)
+=====================
+
+.. tab-set::
+
+    .. tab-item:: Anaconda
+
+        Make sure you have a working `Anaconda <https://www.anaconda.com/download/>`_ installation with Python v3.9 or greater.
+
+        Anaconda will already have many requirements already installed, however you may have to install ...
+
+        From the `arim releases page <https://github.com/ndtatbristol/arim/releases>`_, download the most recent wheel package
+        (``*.whl`` file).
+
+        Open the Anaconda Prompt, navigate to the directory where the wheel file was downloaded, and install this file ::
+
+            cd <download-directory>
+            pip install <arim-wheel-file>
+
+        For the most recent version, this is ::
+
+            cd <download-directory>
+            pip install <arim-wheel-file>
+
+        arim will now be installed in your environment. ::
+
+            >>> import arim
+            >>> print(arim.__version__)
+
+    .. tab-item:: Conda / mamba environment
+
+        Make sure you have a working `conda <https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html>`_
+        or `mamba <https://mamba.readthedocs.io/en/latest/installation/mamba-installation.html>`_ installation.
+
+        Open the Anaconda Prompt or Miniforge Prompt, and create a new environment with the required packages installed ::
+
+            conda create -n <env-name> numpy scipy numba matplotlib pyyaml pandas pooch h5py
+
+        Activate this new environment ::
+
+            conda activate <env-name>
+
+        From the `arim releases page <https://github.com/ndtatbristol/arim/releases>`_, download the most recent wheel
+        package (``*.whl`` file).
+
+        In the prompt, navigate to the directory where the wheel file was downloaded, and install this file ::
+
+            cd <download-directory>
+            pip install <arim-wheel-file>
+
+        For the most recent version, this is ::
+
+            cd <download-directory>
+            pip install <arim-wheel-file>
+
+        arim will now be installed in your environment. ::
+
+            >>> import arim
+            >>> print(arim.__version__)
+
+Installation (latest)
+=====================
+
+.. tab-set::
+
+    .. tab-item:: Github
+
+        Make sure you have a working installation of Anaconda, Conda or Mamba, and that the requirements are installed.
+        See above
+
+        From the `main arim repository <https://github.com/ndtatbristol/arim>`_, click the green ``Code`` button, and
+        ``Download ZIP`` to download the latest version.
+
+        After it has downloaded, extract the contents of the zip file.
+
+        Open your Anaconda Prompt or Miniforge Prompt
+
+
+Stable release (recommended)
 ------------------------------------------------
 
 Use case: general case.

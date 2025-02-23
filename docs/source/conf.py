@@ -28,6 +28,7 @@ release = arim.__version__
 
 # -- General configuration ---------------------------------------------------
 extensions = [
+    "sphinx_design",
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
     "sphinx.ext.todo",
@@ -35,7 +36,6 @@ extensions = [
     "sphinx.ext.mathjax",
     "sphinx.ext.napoleon",
     "sphinx.ext.viewcode",
-    "sphinx_design"
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -52,6 +52,25 @@ exclude_patterns = []
 # a list of builtin themes.
 #
 html_theme = 'pydata_sphinx_theme'
+
+# html_theme_options = {
+#     "navbar_start": ["navbar-logo"],
+#     "navbar_center": [
+#         {
+#             "type": "dropdown",
+#             "label": "Installation",
+#             "items": [
+#                 {"type": "link", "label": "User Installation", "url": "installation//index.html"},
+#                 {"type": "link", "label": "Development", "url": "installation//development.html"},
+#             ],
+#         },
+#     ],
+#     "navbar_end": ["navbar-icon-links"],
+#     "navbar_persistent": ["search-field"],
+#     "navbar_align": "content",
+#     "show_nav_level": 2,
+#     "collapse_navigation": False,
+# }
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
