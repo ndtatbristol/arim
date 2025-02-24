@@ -14,38 +14,19 @@ overview, see :ref:`examples`.
 Below, a range of guides to the functionality are provided. More details may be found in the :ref:`api`.
 
 
-Getting started
----------------
-.. toctree::
-    :maxdepth: 2
-
-    installation/index
-    installation/development
-
-
 Guides
 ------
 
 .. toctree::
     :maxdepth: 2
 
-    user/core/index
-    user/model/index
-    user/im/index
-    user/utils/index
-    user/io/index
-    user/examples/index
-    user/glossary
-    user/bibliography
-
-
-API
----
-
-.. toctree::
-    :maxdepth: 1
-
-    api
+    core/index
+    model/index
+    im/index
+    utils/index
+    io/index
+    glossary
+    bibliography
 
 Indices and tables
 ==================

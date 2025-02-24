@@ -4,6 +4,12 @@
 Installation
 ============
 
+.. toctree::
+    :maxdepth: 2
+    :hidden:
+
+    development
+
 This section describes how to install arim for an end-user. For developer installation,
 see the `developer install guide <installation/developer>`_ or
 `Contributing.md <https://github.com/ndtatbristol/arim/blob/master/CONTRIBUTING.md>`_ in arim's git repository.

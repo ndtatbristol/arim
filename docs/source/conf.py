@@ -53,7 +53,9 @@ exclude_patterns = []
 #
 html_theme = 'pydata_sphinx_theme'
 
-# html_theme_options = {
+html_theme_options = {
+    "navigation_depth": 4
+}
 #     "navbar_start": ["navbar-logo"],
 #     "navbar_center": [
 #         {

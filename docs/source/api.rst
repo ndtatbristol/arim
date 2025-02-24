@@ -10,6 +10,7 @@ API Reference
 
 .. autosummary::
    :toctree: _autosummary
+   :recursive:
 
    core
    geometry
@@ -20,6 +21,7 @@ API Reference
 
 .. autosummary::
    :toctree: _autosummary
+   :recursive:
 
    model
    models
@@ -32,6 +34,7 @@ API Reference
 
 .. autosummary::
    :toctree: _autosummary
+   :recursive:
 
    im
    im.tfm
@@ -42,6 +45,7 @@ API Reference
 
 .. autosummary::
    :toctree: _autosummary
+   :recursive:
 
    datasets
    io
@@ -58,6 +62,7 @@ API Reference
 
 .. autosummary::
    :toctree: _autosummary
+   :recursive:
 
    config
    helpers

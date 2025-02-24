@@ -2,6 +2,15 @@
 arim Documentation
 ===================
 
+.. toctree::
+    :maxdepth: 2
+    :hidden:
+
+    installation/index
+    user/index
+    examples/index
+    api
+
 **Date**: |today| **Version**: |release|
 
 **Links**:
@@ -53,12 +62,3 @@ Citation
 If arim has formed a significant part of your work and you would like to acknowledge us, please cite the following paper:
 
 - N. Budyn, R. L. T. Bevan, J. Zhang, A. J. Croxford and P. D. Wilcox, "A Model for Multiview Ultrasonic Array Inspection of Small Two-Dimensional Defects," in IEEE Transactions on Ultrasonics, Ferroelectrics, and Frequency Control, vol. 66, no. 6, pp. 1129-1139, June 2019, doi: `10.1109/TUFFC.2019.2909988 <https://doi.org/10.1109/TUFFC.2019.2909988>`_.
-
-.. toctree::
-    :maxdepth: 2
-    :includehidden:
-
-    installation/index
-    user/index
-    user/examples/index
-    api
