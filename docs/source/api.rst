@@ -1,7 +1,7 @@
 .. _api:
 
 ==============
-arim reference
+API Reference
 ==============
 
 .. currentmodule:: arim

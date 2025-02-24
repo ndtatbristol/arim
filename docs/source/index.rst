@@ -56,10 +56,9 @@ If arim has formed a significant part of your work and you would like to acknowl
 
 .. toctree::
     :maxdepth: 2
+    :includehidden:
 
     installation/index
-    installation/development
-
     user/index
     user/examples/index
     api
