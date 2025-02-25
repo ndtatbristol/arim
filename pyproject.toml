@@ -13,6 +13,7 @@ keywords = []
 authors = [
   { name = "Nicolas Budyn", email = "contact@budyn.dev" },
   { name = "Rhodri Bevan", email = "" },
+  { name = "Matt Chandler", email = "m.chandler@bristol.ac.uk"},
 ]
 classifiers = [
   "Development Status :: 4 - Beta",
