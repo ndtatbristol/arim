@@ -1,4 +1,4 @@
-# furo==2021.11.16
-sphinx==5.0.2
+matplotlib
+sphinx>=5.0.2
 sphinx_design
 pydata_sphinx_theme

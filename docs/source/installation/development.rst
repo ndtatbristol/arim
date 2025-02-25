@@ -4,262 +4,207 @@
 Contributing
 ============
 
-This section describes how to install arim for an end-user. For developer installation,
-see the `developer install guide <installation/developer>`_ or
-`Contributing.md <https://github.com/ndtatbristol/arim/blob/master/CONTRIBUTING.md>`_ in arim's git repository.
+Thank you for your interest in arim! There are many ways to contribute, including:
 
-.. _reqs_user_install:
+- Reporting issues for bug fixes,
+- Writing documentation,
+- Writing example scripts to help users get up to speed quickly,
+- Writing unit tests to ensure the code works as intended,
+- Adding new features.
 
-Requirements
-============
+Developer installation
+======================
 
-Dependencies for arim itself:
+Installation for development requires extra packages for testing, running the code formatting and linting, and building
+documentation. The recommended instructions are as follows.
 
-- Python 3
-- `numpy <https://www.numpy.org/>`_
-- `scipy <https://www.scipy.org/>`_
-- `numba <https://numba.pydata.org/>`_: efficient computation
-- `matplotlib <https://matplotlib.org/>`_: plotting library used in :mod:`arim.plot` and in scripts
-- `pyyaml <https://pyyaml.org/>`_: used for reading configuration files
-
-Dependencies for the example scripts (not used by arim *per se*):
-
-- `pandas <https://pandas.pydata.org/>`_: data analysis tools
-- `pooch <https://www.fatiando.org/pooch/latest/>`_: for downloading data files
-
-Optional dependency:
-
-- `h5py <https://www.h5py.org/>`_: for reading MATLAB v7 datafile (used in :mod:`arim.io`)
-
-.. _stable_intall:
-
-Installation (stable)
-=====================
+First, create a fork of arim under your own Github account.
 
 .. tab-set::
 
-    .. tab-item:: Anaconda
+    .. tab-item:: Hatch
 
-        Make sure you have a working `Anaconda <https://www.anaconda.com/download/>`_ installation with Python v3.9 or greater.
+        Install `hatch <https://hatch.pypa.io/latest/install/>`_.
 
-        Anaconda will already have many requirements already installed, however you may have to install ...
+        Clone your forked arim repository locally.
 
-        From the `arim releases page <https://github.com/ndtatbristol/arim/releases>`_, download the most recent wheel package
-        (``*.whl`` file).
+        Create a new virtual environment and install the dependencies. You can do this from any prompt or terminal window
 
-        Open the Anaconda Prompt, navigate to the directory where the wheel file was downloaded, and install this file ::
+        .. code-block:: shell
 
-            cd <download-directory>
-            pip install <arim-wheel-file>
+            cd <arim-clone-directory>
+            hatch env create
 
-        For the most recent version, this is ::
+        To activate this virtual environment, use ``hatch shell``. Refer to the `hatch documentation <https://hatch.pypa.io/latest/intro/>`_
+        for further details.
 
-            cd <download-directory>
-            pip install <arim-wheel-file>
-
-        arim will now be installed in your environment. ::
-
-            >>> import arim
-            >>> print(arim.__version__)
-
-    .. tab-item:: Conda / mamba environment
+    .. tab-item:: conda / mamba environment
 
         Make sure you have a working `conda <https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html>`_
-        or `mamba <https://mamba.readthedocs.io/en/latest/installation/mamba-installation.html>`_ installation.
+        or `mamba <https://mamba.readthedocs.io/en/latest/installation/mamba-installation.html>`_ installation. For the
+        remainder of this section, ``mamba`` will be used - replace this with ``conda`` if this is your preferred package
+        manager.
 
-        Open the Anaconda Prompt or Miniforge Prompt, and create a new environment with the required packages installed ::
+        Clone your forked arim repository locally.
 
-            conda create -n <env-name> numpy scipy numba matplotlib pyyaml pandas pooch h5py
+        Create a new ``mamba`` environment, and install arim.
 
-        Activate this new environment ::
+        .. code-block:: shell
 
-            conda activate <env-name>
+            mamba create -n arim-env
+            cd <arim-clone-directory>
+            pip install -e .
 
-        From the `arim releases page <https://github.com/ndtatbristol/arim/releases>`_, download the most recent wheel
-        package (``*.whl`` file).
+        This will install the required dependencies, as well as arim in editable mode. Any changes you make to the code
+        base in this folder will therefore be used when running arim.
 
-        In the prompt, navigate to the directory where the wheel file was downloaded, and install this file ::
 
-            cd <download-directory>
-            pip install <arim-wheel-file>
+.. _quality_guidelines:
 
-        For the most recent version, this is ::
+Code quality guidelines
+=======================
 
-            cd <download-directory>
-            pip install <arim-wheel-file>
+Adhering to a common code style helps make the code more readable. As code is written once but read multiple times, it
+is important that it is written well to save time in the long run. Meaningful and expressive variable and function names,
+with no or little abbreviation, are essential.
 
-        arim will now be installed in your environment. ::
+arim code follows the general guidelines defined in `Python PEP-8 <https://www.python.org/dev/peps/pep-0008/>`_, with the
+amendments defined in the following sections.
 
-            >>> import arim
-            >>> print(arim.__version__)
 
-Installation (latest)
-=====================
+Code formatting and linting
+---------------------------
+
+arim uses the `black <https://black.readthedocs.io/en/stable/>`_ formatter and the `ruff <https://docs.astral.sh/ruff/>`_
+linter. To format and lint from your environment, use
+
+.. code-block:: shell
+
+    hatch run lint:fmt
+
+To run a check without changing any code, use
+
+.. code-block:: shell
+
+    hatch run lint:check
+
+The linter configuration is defined in `pyproject.toml <https://github.com/ndtatbristol/arim/blob/master/pyproject.toml>`_.
+
+
+Docstrings
+----------
+
+Docstrings for functions, classes and modules follow `numpy's docstring format <https://numpydoc.readthedocs.io/en/latest/format.html>`_
+
+
+Documentation
+=============
+
+arim's documentation is powered by `Sphinx <http://sphinx-doc.org/>`_, with the most recent version deployed using
+`Github Pages <https://pages.github.com/>`_.
+
+The documentation is generated from two sources:
+
+1. The files found in ``docs/source``, formatted as ReStructuredText, and
+2. The docstrings in the codebase, compiled via `autosummary <https://www.sphinx-doc.org/en/master/usage/extensions/autosummary.html>`_.
+
+If including academic references, please use the author-date style from the Chicago Manual of Style, e.g.
+- Holmes, Caroline, Bruce W. Drinkwater, and Paul D. Wilcox. 2005. ‘Post-Processing of the Full Matrix of Ultrasonic Transmit–receive Array Data for Non-Destructive Evaluation’. NDT & E International 38 (8): 701–11. doi:10.1016/j.ndteint.2005.04.002.
+
+
+Building the documentation
+--------------------------
+
+arim uses Github Actions to automatically build the documentation when new pushes are made, or when a new pull request
+is accepted. Before this happens, please test that it works by building a version locally:
 
 .. tab-set::
 
-    .. tab-item:: Github
+    .. tab-item:: hatch
 
-        Make sure you have a working installation of Anaconda, Conda or Mamba, and that the requirements are installed.
-        See above
+        .. code-block:: shell
 
-        From the `main arim repository <https://github.com/ndtatbristol/arim>`_, click the green ``Code`` button, and
-        ``Download ZIP`` to download the latest version.
+            cd <arim-clone-directory>/docs
+            hatch shell default
+            make html
 
-        After it has downloaded, extract the contents of the zip file.
+    .. tab-item:: mamba / conda
 
-        Open your Anaconda Prompt or Miniforge Prompt
+        .. code-block:: shell
 
+            cd <arim-clone-directory>/docs
+            mamba activate arim-env
+            make html
 
-Stable release (recommended)
-------------------------------------------------
+The output will be found in ``docs/build/html``.
 
-Use case: general case.
 
-Install `Anaconda distribution <https://www.anaconda.com/download/>`_ (Python 3 version).
+Version control
+===============
 
-Go to the `Release page of arim <https://github.com/ndtatbristol/arim/releases>`_.
+A commit should contain one functional change. In other words, it should not contain multiple unrelated features. It is
+also important to use `informative commit messages <https://wiki.openstack.org/wiki/GitCommitMessages>`_.
 
-Download the wheel package (``.whl`` file) corresponding to the latest release.
+It is best practice to only push to branch ``master`` versions of arim which successfully pass all tests. When developing
+new features, please create a new branch first to develop the feature locally. Add tests, docstrings, examples, and if
+necessary update the user guides in the documentation. Finally, only when all tests are passing, should you finally
+create a pull request to ``master``. (See `this article <https://www.atlassian.com/git/tutorials/comparing-workflows/feature-branch-workflow>`_
+for more details).
 
-Start an Anaconda Prompt (in Windows, it should be in the Start menu) and type in::
 
-  pip install <arim-wheel-file>
+.. _unit_testing:
 
-Example::
+Testing
+=======
 
-  pip install arim-1.0-py3-none-any.whl
+Unit tests ensure that a given function returns the intended results at the time of commit, as well as much later down
+the line (i.e. it is non-regressive). arim uses `pytest <https://docs.pytest.org/>`_ to do unit testing. Tests are defined
+in the ``tests`` directory. Please consider adding new tests!
 
+To run the tests, use
 
-Installation from a wheel file in a virtual environment
--------------------------------------------------------
+.. tab-set::
 
-Use cases:
+    .. tab-item:: hatch
 
-- several versions of arim are needed on the same machine (create one environment per version),
-- and/or the user prefers to keep conda root environment free from arim,
-- and/or space is tight (install conda without the whole Anaconda distribution).
+        .. code-block:: shell
 
-Install `Anaconda distribution <https://www.anaconda.com/download/>`_ (Python 3 version) or conda (`conda installation guide <http://conda.pydata.org/docs/download.html>`_).
+            hatch run test
 
-In an Anaconda prompt, create a new virtual environment with the desired dependencies::
+    .. tab-item:: mamba / conda
 
-  conda create --name arim python numpy scipy numba matplotlib numba pyyaml pandas h5py
+        .. code-block:: shell
 
-Activate the virtual environment::
+            mamba activate arim-env
+            pytest
 
-  # on Windows:
-  activate arim 
+All tests must pass before a pull request will be accepted into the ``master`` branch.
 
-  # on Unix:
-  source activate arim
 
-Then install arim::
+Pull requests
+=============
 
-  pip install <arim-wheel-file>
+You can propose changes to arim using `pull requests <https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/proposing-changes-to-your-work-with-pull-requests>`_.
+By submitting a pull request, you accept that the proposed changes are licensed under the MIT license. The proposed
+changes must also comply with arim's `code quality guidelines <quality_guidelines>`_.
 
-Example::
 
-  pip install arim-1.0-py3-none-any.whl
+Releases
+========
 
-.. seealso::
+Releases should be made when new features are added. To create a release,
+1. Ensure all `unit tests <unit_testing>`_ pass.
+2. Change arim's version number in ``src/arim/__init__.py``, following the `PEP 440 <https://www.python.org/dev/peps/pep-0440/>`_
+convention. Commit with an instructive description.
+3. Assign a `tag <https://git-scm.com/book/en/v2/Git-Basics-Tagging>`_ to the release commit. For example, if the version
+number is 1.1, the tag name should be "v1.1".
+4. Build the documentation, and save the HTML files in a zip names "documentation.zip", outside of the tracked repository.
+5. Create a wheel package
 
-  `conda documentation <https://conda.io/docs/>`_
+.. code-block:: shell
 
-.. _source_install:
+    hatch build
 
-Source installation from git
-----------------------------
-
-Use cases:
-
-- tracking the latest changes in arim,
-- and/or developer installation
-
-Install all requirements, in a virtual environment if desired.
-Clone the `github repository <https://github.com/ndtatbristol/arim>`_. The newly created directory is referred below
-as your *local git repository*. It contains:
-
-- ``arim/setup.py``: file for installing arim
-- ``arim/arim``: directory of the code of arim
-- ``arim/examples``: directory of example scripts
-- ``arim/tests``: directory of unit tests for arim
-- ``arim/docs``: directory of the present documentation (must be built first)
-- other elements.
-
-
-Option 1: normal installation
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-In the Anaconda Prompt, change to the top arim directory (the one with ``setup.py``) and type::
-
-  pip install .
-
-The content of your local git repository will be *copied* into the ``site-packages`` directory, which is the main
-location where Python stores the non-standard libraries For an Anaconda installation on Windows with default settings,
-this directory is::
-
-  C:\ProgramData\Anaconda3\Lib\site-packages
-
-When running ``import arim`` in Python, the files from the ``site-packages`` directory will be imported. Consequently,
-updating your local git repository *will not change* the installed files. The local git repository can be safely deleted
-if needed.
-
-
-Option 2: developer installation
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-In the Anaconda Prompt, change to the top arim directory (the one with ``setup.py``) and type::
-
-  pip install . -e
-
-The content of the your local git repository becomes the place where Python looks up arim files during an import. These
-files are *not copied* into the ``site-packages`` directory.  When running ``import arim`` in Python, the files from the
-local git repository are imported.
-
-.. seealso::
-
-   `CONTRIBUTING guide <https://github.com/ndtatbristol/arim/blob/master/CONTRIBUTING.md>`_
-
-
-Update arim
-===========
-
-Re-run the installation procedure with the updated wheel or source files.
-
-Check arim is working
-=====================
-
-Start Python::
-
-  python
-
-Start arim::
-
-  >>> import arim
-  >>> arim.__version__
-  '1.0'
-  >>> exit()
-
-
-Upgrade arim
-============
-
-To upgrade, repeat the installation procedure with the updated package.
-
-In arim virtual environment (if any)::
-
-  pip install <arim-wheel-file> --upgrade
-
-
-Uninstall arim
-==============
-
-In arim virtual environment (if any)::
-
-  pip uninstall arim
-
-Remove the virtual environment (if any) with::
-
-  conda env remove -n arim
-
+6. `Create a new release on Github <https://help.github.com/en/github/administering-a-repository/managing-releases-in-a-repository>`_.
+Select the newly created tag, and describe the changes in this version. Attach both the wheel (``.whl``) file and
+``documentation.zip``.
