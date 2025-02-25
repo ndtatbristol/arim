@@ -3,10 +3,10 @@ name: Deploy Sphinx documentation to Pages
 on:
   push:
     branches:
-      - docs-and-typing
+      - docs-for-pages
   pull_request:
     branches:
-      - docs-and-typing
+      - docs-for-pages
 
 jobs:
   cleanup:
