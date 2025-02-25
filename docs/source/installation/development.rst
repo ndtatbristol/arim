@@ -109,6 +109,7 @@ The documentation is generated from two sources:
 2. The docstrings in the codebase, compiled via `autosummary <https://www.sphinx-doc.org/en/master/usage/extensions/autosummary.html>`_.
 
 If including academic references, please use the author-date style from the Chicago Manual of Style, e.g.
+
 - Holmes, Caroline, Bruce W. Drinkwater, and Paul D. Wilcox. 2005. ‘Post-Processing of the Full Matrix of Ultrasonic Transmit–receive Array Data for Non-Destructive Evaluation’. NDT & E International 38 (8): 701–11. doi:10.1016/j.ndteint.2005.04.002.
 
 
