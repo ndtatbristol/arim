@@ -5,11 +5,12 @@ on:
     branches:
       - master
   pull_request:
-    branches:
-      - master
-
+    types:
+      - closed
+      
 jobs:
   cleanup:
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     permissions: write-all
 
@@ -22,6 +23,7 @@ jobs:
           onlyRemoveDeployments: true
           
   build:
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     needs: cleanup
 
