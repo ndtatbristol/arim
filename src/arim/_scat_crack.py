@@ -166,11 +166,7 @@ def A_x(xi, xi2, h_nodes, num_nodes):
 
 @numba.njit(cache=True)
 def A_z_F1(x, xi, xi2, h_nodes, z):
-    return (
-        F(xi, xi2, h_nodes, xi - x**2)
-        / sqrt(2 * xi - x**2)
-        * cos((xi - x**2) * z)
-    )
+    return F(xi, xi2, h_nodes, xi - x**2) / sqrt(2 * xi - x**2) * cos((xi - x**2) * z)
 
 
 @numba.cfunc("f8(f8, voidptr)", cache=True)
@@ -187,11 +183,7 @@ def A_z_F1_imag(x, data):
 
 @numba.njit(cache=True)
 def A_z_F2(x, xi, xi2, h_nodes, z):
-    return (
-        F(xi, xi2, h_nodes, xi + x**2)
-        / sqrt(2 * xi + x**2)
-        * cos((xi + x**2) * z)
-    )
+    return F(xi, xi2, h_nodes, xi + x**2) / sqrt(2 * xi + x**2) * cos((xi + x**2) * z)
 
 
 @numba.cfunc("f8(f8, voidptr)", cache=True)

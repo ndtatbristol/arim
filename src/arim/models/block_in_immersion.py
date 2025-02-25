@@ -53,6 +53,7 @@ evaluate, precomputing the scattering matrices (option 2) is often more
 computationally efficient.
 
 """
+
 import logging
 import warnings
 from collections import OrderedDict, namedtuple
@@ -146,10 +147,10 @@ def tx_ray_weights(
     one = np.ones((len(path.interfaces[0].points), d.numgridpoints), order="F")
 
     if use_directivity:
-        weights_dict[
-            "directivity"
-        ] = model.directivity_2d_rectangular_in_fluid_for_path(
-            ray_geometry, probe_element_width, d.wavelength_in_couplant
+        weights_dict["directivity"] = (
+            model.directivity_2d_rectangular_in_fluid_for_path(
+                ray_geometry, probe_element_width, d.wavelength_in_couplant
+            )
         )
     else:
         weights_dict["directivity"] = one
@@ -229,10 +230,10 @@ def rx_ray_weights(
     one = np.ones((len(path.interfaces[0].points), d.numgridpoints), order="F")
 
     if use_directivity:
-        weights_dict[
-            "directivity"
-        ] = model.directivity_2d_rectangular_in_fluid_for_path(
-            ray_geometry, probe_element_width, d.wavelength_in_couplant
+        weights_dict["directivity"] = (
+            model.directivity_2d_rectangular_in_fluid_for_path(
+                ray_geometry, probe_element_width, d.wavelength_in_couplant
+            )
         )
     else:
         weights_dict["directivity"] = one

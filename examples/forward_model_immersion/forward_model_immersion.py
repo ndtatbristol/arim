@@ -35,7 +35,6 @@ Data structure of this script:
 
 """
 
-
 import logging
 import math
 from collections import OrderedDict
