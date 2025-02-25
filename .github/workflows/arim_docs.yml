@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - docs-and-typing
+  pull_request:
+    branches:
+      - docs-and-typing
 
 jobs:
   cleanup:
