@@ -1,0 +1,50 @@
+name: Deploy Sphinx documentation to Pages
+
+on:
+  push:
+    branches:
+      - docs-and-typing
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.9'
+
+    - name: Upgrade pip
+      run: |
+        python -m pip install --upgrade pip
+        pip install virtualenv
+        virtualenv venv
+        source venv/bin/activate
+        pip install .
+        pip install -r docs/requirements.txt
+
+    - name: Verify Sphinx version
+      run: |
+        source venv/bin/activate
+        sphinx-build --version
+
+    - name: Build documentation
+      run: |
+        source venv/bin/activate
+        sphinx-build -b html docs/source docs/_build/html
+
+    - name: Upload built docs as artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: built-docs
+        path: docs/_build/html
+
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: docs/_build/html
