@@ -40,7 +40,7 @@ dependencies = [
 plot = ["matplotlib"]
 io = ["h5py"]
 docs = [
-  "sphinx==5.0.2",
+  "sphinx>=5.0.2",
   "pydata_sphinx_theme",
   "sphinx_design"
 ]
