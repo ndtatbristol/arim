@@ -92,6 +92,8 @@ check = [
   "black --check --diff {args:.}",
 ]
 check-gh = [
+  "black --version",
+  "ruff --version"
   "ruff check --output-format=github {args:.}",
   "black --check --diff {args:.}",
 ]

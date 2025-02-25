@@ -24,5 +24,4 @@ jobs:
         python -m pip install hatch
     - name: Run linter
       run: |
-        black --version
         hatch run lint:check-gh
