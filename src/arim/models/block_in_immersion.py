@@ -103,42 +103,43 @@ def _init_ray_weights(path, frequency, probe_element_width, use_directivity):
 
 
 def tx_ray_weights(
-    path: c.Path,
-    ray_geometry: ray.RayGeometry,
-    frequency: float,
-    probe_element_width: float = None,
-    use_directivity: bool = True,
-    use_beamspread: bool = True,
-    use_transrefl: bool = True,
-    use_attenuation: bool = True,
-    turn_off_invalid_rays: bool = False,
+    path,
+    ray_geometry,
+    frequency,
+    probe_element_width=None,
+    use_directivity=True,
+    use_beamspread=True,
+    use_transrefl=True,
+    use_attenuation=True,
+    turn_off_invalid_rays=False,
 ):
     """
     Coefficients Q_i(r, omega) in forward model.
 
-    :param path: A path for which the tx ray weights will be computed.
-    :type path: c.Path
-    :param ray_geometry: The ray geometry for the given path.
-    :type ray_geometry: ray.RayGeometry
-    :param frequency: The frequency at which the ray weights will be computed.
-    :type frequency: float
-    :param probe_element_width: The width of the probe element, useful for directivity. Defaults to None
-    :type probe_element_width: float, optional
-    :param use_directivity: `True` if probe element directivity should be calculated, `False` if not. Defaults to `True`.
-    :type use_directivity: bool, optional
-    :param use_beamspread: `True` if geometrical attenuation should be calculated, `False` if not. Defaults to `True`.
-    :type use_beamspread: bool, optional
-    :param use_transrefl: `True` if transmission and reflection coefficients should be calculated, `False` if not. Defaults
-        to `True`.
-    :type use_transrefl: bool, optional
-    :param use_attenuation: `True` if attenuation due to the material should be calculated, `False` if not. Defaults to
-        `True`.
-    :type use_attenuation: bool, optional
-    :param turn_off_invalid_rays: `True` if invalid rays should be turned off, i.e. rays blocked by geometry, `False` if
-        not. Defaults to `True`.
-    :type turn_off_invalid_rays: bool, optional
-    :return: Set of total ray weights, and dictionary of individual weight components.
-    :rtype: (np.ndarray, dict[str, np.ndarray])
+    Parameters
+    ----------
+    path : Path
+    ray_geometry : arim.ray.RayGeometry
+    frequency : float
+    probe_element_width : float or None
+        Mandatory if use_directivity is True
+    use_directivity : bool
+        Default True
+    use_beamspread : bool
+        Default True
+    use_transrefl : bool
+        Default: True
+    use_attenuation : bool
+        Default: True
+    turn_off_invalid_rays : bool
+        Default: False
+
+    Returns
+    -------
+    weights : ndarray
+        Shape (numelements, numgridpoints)
+    weights_dict : dict[str, ndarray]
+        Components of the ray weights: beamspread, directivity, transmission-reflection, attenuation
     """
     d = _init_ray_weights(path, frequency, probe_element_width, use_directivity)
 
