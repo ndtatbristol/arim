@@ -26,6 +26,7 @@ jobs:
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     needs: cleanup
+    permissions: write-all
 
     steps:
     - name: Checkout repository
