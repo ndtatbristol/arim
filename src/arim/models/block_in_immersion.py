@@ -53,6 +53,7 @@ evaluate, precomputing the scattering matrices (option 2) is often more
 computationally efficient.
 
 """
+
 import logging
 import warnings
 from collections import OrderedDict, namedtuple

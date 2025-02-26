@@ -25,6 +25,7 @@ Multiple frequency scattering matrices are defined formally as::
 
 
 """
+
 import abc
 import contextlib
 import ctypes

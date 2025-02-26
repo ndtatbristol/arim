@@ -28,6 +28,7 @@ release = arim.__version__
 
 # -- General configuration ---------------------------------------------------
 extensions = [
+    "sphinx_design",
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
     "sphinx.ext.todo",
@@ -50,12 +51,31 @@ exclude_patterns = []
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = "sphinx_rtd_theme"
+html_theme = "pydata_sphinx_theme"
+
+html_theme_options = {"navigation_depth": 4}
+#     "navbar_start": ["navbar-logo"],
+#     "navbar_center": [
+#         {
+#             "type": "dropdown",
+#             "label": "Installation",
+#             "items": [
+#                 {"type": "link", "label": "User Installation", "url": "installation//index.html"},
+#                 {"type": "link", "label": "Development", "url": "installation//development.html"},
+#             ],
+#         },
+#     ],
+#     "navbar_end": ["navbar-icon-links"],
+#     "navbar_persistent": ["search-field"],
+#     "navbar_align": "content",
+#     "show_nav_level": 2,
+#     "collapse_navigation": False,
+# }
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ["_static"]
+# html_static_path = ["_static"]
 
 # -- Extension settings  -----------------------------------------------------
 

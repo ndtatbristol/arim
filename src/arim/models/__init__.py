@@ -22,8 +22,6 @@ i to j.
 
    block_in_immersion
    block_in_contact
-   generic_block_in_immersion
-   generic_block_in_contact
    helpers
 
 

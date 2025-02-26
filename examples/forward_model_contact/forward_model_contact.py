@@ -4,7 +4,6 @@ Forward model for a contact inspection
 Model was not validated experimentally, buyer beware.
 """
 
-
 import logging
 import math
 from collections import OrderedDict
