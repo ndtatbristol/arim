@@ -1,5 +1,7 @@
+.. _api:
+
 ==============
-arim reference
+API Reference
 ==============
 
 .. currentmodule:: arim
@@ -8,6 +10,7 @@ arim reference
 
 .. autosummary::
    :toctree: _autosummary
+   :recursive:
 
    core
    geometry
@@ -18,6 +21,7 @@ arim reference
 
 .. autosummary::
    :toctree: _autosummary
+   :recursive:
 
    model
    models
@@ -30,6 +34,7 @@ arim reference
 
 .. autosummary::
    :toctree: _autosummary
+   :recursive:
 
    im
    im.tfm
@@ -40,6 +45,7 @@ arim reference
 
 .. autosummary::
    :toctree: _autosummary
+   :recursive:
 
    datasets
    io
@@ -56,6 +62,7 @@ arim reference
 
 .. autosummary::
    :toctree: _autosummary
+   :recursive:
 
    config
    helpers

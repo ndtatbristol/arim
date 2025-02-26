@@ -39,6 +39,11 @@ dependencies = [
 [project.optional-dependencies]
 plot = ["matplotlib"]
 io = ["h5py"]
+docs = [
+  "sphinx>=5.0.2",
+  "pydata_sphinx_theme",
+  "sphinx_design"
+]
 
 [project.urls]
 Documentation = "https://github.com/ndtatbristol/arim#readme"
@@ -57,9 +62,6 @@ dependencies = [
   "coverage[toml]>=6.5",
   "pytest>=6.0",
   "numdifftools",
-  "sphinx",
-  "sphinx_rtd_theme",
-
 ]
 [tool.hatch.envs.default.scripts]
 test = "pytest {args:tests}"
