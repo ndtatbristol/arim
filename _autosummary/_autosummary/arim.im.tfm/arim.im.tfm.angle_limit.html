@@ -1,0 +1,772 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>arim.im.tfm.angle_limit &#8212; arim 0.10.0.a0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../../_static/documentation_options.js?v=51601fd6"></script>
+    <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_autosummary/_autosummary/arim.im.tfm/arim.im.tfm.angle_limit';</script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="arim.im.tfm.angle_limit_for_view" href="arim.im.tfm.angle_limit_for_view.html" />
+    <link rel="prev" title="arim.im.tfm.TxRxAmplitudes" href="arim.im.tfm.TxRxAmplitudes.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">arim 0.10.0.a0 documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../installation/index.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../../../api.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../installation/index.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../../../api.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../arim.core.html">arim.core</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../arim.core/arim.core.BlockInContact.html">arim.core.BlockInContact</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.core/arim.core.BlockInImmersion.html">arim.core.BlockInImmersion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.core/arim.core.CaptureMethod.html">arim.core.CaptureMethod</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.core/arim.core.ElementShape.html">arim.core.ElementShape</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.core/arim.core.ExaminationObject.html">arim.core.ExaminationObject</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.core/arim.core.Frame.html">arim.core.Frame</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.core/arim.core.Interface.html">arim.core.Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.core/arim.core.InterfaceKind.html">arim.core.InterfaceKind</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.core/arim.core.Material.html">arim.core.Material</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.core/arim.core.Mode.html">arim.core.Mode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.core/arim.core.Path.html">arim.core.Path</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.core/arim.core.Probe.html">arim.core.Probe</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.core/arim.core.StateMatter.html">arim.core.StateMatter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.core/arim.core.Time.html">arim.core.Time</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.core/arim.core.TransmissionReflection.html">arim.core.TransmissionReflection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.core/arim.core.View.html">arim.core.View</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.core/arim.core.material_attenuation_factory.html">arim.core.material_attenuation_factory</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../arim.geometry.html">arim.geometry</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../arim.geometry/arim.geometry.CoordinateSystem.html">arim.geometry.CoordinateSystem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.geometry/arim.geometry.Grid.html">arim.geometry.Grid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.geometry/arim.geometry.OrientedPoints.html">arim.geometry.OrientedPoints</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.geometry/arim.geometry.Points.html">arim.geometry.Points</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.geometry/arim.geometry.SphericalCoordinates.html">arim.geometry.SphericalCoordinates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.geometry/arim.geometry.are_points_aligned.html">arim.geometry.are_points_aligned</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.geometry/arim.geometry.are_points_close.html">arim.geometry.are_points_close</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.geometry/arim.geometry.aspoints.html">arim.geometry.aspoints</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.geometry/arim.geometry.combine_oriented_points.html">arim.geometry.combine_oriented_points</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.geometry/arim.geometry.default_orientations.html">arim.geometry.default_orientations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.geometry/arim.geometry.default_oriented_points.html">arim.geometry.default_oriented_points</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.geometry/arim.geometry.direct_isometry_2d.html">arim.geometry.direct_isometry_2d</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.geometry/arim.geometry.direct_isometry_3d.html">arim.geometry.direct_isometry_3d</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.geometry/arim.geometry.distance_pairwise.html">arim.geometry.distance_pairwise</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.geometry/arim.geometry.from_gcs.html">arim.geometry.from_gcs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.geometry/arim.geometry.is_orthonormal.html">arim.geometry.is_orthonormal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.geometry/arim.geometry.is_orthonormal_direct.html">arim.geometry.is_orthonormal_direct</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.geometry/arim.geometry.make_contiguous_geometry.html">arim.geometry.make_contiguous_geometry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.geometry/arim.geometry.norm2.html">arim.geometry.norm2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.geometry/arim.geometry.norm2_2d.html">arim.geometry.norm2_2d</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.geometry/arim.geometry.points_1d_wall.html">arim.geometry.points_1d_wall</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.geometry/arim.geometry.points_1d_wall_z.html">arim.geometry.points_1d_wall_z</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.geometry/arim.geometry.points_from_probe.html">arim.geometry.points_from_probe</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.geometry/arim.geometry.points_in_rectbox.html">arim.geometry.points_in_rectbox</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.geometry/arim.geometry.rotate.html">arim.geometry.rotate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.geometry/arim.geometry.rotation_matrix_x.html">arim.geometry.rotation_matrix_x</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.geometry/arim.geometry.rotation_matrix_y.html">arim.geometry.rotation_matrix_y</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.geometry/arim.geometry.rotation_matrix_ypr.html">arim.geometry.rotation_matrix_ypr</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.geometry/arim.geometry.rotation_matrix_z.html">arim.geometry.rotation_matrix_z</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.geometry/arim.geometry.spherical_coordinates.html">arim.geometry.spherical_coordinates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.geometry/arim.geometry.spherical_coordinates_phi.html">arim.geometry.spherical_coordinates_phi</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.geometry/arim.geometry.spherical_coordinates_r.html">arim.geometry.spherical_coordinates_r</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.geometry/arim.geometry.spherical_coordinates_theta.html">arim.geometry.spherical_coordinates_theta</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.geometry/arim.geometry.to_gcs.html">arim.geometry.to_gcs</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../arim.ray.html">arim.ray</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../arim.ray/arim.ray.FermatPath.html">arim.ray.FermatPath</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.ray/arim.ray.FermatSolver.html">arim.ray.FermatSolver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.ray/arim.ray.RayGeometry.html">arim.ray.RayGeometry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.ray/arim.ray.Rays.html">arim.ray.Rays</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.ray/arim.ray.find_minimum_times.html">arim.ray.find_minimum_times</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.ray/arim.ray.ray_tracing.html">arim.ray.ray_tracing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.ray/arim.ray.ray_tracing_for_paths.html">arim.ray.ray_tracing_for_paths</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../../arim._probes.html">arim._probes</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../arim.model.html">arim.model</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../arim.model/arim.model.ModelAmplitudes.html">arim.model.ModelAmplitudes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.model/arim.model.RayWeights.html">arim.model.RayWeights</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.model/arim.model.beamspread_2d_for_path.html">arim.model.beamspread_2d_for_path</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.model/arim.model.directivity_2d_rectangular_in_fluid.html">arim.model.directivity_2d_rectangular_in_fluid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.model/arim.model.directivity_2d_rectangular_in_fluid_for_path.html">arim.model.directivity_2d_rectangular_in_fluid_for_path</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.model/arim.model.directivity_2d_rectangular_on_solid_l.html">arim.model.directivity_2d_rectangular_on_solid_l</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.model/arim.model.directivity_2d_rectangular_on_solid_t.html">arim.model.directivity_2d_rectangular_on_solid_t</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.model/arim.model.fluid_solid.html">arim.model.fluid_solid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.model/arim.model.make_toneburst.html">arim.model.make_toneburst</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.model/arim.model.make_toneburst2.html">arim.model.make_toneburst2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.model/arim.model.material_attenuation_for_path.html">arim.model.material_attenuation_for_path</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.model/arim.model.model_amplitudes_factory.html">arim.model.model_amplitudes_factory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.model/arim.model.reflection_at_interface.html">arim.model.reflection_at_interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.model/arim.model.reverse_beamspread_2d_for_path.html">arim.model.reverse_beamspread_2d_for_path</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.model/arim.model.reverse_transmission_reflection_for_path.html">arim.model.reverse_transmission_reflection_for_path</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.model/arim.model.sensitivity_model_assisted_tfm.html">arim.model.sensitivity_model_assisted_tfm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.model/arim.model.sensitivity_uniform_tfm.html">arim.model.sensitivity_uniform_tfm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.model/arim.model.snell_angles.html">arim.model.snell_angles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.model/arim.model.solid_l_fluid.html">arim.model.solid_l_fluid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.model/arim.model.solid_t_fluid.html">arim.model.solid_t_fluid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.model/arim.model.transfer_func_to_scanlines.html">arim.model.transfer_func_to_scanlines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.model/arim.model.transfer_func_to_timetraces.html">arim.model.transfer_func_to_timetraces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.model/arim.model.transmission_at_interface.html">arim.model.transmission_at_interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.model/arim.model.transmission_reflection_for_path.html">arim.model.transmission_reflection_for_path</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../arim.models.html">arim.models</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../arim.models.block_in_immersion.html">arim.models.block_in_immersion</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../arim.models.block_in_immersion/arim.models.block_in_immersion.backwall_paths.html">arim.models.block_in_immersion.backwall_paths</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../arim.models.block_in_immersion/arim.models.block_in_immersion.backwall_paths2.html">arim.models.block_in_immersion.backwall_paths2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../arim.models.block_in_immersion/arim.models.block_in_immersion.frontwall_path.html">arim.models.block_in_immersion.frontwall_path</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../arim.models.block_in_immersion/arim.models.block_in_immersion.make_interfaces.html">arim.models.block_in_immersion.make_interfaces</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../arim.models.block_in_immersion/arim.models.block_in_immersion.make_paths.html">arim.models.block_in_immersion.make_paths</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../arim.models.block_in_immersion/arim.models.block_in_immersion.make_views.html">arim.models.block_in_immersion.make_views</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../arim.models.block_in_immersion/arim.models.block_in_immersion.multifreq_scat_transfer_functions.html">arim.models.block_in_immersion.multifreq_scat_transfer_functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../arim.models.block_in_immersion/arim.models.block_in_immersion.multifreq_wall_transfer_functions.html">arim.models.block_in_immersion.multifreq_wall_transfer_functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../arim.models.block_in_immersion/arim.models.block_in_immersion.ray_weights_for_views.html">arim.models.block_in_immersion.ray_weights_for_views</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../arim.models.block_in_immersion/arim.models.block_in_immersion.ray_weights_for_wall.html">arim.models.block_in_immersion.ray_weights_for_wall</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../arim.models.block_in_immersion/arim.models.block_in_immersion.rx_ray_weights.html">arim.models.block_in_immersion.rx_ray_weights</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../arim.models.block_in_immersion/arim.models.block_in_immersion.scat_unshifted_transfer_functions.html">arim.models.block_in_immersion.scat_unshifted_transfer_functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../arim.models.block_in_immersion/arim.models.block_in_immersion.singlefreq_scat_transfer_functions.html">arim.models.block_in_immersion.singlefreq_scat_transfer_functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../arim.models.block_in_immersion/arim.models.block_in_immersion.singlefreq_wall_transfer_functions.html">arim.models.block_in_immersion.singlefreq_wall_transfer_functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../arim.models.block_in_immersion/arim.models.block_in_immersion.tx_ray_weights.html">arim.models.block_in_immersion.tx_ray_weights</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../arim.models.block_in_immersion/arim.models.block_in_immersion.wall_unshifted_transfer_functions.html">arim.models.block_in_immersion.wall_unshifted_transfer_functions</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../arim.models.block_in_contact.html">arim.models.block_in_contact</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../arim.models.block_in_contact/arim.models.block_in_contact.backwall_paths.html">arim.models.block_in_contact.backwall_paths</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../arim.models.block_in_contact/arim.models.block_in_contact.make_interfaces.html">arim.models.block_in_contact.make_interfaces</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../arim.models.block_in_contact/arim.models.block_in_contact.make_paths.html">arim.models.block_in_contact.make_paths</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../arim.models.block_in_contact/arim.models.block_in_contact.make_views.html">arim.models.block_in_contact.make_views</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../arim.models.block_in_contact/arim.models.block_in_contact.multifreq_scat_transfer_functions.html">arim.models.block_in_contact.multifreq_scat_transfer_functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../arim.models.block_in_contact/arim.models.block_in_contact.multifreq_wall_transfer_functions.html">arim.models.block_in_contact.multifreq_wall_transfer_functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../arim.models.block_in_contact/arim.models.block_in_contact.ray_weights_for_views.html">arim.models.block_in_contact.ray_weights_for_views</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../arim.models.block_in_contact/arim.models.block_in_contact.ray_weights_for_wall.html">arim.models.block_in_contact.ray_weights_for_wall</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../arim.models.block_in_contact/arim.models.block_in_contact.rx_ray_weights.html">arim.models.block_in_contact.rx_ray_weights</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../arim.models.block_in_contact/arim.models.block_in_contact.scat_unshifted_transfer_functions.html">arim.models.block_in_contact.scat_unshifted_transfer_functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../arim.models.block_in_contact/arim.models.block_in_contact.singlefreq_scat_transfer_functions.html">arim.models.block_in_contact.singlefreq_scat_transfer_functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../arim.models.block_in_contact/arim.models.block_in_contact.singlefreq_wall_transfer_functions.html">arim.models.block_in_contact.singlefreq_wall_transfer_functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../arim.models.block_in_contact/arim.models.block_in_contact.tx_ray_weights.html">arim.models.block_in_contact.tx_ray_weights</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../arim.models.block_in_contact/arim.models.block_in_contact.wall_unshifted_transfer_functions.html">arim.models.block_in_contact.wall_unshifted_transfer_functions</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../arim.models.helpers.html">arim.models.helpers</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../arim.models.helpers/arim.models.helpers.make_views_from_paths.html">arim.models.helpers.make_views_from_paths</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../arim.scat.html">arim.scat</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../arim.scat/arim.scat.CrackCentreScat.html">arim.scat.CrackCentreScat</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.scat/arim.scat.CrackTipScat.html">arim.scat.CrackTipScat</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.scat/arim.scat.PointSourceScat.html">arim.scat.PointSourceScat</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.scat/arim.scat.ScatFromData.html">arim.scat.ScatFromData</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.scat/arim.scat.Scattering2d.html">arim.scat.Scattering2d</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.scat/arim.scat.Scattering2dFromFunc.html">arim.scat.Scattering2dFromFunc</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.scat/arim.scat.SdhScat.html">arim.scat.SdhScat</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.scat/arim.scat.crack_2d_scat.html">arim.scat.crack_2d_scat</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.scat/arim.scat.crack_tip_2d.html">arim.scat.crack_tip_2d</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.scat/arim.scat.interpolate_matrices.html">arim.scat.interpolate_matrices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.scat/arim.scat.interpolate_matrix.html">arim.scat.interpolate_matrix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.scat/arim.scat.make_angles.html">arim.scat.make_angles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.scat/arim.scat.make_angles_grid.html">arim.scat.make_angles_grid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.scat/arim.scat.rotate_matrices.html">arim.scat.rotate_matrices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.scat/arim.scat.rotate_matrix.html">arim.scat.rotate_matrix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.scat/arim.scat.scat_factory.html">arim.scat.scat_factory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.scat/arim.scat.sdh_2d_scat.html">arim.scat.sdh_2d_scat</a></li>
+</ul>
+</details></li>
+</ul>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../arim.im.html">arim.im</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../../arim.im.tfm.html">arim.im.tfm</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="arim.im.tfm.ExtramaLookupTimes.html">arim.im.tfm.ExtramaLookupTimes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arim.im.tfm.FocalLaw.html">arim.im.tfm.FocalLaw</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arim.im.tfm.TfmResult.html">arim.im.tfm.TfmResult</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arim.im.tfm.TxRxAmplitudes.html">arim.im.tfm.TxRxAmplitudes</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">arim.im.tfm.angle_limit</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arim.im.tfm.angle_limit_for_view.html">arim.im.tfm.angle_limit_for_view</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arim.im.tfm.angle_limit_in_contact.html">arim.im.tfm.angle_limit_in_contact</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arim.im.tfm.contact_tfm.html">arim.im.tfm.contact_tfm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arim.im.tfm.extrema_lookup_times_in_rectbox.html">arim.im.tfm.extrema_lookup_times_in_rectbox</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arim.im.tfm.tfm_for_view.html">arim.im.tfm.tfm_for_view</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../arim.im.das.html">arim.im.das</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../arim.im.das/arim.im.das.delay_and_sum.html">arim.im.das.delay_and_sum</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.im.das/arim.im.das.delay_and_sum_naive.html">arim.im.das.delay_and_sum_naive</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.im.das/arim.im.das.delay_and_sum_numba.html">arim.im.das.delay_and_sum_numba</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.im.das/arim.im.das.delay_and_sum_numba_noamp.html">arim.im.das.delay_and_sum_numba_noamp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.im.das/arim.im.das.lanczos_interpolation.html">arim.im.das.lanczos_interpolation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.im.das/arim.im.das.sinc.html">arim.im.das.sinc</a></li>
+</ul>
+</details></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../arim.datasets.html">arim.datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../arim.io.html">arim.io</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../arim.io.native.html">arim.io.native</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../arim.io.native/arim.io.native.block_in_contact_from_conf.html">arim.io.native.block_in_contact_from_conf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.io.native/arim.io.native.block_in_immersion_from_conf.html">arim.io.native.block_in_immersion_from_conf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.io.native/arim.io.native.examination_object_from_conf.html">arim.io.native.examination_object_from_conf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.io.native/arim.io.native.frame_from_conf.html">arim.io.native.frame_from_conf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.io.native/arim.io.native.grid_from_conf.html">arim.io.native.grid_from_conf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.io.native/arim.io.native.load_conf.html">arim.io.native.load_conf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.io.native/arim.io.native.load_conf_file.html">arim.io.native.load_conf_file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.io.native/arim.io.native.load_conf_from_str.html">arim.io.native.load_conf_from_str</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.io.native/arim.io.native.material_attenuation_from_conf.html">arim.io.native.material_attenuation_from_conf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.io.native/arim.io.native.material_from_conf.html">arim.io.native.material_from_conf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.io.native/arim.io.native.probe_from_conf.html">arim.io.native.probe_from_conf</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../arim.io.brain.html">arim.io.brain</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../arim.io.brain/arim.io.brain.load_expdata.html">arim.io.brain.load_expdata</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../arim.io.scat.html">arim.io.scat</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../arim.io.scat/arim.io.scat.load_scat.html">arim.io.scat.load_scat</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.io.scat/arim.io.scat.load_scat_from_matlab.html">arim.io.scat.load_scat_from_matlab</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../arim.ut.html">arim.ut</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../arim.ut/arim.ut.decibel.html">arim.ut.decibel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.ut/arim.ut.default_scanline_weights.html">arim.ut.default_scanline_weights</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.ut/arim.ut.default_timetrace_weights.html">arim.ut.default_timetrace_weights</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.ut/arim.ut.default_viewname_order.html">arim.ut.default_viewname_order</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.ut/arim.ut.filter_unique_views.html">arim.ut.filter_unique_views</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.ut/arim.ut.fmc.html">arim.ut.fmc</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.ut/arim.ut.hmc.html">arim.ut.hmc</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.ut/arim.ut.infer_capture_method.html">arim.ut.infer_capture_method</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.ut/arim.ut.instantaneous_phase_shift.html">arim.ut.instantaneous_phase_shift</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.ut/arim.ut.make_timevect.html">arim.ut.make_timevect</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.ut/arim.ut.make_viewnames.html">arim.ut.make_viewnames</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.ut/arim.ut.rayleigh_vel.html">arim.ut.rayleigh_vel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.ut/arim.ut.reciprocal_viewname.html">arim.ut.reciprocal_viewname</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.ut/arim.ut.wrap_phase.html">arim.ut.wrap_phase</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../arim.plot.html">arim.plot</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../arim.plot/arim.plot.RayPlotter.html">arim.plot.RayPlotter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.plot/arim.plot.common_dynamic_db_scale.html">arim.plot.common_dynamic_db_scale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.plot/arim.plot.draw_rays_on_click.html">arim.plot.draw_rays_on_click</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.plot/arim.plot.plot_bscan.html">arim.plot.plot_bscan</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.plot/arim.plot.plot_bscan_pulse_echo.html">arim.plot.plot_bscan_pulse_echo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.plot/arim.plot.plot_directivity_finite_width_2d.html">arim.plot.plot_directivity_finite_width_2d</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.plot/arim.plot.plot_interfaces.html">arim.plot.plot_interfaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.plot/arim.plot.plot_oxz.html">arim.plot.plot_oxz</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.plot/arim.plot.plot_oxz_many.html">arim.plot.plot_oxz_many</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.plot/arim.plot.plot_psd.html">arim.plot.plot_psd</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.plot/arim.plot.plot_tfm.html">arim.plot.plot_tfm</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../arim.signal.html">arim.signal</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../arim.signal/arim.signal.Abs.html">arim.signal.Abs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.signal/arim.signal.ButterworthBandpass.html">arim.signal.ButterworthBandpass</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.signal/arim.signal.ComposedFilter.html">arim.signal.ComposedFilter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.signal/arim.signal.Filter.html">arim.signal.Filter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.signal/arim.signal.Gaussian.html">arim.signal.Gaussian</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.signal/arim.signal.Hanning.html">arim.signal.Hanning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.signal/arim.signal.Hilbert.html">arim.signal.Hilbert</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.signal/arim.signal.NoFilter.html">arim.signal.NoFilter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.signal/arim.signal.rfft_to_hilbert.html">arim.signal.rfft_to_hilbert</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.signal/arim.signal.timeshift_spectra.html">arim.signal.timeshift_spectra</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../arim.measurement.html">arim.measurement</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../arim.measurement/arim.measurement.detect_surface_from_extrema.html">arim.measurement.detect_surface_from_extrema</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.measurement/arim.measurement.find_probe_loc_from_frontwall.html">arim.measurement.find_probe_loc_from_frontwall</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.measurement/arim.measurement.move_probe_over_flat_surface.html">arim.measurement.move_probe_over_flat_surface</a></li>
+</ul>
+</details></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../arim.config.html">arim.config</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../arim.config/arim.config.Config.html">arim.config.Config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.config/arim.config.recursive_dict_merge.html">arim.config.recursive_dict_merge</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../arim.helpers.html">arim.helpers</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../arim.helpers/arim.helpers.Cache.html">arim.helpers.Cache</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.helpers/arim.helpers.NoCache.html">arim.helpers.NoCache</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.helpers/arim.helpers.chunk_array.html">arim.helpers.chunk_array</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.helpers/arim.helpers.get_git_version.html">arim.helpers.get_git_version</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.helpers/arim.helpers.get_name.html">arim.helpers.get_name</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.helpers/arim.helpers.get_shape_safely.html">arim.helpers.get_shape_safely</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.helpers/arim.helpers.parse_enum_constant.html">arim.helpers.parse_enum_constant</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.helpers/arim.helpers.sizeof_fmt.html">arim.helpers.sizeof_fmt</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.helpers/arim.helpers.smallest_uint_that_fits.html">arim.helpers.smallest_uint_that_fits</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.helpers/arim.helpers.timeit.html">arim.helpers.timeit</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../../arim.settings.html">arim.settings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../arim.exceptions.html">arim.exceptions</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../../api.html" class="nav-link">API Reference</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="../../arim.im.tfm.html" class="nav-link">arim.im.tfm</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">arim.im.tfm.angle_limit</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="arim-im-tfm-angle-limit">
+<h1>arim.im.tfm.angle_limit<a class="headerlink" href="#arim-im-tfm-angle-limit" title="Link to this heading">#</a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="arim.im.tfm.angle_limit">
+<span class="sig-prename descclassname"><span class="pre">arim.im.tfm.</span></span><span class="sig-name descname"><span class="pre">angle_limit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">theta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phi</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">elev</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">azim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.5707963267948966</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'hanning'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arim/im/tfm.html#angle_limit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arim.im.tfm.angle_limit" title="Link to this definition">#</a></dt>
+<dd><p>Apply an angle limit to the provided angles. Hanning window applied over
+limit centred on elevation. Assumes 2D.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>theta</strong> (<em>ndarray</em>) – Shape (numtx, numgridpoints)
+Angle made by the ray from the probe.</p></li>
+<li><p><strong>limit</strong> (<em>float</em>)</p></li>
+<li><p><strong>elev</strong> (<em>float</em><em>, </em><em>optional</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="arim.im.tfm.TxRxAmplitudes.html#arim.im.tfm.TxRxAmplitudes" title="arim.im.tfm.TxRxAmplitudes">TxRxAmplitudes</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="arim.im.tfm.TxRxAmplitudes.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">arim.im.tfm.TxRxAmplitudes</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="arim.im.tfm.angle_limit_for_view.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">arim.im.tfm.angle_limit_for_view</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#arim.im.tfm.angle_limit"><code class="docutils literal notranslate"><span class="pre">angle_limit()</span></code></a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../../_sources/_autosummary/_autosummary/arim.im.tfm/arim.im.tfm.angle_limit.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2016–2025, arim contributors.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.4.7.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

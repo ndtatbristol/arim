@@ -1,0 +1,1376 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>arim.plot &#8212; arim 0.10.0.a0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../_static/documentation_options.js?v=51601fd6"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/arim/plot';</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">arim 0.10.0.a0 documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../installation/index.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../installation/index.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">arim.plot</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for arim.plot</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Plotting utilities based on `matplotib &lt;http://matplotlib.org/&gt;`_.</span>
+
+<span class="sd">Some default values are configurable via the dictionary ``arim.plot.conf``.</span>
+
+<span class="sd">.. py:data:: conf</span>
+
+<span class="sd">    Dictionary of default values. For some functions, if an argument is not populated,</span>
+<span class="sd">    its values will be populated from this dictionary. Example::</span>
+
+<span class="sd">        # save the figure (independently on conf[&#39;savefig])</span>
+<span class="sd">        plot_oyz(data, grid, savefig=True, filename=&#39;foo&#39;)</span>
+
+<span class="sd">        # do not save the figure independently on conf[&#39;savefig])</span>
+<span class="sd">        plot_oyz(data, grid, savefig=False, filename=&#39;foo&#39;)</span>
+
+<span class="sd">        # save the figure depending only if conf[&#39;savefig&#39;] is True</span>
+<span class="sd">        plot_oyz(data, grid, filename=&#39;foo&#39;)</span>
+
+<span class="sd">.. py:data:: micro_formatter</span>
+<span class="sd">.. py:data:: milli_formatter</span>
+<span class="sd">.. py:data:: mega_formatter</span>
+
+<span class="sd">    Format the labels of an axis in a given unit prefix. Usage::</span>
+
+<span class="sd">        import matplotlib.pyplot as plt</span>
+<span class="sd">        ax = plt.plot(distance_vector, data)</span>
+<span class="sd">        ax.xaxis.set_major_formatter(arim.plot.milli_formatter)</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">warnings</span><span class="w"> </span><span class="kn">import</span> <span class="n">warn</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">scipy.signal</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">ticker</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mpl_toolkits</span><span class="w"> </span><span class="kn">import</span> <span class="n">axes_grid1</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">geometry</span> <span class="k">as</span> <span class="n">g</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">ut</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">Config</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArimWarning</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;micro_formatter&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;mega_formatter&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;milli_formatter&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;plot_bscan&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;plot_bscan_pulse_echo&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;plot_oxz&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;plot_oxz_many&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;plot_tfm&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;plot_directivity_finite_width_2d&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;draw_rays_on_click&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;RayPlotter&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;conf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;common_dynamic_db_scale&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="n">micro_formatter</span> <span class="o">=</span> <span class="n">ticker</span><span class="o">.</span><span class="n">FuncFormatter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">pos</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">x</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">1e6</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">micro_formatter</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="s2">&quot;Format an axis to micro (µ).</span><span class="se">\n</span><span class="s2">Example: ``ax.xaxis.set_major_formatter(micro_formatter)``&quot;</span>
+
+<span class="n">milli_formatter</span> <span class="o">=</span> <span class="n">ticker</span><span class="o">.</span><span class="n">FuncFormatter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">pos</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">x</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">1e3</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">milli_formatter</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="s2">&quot;Format an axis to milli (m).</span><span class="se">\n</span><span class="s2">Example: ``ax.xaxis.set_major_formatter(milli_formatter)``&quot;</span>
+
+<span class="n">mega_formatter</span> <span class="o">=</span> <span class="n">ticker</span><span class="o">.</span><span class="n">FuncFormatter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">pos</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">x</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">1e-6</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">mega_formatter</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="s2">&quot;Format an axis to mega (M).</span><span class="se">\n</span><span class="s2">Example: ``ax.xaxis.set_major_formatter(mega_formatter)``&quot;</span>
+
+<span class="n">conf</span> <span class="o">=</span> <span class="n">Config</span><span class="p">(</span>
+    <span class="p">[</span>
+        <span class="p">(</span><span class="s2">&quot;savefig&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>  <span class="c1"># save the figure?</span>
+        <span class="p">(</span><span class="s2">&quot;plot_oxz.figsize&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;plot_oxz_many.figsize&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+    <span class="p">]</span>
+<span class="p">)</span>
+
+
+<div class="viewcode-block" id="plot_bscan">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.plot/arim.plot.plot_bscan.html#arim.plot.plot_bscan">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">plot_bscan</span><span class="p">(</span>
+    <span class="n">frame</span><span class="p">,</span>
+    <span class="n">timetraces_idx</span><span class="p">,</span>
+    <span class="n">use_dB</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;B-scan&quot;</span><span class="p">,</span>
+    <span class="n">clim</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">interpolation</span><span class="o">=</span><span class="s2">&quot;none&quot;</span><span class="p">,</span>
+    <span class="n">draw_cbar</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">cmap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">savefig</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;bscan&quot;</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Plot Bscan (timetraces vs time)</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    frame : Frame</span>
+<span class="sd">    timetraces_idx : slice or tuple or ndarray</span>
+<span class="sd">        timetraces to use. Any valid numpy array is accepted.</span>
+<span class="sd">    use_dB : bool, optional</span>
+<span class="sd">    ax : matplotlib axis, optional</span>
+<span class="sd">        Where to draw. Default: create a new figure and axis.</span>
+<span class="sd">    title : str, optional</span>
+<span class="sd">        Title of the image (default: &quot;Bscan&quot;)</span>
+<span class="sd">    clim : tuple, optional</span>
+<span class="sd">        Color limits of the image.</span>
+<span class="sd">    interpolation : str, optional</span>
+<span class="sd">        Image interpolation type (default: &quot;none&quot;)</span>
+<span class="sd">    draw_cbar : bool, optional</span>
+<span class="sd">    cmap : str, optional</span>
+<span class="sd">    savefig : bool, optional</span>
+<span class="sd">        Default: use ``conf[&quot;savefig&quot;]``</span>
+<span class="sd">    filename : str, optional</span>
+<span class="sd">        Default: &quot;bscan&quot;</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    ax : matplotlib axis</span>
+<span class="sd">    im : matplotlib image</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    &gt;&gt;&gt; arim.plot.plot_bscan(frame, frame.tx == 0)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">fig</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">figure</span>
+
+    <span class="k">if</span> <span class="n">savefig</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">savefig</span> <span class="o">=</span> <span class="n">conf</span><span class="p">[</span><span class="s2">&quot;savefig&quot;</span><span class="p">]</span>
+
+    <span class="n">timetraces</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">timetraces</span><span class="p">[</span><span class="n">timetraces_idx</span><span class="p">]</span>
+    <span class="n">numtimetraces</span> <span class="o">=</span> <span class="n">timetraces</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">use_dB</span><span class="p">:</span>
+        <span class="n">timetraces</span> <span class="o">=</span> <span class="n">ut</span><span class="o">.</span><span class="n">decibel</span><span class="p">(</span><span class="n">timetraces</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">clim</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">clim</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mf">40.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span>
+
+    <span class="n">im</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span>
+        <span class="n">timetraces</span><span class="p">,</span>
+        <span class="n">extent</span><span class="o">=</span><span class="p">[</span><span class="n">frame</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="n">frame</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">end</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">numtimetraces</span> <span class="o">-</span> <span class="mi">1</span><span class="p">],</span>
+        <span class="n">interpolation</span><span class="o">=</span><span class="n">interpolation</span><span class="p">,</span>
+        <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">,</span>
+        <span class="n">origin</span><span class="o">=</span><span class="s2">&quot;lower&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Time (µs)&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;TX/RX index&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span><span class="n">micro_formatter</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_minor_formatter</span><span class="p">(</span><span class="n">micro_formatter</span><span class="p">)</span>
+
+    <span class="c1"># Use element index instead of timetrace index (may be different)</span>
+    <span class="n">tx</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">tx</span><span class="p">[</span><span class="n">timetraces_idx</span><span class="p">]</span>
+    <span class="n">rx</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">rx</span><span class="p">[</span><span class="n">timetraces_idx</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_y_formatter</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">pos</span><span class="p">):</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="n">tx</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">rx</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="s2">)&quot;</span>
+        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+
+    <span class="n">y_formatter</span> <span class="o">=</span> <span class="n">ticker</span><span class="o">.</span><span class="n">FuncFormatter</span><span class="p">(</span><span class="n">_y_formatter</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span><span class="n">y_formatter</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_minor_formatter</span><span class="p">(</span><span class="n">y_formatter</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">draw_cbar</span><span class="p">:</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">clim</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">im</span><span class="o">.</span><span class="n">set_clim</span><span class="p">(</span><span class="n">clim</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">title</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
+
+    <span class="n">ax</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">&quot;tight&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">savefig</span><span class="p">:</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ax</span><span class="p">,</span> <span class="n">im</span></div>
+
+
+
+<div class="viewcode-block" id="plot_bscan_pulse_echo">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.plot/arim.plot.plot_bscan_pulse_echo.html#arim.plot.plot_bscan_pulse_echo">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">plot_bscan_pulse_echo</span><span class="p">(</span>
+    <span class="n">frame</span><span class="p">,</span>
+    <span class="n">use_dB</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;B-scan (pulse-echo)&quot;</span><span class="p">,</span>
+    <span class="n">clim</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">interpolation</span><span class="o">=</span><span class="s2">&quot;none&quot;</span><span class="p">,</span>
+    <span class="n">draw_cbar</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">cmap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">savefig</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;bscan&quot;</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plot a B-scan. Use the pulse-echo timetraces.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    frame</span>
+<span class="sd">    use_dB</span>
+<span class="sd">    ax</span>
+<span class="sd">    title</span>
+<span class="sd">    clim</span>
+<span class="sd">    interpolation</span>
+<span class="sd">    draw_cbar</span>
+<span class="sd">    cmap</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    axis, image</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :func:`plot_bscan`</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">pulse_echo</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">tx</span> <span class="o">==</span> <span class="n">frame</span><span class="o">.</span><span class="n">rx</span>
+    <span class="n">elements</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">tx</span><span class="p">[</span><span class="n">pulse_echo</span><span class="p">]</span>
+    <span class="n">ax</span><span class="p">,</span> <span class="n">im</span> <span class="o">=</span> <span class="n">plot_bscan</span><span class="p">(</span>
+        <span class="n">frame</span><span class="p">,</span>
+        <span class="n">pulse_echo</span><span class="p">,</span>
+        <span class="n">use_dB</span><span class="o">=</span><span class="n">use_dB</span><span class="p">,</span>
+        <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span>
+        <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span>
+        <span class="n">clim</span><span class="o">=</span><span class="n">clim</span><span class="p">,</span>
+        <span class="n">interpolation</span><span class="o">=</span><span class="n">interpolation</span><span class="p">,</span>
+        <span class="n">draw_cbar</span><span class="o">=</span><span class="n">draw_cbar</span><span class="p">,</span>
+        <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">,</span>
+        <span class="n">savefig</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>  <span class="c1"># save later</span>
+        <span class="n">filename</span><span class="o">=</span><span class="n">filename</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Element&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Use element index instead of timetrace index (may be different)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_y_formatter</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">pos</span><span class="p">):</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">elements</span><span class="p">):</span>
+            <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">elements</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
+    <span class="n">y_formatter</span> <span class="o">=</span> <span class="n">ticker</span><span class="o">.</span><span class="n">FuncFormatter</span><span class="p">(</span><span class="n">_y_formatter</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span><span class="n">y_formatter</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_minor_formatter</span><span class="p">(</span><span class="n">y_formatter</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">savefig</span><span class="p">:</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">ax</span><span class="p">,</span> <span class="n">im</span></div>
+
+
+
+<div class="viewcode-block" id="plot_psd">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.plot/arim.plot.plot_psd.html#arim.plot.plot_psd">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">plot_psd</span><span class="p">(</span>
+    <span class="n">frame</span><span class="p">,</span>
+    <span class="n">idx</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">,</span>
+    <span class="n">to_show</span><span class="o">=</span><span class="s2">&quot;filtered&quot;</span><span class="p">,</span>
+    <span class="n">welch_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Power spectrum estimation&quot;</span><span class="p">,</span>
+    <span class="n">show_legend</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">savefig</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;psd&quot;</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plot the estimated power spectrum of a timetrace using Welch&#39;s method.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    frame : Frame</span>
+<span class="sd">    idx : int or slice or list</span>
+<span class="sd">        Index or indices of the timetrace to use. If multiple indices are given,</span>
+<span class="sd">        the arithmetical mean of all PSDs is plotted. Default: use all</span>
+<span class="sd">    to_show</span>
+<span class="sd">    welch_params : dict</span>
+<span class="sd">        Arguments to pass to ``scipy.signal.welch``.</span>
+<span class="sd">    ax : matplotlib.axes.Axes or None</span>
+<span class="sd">    title</span>
+<span class="sd">    show_legend</span>
+<span class="sd">    savefig</span>
+<span class="sd">    filename</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    ax : matplotlib.axes.Axes</span>
+<span class="sd">    lines : dict</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">fig</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">figure</span>
+
+    <span class="k">if</span> <span class="n">welch_params</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">welch_params</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">if</span> <span class="n">savefig</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">savefig</span> <span class="o">=</span> <span class="n">conf</span><span class="p">[</span><span class="s2">&quot;savefig&quot;</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">idx</span> <span class="o">==</span> <span class="s2">&quot;all&quot;</span><span class="p">:</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+
+    <span class="n">fs</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">frame</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">step</span>
+
+    <span class="n">to_show</span> <span class="o">=</span> <span class="n">to_show</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">to_show</span> <span class="o">==</span> <span class="s2">&quot;both&quot;</span><span class="p">:</span>
+        <span class="n">show_raw</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">show_filtered</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">elif</span> <span class="n">to_show</span> <span class="o">==</span> <span class="s2">&quot;raw&quot;</span><span class="p">:</span>
+        <span class="n">show_raw</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">show_filtered</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">elif</span> <span class="n">to_show</span> <span class="o">==</span> <span class="s2">&quot;filtered&quot;</span><span class="p">:</span>
+        <span class="n">show_raw</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">show_filtered</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Valid values for &#39;to_show&#39; are: filtered, raw, both&quot;</span><span class="p">)</span>
+
+    <span class="n">lines</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">if</span> <span class="n">show_raw</span><span class="p">:</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">timetraces_raw</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">real</span>
+        <span class="n">freq</span><span class="p">,</span> <span class="n">pxx</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">welch</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="o">**</span><span class="n">welch_params</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">pxx</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">pxx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">pxx</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">line</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">freq</span><span class="p">,</span> <span class="n">pxx</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;raw&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">())</span>
+        <span class="n">lines</span><span class="p">[</span><span class="s2">&quot;raw&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">line</span>
+    <span class="k">if</span> <span class="n">show_filtered</span><span class="p">:</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">timetraces</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">real</span>
+        <span class="n">freq</span><span class="p">,</span> <span class="n">pxx</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">welch</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="o">**</span><span class="n">welch_params</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">pxx</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">pxx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">pxx</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">line</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">freq</span><span class="p">,</span> <span class="n">pxx</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;filtered&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">())</span>
+        <span class="n">lines</span><span class="p">[</span><span class="s2">&quot;filtered&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">line</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;frequency (MHz)&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;power spectrum estimation&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span><span class="n">mega_formatter</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_minor_formatter</span><span class="p">(</span><span class="n">mega_formatter</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">title</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">show_legend</span><span class="p">:</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;best&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">savefig</span><span class="p">:</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ax</span><span class="p">,</span> <span class="n">lines</span></div>
+
+
+
+<div class="viewcode-block" id="plot_oxz">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.plot/arim.plot.plot_oxz.html#arim.plot.plot_oxz">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">plot_oxz</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">,</span>
+    <span class="n">grid</span><span class="p">,</span>
+    <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">clim</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">interpolation</span><span class="o">=</span><span class="s2">&quot;none&quot;</span><span class="p">,</span>
+    <span class="n">draw_cbar</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">cmap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">figsize</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">savefig</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">patches</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">scale</span><span class="o">=</span><span class="s2">&quot;linear&quot;</span><span class="p">,</span>
+    <span class="n">ref_db</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plot data in the plane Oxz.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data : ndarray</span>
+<span class="sd">        Shape: 2D matrix ``(grid.numx, grid.numz)`` or 3D matrix ``(grid.numx, 1, grid.numz)``</span>
+<span class="sd">        or 1D matrix ``(grid.numx * grid.numz)``</span>
+<span class="sd">    grid : Grid</span>
+<span class="sd">    ax : matplotlib.Axis or None</span>
+<span class="sd">        Axis where to plot.</span>
+<span class="sd">    title : str or None</span>
+<span class="sd">    clim : List[Float] or None</span>
+<span class="sd">    interpolation : str or None</span>
+<span class="sd">    draw_cbar : boolean</span>
+<span class="sd">    cmap</span>
+<span class="sd">    figsize : List[Float] or None</span>
+<span class="sd">        Default: ``conf[&#39;plot_oxz.figsize&#39;]``</span>
+<span class="sd">    savefig : boolean or None</span>
+<span class="sd">        If True, save the figure. Default: ``conf[&#39;savefig&#39;]``</span>
+<span class="sd">    patches : List[matplotlib.patches.Patch] or None</span>
+<span class="sd">        Patches to draw</span>
+<span class="sd">    filename : str or None</span>
+<span class="sd">        If True</span>
+<span class="sd">    scale : str or None</span>
+<span class="sd">        &#39;linear&#39; or &#39;db&#39;. Default: &#39;linear&#39;</span>
+<span class="sd">    ref_db : float or None</span>
+<span class="sd">        Value for 0 dB. Used only for scale=db.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    axis</span>
+<span class="sd">    image</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    ::</span>
+
+<span class="sd">        grid = arim.geometry.Grid(-5e-3, 5e-3, 0, 0, 0, 15e-3, .1e-3)</span>
+<span class="sd">        k = 2 * np.pi / 10e-3</span>
+<span class="sd">        data = (np.cos(grid.x * 2 * k) * np.sin(grid.z * k))</span>
+<span class="sd">        ax, im = aplt.plot_oxz(data, grid)</span>
+
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">figsize</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">figsize</span> <span class="o">=</span> <span class="n">conf</span><span class="p">[</span><span class="s2">&quot;plot_oxz.figsize&quot;</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">warn</span><span class="p">(</span>
+                <span class="s2">&quot;figsize is ignored because an axis is provided&quot;</span><span class="p">,</span>
+                <span class="n">ArimWarning</span><span class="p">,</span>
+                <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+            <span class="p">)</span>
+    <span class="k">if</span> <span class="n">savefig</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">savefig</span> <span class="o">=</span> <span class="n">conf</span><span class="p">[</span><span class="s2">&quot;savefig&quot;</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="n">figsize</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">fig</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">figure</span>
+    <span class="k">if</span> <span class="n">patches</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">patches</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="n">valid_shapes</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">numx</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">grid</span><span class="o">.</span><span class="n">numz</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">numx</span><span class="p">,</span> <span class="n">grid</span><span class="o">.</span><span class="n">numz</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">numx</span> <span class="o">*</span> <span class="n">grid</span><span class="o">.</span><span class="n">numz</span><span class="p">,),</span>
+    <span class="p">]</span>
+    <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span> <span class="ow">in</span> <span class="n">valid_shapes</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">grid</span><span class="o">.</span><span class="n">numx</span><span class="p">,</span> <span class="n">grid</span><span class="o">.</span><span class="n">numz</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;invalid data shape (got </span><span class="si">{}</span><span class="s2">, expected </span><span class="si">{}</span><span class="s2"> or </span><span class="si">{}</span><span class="s2"> or </span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="o">*</span><span class="n">valid_shapes</span>
+        <span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">rot90</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+    <span class="n">scale</span> <span class="o">=</span> <span class="n">scale</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">scale</span> <span class="o">==</span> <span class="s2">&quot;linear&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">ref_db</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;ref_db is ignored for linear plot&quot;</span><span class="p">,</span> <span class="n">ArimWarning</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">scale</span> <span class="o">==</span> <span class="s2">&quot;db&quot;</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">ut</span><span class="o">.</span><span class="n">decibel</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">ref_db</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;invalid scale: </span><span class="si">{</span><span class="n">scale</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">image</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span>
+        <span class="n">data</span><span class="p">,</span>
+        <span class="n">interpolation</span><span class="o">=</span><span class="n">interpolation</span><span class="p">,</span>
+        <span class="n">origin</span><span class="o">=</span><span class="s2">&quot;lower&quot;</span><span class="p">,</span>
+        <span class="n">extent</span><span class="o">=</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">xmin</span><span class="p">,</span> <span class="n">grid</span><span class="o">.</span><span class="n">xmax</span><span class="p">,</span> <span class="n">grid</span><span class="o">.</span><span class="n">zmax</span><span class="p">,</span> <span class="n">grid</span><span class="o">.</span><span class="n">zmin</span><span class="p">),</span>
+        <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_xlabel</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+        <span class="c1"># avoid overwriting labels</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;x (mm)&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_ylabel</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;z (mm)&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span><span class="n">milli_formatter</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_minor_formatter</span><span class="p">(</span><span class="n">milli_formatter</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span><span class="n">milli_formatter</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_minor_formatter</span><span class="p">(</span><span class="n">milli_formatter</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">draw_cbar</span><span class="p">:</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">clim</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">image</span><span class="o">.</span><span class="n">set_clim</span><span class="p">(</span><span class="n">clim</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">title</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">patches</span><span class="p">:</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">add_patch</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="n">aspect</span><span class="o">=</span><span class="s2">&quot;equal&quot;</span><span class="p">,</span> <span class="n">adjustable</span><span class="o">=</span><span class="s2">&quot;box&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">axis</span><span class="p">([</span><span class="n">grid</span><span class="o">.</span><span class="n">xmin</span><span class="p">,</span> <span class="n">grid</span><span class="o">.</span><span class="n">xmax</span><span class="p">,</span> <span class="n">grid</span><span class="o">.</span><span class="n">zmax</span><span class="p">,</span> <span class="n">grid</span><span class="o">.</span><span class="n">zmin</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">savefig</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">filename</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;filename must be provided when savefig is true&quot;</span><span class="p">)</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ax</span><span class="p">,</span> <span class="n">image</span></div>
+
+
+
+<div class="viewcode-block" id="plot_oxz_many">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.plot/arim.plot.plot_oxz_many.html#arim.plot.plot_oxz_many">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">plot_oxz_many</span><span class="p">(</span>
+    <span class="n">data_list</span><span class="p">,</span>
+    <span class="n">grid</span><span class="p">,</span>
+    <span class="n">nrows</span><span class="p">,</span>
+    <span class="n">ncols</span><span class="p">,</span>
+    <span class="n">title_list</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">suptitle</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">draw_colorbar</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">figsize</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">savefig</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">clim</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">y_title</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+    <span class="n">y_suptitle</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+    <span class="n">axes_pad</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">plot_oxz_kwargs</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plot many Oxz plots on the same figure.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data_list : List[ndarray]</span>
+<span class="sd">        Data are plotted from top left to bottom right, row per row.</span>
+<span class="sd">    grid : Grid</span>
+<span class="sd">    nrows : int</span>
+<span class="sd">    ncols : int</span>
+<span class="sd">    title_list : List[str] or None</span>
+<span class="sd">    suptitle : str or None</span>
+<span class="sd">    draw_colorbar : boolean</span>
+<span class="sd">        Default: True</span>
+<span class="sd">    figsize : List[Float] or None</span>
+<span class="sd">        Default: ``conf[&#39;plot_oxz_many.figsize&#39;]``</span>
+<span class="sd">    savefig: boolean</span>
+<span class="sd">        Default: ``conf[&#39;savefig&#39;]``</span>
+<span class="sd">    clim :</span>
+<span class="sd">        Color limit. Common for all plots.</span>
+<span class="sd">    filename</span>
+<span class="sd">    y_title : float</span>
+<span class="sd">        Adjust y location of the titles.</span>
+<span class="sd">    y_suptitle : float</span>
+<span class="sd">        Adjust y location of the titles.</span>
+<span class="sd">    axes_pad : float</span>
+<span class="sd">        Pad between images in inches</span>
+
+<span class="sd">    plot_oxz_kwargs</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    axes_grid : axes_grid1.ImageGrid</span>
+<span class="sd">    im_list</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">savefig</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">savefig</span> <span class="o">=</span> <span class="n">conf</span><span class="p">[</span><span class="s2">&quot;savefig&quot;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">figsize</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">figsize</span> <span class="o">=</span> <span class="n">conf</span><span class="p">[</span><span class="s2">&quot;plot_oxz_many.figsize&quot;</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">title_list</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">title_list</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">data_list</span><span class="p">)</span>
+
+    <span class="c1"># must use a common clim (otherwise the figure does not make sense)</span>
+    <span class="k">if</span> <span class="n">clim</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">clim</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="nb">min</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nanmin</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">data_list</span><span class="p">),</span>
+            <span class="nb">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nanmax</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">data_list</span><span class="p">),</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">draw_colorbar</span><span class="p">:</span>
+        <span class="n">cbar_mode</span> <span class="o">=</span> <span class="s2">&quot;single&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">cbar_mode</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="n">figsize</span><span class="p">)</span>
+    <span class="n">axes_grid</span> <span class="o">=</span> <span class="n">axes_grid1</span><span class="o">.</span><span class="n">ImageGrid</span><span class="p">(</span>
+        <span class="n">fig</span><span class="p">,</span>
+        <span class="mi">111</span><span class="p">,</span>
+        <span class="n">nrows_ncols</span><span class="o">=</span><span class="p">(</span><span class="n">nrows</span><span class="p">,</span> <span class="n">ncols</span><span class="p">),</span>
+        <span class="n">axes_pad</span><span class="o">=</span><span class="n">axes_pad</span><span class="p">,</span>
+        <span class="n">share_all</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">cbar_mode</span><span class="o">=</span><span class="n">cbar_mode</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">images</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">data</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">ax</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">data_list</span><span class="p">,</span> <span class="n">title_list</span><span class="p">,</span> <span class="n">axes_grid</span><span class="p">):</span>
+        <span class="c1"># the current function handles saving fig, drawing the cbar and displaying the title</span>
+        <span class="c1"># so we prevent plot_oxz to do it.</span>
+        <span class="n">ax</span><span class="p">,</span> <span class="n">im</span> <span class="o">=</span> <span class="n">plot_oxz</span><span class="p">(</span>
+            <span class="n">data</span><span class="p">,</span>
+            <span class="n">grid</span><span class="p">,</span>
+            <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span>
+            <span class="n">clim</span><span class="o">=</span><span class="n">clim</span><span class="p">,</span>
+            <span class="n">draw_cbar</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">savefig</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">plot_oxz_kwargs</span><span class="p">,</span>
+            <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">images</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">title</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y_title</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">suptitle</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="n">suptitle</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y_suptitle</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="s2">&quot;x-large&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">draw_colorbar</span><span class="p">:</span>
+        <span class="n">cax</span> <span class="o">=</span> <span class="n">axes_grid</span><span class="o">.</span><span class="n">cbar_axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">cax</span><span class="o">=</span><span class="n">cax</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">savefig</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">filename</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;filename must be provided when savefig is true&quot;</span><span class="p">)</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">axes_grid</span><span class="p">,</span> <span class="n">images</span></div>
+
+
+
+<div class="viewcode-block" id="plot_tfm">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.plot/arim.plot.plot_tfm.html#arim.plot.plot_tfm">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">plot_tfm</span><span class="p">(</span><span class="n">tfm</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">func_res</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s2">&quot;bilinear&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">plot_oxz_kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plot a TFM in plane Oxz.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    tfm : BaseTFM</span>
+<span class="sd">    y : float</span>
+<span class="sd">    interpolation : str</span>
+<span class="sd">        Cf matplotlib.pyplot.imshow</span>
+<span class="sd">    func_res : function</span>
+<span class="sd">        Function to apply on tfm.res before plotting it. Example: ``lambda x: np.abs(x)``</span>
+<span class="sd">    plot_oxz_kwargs : dict</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    ax</span>
+<span class="sd">    image</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :func:`plot_oxz`</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">grid</span> <span class="o">=</span> <span class="n">tfm</span><span class="o">.</span><span class="n">grid</span>
+    <span class="n">iy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">y</span> <span class="o">-</span> <span class="n">y</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">tfm</span><span class="o">.</span><span class="n">res</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No result in this TFM object.&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">func_res</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">func_res</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span>
+
+    <span class="n">data</span> <span class="o">=</span> <span class="n">func_res</span><span class="p">(</span><span class="n">tfm</span><span class="o">.</span><span class="n">res</span><span class="p">[:,</span> <span class="n">iy</span><span class="p">,</span> <span class="p">:])</span>
+
+    <span class="k">return</span> <span class="n">plot_oxz</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">grid</span><span class="o">=</span><span class="n">grid</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="n">interpolation</span><span class="p">,</span> <span class="o">**</span><span class="n">plot_oxz_kwargs</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="plot_directivity_finite_width_2d">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.plot/arim.plot.plot_directivity_finite_width_2d.html#arim.plot.plot_directivity_finite_width_2d">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">plot_directivity_finite_width_2d</span><span class="p">(</span><span class="n">element_width</span><span class="p">,</span> <span class="n">wavelength</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    element_width</span>
+<span class="sd">    wavelength</span>
+<span class="sd">    ax : matplotlib.axes._subplots.AxesSubplot</span>
+<span class="sd">    kwargs</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">_</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">figure</span>
+
+    <span class="n">title</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+        <span class="s2">&quot;title&quot;</span><span class="p">,</span> <span class="s2">&quot;Directivity of an element (uniform sources along a straight line)&quot;</span>
+    <span class="p">)</span>
+
+    <span class="n">ratio</span> <span class="o">=</span> <span class="n">element_width</span> <span class="o">/</span> <span class="n">wavelength</span>
+    <span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+    <span class="n">directivity</span> <span class="o">=</span> <span class="n">ut</span><span class="o">.</span><span class="n">directivity_finite_width_2d</span><span class="p">(</span><span class="n">theta</span><span class="p">,</span> <span class="n">element_width</span><span class="p">,</span> <span class="n">wavelength</span><span class="p">)</span>
+
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">rad2deg</span><span class="p">(</span><span class="n">theta</span><span class="p">),</span>
+        <span class="n">directivity</span><span class="p">,</span>
+        <span class="n">label</span><span class="o">=</span><span class="sa">rf</span><span class="s2">&quot;$a/\lambda = </span><span class="si">{</span><span class="n">ratio</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">$&quot;</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;Polar angle $\theta$ (deg)&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;directivity (1)&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="o">-</span><span class="mi">90</span><span class="p">,</span> <span class="mi">90</span><span class="p">])</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">])</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_locator</span><span class="p">(</span><span class="n">ticker</span><span class="o">.</span><span class="n">MultipleLocator</span><span class="p">(</span><span class="mf">30.0</span><span class="p">))</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_minor_locator</span><span class="p">(</span><span class="n">ticker</span><span class="o">.</span><span class="n">MultipleLocator</span><span class="p">(</span><span class="mf">15.0</span><span class="p">))</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_minor_locator</span><span class="p">(</span><span class="n">ticker</span><span class="o">.</span><span class="n">MultipleLocator</span><span class="p">(</span><span class="mf">0.1</span><span class="p">))</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">ax</span></div>
+
+
+
+<div class="viewcode-block" id="RayPlotter">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.plot/arim.plot.RayPlotter.html#arim.plot.RayPlotter">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">RayPlotter</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">ray</span><span class="p">,</span> <span class="n">element_index</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;m--&quot;</span><span class="p">,</span> <span class="n">tolerance_distance</span><span class="o">=</span><span class="mf">1e-3</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">grid</span> <span class="o">=</span> <span class="n">grid</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ray</span> <span class="o">=</span> <span class="n">ray</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">element_index</span> <span class="o">=</span> <span class="n">element_index</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">linestyle</span> <span class="o">=</span> <span class="n">linestyle</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lines</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">debug</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tolerance_distance</span> <span class="o">=</span> <span class="n">tolerance_distance</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+            <span class="s2">&quot;button=</span><span class="si">%d</span><span class="s2">, x=</span><span class="si">%d</span><span class="s2">, y=</span><span class="si">%d</span><span class="s2">, xdata=</span><span class="si">%f</span><span class="s2">, ydata=</span><span class="si">%f</span><span class="s2">&quot;</span>
+            <span class="o">%</span> <span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">button</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">xdata</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">ydata</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">ax</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">button</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">draw_ray</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">xdata</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">ydata</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">button</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">clear_rays</span><span class="p">(</span><span class="n">ax</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;show_ray_on_clic() finish with no error&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="RayPlotter.draw_ray">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.plot/arim.plot.RayPlotter.html#arim.plot.RayPlotter.draw_ray">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">draw_ray</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">z</span><span class="p">):</span>
+        <span class="n">gridpoints</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">to_1d_points</span><span class="p">()</span>
+        <span class="n">wanted_point</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>
+        <span class="n">point_index</span> <span class="o">=</span> <span class="n">gridpoints</span><span class="o">.</span><span class="n">closest_point</span><span class="p">(</span><span class="o">*</span><span class="n">wanted_point</span><span class="p">)</span>
+        <span class="n">obtained_point</span> <span class="o">=</span> <span class="n">gridpoints</span><span class="p">[</span><span class="n">point_index</span><span class="p">]</span>
+
+        <span class="n">distance</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">norm2</span><span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="n">obtained_point</span> <span class="o">-</span> <span class="n">wanted_point</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">distance</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">tolerance_distance</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s2">&quot;The closest grid point is far from what you want (dist: </span><span class="si">{:.2f}</span><span class="s2"> mm)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">distance</span> <span class="o">*</span> <span class="mi">1000</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="n">legs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ray</span><span class="o">.</span><span class="n">get_coordinates_one</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">element_index</span><span class="p">,</span> <span class="n">point_index</span><span class="p">)</span>
+        <span class="n">line</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">legs</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">legs</span><span class="o">.</span><span class="n">z</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">linestyle</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lines</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Draw a ray&quot;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">draw_idle</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="RayPlotter.clear_rays">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.plot/arim.plot.RayPlotter.html#arim.plot.RayPlotter.clear_rays">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">clear_rays</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Clear all rays&quot;&quot;&quot;</span>
+        <span class="n">lines_to_clear</span> <span class="o">=</span> <span class="p">[</span><span class="n">line</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">ax</span><span class="o">.</span><span class="n">lines</span> <span class="k">if</span> <span class="n">line</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lines</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines_to_clear</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">lines</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_lines</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Clear </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">lines_to_clear</span><span class="p">)</span><span class="si">}</span><span class="s2"> ray(s) on figure&quot;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">draw_idle</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="RayPlotter.connect">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.plot/arim.plot.RayPlotter.html#arim.plot.RayPlotter.connect">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Connect to matplotlib event backend&quot;&quot;&quot;</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">mpl_connect</span><span class="p">(</span><span class="s2">&quot;button_press_event&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="draw_rays_on_click">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.plot/arim.plot.draw_rays_on_click.html#arim.plot.draw_rays_on_click">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">draw_rays_on_click</span><span class="p">(</span><span class="n">grid</span><span class="p">,</span> <span class="n">ray</span><span class="p">,</span> <span class="n">element_index</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;m--&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Dynamic plotting of rays on a plot.</span>
+
+<span class="sd">    Left-click: draw a ray between the probe element and the mouse point.</span>
+<span class="sd">    Right-click: clear all rays in the plot.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    grid : Grid</span>
+<span class="sd">    ray : Rays</span>
+
+<span class="sd">    element_index : int</span>
+<span class="sd">    ax : Axis</span>
+<span class="sd">        Matplotlib axis on which to plot. If None: current axis.</span>
+<span class="sd">    linestyle : str</span>
+<span class="sd">        A valid matplotlib linestyle. Default: &#39;m--&#39;</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    ray_plotter : RayPlotter</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+    <span class="n">ray_plotter</span> <span class="o">=</span> <span class="n">RayPlotter</span><span class="p">(</span>
+        <span class="n">grid</span><span class="o">=</span><span class="n">grid</span><span class="p">,</span> <span class="n">ray</span><span class="o">=</span><span class="n">ray</span><span class="p">,</span> <span class="n">element_index</span><span class="o">=</span><span class="n">element_index</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="n">linestyle</span>
+    <span class="p">)</span>
+    <span class="n">ray_plotter</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">ax</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ray_plotter</span></div>
+
+
+
+<div class="viewcode-block" id="plot_interfaces">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.plot/arim.plot.plot_interfaces.html#arim.plot.plot_interfaces">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">plot_interfaces</span><span class="p">(</span>
+    <span class="n">oriented_points_list</span><span class="p">,</span>
+    <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">show_probe</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">show_last</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">show_orientations</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">n_arrows</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Interfaces&quot;</span><span class="p">,</span>
+    <span class="n">savefig</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;interfaces&quot;</span><span class="p">,</span>
+    <span class="n">markers</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">show_legend</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">quiver_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plot interfaces on the Oxz plane.</span>
+
+<span class="sd">    Assume the first interface is for the probe and the last is for the grid.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    oriented_points_list : list[OrientedPoints]</span>
+<span class="sd">    ax : matplotlib.axis.Axis</span>
+<span class="sd">    show_probe : boolean</span>
+<span class="sd">        Default True</span>
+<span class="sd">    show_last : boolean</span>
+<span class="sd">        Default: True. Useful for hiding the grid.</span>
+<span class="sd">    show_orientations : boolean</span>
+<span class="sd">        Plot arrows for the orientations. Default: False</span>
+<span class="sd">    n_arrows : int</span>
+<span class="sd">        Number of arrows per interface to plot.</span>
+<span class="sd">    title : str or None</span>
+<span class="sd">        Title to display. None for no title.</span>
+<span class="sd">    savefig : boolean</span>
+<span class="sd">        If True, the plot will be saved. Default: ``conf[&#39;savefig&#39;]``.</span>
+<span class="sd">    filename : str</span>
+<span class="sd">        Filename of the plot, used if savefig is True. Default: &#39;interfaces&#39;</span>
+<span class="sd">    markers : List[str]</span>
+<span class="sd">        Matplotlib markers for each interfaces. Default: &#39;.&#39; for probe, &#39;,k&#39; for the grid,</span>
+<span class="sd">        &#39;.&#39; for the rest.</span>
+<span class="sd">    show_legend : boolean</span>
+<span class="sd">        Default True</span>
+<span class="sd">    quiver_kwargs : dict</span>
+<span class="sd">        Arguments for displaying the arrows (cf. matplotlib function &#39;quiver&#39;)</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    ax : matplotlib.axis.Axis</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">savefig</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">savefig</span> <span class="o">=</span> <span class="n">conf</span><span class="p">[</span><span class="s2">&quot;savefig&quot;</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">fig</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">figure</span>
+
+    <span class="k">if</span> <span class="n">quiver_kwargs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">quiver_kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="mf">0.0003</span><span class="p">)</span>
+
+    <span class="n">numinterfaces</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">oriented_points_list</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">markers</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">markers</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;.&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;.&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">numinterfaces</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;,k&quot;</span><span class="p">]</span>
+
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">interface</span><span class="p">,</span> <span class="n">marker</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">oriented_points_list</span><span class="p">,</span> <span class="n">markers</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">show_probe</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">numinterfaces</span> <span class="o">-</span> <span class="mi">1</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">show_last</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="p">(</span><span class="n">line</span><span class="p">,)</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+            <span class="n">interface</span><span class="o">.</span><span class="n">points</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">interface</span><span class="o">.</span><span class="n">points</span><span class="o">.</span><span class="n">z</span><span class="p">,</span> <span class="n">marker</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">interface</span><span class="o">.</span><span class="n">points</span><span class="o">.</span><span class="n">name</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">show_orientations</span><span class="p">:</span>
+            <span class="c1"># arrow every k points</span>
+            <span class="n">k</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">interface</span><span class="o">.</span><span class="n">points</span><span class="p">)</span> <span class="o">//</span> <span class="n">n_arrows</span>
+            <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">k</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="c1"># import pytest; pytest.set_trace()</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">quiver</span><span class="p">(</span>
+                <span class="n">interface</span><span class="o">.</span><span class="n">points</span><span class="o">.</span><span class="n">x</span><span class="p">[::</span><span class="n">k</span><span class="p">],</span>
+                <span class="n">interface</span><span class="o">.</span><span class="n">points</span><span class="o">.</span><span class="n">z</span><span class="p">[::</span><span class="n">k</span><span class="p">],</span>
+                <span class="n">interface</span><span class="o">.</span><span class="n">orientations</span><span class="o">.</span><span class="n">x</span><span class="p">[::</span><span class="n">k</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+                <span class="n">interface</span><span class="o">.</span><span class="n">orientations</span><span class="o">.</span><span class="n">z</span><span class="p">[::</span><span class="n">k</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+                <span class="n">color</span><span class="o">=</span><span class="n">line</span><span class="o">.</span><span class="n">get_color</span><span class="p">(),</span>
+                <span class="n">units</span><span class="o">=</span><span class="s2">&quot;xy&quot;</span><span class="p">,</span>
+                <span class="n">angles</span><span class="o">=</span><span class="s2">&quot;xy&quot;</span><span class="p">,</span>
+                <span class="o">**</span><span class="n">quiver_kwargs</span><span class="p">,</span>
+            <span class="p">)</span>
+
+    <span class="c1"># set labels only if there is none in the axis yet</span>
+    <span class="k">if</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_xlabel</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;x (mm)&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_ylabel</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;z (mm)&quot;</span><span class="p">)</span>
+
+    <span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span><span class="n">milli_formatter</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span><span class="n">milli_formatter</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_minor_formatter</span><span class="p">(</span><span class="n">milli_formatter</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_minor_formatter</span><span class="p">(</span><span class="n">milli_formatter</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">title</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
+
+    <span class="n">ylim</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_ylim</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">ylim</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">ylim</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">invert_yaxis</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">show_legend</span><span class="p">:</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;best&quot;</span><span class="p">)</span>
+
+    <span class="n">ax</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">&quot;equal&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">savefig</span><span class="p">:</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ax</span></div>
+
+
+
+<div class="viewcode-block" id="common_dynamic_db_scale">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.plot/arim.plot.common_dynamic_db_scale.html#arim.plot.common_dynamic_db_scale">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">common_dynamic_db_scale</span><span class="p">(</span><span class="n">data_list</span><span class="p">,</span> <span class="n">area</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">db_range</span><span class="o">=</span><span class="mf">40.0</span><span class="p">,</span> <span class="n">ref_db</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Scale such as:</span>
+<span class="sd">      - 0 dB corresponds to the maximum value in the area for all data arrays,</span>
+<span class="sd">      - the clim for each data array are bound by the maximum value in the area.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data_list</span>
+<span class="sd">    db_range : float</span>
+
+<span class="sd">    Yields</span>
+<span class="sd">    ------</span>
+<span class="sd">    ref_db</span>
+<span class="sd">    (clim_min, clim_max)</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">        &gt;&gt;&gt; area = grid.points_in_rectbox(xmin=10, xmax=20)</span>
+<span class="sd">        &gt;&gt;&gt; common_db_scale_iter = common_dynamic_db_scale(data_list, area)</span>
+<span class="sd">        &gt;&gt;&gt; for data in data_list:</span>
+<span class="sd">        ...     ref_db, clim = next(common_db_scale_iter)</span>
+<span class="sd">        ...     plot_oxz(data, grid, scale=&#39;db&#39;, ref_db=ref_db, clim=clim)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">data_max_list</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">if</span> <span class="n">area</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">area</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">data_list</span><span class="p">:</span>
+        <span class="n">data_max_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nanmax</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">area</span><span class="p">])))</span>
+    <span class="k">if</span> <span class="n">ref_db</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">ref_db</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">data_max_list</span><span class="p">)</span>
+
+    <span class="n">data_max_db_list</span> <span class="o">=</span> <span class="n">ut</span><span class="o">.</span><span class="n">decibel</span><span class="p">(</span><span class="n">data_max_list</span><span class="p">,</span> <span class="n">ref_db</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">data_max_db</span> <span class="ow">in</span> <span class="n">data_max_db_list</span><span class="p">:</span>
+        <span class="k">yield</span> <span class="n">ref_db</span><span class="p">,</span> <span class="p">(</span><span class="n">data_max_db</span> <span class="o">-</span> <span class="n">db_range</span><span class="p">,</span> <span class="n">data_max_db</span><span class="p">)</span></div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2016–2025, arim contributors.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.4.7.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

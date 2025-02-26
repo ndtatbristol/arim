@@ -1,0 +1,6 @@
+arim.plot.common_dynamic_db_scale
+=================================
+
+.. currentmodule:: arim.plot
+
+.. autofunction:: common_dynamic_db_scale

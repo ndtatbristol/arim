@@ -1,0 +1,1365 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>arim.im.das &#8212; arim 0.10.0.a0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../../_static/documentation_options.js?v=51601fd6"></script>
+    <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/arim/im/das';</script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">arim 0.10.0.a0 documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../installation/index.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../installation/index.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">arim.im.das</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for arim.im.das</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Delay-and-sum functions</span>
+
+<span class="sd">Contains different implementation of delay-and-sum algorithm.</span>
+
+<span class="sd">.. currentmodule:: arim.im.das</span>
+
+<span class="sd">Examples</span>
+<span class="sd">--------</span>
+
+<span class="sd">::</span>
+
+<span class="sd">    res = das.delay_and_sum(frame, focal_law, fillvalue=0.0)</span>
+<span class="sd">    res = das.delay_and_sum(frame, focal_law, fillvalue=np.nan)</span>
+<span class="sd">    res = das.delay_and_sum(frame, focal_law, interpolation=&quot;nearest&quot;)</span>
+<span class="sd">    res = das.delay_and_sum(frame, focal_law, interpolation=&quot;nearest&quot;, aggregation=&quot;median&quot;)</span>
+<span class="sd">    res = das.delay_and_sum(frame, focal_law, interpolation=&quot;nearest&quot;, aggregation=(&quot;huber&quot;, 1.5))</span>
+<span class="sd">    res = das.delay_and_sum(frame, focal_law, interpolation=&quot;linear&quot;)</span>
+<span class="sd">    res = das.delay_and_sum(frame, focal_law, interpolation=(&quot;lanczos&quot;, 3))</span>
+<span class="sd">    res = das.delay_and_sum(frame, focal_law, interpolation=(&quot;lanczos&quot;, 3), aggregation=&quot;median&quot;)</span>
+
+
+<span class="sd">Data structures</span>
+<span class="sd">---------------</span>
+
+<span class="sd">- ``lookup_times_tx``: ndarray of shape (numgridpoints, numtx)</span>
+<span class="sd">- ``lookup_times_rx``: ndarray of shape (numgridpoints, numrx)</span>
+<span class="sd">- ``amplitudes_tx``: ndarray of shape (numgridpoints, numtx)</span>
+<span class="sd">- ``amplitudes_tx``: ndarray of shape (numgridpoints, numrx)</span>
+<span class="sd">- ``amplitudes``: TxRxAmplitudes or ndarray (numgridpoints, numtimetraces) or None</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numba</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">geomed</span><span class="p">,</span> <span class="n">huber</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="n">use_parallel</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ARIM_USE_PARALLEL&quot;</span><span class="p">,</span> <span class="ow">not</span> <span class="n">numba</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">IS_32BITS</span><span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">NotImplementedTyping</span><span class="p">(</span><span class="ne">NotImplementedError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+    <span class="k">pass</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_check_shapes</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">focal_law</span><span class="p">):</span>
+    <span class="n">numtimetraces</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">numtimetraces</span>
+    <span class="n">numpoints</span><span class="p">,</span> <span class="n">numtx</span> <span class="o">=</span> <span class="n">focal_law</span><span class="o">.</span><span class="n">lookup_times_tx</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">numrx</span> <span class="o">=</span> <span class="n">focal_law</span><span class="o">.</span><span class="n">lookup_times_rx</span><span class="o">.</span><span class="n">shape</span>
+
+    <span class="k">if</span> <span class="n">focal_law</span><span class="o">.</span><span class="n">amplitudes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="n">focal_law</span><span class="o">.</span><span class="n">amplitudes</span><span class="o">.</span><span class="n">amplitudes_tx</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="n">numpoints</span><span class="p">,</span> <span class="n">numtx</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">focal_law</span><span class="o">.</span><span class="n">amplitudes</span><span class="o">.</span><span class="n">amplitudes_rx</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="n">numpoints</span><span class="p">,</span> <span class="n">numrx</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">focal_law</span><span class="o">.</span><span class="n">amplitudes</span><span class="o">.</span><span class="n">amplitudes_tx</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">c_contiguous</span>
+        <span class="k">assert</span> <span class="n">focal_law</span><span class="o">.</span><span class="n">amplitudes</span><span class="o">.</span><span class="n">amplitudes_rx</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">c_contiguous</span>
+
+    <span class="k">assert</span> <span class="n">frame</span><span class="o">.</span><span class="n">tx</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="n">numtimetraces</span><span class="p">,)</span>
+    <span class="k">assert</span> <span class="n">frame</span><span class="o">.</span><span class="n">rx</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="n">numtimetraces</span><span class="p">,)</span>
+
+    <span class="k">assert</span> <span class="n">focal_law</span><span class="o">.</span><span class="n">lookup_times_tx</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">c_contiguous</span>
+    <span class="k">assert</span> <span class="n">focal_law</span><span class="o">.</span><span class="n">lookup_times_rx</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">c_contiguous</span>
+    <span class="k">assert</span> <span class="n">frame</span><span class="o">.</span><span class="n">timetraces</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">c_contiguous</span>
+    <span class="k">assert</span> <span class="n">frame</span><span class="o">.</span><span class="n">tx</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">c_contiguous</span>
+    <span class="k">assert</span> <span class="n">frame</span><span class="o">.</span><span class="n">rx</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">c_contiguous</span>
+
+
+<div class="viewcode-block" id="delay_and_sum_numba">
+<a class="viewcode-back" href="../../../_autosummary/_autosummary/arim.im.das/arim.im.das.delay_and_sum_numba.html#arim.im.das.delay_and_sum_numba">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">delay_and_sum_numba</span><span class="p">(</span>
+    <span class="n">frame</span><span class="p">,</span>
+    <span class="n">focal_law</span><span class="p">,</span>
+    <span class="n">fillvalue</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+    <span class="n">interpolation</span><span class="o">=</span><span class="s2">&quot;nearest&quot;</span><span class="p">,</span>
+    <span class="n">aggregation</span><span class="o">=</span><span class="s2">&quot;mean&quot;</span><span class="p">,</span>
+    <span class="n">result</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Delay-and-sum function for non-uniform amplitudes</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    frame : Frame</span>
+<span class="sd">    focal_law : FocalLaw</span>
+<span class="sd">    fillvalue : float</span>
+<span class="sd">        Default: 0.</span>
+<span class="sd">    interpolation : str</span>
+<span class="sd">        Interpolation of timetraces between samples. &quot;linear&quot;, &quot;nearest&quot;</span>
+<span class="sd">    aggregation : str</span>
+<span class="sd">        Only &quot;mean&quot; supported.</span>
+<span class="sd">    result : ndarray</span>
+<span class="sd">        Write on it if provided.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    result : ndarray (numpoints, )</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># numtimetraces = frame.numtimetraces</span>
+    <span class="n">numpoints</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">focal_law</span><span class="o">.</span><span class="n">lookup_times_tx</span><span class="o">.</span><span class="n">shape</span>
+
+    <span class="n">_check_shapes</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">focal_law</span><span class="p">)</span>
+
+    <span class="n">weighted_timetraces</span> <span class="o">=</span> <span class="n">focal_law</span><span class="o">.</span><span class="n">weigh_timetraces</span><span class="p">(</span><span class="n">frame</span><span class="o">.</span><span class="n">timetraces</span><span class="p">)</span>
+    <span class="n">dtype_float</span><span class="p">,</span> <span class="n">dtype_amp</span><span class="p">,</span> <span class="n">dtype_data</span> <span class="o">=</span> <span class="n">_infer_datatypes</span><span class="p">(</span>
+        <span class="n">weighted_timetraces</span><span class="p">,</span> <span class="n">focal_law</span><span class="p">,</span> <span class="n">result</span>
+    <span class="p">)</span>
+
+    <span class="n">aggregation</span> <span class="o">=</span> <span class="n">aggregation</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">aggregation</span> <span class="o">!=</span> <span class="s2">&quot;mean&quot;</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="n">numpoints</span><span class="p">,),</span> <span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype_data</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">result</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="n">numpoints</span><span class="p">,)</span>
+
+    <span class="k">if</span> <span class="n">interpolation</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;nearest&quot;</span><span class="p">:</span>
+        <span class="n">delay_and_sum_function</span> <span class="o">=</span> <span class="n">_delay_and_sum_amplitudes_nearest</span>
+    <span class="k">elif</span> <span class="n">interpolation</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;linear&quot;</span><span class="p">:</span>
+        <span class="n">delay_and_sum_function</span> <span class="o">=</span> <span class="n">_delay_and_sum_amplitudes_linear</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;invalid &#39;interpolation&#39; argument&quot;</span><span class="p">)</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Delay-and-sum function: </span><span class="si">{</span><span class="n">delay_and_sum_function</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">delay_and_sum_function</span><span class="p">(</span>
+        <span class="n">weighted_timetraces</span><span class="p">,</span>
+        <span class="n">frame</span><span class="o">.</span><span class="n">tx</span><span class="p">,</span>
+        <span class="n">frame</span><span class="o">.</span><span class="n">rx</span><span class="p">,</span>
+        <span class="n">focal_law</span><span class="o">.</span><span class="n">lookup_times_tx</span><span class="p">,</span>
+        <span class="n">focal_law</span><span class="o">.</span><span class="n">lookup_times_rx</span><span class="p">,</span>
+        <span class="n">focal_law</span><span class="o">.</span><span class="n">amplitudes</span><span class="o">.</span><span class="n">amplitudes_tx</span><span class="p">,</span>
+        <span class="n">focal_law</span><span class="o">.</span><span class="n">amplitudes</span><span class="o">.</span><span class="n">amplitudes_rx</span><span class="p">,</span>
+        <span class="n">frame</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">step</span><span class="p">,</span>
+        <span class="n">frame</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">start</span><span class="p">,</span>
+        <span class="n">fillvalue</span><span class="p">,</span>
+        <span class="n">result</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">result</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_infer_datatypes</span><span class="p">(</span>
+    <span class="n">timetraces</span><span class="p">,</span> <span class="n">focal_law</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="n">dtype_float</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype_amp</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype_data</span><span class="o">=</span><span class="kc">None</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dtype_float: datatype of times only values (time)</span>
+<span class="sd">    dtype_amp: datatype of TFM amplitudes</span>
+<span class="sd">    dtype_data: datatype that suits both the input timetraces and the results</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">dtype_float</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">dtype_float</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">result_type</span><span class="p">(</span>
+            <span class="n">focal_law</span><span class="o">.</span><span class="n">lookup_times_tx</span><span class="p">,</span> <span class="n">focal_law</span><span class="o">.</span><span class="n">lookup_times_rx</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="n">dtype_amp</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">focal_law</span><span class="o">.</span><span class="n">amplitudes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">has_amp</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">dtype_amp</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">has_amp</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">dtype_amp</span> <span class="o">=</span> <span class="n">focal_law</span><span class="o">.</span><span class="n">amplitudes</span><span class="o">.</span><span class="n">dtype</span>
+    <span class="k">if</span> <span class="n">dtype_data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">has_amp</span><span class="p">:</span>
+            <span class="n">data_arrays</span> <span class="o">=</span> <span class="p">[</span><span class="n">timetraces</span><span class="p">,</span> <span class="n">dtype_amp</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">data_arrays</span> <span class="o">=</span> <span class="p">[</span><span class="n">timetraces</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">data_arrays</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+        <span class="n">dtype_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">result_type</span><span class="p">(</span><span class="o">*</span><span class="n">data_arrays</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dtype_float</span><span class="p">,</span> <span class="n">dtype_amp</span><span class="p">,</span> <span class="n">dtype_data</span>
+
+
+<span class="nd">@numba</span><span class="o">.</span><span class="n">jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">nogil</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">parallel</span><span class="o">=</span><span class="n">use_parallel</span><span class="p">,</span> <span class="n">fastmath</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_delay_and_sum_amplitudes_nearest</span><span class="p">(</span>
+    <span class="n">weighted_timetraces</span><span class="p">,</span>
+    <span class="n">tx</span><span class="p">,</span>
+    <span class="n">rx</span><span class="p">,</span>
+    <span class="n">lookup_times_tx</span><span class="p">,</span>
+    <span class="n">lookup_times_rx</span><span class="p">,</span>
+    <span class="n">amplitudes_tx</span><span class="p">,</span>
+    <span class="n">amplitudes_rx</span><span class="p">,</span>
+    <span class="n">dt</span><span class="p">,</span>
+    <span class="n">t0</span><span class="p">,</span>
+    <span class="n">fillvalue</span><span class="p">,</span>
+    <span class="n">result</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Numba implementation of the delay and sum algorithm, using nearest time point</span>
+<span class="sd">    match.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    weighted_timetraces : ndarray [numtimetraces x numsamples]</span>
+<span class="sd">    lookup_times_tx : ndarray [numpoints x numtx]</span>
+<span class="sd">        Times of flight (floats) between the transmitters and the grid points.</span>
+<span class="sd">    lookup_times_rx : ndarray [numpoints x numrx]</span>
+<span class="sd">        Times of flight (floats) between the grid points and the receivers.</span>
+<span class="sd">    amplitudes_tx : ndarray [numpoints x numtx]</span>
+<span class="sd">    amplitudes_rx : ndarray [numpoints x numrx]</span>
+<span class="sd">    result : ndarray [numpoints]</span>
+<span class="sd">        Result.</span>
+<span class="sd">    tx, rx : ndarray [numtimetraces]</span>
+<span class="sd">        Mapping between the timetraces and the transmitter/receiver.</span>
+<span class="sd">        Values: integers in [0, numtx[ and [0, numrx] respectively</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">numtimetraces</span><span class="p">,</span> <span class="n">numsamples</span> <span class="o">=</span> <span class="n">weighted_timetraces</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">numpoints</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">lookup_times_tx</span><span class="o">.</span><span class="n">shape</span>
+
+    <span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="n">numba</span><span class="o">.</span><span class="n">prange</span><span class="p">(</span><span class="n">numpoints</span><span class="p">):</span>
+        <span class="n">res_tmp</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+        <span class="k">for</span> <span class="n">scan</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">numtimetraces</span><span class="p">):</span>
+            <span class="n">lookup_time</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">lookup_times_tx</span><span class="p">[</span><span class="n">point</span><span class="p">,</span> <span class="n">tx</span><span class="p">[</span><span class="n">scan</span><span class="p">]]</span> <span class="o">+</span> <span class="n">lookup_times_rx</span><span class="p">[</span><span class="n">point</span><span class="p">,</span> <span class="n">rx</span><span class="p">[</span><span class="n">scan</span><span class="p">]]</span>
+            <span class="p">)</span>
+            <span class="n">lookup_index</span> <span class="o">=</span> <span class="nb">round</span><span class="p">((</span><span class="n">lookup_time</span> <span class="o">-</span> <span class="n">t0</span><span class="p">)</span> <span class="o">/</span> <span class="n">dt</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">lookup_index</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">lookup_index</span> <span class="o">&gt;=</span> <span class="n">numsamples</span><span class="p">:</span>
+                <span class="n">res_tmp</span> <span class="o">+=</span> <span class="n">fillvalue</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">res_tmp</span> <span class="o">+=</span> <span class="p">(</span>
+                    <span class="n">amplitudes_tx</span><span class="p">[</span><span class="n">point</span><span class="p">,</span> <span class="n">tx</span><span class="p">[</span><span class="n">scan</span><span class="p">]]</span>
+                    <span class="o">*</span> <span class="n">amplitudes_rx</span><span class="p">[</span><span class="n">point</span><span class="p">,</span> <span class="n">rx</span><span class="p">[</span><span class="n">scan</span><span class="p">]]</span>
+                    <span class="o">*</span> <span class="n">weighted_timetraces</span><span class="p">[</span><span class="n">scan</span><span class="p">,</span> <span class="n">lookup_index</span><span class="p">]</span>
+                <span class="p">)</span>
+        <span class="n">result</span><span class="p">[</span><span class="n">point</span><span class="p">]</span> <span class="o">=</span> <span class="n">res_tmp</span> <span class="o">/</span> <span class="n">numtimetraces</span>
+
+
+<span class="nd">@numba</span><span class="o">.</span><span class="n">jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">nogil</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">parallel</span><span class="o">=</span><span class="n">use_parallel</span><span class="p">,</span> <span class="n">fastmath</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_delay_and_sum_amplitudes_linear</span><span class="p">(</span>
+    <span class="n">weighted_timetraces</span><span class="p">,</span>
+    <span class="n">tx</span><span class="p">,</span>
+    <span class="n">rx</span><span class="p">,</span>
+    <span class="n">lookup_times_tx</span><span class="p">,</span>
+    <span class="n">lookup_times_rx</span><span class="p">,</span>
+    <span class="n">amplitudes_tx</span><span class="p">,</span>
+    <span class="n">amplitudes_rx</span><span class="p">,</span>
+    <span class="n">dt</span><span class="p">,</span>
+    <span class="n">t0</span><span class="p">,</span>
+    <span class="n">fillvalue</span><span class="p">,</span>
+    <span class="n">result</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Numba implementation of the delay and sum algorithm, using linear</span>
+<span class="sd">    interpolation for time point.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    weighted_timetraces : ndarray [numtimetraces x numsamples]</span>
+<span class="sd">    lookup_times_tx : ndarray [numpoints x numtx]</span>
+<span class="sd">        Times of flight (floats) between the transmitters and the grid points.</span>
+<span class="sd">    lookup_times_rx : ndarray [numpoints x numrx]</span>
+<span class="sd">        Times of flight (floats) between the grid points and the receivers.</span>
+<span class="sd">    amplitudes_tx : ndarray [numpoints x numtx]</span>
+<span class="sd">    amplitudes_rx : ndarray [numpoints x numrx]</span>
+<span class="sd">    result : ndarray [numpoints]</span>
+<span class="sd">        Result.</span>
+<span class="sd">    tx, rx : ndarray [numtimetraces]</span>
+<span class="sd">        Mapping between the timetraces and the transmitter/receiver.</span>
+<span class="sd">        Values: integers in [0, numtx[ and [0, numrx] respectively</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">numtimetraces</span><span class="p">,</span> <span class="n">numsamples</span> <span class="o">=</span> <span class="n">weighted_timetraces</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">numpoints</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">lookup_times_tx</span><span class="o">.</span><span class="n">shape</span>
+
+    <span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="n">numba</span><span class="o">.</span><span class="n">prange</span><span class="p">(</span><span class="n">numpoints</span><span class="p">):</span>
+        <span class="n">res_tmp</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">for</span> <span class="n">scan</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">numtimetraces</span><span class="p">):</span>
+            <span class="n">lookup_time</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">lookup_times_tx</span><span class="p">[</span><span class="n">point</span><span class="p">,</span> <span class="n">tx</span><span class="p">[</span><span class="n">scan</span><span class="p">]]</span> <span class="o">+</span> <span class="n">lookup_times_rx</span><span class="p">[</span><span class="n">point</span><span class="p">,</span> <span class="n">rx</span><span class="p">[</span><span class="n">scan</span><span class="p">]]</span>
+            <span class="p">)</span>
+            <span class="n">loc1</span> <span class="o">=</span> <span class="p">(</span><span class="n">lookup_time</span> <span class="o">-</span> <span class="n">t0</span><span class="p">)</span> <span class="o">/</span> <span class="n">dt</span>
+            <span class="n">lookup_index</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">loc1</span><span class="p">)</span>
+            <span class="n">frac1</span> <span class="o">=</span> <span class="n">loc1</span> <span class="o">-</span> <span class="n">lookup_index</span>
+            <span class="n">lookup_index1</span> <span class="o">=</span> <span class="n">lookup_index</span> <span class="o">+</span> <span class="mi">1</span>
+
+            <span class="k">if</span> <span class="n">lookup_index</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">lookup_index1</span> <span class="o">&gt;=</span> <span class="n">numsamples</span><span class="p">:</span>
+                <span class="n">res_tmp</span> <span class="o">+=</span> <span class="n">fillvalue</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">lscanVal</span> <span class="o">=</span> <span class="n">weighted_timetraces</span><span class="p">[</span><span class="n">scan</span><span class="p">,</span> <span class="n">lookup_index</span><span class="p">]</span>
+                <span class="n">lscanVal1</span> <span class="o">=</span> <span class="n">weighted_timetraces</span><span class="p">[</span><span class="n">scan</span><span class="p">,</span> <span class="n">lookup_index1</span><span class="p">]</span>
+                <span class="n">lscanUseVal</span> <span class="o">=</span> <span class="n">lscanVal</span> <span class="o">+</span> <span class="n">frac1</span> <span class="o">*</span> <span class="p">(</span><span class="n">lscanVal1</span> <span class="o">-</span> <span class="n">lscanVal</span><span class="p">)</span>
+                <span class="n">res_tmp</span> <span class="o">+=</span> <span class="p">(</span>
+                    <span class="n">amplitudes_tx</span><span class="p">[</span><span class="n">point</span><span class="p">,</span> <span class="n">tx</span><span class="p">[</span><span class="n">scan</span><span class="p">]]</span>
+                    <span class="o">*</span> <span class="n">amplitudes_rx</span><span class="p">[</span><span class="n">point</span><span class="p">,</span> <span class="n">rx</span><span class="p">[</span><span class="n">scan</span><span class="p">]]</span>
+                    <span class="o">*</span> <span class="n">lscanUseVal</span>
+                <span class="p">)</span>
+        <span class="n">result</span><span class="p">[</span><span class="n">point</span><span class="p">]</span> <span class="o">=</span> <span class="n">res_tmp</span> <span class="o">/</span> <span class="n">numtimetraces</span>
+
+
+<span class="nd">@numba</span><span class="o">.</span><span class="n">jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">nogil</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">parallel</span><span class="o">=</span><span class="n">use_parallel</span><span class="p">,</span> <span class="n">fastmath</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_delay_and_sum_amplitudes_linear</span><span class="p">(</span>
+    <span class="n">weighted_timetraces</span><span class="p">,</span>
+    <span class="n">tx</span><span class="p">,</span>
+    <span class="n">rx</span><span class="p">,</span>
+    <span class="n">lookup_times_tx</span><span class="p">,</span>
+    <span class="n">lookup_times_rx</span><span class="p">,</span>
+    <span class="n">amplitudes_tx</span><span class="p">,</span>
+    <span class="n">amplitudes_rx</span><span class="p">,</span>
+    <span class="n">dt</span><span class="p">,</span>
+    <span class="n">t0</span><span class="p">,</span>
+    <span class="n">fillvalue</span><span class="p">,</span>
+    <span class="n">result</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Numba implementation of the delay and sum algorithm, using linear</span>
+<span class="sd">    interpolation for time point.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    weighted_timetraces : ndarray [numtimetraces x numsamples]</span>
+<span class="sd">    lookup_times_tx : ndarray [numpoints x numtx]</span>
+<span class="sd">        Times of flight (floats) between the transmitters and the grid points.</span>
+<span class="sd">    lookup_times_rx : ndarray [numpoints x numrx]</span>
+<span class="sd">        Times of flight (floats) between the grid points and the receivers.</span>
+<span class="sd">    amplitudes_tx : ndarray [numpoints x numtx]</span>
+<span class="sd">    amplitudes_rx : ndarray [numpoints x numrx]</span>
+<span class="sd">    result : ndarray [numpoints]</span>
+<span class="sd">        Result.</span>
+<span class="sd">    tx, rx : ndarray [numtimetraces]</span>
+<span class="sd">        Mapping between the timetraces and the transmitter/receiver.</span>
+<span class="sd">        Values: integers in [0, numtx[ and [0, numrx] respectively</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">numtimetraces</span><span class="p">,</span> <span class="n">numsamples</span> <span class="o">=</span> <span class="n">weighted_timetraces</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">numpoints</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">lookup_times_tx</span><span class="o">.</span><span class="n">shape</span>
+
+    <span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="n">numba</span><span class="o">.</span><span class="n">prange</span><span class="p">(</span><span class="n">numpoints</span><span class="p">):</span>
+        <span class="n">res_tmp</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">for</span> <span class="n">scan</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">numtimetraces</span><span class="p">):</span>
+            <span class="n">lookup_time</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">lookup_times_tx</span><span class="p">[</span><span class="n">point</span><span class="p">,</span> <span class="n">tx</span><span class="p">[</span><span class="n">scan</span><span class="p">]]</span> <span class="o">+</span> <span class="n">lookup_times_rx</span><span class="p">[</span><span class="n">point</span><span class="p">,</span> <span class="n">rx</span><span class="p">[</span><span class="n">scan</span><span class="p">]]</span>
+            <span class="p">)</span>
+            <span class="n">loc1</span> <span class="o">=</span> <span class="p">(</span><span class="n">lookup_time</span> <span class="o">-</span> <span class="n">t0</span><span class="p">)</span> <span class="o">/</span> <span class="n">dt</span>
+            <span class="n">lookup_index</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">loc1</span><span class="p">)</span>
+            <span class="n">frac1</span> <span class="o">=</span> <span class="n">loc1</span> <span class="o">-</span> <span class="n">lookup_index</span>
+            <span class="n">lookup_index1</span> <span class="o">=</span> <span class="n">lookup_index</span> <span class="o">+</span> <span class="mi">1</span>
+
+            <span class="k">if</span> <span class="n">lookup_index</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">lookup_index1</span> <span class="o">&gt;=</span> <span class="n">numsamples</span><span class="p">:</span>
+                <span class="n">res_tmp</span> <span class="o">+=</span> <span class="n">fillvalue</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">lscanVal</span> <span class="o">=</span> <span class="n">weighted_timetraces</span><span class="p">[</span><span class="n">scan</span><span class="p">,</span> <span class="n">lookup_index</span><span class="p">]</span>
+                <span class="n">lscanVal1</span> <span class="o">=</span> <span class="n">weighted_timetraces</span><span class="p">[</span><span class="n">scan</span><span class="p">,</span> <span class="n">lookup_index1</span><span class="p">]</span>
+                <span class="n">lscanUseVal</span> <span class="o">=</span> <span class="n">lscanVal</span> <span class="o">+</span> <span class="n">frac1</span> <span class="o">*</span> <span class="p">(</span><span class="n">lscanVal1</span> <span class="o">-</span> <span class="n">lscanVal</span><span class="p">)</span>
+                <span class="n">res_tmp</span> <span class="o">+=</span> <span class="p">(</span>
+                    <span class="n">amplitudes_tx</span><span class="p">[</span><span class="n">point</span><span class="p">,</span> <span class="n">tx</span><span class="p">[</span><span class="n">scan</span><span class="p">]]</span>
+                    <span class="o">*</span> <span class="n">amplitudes_rx</span><span class="p">[</span><span class="n">point</span><span class="p">,</span> <span class="n">rx</span><span class="p">[</span><span class="n">scan</span><span class="p">]]</span>
+                    <span class="o">*</span> <span class="n">lscanUseVal</span>
+                <span class="p">)</span>
+        <span class="n">result</span><span class="p">[</span><span class="n">point</span><span class="p">]</span> <span class="o">=</span> <span class="n">res_tmp</span> <span class="o">/</span> <span class="n">numtimetraces</span>
+
+
+<div class="viewcode-block" id="delay_and_sum_numba_noamp">
+<a class="viewcode-back" href="../../../_autosummary/_autosummary/arim.im.das/arim.im.das.delay_and_sum_numba_noamp.html#arim.im.das.delay_and_sum_numba_noamp">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">delay_and_sum_numba_noamp</span><span class="p">(</span>
+    <span class="n">frame</span><span class="p">,</span>
+    <span class="n">focal_law</span><span class="p">,</span>
+    <span class="n">fillvalue</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+    <span class="n">interpolation</span><span class="o">=</span><span class="s2">&quot;nearest&quot;</span><span class="p">,</span>
+    <span class="n">aggregation</span><span class="o">=</span><span class="s2">&quot;mean&quot;</span><span class="p">,</span>
+    <span class="n">result</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Delay and sum with uniform amplitudes</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    frame</span>
+<span class="sd">    focal_law</span>
+<span class="sd">    fillvalue</span>
+<span class="sd">    interpolation : str</span>
+<span class="sd">        Interpolation of timetraces between samples. &#39;linear&#39;, &#39;nearest&#39;, (&#39;lanczos&#39;, a)</span>
+<span class="sd">    result</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    result : ndarray (numpoints, )</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">numpoints</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">focal_law</span><span class="o">.</span><span class="n">lookup_times_tx</span><span class="o">.</span><span class="n">shape</span>
+
+    <span class="n">_check_shapes</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">focal_law</span><span class="p">)</span>
+
+    <span class="n">weighted_timetraces</span> <span class="o">=</span> <span class="n">focal_law</span><span class="o">.</span><span class="n">weigh_timetraces</span><span class="p">(</span><span class="n">frame</span><span class="o">.</span><span class="n">timetraces</span><span class="p">)</span>
+    <span class="n">dtype_float</span><span class="p">,</span> <span class="n">dtype_amp</span><span class="p">,</span> <span class="n">dtype_data</span> <span class="o">=</span> <span class="n">_infer_datatypes</span><span class="p">(</span>
+        <span class="n">weighted_timetraces</span><span class="p">,</span> <span class="n">focal_law</span><span class="p">,</span> <span class="n">result</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="n">numpoints</span><span class="p">,),</span> <span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype_data</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">result</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="n">numpoints</span><span class="p">,)</span>
+
+    <span class="n">invdt</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">frame</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">step</span>
+    <span class="n">t0</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">start</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">interpolation</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">interpolation_name</span> <span class="o">=</span> <span class="n">interpolation</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="n">interpolation_args</span> <span class="o">=</span> <span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">interpolation_name</span> <span class="o">=</span> <span class="n">interpolation</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="n">interpolation_args</span> <span class="o">=</span> <span class="n">interpolation</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">aggregation</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">aggregation_name</span> <span class="o">=</span> <span class="n">aggregation</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="n">aggregation_args</span> <span class="o">=</span> <span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">aggregation_name</span> <span class="o">=</span> <span class="n">aggregation</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="n">aggregation_args</span> <span class="o">=</span> <span class="n">aggregation</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+
+    <span class="k">if</span> <span class="n">aggregation_name</span> <span class="o">==</span> <span class="s2">&quot;mean&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">interpolation_name</span> <span class="o">==</span> <span class="s2">&quot;nearest&quot;</span><span class="p">:</span>
+            <span class="n">das_func</span> <span class="o">=</span> <span class="n">_delay_and_sum_noamp</span>
+            <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">interpolation_args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
+        <span class="k">elif</span> <span class="n">interpolation_name</span> <span class="o">==</span> <span class="s2">&quot;linear&quot;</span><span class="p">:</span>
+            <span class="n">das_func</span> <span class="o">=</span> <span class="n">_delay_and_sum_noamp_linear</span>
+            <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">interpolation_args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
+        <span class="k">elif</span> <span class="n">interpolation_name</span> <span class="o">==</span> <span class="s2">&quot;lanczos&quot;</span><span class="p">:</span>
+            <span class="n">das_func</span> <span class="o">=</span> <span class="n">_delay_and_sum_noamp_lanczos</span>
+            <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">interpolation_args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;invalid interpolation&quot;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">aggregation_name</span> <span class="o">==</span> <span class="s2">&quot;median&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">dtype_data</span> <span class="o">!=</span> <span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">NotImplementedTyping</span>
+        <span class="k">if</span> <span class="n">interpolation_name</span> <span class="o">==</span> <span class="s2">&quot;lanczos&quot;</span><span class="p">:</span>
+            <span class="n">das_func</span> <span class="o">=</span> <span class="n">_delay_and_sum_noamp_median_lanczos</span>
+            <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">interpolation_args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+        <span class="k">elif</span> <span class="n">interpolation_name</span> <span class="o">==</span> <span class="s2">&quot;nearest&quot;</span><span class="p">:</span>
+            <span class="n">das_func</span> <span class="o">=</span> <span class="n">_delay_and_sum_noamp_median_nearest</span>
+            <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">interpolation_args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+    <span class="k">elif</span> <span class="n">aggregation_name</span> <span class="o">==</span> <span class="s2">&quot;huber&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">dtype_data</span> <span class="o">!=</span> <span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">NotImplementedTyping</span>
+        <span class="k">if</span> <span class="n">interpolation_name</span> <span class="o">==</span> <span class="s2">&quot;lanczos&quot;</span><span class="p">:</span>
+            <span class="n">das_func</span> <span class="o">=</span> <span class="n">_delay_and_sum_noamp_huber_lanczos</span>
+            <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">interpolation_args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="n">das_func</span><span class="p">(</span>
+        <span class="n">weighted_timetraces</span><span class="p">,</span>
+        <span class="n">frame</span><span class="o">.</span><span class="n">tx</span><span class="p">,</span>
+        <span class="n">frame</span><span class="o">.</span><span class="n">rx</span><span class="p">,</span>
+        <span class="n">focal_law</span><span class="o">.</span><span class="n">lookup_times_tx</span><span class="p">,</span>
+        <span class="n">focal_law</span><span class="o">.</span><span class="n">lookup_times_rx</span><span class="p">,</span>
+        <span class="n">invdt</span><span class="p">,</span>
+        <span class="n">t0</span><span class="p">,</span>
+        <span class="n">fillvalue</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">interpolation_args</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">aggregation_args</span><span class="p">,</span>
+        <span class="n">result</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">result</span></div>
+
+
+
+<span class="c1"># todo: add cache=True if it becomes compatible with parallel=True (numba)</span>
+<span class="nd">@numba</span><span class="o">.</span><span class="n">jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">nogil</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">parallel</span><span class="o">=</span><span class="n">use_parallel</span><span class="p">,</span> <span class="n">fastmath</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_delay_and_sum_noamp</span><span class="p">(</span>
+    <span class="n">weighted_timetraces</span><span class="p">,</span>
+    <span class="n">tx</span><span class="p">,</span>
+    <span class="n">rx</span><span class="p">,</span>
+    <span class="n">lookup_times_tx</span><span class="p">,</span>
+    <span class="n">lookup_times_rx</span><span class="p">,</span>
+    <span class="n">invdt</span><span class="p">,</span>
+    <span class="n">t0</span><span class="p">,</span>
+    <span class="n">fillvalue</span><span class="p">,</span>
+    <span class="n">result</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="c1"># Mean aggregation, nearest interpolation</span>
+    <span class="n">numtimetraces</span><span class="p">,</span> <span class="n">numsamples</span> <span class="o">=</span> <span class="n">weighted_timetraces</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">numpoints</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">lookup_times_tx</span><span class="o">.</span><span class="n">shape</span>
+
+    <span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="n">numba</span><span class="o">.</span><span class="n">prange</span><span class="p">(</span><span class="n">numpoints</span><span class="p">):</span>
+        <span class="n">res_tmp</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+        <span class="k">for</span> <span class="n">scan</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">numtimetraces</span><span class="p">):</span>
+            <span class="n">lookup_time</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">lookup_times_tx</span><span class="p">[</span><span class="n">point</span><span class="p">,</span> <span class="n">tx</span><span class="p">[</span><span class="n">scan</span><span class="p">]]</span> <span class="o">+</span> <span class="n">lookup_times_rx</span><span class="p">[</span><span class="n">point</span><span class="p">,</span> <span class="n">rx</span><span class="p">[</span><span class="n">scan</span><span class="p">]]</span>
+            <span class="p">)</span>
+            <span class="n">lookup_index</span> <span class="o">=</span> <span class="nb">round</span><span class="p">((</span><span class="n">lookup_time</span> <span class="o">-</span> <span class="n">t0</span><span class="p">)</span> <span class="o">*</span> <span class="n">invdt</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">lookup_index</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">lookup_index</span> <span class="o">&gt;=</span> <span class="n">numsamples</span><span class="p">:</span>
+                <span class="n">res_tmp</span> <span class="o">+=</span> <span class="n">fillvalue</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">res_tmp</span> <span class="o">+=</span> <span class="n">weighted_timetraces</span><span class="p">[</span><span class="n">scan</span><span class="p">,</span> <span class="n">lookup_index</span><span class="p">]</span>
+        <span class="n">result</span><span class="p">[</span><span class="n">point</span><span class="p">]</span> <span class="o">=</span> <span class="n">res_tmp</span> <span class="o">/</span> <span class="n">numtimetraces</span>
+
+
+<span class="nd">@numba</span><span class="o">.</span><span class="n">jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">nogil</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">parallel</span><span class="o">=</span><span class="n">use_parallel</span><span class="p">,</span> <span class="n">fastmath</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_delay_and_sum_noamp_median_nearest</span><span class="p">(</span>
+    <span class="n">weighted_timetraces</span><span class="p">,</span>
+    <span class="n">tx</span><span class="p">,</span>
+    <span class="n">rx</span><span class="p">,</span>
+    <span class="n">lookup_times_tx</span><span class="p">,</span>
+    <span class="n">lookup_times_rx</span><span class="p">,</span>
+    <span class="n">invdt</span><span class="p">,</span>
+    <span class="n">t0</span><span class="p">,</span>
+    <span class="n">fillvalue</span><span class="p">,</span>
+    <span class="n">result</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="n">numtimetraces</span><span class="p">,</span> <span class="n">numsamples</span> <span class="o">=</span> <span class="n">weighted_timetraces</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">numpoints</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">lookup_times_tx</span><span class="o">.</span><span class="n">shape</span>
+
+    <span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="n">numba</span><span class="o">.</span><span class="n">prange</span><span class="p">(</span><span class="n">numpoints</span><span class="p">):</span>
+        <span class="n">datapoints</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">numtimetraces</span><span class="p">,</span> <span class="n">weighted_timetraces</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">scan</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">numtimetraces</span><span class="p">):</span>
+            <span class="n">lookup_time</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">lookup_times_tx</span><span class="p">[</span><span class="n">point</span><span class="p">,</span> <span class="n">tx</span><span class="p">[</span><span class="n">scan</span><span class="p">]]</span> <span class="o">+</span> <span class="n">lookup_times_rx</span><span class="p">[</span><span class="n">point</span><span class="p">,</span> <span class="n">rx</span><span class="p">[</span><span class="n">scan</span><span class="p">]]</span>
+            <span class="p">)</span>
+            <span class="n">lookup_index</span> <span class="o">=</span> <span class="nb">round</span><span class="p">((</span><span class="n">lookup_time</span> <span class="o">-</span> <span class="n">t0</span><span class="p">)</span> <span class="o">*</span> <span class="n">invdt</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">lookup_index</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">lookup_index</span> <span class="o">&gt;=</span> <span class="n">numsamples</span><span class="p">:</span>
+                <span class="n">datapoints</span><span class="p">[</span><span class="n">scan</span><span class="p">]</span> <span class="o">=</span> <span class="n">fillvalue</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">datapoints</span><span class="p">[</span><span class="n">scan</span><span class="p">]</span> <span class="o">=</span> <span class="n">weighted_timetraces</span><span class="p">[</span><span class="n">scan</span><span class="p">,</span> <span class="n">lookup_index</span><span class="p">]</span>
+        <span class="c1"># I don&#39;t know how to statically cast complex64 to float32, and</span>
+        <span class="c1"># complex128 to float64 :(</span>
+        <span class="c1"># Have to impose dtype meanwhile.</span>
+        <span class="n">res</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">geomed</span><span class="o">.</span><span class="n">geomed</span><span class="p">(</span><span class="n">datapoints</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">numtimetraces</span><span class="p">,</span> <span class="mi">2</span><span class="p">)))</span>
+        <span class="n">result</span><span class="p">[</span><span class="n">point</span><span class="p">]</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+
+<span class="nd">@numba</span><span class="o">.</span><span class="n">jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">nogil</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">parallel</span><span class="o">=</span><span class="n">use_parallel</span><span class="p">,</span> <span class="n">fastmath</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_delay_and_sum_noamp_linear</span><span class="p">(</span>
+    <span class="n">weighted_timetraces</span><span class="p">,</span>
+    <span class="n">tx</span><span class="p">,</span>
+    <span class="n">rx</span><span class="p">,</span>
+    <span class="n">lookup_times_tx</span><span class="p">,</span>
+    <span class="n">lookup_times_rx</span><span class="p">,</span>
+    <span class="n">invdt</span><span class="p">,</span>
+    <span class="n">t0</span><span class="p">,</span>
+    <span class="n">fillvalue</span><span class="p">,</span>
+    <span class="n">result</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="n">numtimetraces</span><span class="p">,</span> <span class="n">numsamples</span> <span class="o">=</span> <span class="n">weighted_timetraces</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">numpoints</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">lookup_times_tx</span><span class="o">.</span><span class="n">shape</span>
+
+    <span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="n">numba</span><span class="o">.</span><span class="n">prange</span><span class="p">(</span><span class="n">numpoints</span><span class="p">):</span>
+        <span class="n">res_tmp</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+        <span class="k">for</span> <span class="n">scan</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">numtimetraces</span><span class="p">):</span>
+            <span class="n">lookup_time</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">lookup_times_tx</span><span class="p">[</span><span class="n">point</span><span class="p">,</span> <span class="n">tx</span><span class="p">[</span><span class="n">scan</span><span class="p">]]</span> <span class="o">+</span> <span class="n">lookup_times_rx</span><span class="p">[</span><span class="n">point</span><span class="p">,</span> <span class="n">rx</span><span class="p">[</span><span class="n">scan</span><span class="p">]]</span>
+            <span class="p">)</span>
+
+            <span class="n">lookup_index_exact</span> <span class="o">=</span> <span class="p">(</span><span class="n">lookup_time</span> <span class="o">-</span> <span class="n">t0</span><span class="p">)</span> <span class="o">*</span> <span class="n">invdt</span>
+            <span class="n">lookup_index_left</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">lookup_index_exact</span><span class="p">)</span>
+            <span class="n">lookup_index_right</span> <span class="o">=</span> <span class="n">lookup_index_left</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="n">frac</span> <span class="o">=</span> <span class="n">lookup_index_exact</span> <span class="o">-</span> <span class="n">lookup_index_left</span>
+
+            <span class="k">if</span> <span class="n">lookup_index_left</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">lookup_index_right</span> <span class="o">&gt;=</span> <span class="n">numsamples</span><span class="p">:</span>
+                <span class="n">res_tmp</span> <span class="o">+=</span> <span class="n">fillvalue</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">scan_val_left</span> <span class="o">=</span> <span class="n">weighted_timetraces</span><span class="p">[</span><span class="n">scan</span><span class="p">,</span> <span class="n">lookup_index_left</span><span class="p">]</span>
+                <span class="n">scan_val_right</span> <span class="o">=</span> <span class="n">weighted_timetraces</span><span class="p">[</span><span class="n">scan</span><span class="p">,</span> <span class="n">lookup_index_right</span><span class="p">]</span>
+                <span class="n">res_tmp</span> <span class="o">+=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">frac</span><span class="p">)</span> <span class="o">*</span> <span class="n">scan_val_left</span> <span class="o">+</span> <span class="n">frac</span> <span class="o">*</span> <span class="n">scan_val_right</span>
+
+        <span class="n">result</span><span class="p">[</span><span class="n">point</span><span class="p">]</span> <span class="o">=</span> <span class="n">res_tmp</span> <span class="o">/</span> <span class="n">numtimetraces</span>
+
+
+<div class="viewcode-block" id="sinc">
+<a class="viewcode-back" href="../../../_autosummary/_autosummary/arim.im.das/arim.im.das.sinc.html#arim.im.das.sinc">[docs]</a>
+<span class="nd">@numba</span><span class="o">.</span><span class="n">jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fastmath</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">sinc</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">x</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mf">1.0</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">x</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">x</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="lanczos_interpolation">
+<a class="viewcode-back" href="../../../_autosummary/_autosummary/arim.im.das/arim.im.das.lanczos_interpolation.html#arim.im.das.lanczos_interpolation">[docs]</a>
+<span class="nd">@numba</span><span class="o">.</span><span class="n">jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fastmath</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">lanczos_interpolation</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">a</span><span class="p">):</span>
+    <span class="n">i_min</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">-</span> <span class="n">a</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="n">i_max</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">+</span> <span class="n">a</span> <span class="o">+</span> <span class="mi">1</span>  <span class="c1"># +1 because of how range() works</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i_min</span><span class="p">,</span> <span class="n">i_max</span><span class="p">):</span>
+        <span class="n">out</span> <span class="o">+=</span> <span class="n">x</span><span class="p">[</span><span class="n">i</span> <span class="o">%</span> <span class="n">n</span><span class="p">]</span> <span class="o">*</span> <span class="n">sinc</span><span class="p">(</span><span class="n">t</span> <span class="o">-</span> <span class="n">i</span><span class="p">)</span> <span class="o">*</span> <span class="n">sinc</span><span class="p">((</span><span class="n">t</span> <span class="o">-</span> <span class="n">i</span><span class="p">)</span> <span class="o">/</span> <span class="n">a</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">out</span></div>
+
+
+
+<span class="nd">@numba</span><span class="o">.</span><span class="n">jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">nogil</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">parallel</span><span class="o">=</span><span class="n">use_parallel</span><span class="p">,</span> <span class="n">fastmath</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_delay_and_sum_noamp_lanczos</span><span class="p">(</span>
+    <span class="n">weighted_timetraces</span><span class="p">,</span>
+    <span class="n">tx</span><span class="p">,</span>
+    <span class="n">rx</span><span class="p">,</span>
+    <span class="n">lookup_times_tx</span><span class="p">,</span>
+    <span class="n">lookup_times_rx</span><span class="p">,</span>
+    <span class="n">invdt</span><span class="p">,</span>
+    <span class="n">t0</span><span class="p">,</span>
+    <span class="n">fillvalue</span><span class="p">,</span>
+    <span class="n">a</span><span class="p">,</span>
+    <span class="n">result</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Delay and sum with Lanczos interpolation with factor &#39;a&#39; of the timetraces.</span>
+
+<span class="sd">    https://en.wikipedia.org/wiki/Lanczos_resampling</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">numtimetraces</span><span class="p">,</span> <span class="n">numsamples</span> <span class="o">=</span> <span class="n">weighted_timetraces</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">numpoints</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">lookup_times_tx</span><span class="o">.</span><span class="n">shape</span>
+
+    <span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="n">numba</span><span class="o">.</span><span class="n">prange</span><span class="p">(</span><span class="n">numpoints</span><span class="p">):</span>
+        <span class="n">res_tmp</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+        <span class="k">for</span> <span class="n">scan</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">numtimetraces</span><span class="p">):</span>
+            <span class="n">lookup_time</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">lookup_times_tx</span><span class="p">[</span><span class="n">point</span><span class="p">,</span> <span class="n">tx</span><span class="p">[</span><span class="n">scan</span><span class="p">]]</span> <span class="o">+</span> <span class="n">lookup_times_rx</span><span class="p">[</span><span class="n">point</span><span class="p">,</span> <span class="n">rx</span><span class="p">[</span><span class="n">scan</span><span class="p">]]</span>
+            <span class="p">)</span>
+
+            <span class="n">lookup_index</span> <span class="o">=</span> <span class="p">(</span><span class="n">lookup_time</span> <span class="o">-</span> <span class="n">t0</span><span class="p">)</span> <span class="o">*</span> <span class="n">invdt</span>
+
+            <span class="k">if</span> <span class="n">lookup_index</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">lookup_index</span> <span class="o">&gt;=</span> <span class="n">numsamples</span><span class="p">:</span>
+                <span class="n">res_tmp</span> <span class="o">+=</span> <span class="n">fillvalue</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">res_tmp</span> <span class="o">+=</span> <span class="n">lanczos_interpolation</span><span class="p">(</span>
+                    <span class="n">lookup_index</span><span class="p">,</span> <span class="n">weighted_timetraces</span><span class="p">[</span><span class="n">scan</span><span class="p">],</span> <span class="n">a</span>
+                <span class="p">)</span>
+
+        <span class="n">result</span><span class="p">[</span><span class="n">point</span><span class="p">]</span> <span class="o">=</span> <span class="n">res_tmp</span> <span class="o">/</span> <span class="n">numtimetraces</span>
+
+
+<span class="nd">@numba</span><span class="o">.</span><span class="n">jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">nogil</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">parallel</span><span class="o">=</span><span class="n">use_parallel</span><span class="p">,</span> <span class="n">fastmath</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_delay_and_sum_noamp_median_lanczos</span><span class="p">(</span>
+    <span class="n">weighted_timetraces</span><span class="p">,</span>
+    <span class="n">tx</span><span class="p">,</span>
+    <span class="n">rx</span><span class="p">,</span>
+    <span class="n">lookup_times_tx</span><span class="p">,</span>
+    <span class="n">lookup_times_rx</span><span class="p">,</span>
+    <span class="n">invdt</span><span class="p">,</span>
+    <span class="n">t0</span><span class="p">,</span>
+    <span class="n">fillvalue</span><span class="p">,</span>
+    <span class="n">a</span><span class="p">,</span>
+    <span class="n">result</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="n">numtimetraces</span><span class="p">,</span> <span class="n">numsamples</span> <span class="o">=</span> <span class="n">weighted_timetraces</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">numpoints</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">lookup_times_tx</span><span class="o">.</span><span class="n">shape</span>
+
+    <span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="n">numba</span><span class="o">.</span><span class="n">prange</span><span class="p">(</span><span class="n">numpoints</span><span class="p">):</span>
+        <span class="n">datapoints</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">numtimetraces</span><span class="p">,</span> <span class="n">weighted_timetraces</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">scan</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">numtimetraces</span><span class="p">):</span>
+            <span class="n">lookup_time</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">lookup_times_tx</span><span class="p">[</span><span class="n">point</span><span class="p">,</span> <span class="n">tx</span><span class="p">[</span><span class="n">scan</span><span class="p">]]</span> <span class="o">+</span> <span class="n">lookup_times_rx</span><span class="p">[</span><span class="n">point</span><span class="p">,</span> <span class="n">rx</span><span class="p">[</span><span class="n">scan</span><span class="p">]]</span>
+            <span class="p">)</span>
+
+            <span class="n">lookup_index</span> <span class="o">=</span> <span class="p">(</span><span class="n">lookup_time</span> <span class="o">-</span> <span class="n">t0</span><span class="p">)</span> <span class="o">*</span> <span class="n">invdt</span>
+
+            <span class="k">if</span> <span class="n">lookup_index</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">lookup_index</span> <span class="o">&gt;=</span> <span class="n">numsamples</span><span class="p">:</span>
+                <span class="n">datapoints</span><span class="p">[</span><span class="n">scan</span><span class="p">]</span> <span class="o">=</span> <span class="n">fillvalue</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">datapoints</span><span class="p">[</span><span class="n">scan</span><span class="p">]</span> <span class="o">=</span> <span class="n">lanczos_interpolation</span><span class="p">(</span>
+                    <span class="n">lookup_index</span><span class="p">,</span> <span class="n">weighted_timetraces</span><span class="p">[</span><span class="n">scan</span><span class="p">],</span> <span class="n">a</span>
+                <span class="p">)</span>
+        <span class="c1"># I don&#39;t know how to statically cast complex64 to float32, and</span>
+        <span class="c1"># complex128 to float64 :(</span>
+        <span class="c1"># Have to impose dtype meanwhile.</span>
+        <span class="n">res</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">geomed</span><span class="o">.</span><span class="n">geomed</span><span class="p">(</span><span class="n">datapoints</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">numtimetraces</span><span class="p">,</span> <span class="mi">2</span><span class="p">)))</span>
+        <span class="n">result</span><span class="p">[</span><span class="n">point</span><span class="p">]</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+
+<span class="nd">@numba</span><span class="o">.</span><span class="n">jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">nogil</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">parallel</span><span class="o">=</span><span class="n">use_parallel</span><span class="p">,</span> <span class="n">fastmath</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_delay_and_sum_noamp_huber_lanczos</span><span class="p">(</span>
+    <span class="n">weighted_timetraces</span><span class="p">,</span>
+    <span class="n">tx</span><span class="p">,</span>
+    <span class="n">rx</span><span class="p">,</span>
+    <span class="n">lookup_times_tx</span><span class="p">,</span>
+    <span class="n">lookup_times_rx</span><span class="p">,</span>
+    <span class="n">invdt</span><span class="p">,</span>
+    <span class="n">t0</span><span class="p">,</span>
+    <span class="n">fillvalue</span><span class="p">,</span>
+    <span class="n">a</span><span class="p">,</span>
+    <span class="n">tau</span><span class="p">,</span>
+    <span class="n">result</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="n">numtimetraces</span><span class="p">,</span> <span class="n">numsamples</span> <span class="o">=</span> <span class="n">weighted_timetraces</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">numpoints</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">lookup_times_tx</span><span class="o">.</span><span class="n">shape</span>
+
+    <span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="n">numba</span><span class="o">.</span><span class="n">prange</span><span class="p">(</span><span class="n">numpoints</span><span class="p">):</span>
+        <span class="n">datapoints</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">numtimetraces</span><span class="p">,</span> <span class="n">weighted_timetraces</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">scan</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">numtimetraces</span><span class="p">):</span>
+            <span class="n">lookup_time</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">lookup_times_tx</span><span class="p">[</span><span class="n">point</span><span class="p">,</span> <span class="n">tx</span><span class="p">[</span><span class="n">scan</span><span class="p">]]</span> <span class="o">+</span> <span class="n">lookup_times_rx</span><span class="p">[</span><span class="n">point</span><span class="p">,</span> <span class="n">rx</span><span class="p">[</span><span class="n">scan</span><span class="p">]]</span>
+            <span class="p">)</span>
+
+            <span class="n">lookup_index</span> <span class="o">=</span> <span class="p">(</span><span class="n">lookup_time</span> <span class="o">-</span> <span class="n">t0</span><span class="p">)</span> <span class="o">*</span> <span class="n">invdt</span>
+
+            <span class="k">if</span> <span class="n">lookup_index</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">lookup_index</span> <span class="o">&gt;=</span> <span class="n">numsamples</span><span class="p">:</span>
+                <span class="n">datapoints</span><span class="p">[</span><span class="n">scan</span><span class="p">]</span> <span class="o">=</span> <span class="n">fillvalue</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">datapoints</span><span class="p">[</span><span class="n">scan</span><span class="p">]</span> <span class="o">=</span> <span class="n">lanczos_interpolation</span><span class="p">(</span>
+                    <span class="n">lookup_index</span><span class="p">,</span> <span class="n">weighted_timetraces</span><span class="p">[</span><span class="n">scan</span><span class="p">],</span> <span class="n">a</span>
+                <span class="p">)</span>
+        <span class="c1"># I don&#39;t know how to statically cast complex64 to float32, and</span>
+        <span class="c1"># complex128 to float64 :(</span>
+        <span class="c1"># Have to impose dtype meanwhile.</span>
+        <span class="n">res</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">huber</span><span class="o">.</span><span class="n">huber_m_estimate</span><span class="p">(</span>
+            <span class="n">datapoints</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">numtimetraces</span><span class="p">,</span> <span class="mi">2</span><span class="p">)),</span> <span class="n">tau</span>
+        <span class="p">)</span>
+        <span class="n">result</span><span class="p">[</span><span class="n">point</span><span class="p">]</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+
+<span class="nd">@numba</span><span class="o">.</span><span class="n">jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">nogil</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fastmath</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_general_delay_and_sum_nearest</span><span class="p">(</span>
+    <span class="n">weighted_timetraces</span><span class="p">,</span>
+    <span class="n">tx</span><span class="p">,</span>
+    <span class="n">rx</span><span class="p">,</span>
+    <span class="n">lookup_times_tx</span><span class="p">,</span>
+    <span class="n">lookup_times_rx</span><span class="p">,</span>
+    <span class="n">amplitudes</span><span class="p">,</span>
+    <span class="n">dt</span><span class="p">,</span>
+    <span class="n">t0</span><span class="p">,</span>
+    <span class="n">fillvalue</span><span class="p">,</span>
+    <span class="n">result</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Numba implementation of the delay and sum algorithm using nearest</span>
+<span class="sd">    interpolation for time point.</span>
+
+<span class="sd">    Amplitudes are defined per timetrace instead of per element. This function is</span>
+<span class="sd">    therefore more general but more memory-hungry.</span>
+
+<span class="sd">    One amplitude per timetrace.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    weighted_timetraces : ndarray [numtimetraces x numsamples]</span>
+<span class="sd">    lookup_times_tx : ndarray [numpoints x numtx]</span>
+<span class="sd">        Times of flight (floats) between the transmitters and the grid points.</span>
+<span class="sd">    lookup_times_rx : ndarray [numpoints x numrx]</span>
+<span class="sd">        Times of flight (floats) between the grid points and the receivers.</span>
+<span class="sd">    amplitudes : ndarray [numpoints x numtimetraces]</span>
+<span class="sd">    result : ndarray [numpoints]</span>
+<span class="sd">        Result.</span>
+<span class="sd">    tx, rx : ndarray [numtimetraces]</span>
+<span class="sd">        Mapping between the timetraces and the transmitter/receiver.</span>
+<span class="sd">        Values: integers in [0, numtx[ and [0, numrx]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">numtimetraces</span><span class="p">,</span> <span class="n">numsamples</span> <span class="o">=</span> <span class="n">weighted_timetraces</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">numpoints</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">lookup_times_tx</span><span class="o">.</span><span class="n">shape</span>
+
+    <span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">numpoints</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="n">point</span><span class="p">]):</span>
+            <span class="k">continue</span>
+
+        <span class="k">for</span> <span class="n">scan</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">numtimetraces</span><span class="p">):</span>
+            <span class="n">lookup_time</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">lookup_times_tx</span><span class="p">[</span><span class="n">point</span><span class="p">,</span> <span class="n">tx</span><span class="p">[</span><span class="n">scan</span><span class="p">]]</span> <span class="o">+</span> <span class="n">lookup_times_rx</span><span class="p">[</span><span class="n">point</span><span class="p">,</span> <span class="n">rx</span><span class="p">[</span><span class="n">scan</span><span class="p">]]</span>
+            <span class="p">)</span>
+            <span class="n">lookup_index</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">lookup_time</span> <span class="o">-</span> <span class="n">t0</span><span class="p">)</span> <span class="o">/</span> <span class="n">dt</span> <span class="o">+</span> <span class="mf">0.5</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">lookup_index</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">lookup_index</span> <span class="o">&gt;=</span> <span class="n">numsamples</span><span class="p">:</span>
+                <span class="n">result</span><span class="p">[</span><span class="n">point</span><span class="p">]</span> <span class="o">+=</span> <span class="n">fillvalue</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">result</span><span class="p">[</span><span class="n">point</span><span class="p">]</span> <span class="o">+=</span> <span class="p">(</span>
+                    <span class="n">amplitudes</span><span class="p">[</span><span class="n">point</span><span class="p">,</span> <span class="n">scan</span><span class="p">]</span> <span class="o">*</span> <span class="n">weighted_timetraces</span><span class="p">[</span><span class="n">scan</span><span class="p">,</span> <span class="n">lookup_index</span><span class="p">]</span>
+                <span class="p">)</span>
+        <span class="n">result</span><span class="p">[</span><span class="n">point</span><span class="p">]</span> <span class="o">/=</span> <span class="n">numtimetraces</span>
+
+
+<span class="nd">@numba</span><span class="o">.</span><span class="n">jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">nogil</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fastmath</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_general_delay_and_sum_linear</span><span class="p">(</span>
+    <span class="n">weighted_timetraces</span><span class="p">,</span>
+    <span class="n">tx</span><span class="p">,</span>
+    <span class="n">rx</span><span class="p">,</span>
+    <span class="n">lookup_times_tx</span><span class="p">,</span>
+    <span class="n">lookup_times_rx</span><span class="p">,</span>
+    <span class="n">amplitudes</span><span class="p">,</span>
+    <span class="n">dt</span><span class="p">,</span>
+    <span class="n">t0</span><span class="p">,</span>
+    <span class="n">fillvalue</span><span class="p">,</span>
+    <span class="n">result</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Numba implementation of the delay and sum algorithm, using linear</span>
+<span class="sd">    interpolation for time point.</span>
+
+<span class="sd">    Amplitudes are defined per timetrace instead of per element. This function is</span>
+<span class="sd">    therefore more general but more memory-hungry.</span>
+
+<span class="sd">    One amplitude per timetrace.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    weighted_timetraces : ndarray [numtimetraces x numsamples]</span>
+<span class="sd">    lookup_times_tx : ndarray [numpoints x numtx]</span>
+<span class="sd">        Times of flight (floats) between the transmitters and the grid points.</span>
+<span class="sd">    lookup_times_rx : ndarray [numpoints x numrx]</span>
+<span class="sd">        Times of flight (floats) between the grid points and the receivers.</span>
+<span class="sd">    amplitudes : ndarray [numpoints x numtimetraces]</span>
+<span class="sd">    result : ndarray [numpoints]</span>
+<span class="sd">        Result.</span>
+<span class="sd">    tx, rx : ndarray [numtimetraces]</span>
+<span class="sd">        Mapping between the timetraces and the transmitter/receiver.</span>
+<span class="sd">        Values: integers in [0, numtx[ and [0, numrx]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">numtimetraces</span><span class="p">,</span> <span class="n">numsamples</span> <span class="o">=</span> <span class="n">weighted_timetraces</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">numpoints</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">lookup_times_tx</span><span class="o">.</span><span class="n">shape</span>
+
+    <span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">numpoints</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="n">point</span><span class="p">]):</span>
+            <span class="k">continue</span>
+
+        <span class="k">for</span> <span class="n">scan</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">numtimetraces</span><span class="p">):</span>
+            <span class="n">lookup_time</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">lookup_times_tx</span><span class="p">[</span><span class="n">point</span><span class="p">,</span> <span class="n">tx</span><span class="p">[</span><span class="n">scan</span><span class="p">]]</span> <span class="o">+</span> <span class="n">lookup_times_rx</span><span class="p">[</span><span class="n">point</span><span class="p">,</span> <span class="n">rx</span><span class="p">[</span><span class="n">scan</span><span class="p">]]</span>
+            <span class="p">)</span>
+            <span class="n">loc1</span> <span class="o">=</span> <span class="p">(</span><span class="n">lookup_time</span> <span class="o">-</span> <span class="n">t0</span><span class="p">)</span> <span class="o">/</span> <span class="n">dt</span>
+            <span class="n">lookup_index</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">loc1</span><span class="p">)</span>
+            <span class="n">frac1</span> <span class="o">=</span> <span class="n">loc1</span> <span class="o">-</span> <span class="n">lookup_index</span>
+            <span class="n">lookup_index1</span> <span class="o">=</span> <span class="n">lookup_index</span> <span class="o">+</span> <span class="mi">1</span>
+
+            <span class="k">if</span> <span class="n">lookup_index</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">lookup_index1</span> <span class="o">&gt;=</span> <span class="n">numsamples</span><span class="p">:</span>
+                <span class="n">result</span><span class="p">[</span><span class="n">point</span><span class="p">]</span> <span class="o">+=</span> <span class="n">fillvalue</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">lscanVal</span> <span class="o">=</span> <span class="n">weighted_timetraces</span><span class="p">[</span><span class="n">scan</span><span class="p">,</span> <span class="n">lookup_index</span><span class="p">]</span>
+                <span class="n">lscanVal1</span> <span class="o">=</span> <span class="n">weighted_timetraces</span><span class="p">[</span><span class="n">scan</span><span class="p">,</span> <span class="n">lookup_index1</span><span class="p">]</span>
+                <span class="n">lscanUseVal</span> <span class="o">=</span> <span class="n">lscanVal</span> <span class="o">+</span> <span class="n">frac1</span> <span class="o">*</span> <span class="p">(</span><span class="n">lscanVal1</span> <span class="o">-</span> <span class="n">lscanVal</span><span class="p">)</span>
+                <span class="n">result</span><span class="p">[</span><span class="n">point</span><span class="p">]</span> <span class="o">+=</span> <span class="n">amplitudes</span><span class="p">[</span><span class="n">point</span><span class="p">,</span> <span class="n">scan</span><span class="p">]</span> <span class="o">*</span> <span class="n">lscanUseVal</span>
+        <span class="n">result</span><span class="p">[</span><span class="n">point</span><span class="p">]</span> <span class="o">/=</span> <span class="n">numtimetraces</span>
+
+
+<div class="viewcode-block" id="delay_and_sum_naive">
+<a class="viewcode-back" href="../../../_autosummary/_autosummary/arim.im.das/arim.im.das.delay_and_sum_naive.html#arim.im.das.delay_and_sum_naive">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">delay_and_sum_naive</span><span class="p">(</span>
+    <span class="n">frame</span><span class="p">,</span> <span class="n">focal_law</span><span class="p">,</span> <span class="n">fillvalue</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">result</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">interpolate_position</span><span class="o">=</span><span class="s2">&quot;nearest&quot;</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Pure-Python implementation of delay and sum.</span>
+
+<span class="sd">    This is a very slow implementation, use for test only.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">numtimetraces</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">numtimetraces</span>
+    <span class="n">numpoints</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">focal_law</span><span class="o">.</span><span class="n">lookup_times_tx</span><span class="o">.</span><span class="n">shape</span>
+
+    <span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">tfm</span>
+
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">focal_law</span><span class="o">.</span><span class="n">amplitudes</span><span class="p">,</span> <span class="n">tfm</span><span class="o">.</span><span class="n">TxRxAmplitudes</span><span class="p">)</span>
+
+    <span class="n">_check_shapes</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">focal_law</span><span class="p">)</span>
+    <span class="n">weighted_timetraces</span> <span class="o">=</span> <span class="n">focal_law</span><span class="o">.</span><span class="n">weigh_timetraces</span><span class="p">(</span><span class="n">frame</span><span class="o">.</span><span class="n">timetraces</span><span class="p">)</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">dtype_data</span> <span class="o">=</span> <span class="n">_infer_datatypes</span><span class="p">(</span><span class="n">weighted_timetraces</span><span class="p">,</span> <span class="n">focal_law</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="n">numpoints</span><span class="p">,),</span> <span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype_data</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">result</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="n">numpoints</span><span class="p">,)</span>
+    <span class="k">if</span> <span class="n">interpolate_position</span> <span class="o">!=</span> <span class="s2">&quot;nearest&quot;</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="n">lookup_times_tx</span> <span class="o">=</span> <span class="n">focal_law</span><span class="o">.</span><span class="n">lookup_times_tx</span>
+    <span class="n">lookup_times_rx</span> <span class="o">=</span> <span class="n">focal_law</span><span class="o">.</span><span class="n">lookup_times_rx</span>
+    <span class="n">amplitudes_tx</span> <span class="o">=</span> <span class="n">focal_law</span><span class="o">.</span><span class="n">amplitudes</span><span class="o">.</span><span class="n">amplitudes_tx</span>
+    <span class="n">amplitudes_rx</span> <span class="o">=</span> <span class="n">focal_law</span><span class="o">.</span><span class="n">amplitudes</span><span class="o">.</span><span class="n">amplitudes_rx</span>
+    <span class="n">timetrace_weights</span> <span class="o">=</span> <span class="n">focal_law</span><span class="o">.</span><span class="n">timetrace_weights</span>
+    <span class="k">if</span> <span class="n">timetrace_weights</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">timetrace_weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">numtimetraces</span><span class="p">)</span>
+    <span class="n">timetraces</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">timetraces</span>
+    <span class="n">tx</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">tx</span>
+    <span class="n">rx</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">rx</span>
+    <span class="n">t0</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">start</span>
+    <span class="n">dt</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">step</span>
+    <span class="n">numsamples</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">frame</span><span class="o">.</span><span class="n">time</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">numpoints</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="n">point</span><span class="p">]):</span>
+            <span class="k">continue</span>
+
+        <span class="k">for</span> <span class="n">scan</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">numtimetraces</span><span class="p">):</span>
+            <span class="n">lookup_time</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">lookup_times_tx</span><span class="p">[</span><span class="n">point</span><span class="p">,</span> <span class="n">tx</span><span class="p">[</span><span class="n">scan</span><span class="p">]]</span> <span class="o">+</span> <span class="n">lookup_times_rx</span><span class="p">[</span><span class="n">point</span><span class="p">,</span> <span class="n">rx</span><span class="p">[</span><span class="n">scan</span><span class="p">]]</span>
+            <span class="p">)</span>
+            <span class="n">lookup_index</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">((</span><span class="n">lookup_time</span> <span class="o">-</span> <span class="n">t0</span><span class="p">)</span> <span class="o">/</span> <span class="n">dt</span><span class="p">))</span>
+
+            <span class="k">if</span> <span class="n">lookup_index</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">lookup_index</span> <span class="o">&gt;=</span> <span class="n">numsamples</span><span class="p">:</span>
+                <span class="n">result</span><span class="p">[</span><span class="n">point</span><span class="p">]</span> <span class="o">+=</span> <span class="n">fillvalue</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">result</span><span class="p">[</span><span class="n">point</span><span class="p">]</span> <span class="o">+=</span> <span class="p">(</span>
+                    <span class="n">timetrace_weights</span><span class="p">[</span><span class="n">scan</span><span class="p">]</span>
+                    <span class="o">*</span> <span class="n">amplitudes_tx</span><span class="p">[</span><span class="n">point</span><span class="p">,</span> <span class="n">tx</span><span class="p">[</span><span class="n">scan</span><span class="p">]]</span>
+                    <span class="o">*</span> <span class="n">amplitudes_rx</span><span class="p">[</span><span class="n">point</span><span class="p">,</span> <span class="n">rx</span><span class="p">[</span><span class="n">scan</span><span class="p">]]</span>
+                    <span class="o">*</span> <span class="n">timetraces</span><span class="p">[</span><span class="n">scan</span><span class="p">,</span> <span class="n">lookup_index</span><span class="p">]</span>
+                <span class="p">)</span>
+        <span class="n">result</span><span class="p">[</span><span class="n">point</span><span class="p">]</span> <span class="o">/=</span> <span class="n">numtimetraces</span>
+    <span class="k">return</span> <span class="n">result</span></div>
+
+
+
+<div class="viewcode-block" id="delay_and_sum">
+<a class="viewcode-back" href="../../../_autosummary/_autosummary/arim.im.das/arim.im.das.delay_and_sum.html#arim.im.das.delay_and_sum">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">delay_and_sum</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">focal_law</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Delay-and-sum timetraces</span>
+
+<span class="sd">    .. warning:</span>
+
+<span class="sd">        Not all combinations of parameters are implemented.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    frame</span>
+<span class="sd">    focal_law</span>
+<span class="sd">    fillvalue : float</span>
+<span class="sd">        Value to use outside of time limits of the timetrace.</span>
+<span class="sd">    interpolation : str</span>
+<span class="sd">        &quot;nearest&quot;, &quot;linear&quot;, &quot;lanczos&quot;</span>
+<span class="sd">    aggregation : str</span>
+<span class="sd">        &quot;mean&quot;, &quot;median&quot;</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    result : ndarray (numpoints, )</span>
+
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :func:`delay_and_sum_numba`</span>
+<span class="sd">    :func:`delay_and_sum_numba_noamp`</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">tfm</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">focal_law</span><span class="o">.</span><span class="n">amplitudes</span><span class="p">,</span> <span class="n">tfm</span><span class="o">.</span><span class="n">TxRxAmplitudes</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">delay_and_sum_numba</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">focal_law</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">focal_law</span><span class="o">.</span><span class="n">amplitudes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">delay_and_sum_numba_noamp</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">focal_law</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2016–2025, arim contributors.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.4.7.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

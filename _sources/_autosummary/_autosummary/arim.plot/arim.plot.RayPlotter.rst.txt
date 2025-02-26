@@ -1,0 +1,9 @@
+arim.plot.RayPlotter
+====================
+
+.. currentmodule:: arim.plot
+
+.. autoclass:: RayPlotter
+   :members:
+   :undoc-members:
+   :show-inheritance:

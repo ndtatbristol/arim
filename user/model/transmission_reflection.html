@@ -1,0 +1,813 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Transmission-reflection coefficients &#8212; arim 0.10.0.a0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../_static/documentation_options.js?v=51601fd6"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'user/model/transmission_reflection';</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Beamspread" href="beamspread.html" />
+    <link rel="prev" title="Coordinate system" href="coordinate_system.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">arim 0.10.0.a0 documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../installation/index.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../installation/index.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../core/index.html">Core objects</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../core/probe.html">Probe</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../core/examobj.html">Examination object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../core/frame.html">Frame</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../core/path.html">Paths and views</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../core/ray_tracing.html">Ray tracing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../core/metadata.html">Metadata</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Modelling</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="coordinate_system.html">Coordinate system</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Transmission-reflection coefficients</a></li>
+<li class="toctree-l2"><a class="reference internal" href="beamspread.html">Beamspread</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scattering.html">Scattering</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../im/index.html">Imaging</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../im/tfm.html">Total focusing method</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../utils/index.html">Utilities</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../utils/signal.html">Signal processing</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../io/index.html">Files and I/O</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../io/native.html">arim file format</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../io/brain.html">BRAIN</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../glossary.html">Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bibliography.html">Bibliography</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">User Guide</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Modelling</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Transmission-reflection coefficients</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="transmission-reflection-coefficients">
+<span id="transmission-reflection"></span><h1>Transmission-reflection coefficients<a class="headerlink" href="#transmission-reflection-coefficients" title="Link to this heading">#</a></h1>
+<section id="fluid-solid-interface">
+<h2>Fluid-solid interface<a class="headerlink" href="#fluid-solid-interface" title="Link to this heading">#</a></h2>
+<blockquote>
+<div><ul class="simple">
+<li><p>Fluid to solid: <code class="xref py py-func docutils literal notranslate"><span class="pre">arim.ut.fluid_solid()</span></code></p></li>
+<li><p>Solid to fluid: <code class="xref py py-func docutils literal notranslate"><span class="pre">arim.ut.solid_l_fluid()</span></code> and <code class="xref py py-func docutils literal notranslate"><span class="pre">arim.ut.solid_t_fluid()</span></code></p></li>
+</ul>
+</div></blockquote>
+<p>References: <a class="reference internal" href="../bibliography.html#kk" id="id1"><span>[KK]</span></a> and <a class="reference internal" href="../bibliography.html#schmerr" id="id2"><span>[Schmerr]</span></a>.</p>
+<p><em>Example:</em></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">  1</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos">  2</span><span class="sd">Compute and plot the transmission and reflection coefficients.</span>
+<span class="linenos">  3</span>
+<span class="linenos">  4</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos">  5</span>
+<span class="linenos">  6</span><span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="linenos">  7</span>
+<span class="linenos">  8</span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="linenos">  9</span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="linenos"> 10</span>
+<span class="linenos"> 11</span><span class="kn">from</span><span class="w"> </span><span class="nn">arim.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">snell_angles</span><span class="p">,</span> <span class="n">solid_l_fluid</span>
+<span class="linenos"> 12</span>
+<span class="linenos"> 13</span><span class="c1"># %% Parameters</span>
+<span class="linenos"> 14</span>
+<span class="linenos"> 15</span><span class="n">SAVEFIG</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="linenos"> 16</span>
+<span class="linenos"> 17</span><span class="c1"># water:</span>
+<span class="linenos"> 18</span><span class="n">c_fluid</span> <span class="o">=</span> <span class="mf">1480.0</span>
+<span class="linenos"> 19</span><span class="n">rho_fluid</span> <span class="o">=</span> <span class="mf">1000.0</span>
+<span class="linenos"> 20</span>
+<span class="linenos"> 21</span><span class="c1"># aluminium :</span>
+<span class="linenos"> 22</span><span class="n">c_l</span> <span class="o">=</span> <span class="mf">6320.0</span>
+<span class="linenos"> 23</span><span class="n">c_t</span> <span class="o">=</span> <span class="mf">3130.0</span>
+<span class="linenos"> 24</span><span class="n">rho_solid</span> <span class="o">=</span> <span class="mf">2700.0</span>
+<span class="linenos"> 25</span>
+<span class="linenos"> 26</span><span class="c1"># %% Computation of reflection and transmission coefficients</span>
+<span class="linenos"> 27</span>
+<span class="linenos"> 28</span><span class="c1"># Remark: by using complex angles, complex reflection and transmission coefficients</span>
+<span class="linenos"> 29</span><span class="c1"># are computed.</span>
+<span class="linenos"> 30</span><span class="n">alpha_l</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">50000</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+<span class="linenos"> 31</span>
+<span class="linenos"> 32</span><span class="n">alpha_fluid</span> <span class="o">=</span> <span class="n">snell_angles</span><span class="p">(</span><span class="n">alpha_l</span><span class="p">,</span> <span class="n">c_l</span><span class="p">,</span> <span class="n">c_fluid</span><span class="p">)</span>
+<span class="linenos"> 33</span><span class="n">alpha_t</span> <span class="o">=</span> <span class="n">snell_angles</span><span class="p">(</span><span class="n">alpha_l</span><span class="p">,</span> <span class="n">c_l</span><span class="p">,</span> <span class="n">c_t</span><span class="p">)</span>
+<span class="linenos"> 34</span>
+<span class="linenos"> 35</span><span class="n">reflection_l</span><span class="p">,</span> <span class="n">reflection_t</span><span class="p">,</span> <span class="n">transmission</span> <span class="o">=</span> <span class="n">solid_l_fluid</span><span class="p">(</span>
+<span class="linenos"> 36</span>    <span class="n">alpha_l</span><span class="p">,</span> <span class="n">rho_fluid</span><span class="p">,</span> <span class="n">rho_solid</span><span class="p">,</span> <span class="n">c_fluid</span><span class="p">,</span> <span class="n">c_l</span><span class="p">,</span> <span class="n">c_t</span><span class="p">,</span> <span class="n">alpha_fluid</span><span class="p">,</span> <span class="n">alpha_t</span>
+<span class="linenos"> 37</span><span class="p">)</span>
+<span class="linenos"> 38</span>
+<span class="linenos"> 39</span><span class="n">alpha_fluid_deg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">rad2deg</span><span class="p">(</span><span class="n">alpha_fluid</span><span class="o">.</span><span class="n">real</span><span class="p">)</span>
+<span class="linenos"> 40</span><span class="n">alpha_l_deg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">rad2deg</span><span class="p">(</span><span class="n">alpha_l</span><span class="o">.</span><span class="n">real</span><span class="p">)</span>
+<span class="linenos"> 41</span><span class="n">alpha_t_deg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">rad2deg</span><span class="p">(</span><span class="n">alpha_t</span><span class="o">.</span><span class="n">real</span><span class="p">)</span>
+<span class="linenos"> 42</span>
+<span class="linenos"> 43</span><span class="n">phase</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">angle</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">deg</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="linenos"> 44</span>
+<span class="linenos"> 45</span><span class="c1"># %% Plot reflection and transmission coefficients (alpha_fluid axis)</span>
+<span class="linenos"> 46</span>
+<span class="linenos"> 47</span><span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">nrows</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="linenos"> 48</span><span class="n">ax</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="linenos"> 49</span><span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">alpha_l_deg</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">transmission</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;transmission&quot;</span><span class="p">)</span>
+<span class="linenos"> 50</span><span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">alpha_l_deg</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">reflection_l</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;reflection L&quot;</span><span class="p">)</span>
+<span class="linenos"> 51</span><span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">alpha_l_deg</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">reflection_t</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;reflection T&quot;</span><span class="p">)</span>
+<span class="linenos"> 52</span><span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Tranmission and reflection coefficients from solid L to liquid&quot;</span><span class="p">)</span>
+<span class="linenos"> 53</span><span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;absolute value&quot;</span><span class="p">)</span>
+<span class="linenos"> 54</span><span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;best&quot;</span><span class="p">)</span>
+<span class="linenos"> 55</span>
+<span class="linenos"> 56</span><span class="n">ax</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="linenos"> 57</span><span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">alpha_l_deg</span><span class="p">,</span> <span class="n">phase</span><span class="p">(</span><span class="n">transmission</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;transmission&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="linenos"> 58</span><span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">alpha_l_deg</span><span class="p">,</span> <span class="n">phase</span><span class="p">(</span><span class="n">reflection_l</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;reflection L&quot;</span><span class="p">)</span>
+<span class="linenos"> 59</span><span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">alpha_l_deg</span><span class="p">,</span> <span class="n">phase</span><span class="p">(</span><span class="n">reflection_t</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;reflection T&quot;</span><span class="p">)</span>
+<span class="linenos"> 60</span>
+<span class="linenos"> 61</span><span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;phase (deg)&quot;</span><span class="p">)</span>
+<span class="linenos"> 62</span><span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;angle of the incident L wave in solid (deg)&quot;</span><span class="p">)</span>
+<span class="linenos"> 63</span>
+<span class="linenos"> 64</span><span class="k">if</span> <span class="n">SAVEFIG</span><span class="p">:</span>
+<span class="linenos"> 65</span>    <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s2">&quot;solid_l_to_liquid_alpha_fluid&quot;</span><span class="p">)</span>
+<span class="linenos"> 66</span>
+<span class="linenos"> 67</span><span class="c1"># %% Computation of the repartition of energy</span>
+<span class="linenos"> 68</span>
+<span class="linenos"> 69</span><span class="c1"># incident pressure (no effect because of normalisation, we keep it for clarity of the formulas)</span>
+<span class="linenos"> 70</span><span class="n">pres_i</span> <span class="o">=</span> <span class="mf">1.0</span>
+<span class="linenos"> 71</span>
+<span class="linenos"> 72</span><span class="c1"># cross section areas:</span>
+<span class="linenos"> 73</span><span class="n">area_fluid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">alpha_fluid</span><span class="p">)</span><span class="o">.</span><span class="n">real</span>
+<span class="linenos"> 74</span><span class="n">area_l</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">alpha_l</span><span class="p">)</span><span class="o">.</span><span class="n">real</span>
+<span class="linenos"> 75</span><span class="n">area_t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">alpha_t</span><span class="p">)</span><span class="o">.</span><span class="n">real</span>
+<span class="linenos"> 76</span>
+<span class="linenos"> 77</span><span class="c1"># Compute the energy incoming and outcoming: the principle of conservation of energy must be respected.</span>
+<span class="linenos"> 78</span><span class="c1"># Reference: Schmerr, §6.3.2</span>
+<span class="linenos"> 79</span>
+<span class="linenos"> 80</span><span class="c1"># Incoming energy</span>
+<span class="linenos"> 81</span><span class="n">inc_energy</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">pres_i</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="n">rho_solid</span> <span class="o">*</span> <span class="n">c_l</span><span class="p">)</span> <span class="o">*</span> <span class="n">area_l</span>
+<span class="linenos"> 82</span>
+<span class="linenos"> 83</span><span class="c1"># Outgoing energy</span>
+<span class="linenos"> 84</span><span class="n">energy_trans</span> <span class="o">=</span> <span class="p">(</span>
+<span class="linenos"> 85</span>    <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">transmission</span><span class="p">)</span> <span class="o">*</span> <span class="n">pres_i</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="n">rho_fluid</span> <span class="o">*</span> <span class="n">c_fluid</span><span class="p">)</span> <span class="o">*</span> <span class="n">area_fluid</span>
+<span class="linenos"> 86</span><span class="p">)</span>
+<span class="linenos"> 87</span><span class="n">energy_refl_l</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">reflection_l</span><span class="p">)</span> <span class="o">*</span> <span class="n">pres_i</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="n">rho_solid</span> <span class="o">*</span> <span class="n">c_l</span><span class="p">)</span> <span class="o">*</span> <span class="n">area_l</span>
+<span class="linenos"> 88</span><span class="n">energy_refl_t</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">reflection_t</span><span class="p">)</span> <span class="o">*</span> <span class="n">pres_i</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="n">rho_solid</span> <span class="o">*</span> <span class="n">c_t</span><span class="p">)</span> <span class="o">*</span> <span class="n">area_t</span>
+<span class="linenos"> 89</span><span class="n">out_energy</span> <span class="o">=</span> <span class="n">energy_trans</span> <span class="o">+</span> <span class="n">energy_refl_l</span> <span class="o">+</span> <span class="n">energy_refl_t</span>
+<span class="linenos"> 90</span>
+<span class="linenos"> 91</span><span class="n">ratio_trans</span> <span class="o">=</span> <span class="n">energy_trans</span> <span class="o">/</span> <span class="n">inc_energy</span>
+<span class="linenos"> 92</span><span class="n">ratio_refl_l</span> <span class="o">=</span> <span class="n">energy_refl_l</span> <span class="o">/</span> <span class="n">inc_energy</span>
+<span class="linenos"> 93</span><span class="n">ratio_refl_t</span> <span class="o">=</span> <span class="n">energy_refl_t</span> <span class="o">/</span> <span class="n">inc_energy</span>
+<span class="linenos"> 94</span>
+<span class="linenos"> 95</span><span class="c1"># Verify the conservation of energy:</span>
+<span class="linenos"> 96</span><span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">ratio_trans</span> <span class="o">+</span> <span class="n">ratio_refl_l</span> <span class="o">+</span> <span class="n">ratio_refl_t</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)):</span>
+<span class="linenos"> 97</span>    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;The conservation of energy is not respected.&quot;</span><span class="p">)</span>
+<span class="linenos"> 98</span>
+<span class="linenos"> 99</span><span class="c1"># %% Plot energy</span>
+<span class="linenos">100</span>
+<span class="linenos">101</span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="linenos">102</span><span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">alpha_l_deg</span><span class="p">,</span> <span class="n">ratio_trans</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;transmission&quot;</span><span class="p">)</span>
+<span class="linenos">103</span><span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">alpha_l_deg</span><span class="p">,</span> <span class="n">ratio_refl_l</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;reflection L&quot;</span><span class="p">)</span>
+<span class="linenos">104</span><span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">alpha_l_deg</span><span class="p">,</span> <span class="n">ratio_refl_t</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;reflection T&quot;</span><span class="p">)</span>
+<span class="linenos">105</span><span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">alpha_l_deg</span><span class="p">,</span> <span class="n">ratio_trans</span> <span class="o">+</span> <span class="n">ratio_refl_l</span> <span class="o">+</span> <span class="n">ratio_refl_t</span><span class="p">,</span> <span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;total&quot;</span><span class="p">)</span>
+<span class="linenos">106</span><span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Repartition of energy: solid to liquid interface&quot;</span><span class="p">)</span>
+<span class="linenos">107</span><span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;angle of the incident wave in liquid (deg)&quot;</span><span class="p">)</span>
+<span class="linenos">108</span><span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;normalised energy (1)&quot;</span><span class="p">)</span>
+<span class="linenos">109</span><span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;angle of the incident L wave in solid (deg)&quot;</span><span class="p">)</span>
+<span class="linenos">110</span><span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1.05</span><span class="p">])</span>
+<span class="linenos">111</span><span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;best&quot;</span><span class="p">)</span>
+<span class="linenos">112</span><span class="k">if</span> <span class="n">SAVEFIG</span><span class="p">:</span>
+<span class="linenos">113</span>    <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s2">&quot;solid_l_to_liquid_energy&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">  1</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos">  2</span><span class="sd">Compute and plot the transmission and reflection coefficients.</span>
+<span class="linenos">  3</span>
+<span class="linenos">  4</span><span class="sd">Case: an incident longitudinal in the fluid hits the wall of an solid part.</span>
+<span class="linenos">  5</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos">  6</span>
+<span class="linenos">  7</span><span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="linenos">  8</span>
+<span class="linenos">  9</span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="linenos"> 10</span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="linenos"> 11</span>
+<span class="linenos"> 12</span><span class="kn">from</span><span class="w"> </span><span class="nn">arim.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">fluid_solid</span><span class="p">,</span> <span class="n">snell_angles</span>
+<span class="linenos"> 13</span>
+<span class="linenos"> 14</span><span class="c1"># %% Parameters</span>
+<span class="linenos"> 15</span>
+<span class="linenos"> 16</span><span class="c1"># Transmission coefficients above the critical angles corresponds to</span>
+<span class="linenos"> 17</span><span class="c1"># inhomogeneous surface waves instead of bulk waves</span>
+<span class="linenos"> 18</span><span class="c1"># Set to True to force the coefficients to zero.</span>
+<span class="linenos"> 19</span><span class="n">NULL_TRANSMISSION_ABOVE_CRIT_ANGLES</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="linenos"> 20</span><span class="n">SAVEFIG</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="linenos"> 21</span>
+<span class="linenos"> 22</span><span class="c1"># water:</span>
+<span class="linenos"> 23</span><span class="n">c_fluid</span> <span class="o">=</span> <span class="mf">1480.0</span>
+<span class="linenos"> 24</span><span class="n">rho_fluid</span> <span class="o">=</span> <span class="mf">1000.0</span>
+<span class="linenos"> 25</span>
+<span class="linenos"> 26</span><span class="c1"># aluminium :</span>
+<span class="linenos"> 27</span><span class="n">c_l</span> <span class="o">=</span> <span class="mf">6320.0</span>
+<span class="linenos"> 28</span><span class="n">c_t</span> <span class="o">=</span> <span class="mf">3130.0</span>
+<span class="linenos"> 29</span><span class="n">rho_solid</span> <span class="o">=</span> <span class="mf">2700.0</span>
+<span class="linenos"> 30</span>
+<span class="linenos"> 31</span><span class="c1"># %% Computation of reflection and transmission coefficients</span>
+<span class="linenos"> 32</span>
+<span class="linenos"> 33</span><span class="c1"># Critical angles</span>
+<span class="linenos"> 34</span><span class="n">critical_l</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arcsin</span><span class="p">(</span><span class="n">c_fluid</span> <span class="o">/</span> <span class="n">c_l</span><span class="p">)</span>
+<span class="linenos"> 35</span><span class="n">critical_t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arcsin</span><span class="p">(</span><span class="n">c_fluid</span> <span class="o">/</span> <span class="n">c_t</span><span class="p">)</span>
+<span class="linenos"> 36</span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Critical angle L: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">rad2deg</span><span class="p">(</span><span class="n">critical_l</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">°&quot;</span><span class="p">)</span>
+<span class="linenos"> 37</span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Critical angle T: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">rad2deg</span><span class="p">(</span><span class="n">critical_t</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">°&quot;</span><span class="p">)</span>
+<span class="linenos"> 38</span>
+<span class="linenos"> 39</span><span class="c1"># Remark: by using complex angles, complex reflection and transmission coefficients</span>
+<span class="linenos"> 40</span><span class="c1"># are computed.</span>
+<span class="linenos"> 41</span><span class="n">alpha_fluid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">50000</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">complex</span><span class="p">)</span>
+<span class="linenos"> 42</span>
+<span class="linenos"> 43</span><span class="n">alpha_l</span> <span class="o">=</span> <span class="n">snell_angles</span><span class="p">(</span><span class="n">alpha_fluid</span><span class="p">,</span> <span class="n">c_fluid</span><span class="p">,</span> <span class="n">c_l</span><span class="p">)</span>
+<span class="linenos"> 44</span><span class="n">alpha_t</span> <span class="o">=</span> <span class="n">snell_angles</span><span class="p">(</span><span class="n">alpha_fluid</span><span class="p">,</span> <span class="n">c_fluid</span><span class="p">,</span> <span class="n">c_t</span><span class="p">)</span>
+<span class="linenos"> 45</span>
+<span class="linenos"> 46</span><span class="n">reflection</span><span class="p">,</span> <span class="n">transmission_l</span><span class="p">,</span> <span class="n">transmission_t</span> <span class="o">=</span> <span class="n">fluid_solid</span><span class="p">(</span>
+<span class="linenos"> 47</span>    <span class="n">alpha_fluid</span><span class="p">,</span> <span class="n">rho_fluid</span><span class="p">,</span> <span class="n">rho_solid</span><span class="p">,</span> <span class="n">c_fluid</span><span class="p">,</span> <span class="n">c_l</span><span class="p">,</span> <span class="n">c_t</span><span class="p">,</span> <span class="n">alpha_l</span><span class="p">,</span> <span class="n">alpha_t</span>
+<span class="linenos"> 48</span><span class="p">)</span>
+<span class="linenos"> 49</span>
+<span class="linenos"> 50</span><span class="n">alpha_fluid_deg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">rad2deg</span><span class="p">(</span><span class="n">alpha_fluid</span><span class="o">.</span><span class="n">real</span><span class="p">)</span>
+<span class="linenos"> 51</span><span class="n">alpha_l_deg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">rad2deg</span><span class="p">(</span><span class="n">alpha_l</span><span class="o">.</span><span class="n">real</span><span class="p">)</span>
+<span class="linenos"> 52</span><span class="n">alpha_t_deg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">rad2deg</span><span class="p">(</span><span class="n">alpha_t</span><span class="o">.</span><span class="n">real</span><span class="p">)</span>
+<span class="linenos"> 53</span>
+<span class="linenos"> 54</span><span class="k">if</span> <span class="n">NULL_TRANSMISSION_ABOVE_CRIT_ANGLES</span><span class="p">:</span>
+<span class="linenos"> 55</span>    <span class="n">transmission_l</span><span class="p">[</span><span class="n">alpha_fluid</span> <span class="o">&gt;</span> <span class="n">critical_l</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="linenos"> 56</span>    <span class="n">transmission_t</span><span class="p">[</span><span class="n">alpha_fluid</span> <span class="o">&gt;</span> <span class="n">critical_t</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="linenos"> 57</span>
+<span class="linenos"> 58</span><span class="c1"># %% Plot reflection and transmission coefficients (alpha_fluid axis)</span>
+<span class="linenos"> 59</span>
+<span class="linenos"> 60</span><span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">nrows</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="linenos"> 61</span><span class="n">ax</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="linenos"> 62</span><span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">alpha_fluid_deg</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">reflection</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;reflection&quot;</span><span class="p">)</span>
+<span class="linenos"> 63</span><span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">alpha_fluid_deg</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">transmission_l</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;transmission L&quot;</span><span class="p">)</span>
+<span class="linenos"> 64</span><span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">alpha_fluid_deg</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">transmission_t</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;transmission T&quot;</span><span class="p">)</span>
+<span class="linenos"> 65</span><span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Tranmission and reflection coefficients from liquid to solid&quot;</span><span class="p">)</span>
+<span class="linenos"> 66</span><span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span>
+<span class="linenos"> 67</span>    <span class="n">x</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">rad2deg</span><span class="p">(</span><span class="n">critical_l</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;k&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;critical angle L&quot;</span>
+<span class="linenos"> 68</span><span class="p">)</span>
+<span class="linenos"> 69</span><span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">rad2deg</span><span class="p">(</span><span class="n">critical_t</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;k&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;critical angle T&quot;</span><span class="p">)</span>
+<span class="linenos"> 70</span><span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;absolute value&quot;</span><span class="p">)</span>
+<span class="linenos"> 71</span><span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;best&quot;</span><span class="p">)</span>
+<span class="linenos"> 72</span>
+<span class="linenos"> 73</span><span class="n">ax</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="linenos"> 74</span><span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">alpha_fluid_deg</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">angle</span><span class="p">(</span><span class="n">reflection</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;reflection&quot;</span><span class="p">)</span>
+<span class="linenos"> 75</span><span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">alpha_fluid_deg</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">angle</span><span class="p">(</span><span class="n">transmission_l</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;transmission L&quot;</span><span class="p">)</span>
+<span class="linenos"> 76</span><span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">alpha_fluid_deg</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">angle</span><span class="p">(</span><span class="n">transmission_t</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;transmission T&quot;</span><span class="p">)</span>
+<span class="linenos"> 77</span><span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span>
+<span class="linenos"> 78</span>    <span class="n">x</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">rad2deg</span><span class="p">(</span><span class="n">critical_l</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;k&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;critical angle L&quot;</span>
+<span class="linenos"> 79</span><span class="p">)</span>
+<span class="linenos"> 80</span><span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">rad2deg</span><span class="p">(</span><span class="n">critical_t</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;k&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;critical angle T&quot;</span><span class="p">)</span>
+<span class="linenos"> 81</span>
+<span class="linenos"> 82</span><span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;phase (deg)&quot;</span><span class="p">)</span>
+<span class="linenos"> 83</span><span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;angle of the incident wave in liquid (deg)&quot;</span><span class="p">)</span>
+<span class="linenos"> 84</span>
+<span class="linenos"> 85</span><span class="k">if</span> <span class="n">SAVEFIG</span><span class="p">:</span>
+<span class="linenos"> 86</span>    <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s2">&quot;liquid_to_solid_alpha_fluid&quot;</span><span class="p">)</span>
+<span class="linenos"> 87</span>
+<span class="linenos"> 88</span><span class="c1"># %%Plot reflection and transmission coefficients (alpha_t axis)</span>
+<span class="linenos"> 89</span>
+<span class="linenos"> 90</span><span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">nrows</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="linenos"> 91</span><span class="n">ax</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="linenos"> 92</span><span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">alpha_t_deg</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">reflection</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;reflection&quot;</span><span class="p">)</span>
+<span class="linenos"> 93</span><span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">alpha_t_deg</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">transmission_l</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;transmission L&quot;</span><span class="p">)</span>
+<span class="linenos"> 94</span><span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">alpha_t_deg</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">transmission_t</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;transmission T&quot;</span><span class="p">)</span>
+<span class="linenos"> 95</span><span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Tranmission and reflection coefficients from liquid to solid&quot;</span><span class="p">)</span>
+<span class="linenos"> 96</span><span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;absolute value&quot;</span><span class="p">)</span>
+<span class="linenos"> 97</span><span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;best&quot;</span><span class="p">)</span>
+<span class="linenos"> 98</span>
+<span class="linenos"> 99</span><span class="n">ax</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="linenos">100</span><span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">alpha_t_deg</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">angle</span><span class="p">(</span><span class="n">reflection</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;reflection&quot;</span><span class="p">)</span>
+<span class="linenos">101</span><span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">alpha_t_deg</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">angle</span><span class="p">(</span><span class="n">transmission_l</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;transmission L&quot;</span><span class="p">)</span>
+<span class="linenos">102</span><span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">alpha_t_deg</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">angle</span><span class="p">(</span><span class="n">transmission_t</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;transmission T&quot;</span><span class="p">)</span>
+<span class="linenos">103</span>
+<span class="linenos">104</span><span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;phase (deg)&quot;</span><span class="p">)</span>
+<span class="linenos">105</span><span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;angle of the transmitted wave T (deg)&quot;</span><span class="p">)</span>
+<span class="linenos">106</span>
+<span class="linenos">107</span><span class="k">if</span> <span class="n">SAVEFIG</span><span class="p">:</span>
+<span class="linenos">108</span>    <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s2">&quot;liquid_to_solid_alpha_t&quot;</span><span class="p">)</span>
+<span class="linenos">109</span>
+<span class="linenos">110</span><span class="c1"># %%Plot reflection and transmission coefficients (alpha_l axis)</span>
+<span class="linenos">111</span>
+<span class="linenos">112</span><span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">nrows</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="linenos">113</span><span class="n">ax</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="linenos">114</span><span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">alpha_l_deg</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">reflection</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;reflection&quot;</span><span class="p">)</span>
+<span class="linenos">115</span><span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">alpha_l_deg</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">transmission_l</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;transmission L&quot;</span><span class="p">)</span>
+<span class="linenos">116</span><span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">alpha_l_deg</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">transmission_t</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;transmission T&quot;</span><span class="p">)</span>
+<span class="linenos">117</span><span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Tranmission and reflection coefficients from liquid to solid&quot;</span><span class="p">)</span>
+<span class="linenos">118</span><span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;absolute value&quot;</span><span class="p">)</span>
+<span class="linenos">119</span><span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;best&quot;</span><span class="p">)</span>
+<span class="linenos">120</span>
+<span class="linenos">121</span><span class="n">ax</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="linenos">122</span><span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">alpha_l_deg</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">angle</span><span class="p">(</span><span class="n">reflection</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;reflection&quot;</span><span class="p">)</span>
+<span class="linenos">123</span><span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">alpha_l_deg</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">angle</span><span class="p">(</span><span class="n">transmission_l</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;transmission L&quot;</span><span class="p">)</span>
+<span class="linenos">124</span><span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">alpha_l_deg</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">angle</span><span class="p">(</span><span class="n">transmission_t</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;transmission T&quot;</span><span class="p">)</span>
+<span class="linenos">125</span>
+<span class="linenos">126</span><span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;phase (deg)&quot;</span><span class="p">)</span>
+<span class="linenos">127</span><span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;angle of the transmitted wave L (deg)&quot;</span><span class="p">)</span>
+<span class="linenos">128</span>
+<span class="linenos">129</span><span class="k">if</span> <span class="n">SAVEFIG</span><span class="p">:</span>
+<span class="linenos">130</span>    <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s2">&quot;liquid_to_solid_alpha_l&quot;</span><span class="p">)</span>
+<span class="linenos">131</span>
+<span class="linenos">132</span><span class="c1"># %% Computation of the repartition of energy</span>
+<span class="linenos">133</span>
+<span class="linenos">134</span><span class="c1"># incident pressure (no effect because of normalisation, we keep it for clarity of the formulas)</span>
+<span class="linenos">135</span><span class="n">pres_i</span> <span class="o">=</span> <span class="mf">10000.0</span>
+<span class="linenos">136</span>
+<span class="linenos">137</span><span class="c1"># cross section areas:</span>
+<span class="linenos">138</span><span class="n">area_r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">alpha_fluid</span><span class="p">)</span><span class="o">.</span><span class="n">real</span>
+<span class="linenos">139</span><span class="n">area_l</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">alpha_l</span><span class="p">)</span><span class="o">.</span><span class="n">real</span>
+<span class="linenos">140</span><span class="n">area_t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">alpha_t</span><span class="p">)</span><span class="o">.</span><span class="n">real</span>
+<span class="linenos">141</span>
+<span class="linenos">142</span><span class="c1"># Compute the energy incoming and outcoming: the principle of conservation of</span>
+<span class="linenos">143</span><span class="c1"># energy must be respected.</span>
+<span class="linenos">144</span><span class="c1"># Reference: Schmerr, §6.3.2</span>
+<span class="linenos">145</span><span class="c1"># See also Schmerr, §6.2.5 for the considerations on the inhomogeneous waves</span>
+<span class="linenos">146</span><span class="c1"># which propagate after the critical angle.</span>
+<span class="linenos">147</span>
+<span class="linenos">148</span><span class="c1"># Incoming energy</span>
+<span class="linenos">149</span><span class="n">inc_energy</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">pres_i</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="n">rho_fluid</span> <span class="o">*</span> <span class="n">c_fluid</span><span class="p">)</span> <span class="o">*</span> <span class="n">area_r</span>
+<span class="linenos">150</span>
+<span class="linenos">151</span><span class="c1"># Outgoing energy</span>
+<span class="linenos">152</span><span class="n">energy_refl</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">reflection</span><span class="p">)</span> <span class="o">*</span> <span class="n">pres_i</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="n">rho_fluid</span> <span class="o">*</span> <span class="n">c_fluid</span><span class="p">)</span> <span class="o">*</span> <span class="n">area_r</span>
+<span class="linenos">153</span><span class="n">energy_l</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">transmission_l</span><span class="p">)</span> <span class="o">*</span> <span class="n">pres_i</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="n">rho_solid</span> <span class="o">*</span> <span class="n">c_l</span><span class="p">)</span> <span class="o">*</span> <span class="n">area_l</span>
+<span class="linenos">154</span><span class="n">energy_t</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">transmission_t</span><span class="p">)</span> <span class="o">*</span> <span class="n">pres_i</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="n">rho_solid</span> <span class="o">*</span> <span class="n">c_t</span><span class="p">)</span> <span class="o">*</span> <span class="n">area_t</span>
+<span class="linenos">155</span><span class="n">out_energy</span> <span class="o">=</span> <span class="n">energy_refl</span> <span class="o">+</span> <span class="n">energy_l</span> <span class="o">+</span> <span class="n">energy_t</span>
+<span class="linenos">156</span>
+<span class="linenos">157</span><span class="n">ratio_refl</span> <span class="o">=</span> <span class="n">energy_refl</span> <span class="o">/</span> <span class="n">inc_energy</span>
+<span class="linenos">158</span><span class="n">ratio_l</span> <span class="o">=</span> <span class="n">energy_l</span> <span class="o">/</span> <span class="n">inc_energy</span>
+<span class="linenos">159</span><span class="n">ratio_t</span> <span class="o">=</span> <span class="n">energy_t</span> <span class="o">/</span> <span class="n">inc_energy</span>
+<span class="linenos">160</span>
+<span class="linenos">161</span><span class="c1"># Verify the conservation of energy:</span>
+<span class="linenos">162</span><span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">ratio_refl</span> <span class="o">+</span> <span class="n">ratio_l</span> <span class="o">+</span> <span class="n">ratio_t</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)):</span>
+<span class="linenos">163</span>    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;The conservation of energy is not respected.&quot;</span><span class="p">)</span>
+<span class="linenos">164</span>
+<span class="linenos">165</span><span class="c1"># %% Plot energy</span>
+<span class="linenos">166</span>
+<span class="linenos">167</span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="linenos">168</span><span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">alpha_fluid_deg</span><span class="p">,</span> <span class="n">ratio_refl</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;reflection&quot;</span><span class="p">)</span>
+<span class="linenos">169</span><span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">alpha_fluid_deg</span><span class="p">,</span> <span class="n">ratio_l</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;transmission L&quot;</span><span class="p">)</span>
+<span class="linenos">170</span><span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">alpha_fluid_deg</span><span class="p">,</span> <span class="n">ratio_t</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;transmission T&quot;</span><span class="p">)</span>
+<span class="linenos">171</span><span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">alpha_fluid_deg</span><span class="p">,</span> <span class="n">ratio_refl</span> <span class="o">+</span> <span class="n">ratio_l</span> <span class="o">+</span> <span class="n">ratio_t</span><span class="p">,</span> <span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;total&quot;</span><span class="p">)</span>
+<span class="linenos">172</span><span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span>
+<span class="linenos">173</span>    <span class="n">x</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">rad2deg</span><span class="p">(</span><span class="n">critical_l</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;k&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;critical angle L&quot;</span>
+<span class="linenos">174</span><span class="p">)</span>
+<span class="linenos">175</span><span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">rad2deg</span><span class="p">(</span><span class="n">critical_t</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;k&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;critical angle T&quot;</span><span class="p">)</span>
+<span class="linenos">176</span><span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Repartition of energy of the bulk waves: liquid to solid interface&quot;</span><span class="p">)</span>
+<span class="linenos">177</span><span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;angle of the incident wave in liquid (deg)&quot;</span><span class="p">)</span>
+<span class="linenos">178</span><span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;normalised energy (1)&quot;</span><span class="p">)</span>
+<span class="linenos">179</span><span class="c1"># ylim([0, 1.05])</span>
+<span class="linenos">180</span><span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;best&quot;</span><span class="p">)</span>
+<span class="linenos">181</span><span class="k">if</span> <span class="n">SAVEFIG</span><span class="p">:</span>
+<span class="linenos">182</span>    <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s2">&quot;liquid_to_solid_energy&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>Full reference: <a class="reference internal" href="../../_autosummary/arim.model.html#module-arim.model" title="arim.model"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arim.model</span></code></a>, <a class="reference internal" href="../../_autosummary/arim.ut.html#module-arim.ut" title="arim.ut"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arim.ut</span></code></a></p>
+</div>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="coordinate_system.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Coordinate system</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="beamspread.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Beamspread</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#fluid-solid-interface">Fluid-solid interface</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../_sources/user/model/transmission_reflection.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2016–2025, arim contributors.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.4.7.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

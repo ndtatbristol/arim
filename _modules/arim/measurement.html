@@ -1,0 +1,652 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>arim.measurement &#8212; arim 0.10.0.a0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../_static/documentation_options.js?v=51601fd6"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/arim/measurement';</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">arim 0.10.0.a0 documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../installation/index.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../installation/index.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">arim.measurement</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for arim.measurement</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Tools and methods based on ultrasonic data measurements</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">namedtuple</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">geometry</span> <span class="k">as</span> <span class="n">g</span>
+
+<span class="n">_IsometryOxy</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s2">&quot;_IsometryOxy&quot;</span><span class="p">,</span> <span class="s2">&quot;z_o theta phi&quot;</span><span class="p">)</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="find_probe_loc_from_frontwall">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.measurement/arim.measurement.find_probe_loc_from_frontwall.html#arim.measurement.find_probe_loc_from_frontwall">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">find_probe_loc_from_frontwall</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">couplant</span><span class="p">,</span> <span class="n">tmin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tmax</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Registration process by detection of the frontwall, whose equation is</span>
+<span class="sd">    assumed to be ``z = 0``.</span>
+
+<span class="sd">    This function:</span>
+<span class="sd">    0. reset the position of the probe,</span>
+<span class="sd">    1. detects the frontwall by looking for the extrama in the pulse-echo</span>
+<span class="sd">    timetraces,</span>
+<span class="sd">    2. infers the probe angle and standoff from these values</span>
+<span class="sd">    (use a linear fit),</span>
+<span class="sd">    3. move the probe.</span>
+
+
+<span class="sd">    ..warning::</span>
+
+<span class="sd">        This function changes the input frame.</span>
+
+<span class="sd">    Notes: the user is responsible for checking the quality of the linear fit</span>
+<span class="sd">    by having a look at the output array ``distance_to_surface``.</span>
+
+<span class="sd">    The frontwall is assumed to be the line ``z=0.``</span>
+<span class="sd">        2) move accordingly the probe.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    frame : Frame</span>
+<span class="sd">    couplant : Material</span>
+<span class="sd">    tmin, tmax : float or None</span>
+<span class="sd">        Inferior and superior time limits for finding the frontwall.</span>
+
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    probe_standoff : float</span>
+<span class="sd">        Distance (m) between the reference point of the probe (origin of its PCS) to the surface.</span>
+<span class="sd">    probe_orientation : float</span>
+<span class="sd">        Angle (rad) of the probe to the surface.</span>
+<span class="sd">    time_to_surface : array</span>
+<span class="sd">        Time between each element and the detected frontwall.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    - :func:`detect_surface_from_extrema`</span>
+<span class="sd">    - :func:`move_probe_over_flat_surface`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">frame</span><span class="o">.</span><span class="n">probe</span><span class="o">.</span><span class="n">reset_position</span><span class="p">()</span>
+
+    <span class="c1"># Detect frontwall:</span>
+    <span class="n">time_to_surface</span> <span class="o">=</span> <span class="n">detect_surface_from_extrema</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">tmin</span><span class="p">,</span> <span class="n">tmax</span><span class="p">)</span>
+
+    <span class="c1"># Move probe:</span>
+    <span class="n">distance_to_surface</span> <span class="o">=</span> <span class="n">time_to_surface</span> <span class="o">*</span> <span class="n">couplant</span><span class="o">.</span><span class="n">longitudinal_vel</span> <span class="o">/</span> <span class="mi">2</span>
+    <span class="n">frame</span><span class="p">,</span> <span class="n">iso</span> <span class="o">=</span> <span class="n">move_probe_over_flat_surface</span><span class="p">(</span>
+        <span class="n">frame</span><span class="p">,</span> <span class="n">distance_to_surface</span><span class="p">,</span> <span class="n">full_output</span><span class="o">=</span><span class="kc">True</span>
+    <span class="p">)</span>
+
+    <span class="n">probe_standoff</span> <span class="o">=</span> <span class="n">iso</span><span class="o">.</span><span class="n">z_o</span>
+    <span class="n">probe_angle</span> <span class="o">=</span> <span class="n">iso</span><span class="o">.</span><span class="n">theta</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Probe orientation: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">rad2deg</span><span class="p">(</span><span class="n">iso</span><span class="o">.</span><span class="n">theta</span><span class="p">)</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">°&quot;</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Probe standoff: </span><span class="si">{</span><span class="o">-</span><span class="mf">1e3</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">iso</span><span class="o">.</span><span class="n">z_o</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> mm&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">probe_standoff</span><span class="p">,</span> <span class="n">probe_angle</span><span class="p">,</span> <span class="n">time_to_surface</span></div>
+
+
+
+<div class="viewcode-block" id="move_probe_over_flat_surface">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.measurement/arim.measurement.move_probe_over_flat_surface.html#arim.measurement.move_probe_over_flat_surface">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">move_probe_over_flat_surface</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">distance_to_surface</span><span class="p">,</span> <span class="n">full_output</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Translate and rotate the probe such as it is above the plane Oxy (plane z=0) at a given distance.</span>
+
+
+<span class="sd">    The distances passed as arguments must corresponds to a flat surface.</span>
+<span class="sd">    Perform a linear regression for robustness.</span>
+
+<span class="sd">    Use only the distances corresponding to a pulse-echo timetraces. Other distances are discarded.</span>
+
+<span class="sd">    **Warning:** this function modifies the points1 (you might want to make a copy before the call).</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    frame : Frame</span>
+<span class="sd">    distance_to_surface : ndarray</span>
+<span class="sd">        Distance between elements and the plane. One per timetrace. Only pulse echo data are used.</span>
+<span class="sd">    full_output : boolean, optional</span>
+<span class="sd">        If True, returns also ``(z_op, theta, phi)``. Default: False.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    frame : Frame</span>
+<span class="sd">        Returns the modified frame.</span>
+<span class="sd">    isometry : _IsometryOxy</span>
+<span class="sd">        Tuple ``(z_op, theta, phi)`` returned if ``full_output`` is True.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    For *linear points1*: the points1 must be in the PCS, with all elements on the axis Ox.</span>
+<span class="sd">    The array will be transformed via a rotation of the angle ``theta`` around the axis Oy</span>
+<span class="sd">    and a translation, such as the point O(0,0,0) is</span>
+<span class="sd">    transformed to ``O&#39;(0,0,z_op)``. Remark: if for example you want the first element of the points1 on</span>
+<span class="sd">    ``O&#39;(0, 0, z_op)``, just apply beforehand a translation on the elements such as the first element is in O.</span>
+
+<span class="sd">    *2D array* are not implemented.</span>
+
+<span class="sd">    Implemented only: linear points1.</span>
+
+<span class="sd">    The points1 must be in the PCS.</span>
+
+<span class="sd">    Constraints:</span>
+<span class="sd">    - The points1 will be in the half-space z &lt; 0.</span>
+<span class="sd">    - Linear points1: the points1 will be in the space y = 0.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># probe_type = frame.probe.metadata.get(&#39;probe_type&#39;, None)</span>
+    <span class="c1"># if probe_type not in (&#39;linear&#39;):</span>
+    <span class="c1">#    raise NotImplementedError(&quot;Only linear points1 are supported yet (given: (&#39;{}&#39;).&quot;.format(probe_type))</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">frame</span><span class="o">.</span><span class="n">probe</span><span class="o">.</span><span class="n">pcs</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">GCS</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;This function requires that PCS and the GCS are the same.&quot;</span><span class="p">)</span>
+
+    <span class="c1"># I/ keep only pulse echo timetraces</span>
+    <span class="c1"># ---------------------------------</span>
+
+    <span class="n">numelements</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">probe</span><span class="o">.</span><span class="n">numelements</span>
+    <span class="n">dead_elements</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">numelements</span><span class="p">))[</span><span class="n">frame</span><span class="o">.</span><span class="n">probe</span><span class="o">.</span><span class="n">dead_elements</span><span class="p">]</span>
+
+    <span class="c1"># Consider only pulse-echo data:</span>
+    <span class="n">pulse_echo</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">tx</span> <span class="o">==</span> <span class="n">frame</span><span class="o">.</span><span class="n">rx</span>
+    <span class="n">pulse_echo</span><span class="p">[</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">frame</span><span class="o">.</span><span class="n">tx</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="n">dead_elements</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">pulse_echo</span><span class="p">[</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">frame</span><span class="o">.</span><span class="n">rx</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="n">dead_elements</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="nb">sum</span><span class="p">(</span><span class="n">pulse_echo</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The frame must have at least 2 pulse echo timetraces.&quot;</span><span class="p">)</span>
+
+    <span class="n">distance_to_surface</span> <span class="o">=</span> <span class="n">distance_to_surface</span><span class="p">[</span><span class="n">pulse_echo</span><span class="p">]</span>
+    <span class="n">all_locations</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">probe</span><span class="o">.</span><span class="n">locations_pcs</span>
+
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">distance_to_surface</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Negative distance.&quot;</span><span class="p">)</span>
+
+    <span class="c1"># II/ Check the element are all on Ox</span>
+    <span class="c1"># -----------------------------------------</span>
+
+    <span class="n">on_Ox</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">all_locations</span><span class="o">.</span><span class="n">x</span><span class="p">),</span> <span class="n">all_locations</span><span class="o">.</span><span class="n">norm2</span><span class="p">())</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">on_Ox</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">&quot;This function works only with linear points1. The following elements are not on axis Ox: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">numelements</span><span class="p">)[</span><span class="n">np</span><span class="o">.</span><span class="n">logical_not</span><span class="p">(</span><span class="n">on_Ox</span><span class="p">)]</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="c1"># Let us call A the first element, and B the last element.</span>
+    <span class="n">locations_x</span> <span class="o">=</span> <span class="n">all_locations</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="n">frame</span><span class="o">.</span><span class="n">tx</span><span class="p">[</span><span class="n">pulse_echo</span><span class="p">]]</span>
+    <span class="n">xA</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">locations_x</span><span class="p">)</span>
+    <span class="n">xB</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">locations_x</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">xA</span><span class="p">,</span> <span class="n">xB</span><span class="p">)</span>
+
+    <span class="c1"># III/ Linear regression: distance = p[1] * x + p[0]</span>
+    <span class="c1"># -----------------------------------------</span>
+
+    <span class="c1"># Linear regression to be more robust to small changes in distance_to_surface</span>
+    <span class="c1"># Distance_to_surface = p[1] * x + p[0]</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">reversed</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">polyfit</span><span class="p">(</span><span class="n">locations_x</span><span class="p">,</span> <span class="n">distance_to_surface</span><span class="p">,</span> <span class="mi">1</span><span class="p">)))</span>
+
+    <span class="c1"># IV/ Get theta and z_0:</span>
+    <span class="c1"># -----------------------------------------</span>
+
+    <span class="c1"># Physically the distance to surface is the distance between each element and its orthogonal projection</span>
+    <span class="c1"># on the plane Oxy. In other words, the displaced elements have for z coordinates plus-or-minus the distance to</span>
+    <span class="c1"># surface. We used conventionally minus.</span>
+
+    <span class="c1"># Cf 2016-03-10 Find flat surface.pdf:</span>
+
+    <span class="n">z_o</span> <span class="o">=</span> <span class="o">-</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">with</span> <span class="n">np</span><span class="o">.</span><span class="n">errstate</span><span class="p">(</span><span class="nb">all</span><span class="o">=</span><span class="s2">&quot;raise&quot;</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arcsin</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="s2">&quot;There is no solution: it is likely one circle is in another.&quot;</span>
+            <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+
+    <span class="c1"># V/ Move the points1:</span>
+    <span class="c1"># -----------------------------------------</span>
+
+    <span class="n">rot</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">rotation_matrix_y</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
+
+    <span class="n">frame</span><span class="o">.</span><span class="n">probe</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">probe</span><span class="o">.</span><span class="n">rotate</span><span class="p">(</span><span class="n">rot</span><span class="p">)</span>
+    <span class="n">frame</span><span class="o">.</span><span class="n">probe</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">probe</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">((</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">z_o</span><span class="p">)))</span>
+
+    <span class="k">if</span> <span class="n">full_output</span><span class="p">:</span>
+        <span class="n">isometry</span> <span class="o">=</span> <span class="n">_IsometryOxy</span><span class="p">(</span><span class="n">z_o</span><span class="p">,</span> <span class="n">theta</span><span class="p">,</span> <span class="n">phi</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">frame</span><span class="p">,</span> <span class="n">isometry</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">frame</span></div>
+
+
+
+<div class="viewcode-block" id="detect_surface_from_extrema">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.measurement/arim.measurement.detect_surface_from_extrema.html#arim.measurement.detect_surface_from_extrema">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">detect_surface_from_extrema</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">tmin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tmax</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    frame</span>
+<span class="sd">    tmin : float, optional</span>
+<span class="sd">        Default: -inf</span>
+<span class="sd">    tmax : float, optional</span>
+<span class="sd">        Default: +inf</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    times_to_surface : ndarray of float</span>
+<span class="sd">        For each timetrace, time at which occurs the maximum of the absolute signal in [tmin, tmax].</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">valid_times_ind</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">window</span><span class="p">(</span><span class="n">tmin</span><span class="p">,</span> <span class="n">tmax</span><span class="p">)</span>
+    <span class="n">valid_times</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">samples</span><span class="p">[</span><span class="n">valid_times_ind</span><span class="p">]</span>
+
+    <span class="c1"># Get the timetraces within the window [tmin, tmax].</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">frame</span><span class="o">.</span><span class="n">timetraces</span><span class="p">[:,</span> <span class="n">valid_times_ind</span><span class="p">])</span>
+
+    <span class="c1"># Find the times of the maximum amplitudes (assumed to be the surface):</span>
+    <span class="n">times_to_surface</span> <span class="o">=</span> <span class="n">valid_times</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
+
+    <span class="k">return</span> <span class="n">times_to_surface</span></div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2016–2025, arim contributors.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.4.7.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

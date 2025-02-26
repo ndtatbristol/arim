@@ -1,0 +1,918 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>arim.io.native &#8212; arim 0.10.0.a0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../../_static/documentation_options.js?v=51601fd6"></script>
+    <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/arim/io/native';</script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">arim 0.10.0.a0 documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../installation/index.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../installation/index.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">arim.io.native</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for arim.io.native</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Load .arim file format</span>
+
+<span class="sd">An .arim file is a directory which contains:</span>
+
+<span class="sd">- a conf.yaml file (base configuration file)</span>
+<span class="sd">- a conf.d directory which contains additional configuration files (optional)</span>
+<span class="sd">- intermediary and final results (optional).</span>
+
+<span class="sd">The recommended way to load the configuration is to use :func:`load_conf`.</span>
+<span class="sd">The configuration is loaded according to the following pseudo-code:</span>
+
+<span class="sd">.. code-block:: none</span>
+
+<span class="sd">    conf := read(conf.yaml)</span>
+<span class="sd">    For each file in conf.d:</span>
+<span class="sd">        tmp_conf := read(file)</span>
+<span class="sd">        conf := merge(conf, tmp_conf)</span>
+<span class="sd">    Return conf</span>
+
+<span class="sd">The files are conf.d are read in alphabetical order.</span>
+<span class="sd">If a configuration entry is present in two files, only the entry from the file</span>
+<span class="sd">read the latest will be kept.</span>
+
+
+<span class="sd">conf.yaml format</span>
+<span class="sd">----------------</span>
+
+<span class="sd">The ultrasonic data is provided using either:</span>
+
+<span class="sd">1. ``frame.datafile``: path to the data file, either absolute or relative to</span>
+<span class="sd">   ``conf.yaml``,</span>
+<span class="sd">2. ``frame.dataset_name`` and ``frame.dataset_item``: a dataset name</span>
+<span class="sd">   (``arim.datasets``) and the path of the item to fetch</span>
+
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pathlib</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">OrderedDict</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">yaml</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">..</span><span class="w"> </span><span class="kn">import</span> <span class="n">_probes</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">core</span><span class="p">,</span> <span class="n">datasets</span><span class="p">,</span> <span class="n">geometry</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">brain</span>
+
+<span class="n">LOGGER</span> <span class="o">=</span> <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;load_conf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;load_conf_file&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;load_conf_from_str&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;probe_from_conf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;examination_object_from_conf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;block_in_immersion_from_conf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;block_in_contact_from_conf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;material_from_conf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;material_attenuation_from_conf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;grid_from_conf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;frame_from_conf&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">InvalidConf</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="k">pass</span>
+
+
+<div class="viewcode-block" id="load_conf_from_str">
+<a class="viewcode-back" href="../../../_autosummary/_autosummary/arim.io.native/arim.io.native.load_conf_from_str.html#arim.io.native.load_conf_from_str">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">load_conf_from_str</span><span class="p">(</span><span class="n">stream</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Load a single configuration file from a stream or string formatted in YAML.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    stream : stream, str</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    arim.config.Config</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">config</span><span class="o">.</span><span class="n">Config</span><span class="p">(</span><span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">stream</span><span class="p">))</span></div>
+
+
+
+<div class="viewcode-block" id="load_conf_file">
+<a class="viewcode-back" href="../../../_autosummary/_autosummary/arim.io.native/arim.io.native.load_conf_file.html#arim.io.native.load_conf_file">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">load_conf_file</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Load a single configuration file</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    filename : str</span>
+<span class="sd">        Filename</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    arim.config.Config</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">load_conf_from_str</span><span class="p">(</span><span class="n">f</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="load_conf">
+<a class="viewcode-back" href="../../../_autosummary/_autosummary/arim.io.native/arim.io.native.load_conf.html#arim.io.native.load_conf">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">load_conf</span><span class="p">(</span><span class="n">dirname</span><span class="p">,</span> <span class="n">filepath_keys</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;filename&quot;</span><span class="p">,</span> <span class="s2">&quot;datafile&quot;</span><span class="p">}):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Load the configuration from a `.arim` directory</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dirname</span>
+<span class="sd">    filepath_keys : set</span>
+<span class="sd">        Config keys that stores files. If they are relative paths, they will be replaced</span>
+<span class="sd">        by an absolute path (str object) assuming the root dir is the `.arim` directory.</span>
+<span class="sd">        Set to False to disable.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    arim.config.Config</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Load {dirname}/conf.yaml and all yaml files in {dirname}/conf.d/.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">root_dir</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">dirname</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">(</span><span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># format: foo/bar/{dataset_name}.arim</span>
+    <span class="n">dataset_name</span> <span class="o">=</span> <span class="n">root_dir</span><span class="o">.</span><span class="n">parts</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">dataset_name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.arim&quot;</span><span class="p">):</span>
+        <span class="n">dataset_name</span> <span class="o">=</span> <span class="n">dataset_name</span><span class="p">[:</span><span class="o">-</span><span class="mi">5</span><span class="p">]</span>
+
+    <span class="c1"># Load root conf</span>
+    <span class="n">root_conf_filename</span> <span class="o">=</span> <span class="n">root_dir</span> <span class="o">/</span> <span class="s2">&quot;conf.yaml&quot;</span>
+    <span class="k">if</span> <span class="n">root_conf_filename</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="n">conf</span> <span class="o">=</span> <span class="n">load_conf_file</span><span class="p">(</span><span class="n">root_conf_filename</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">conf</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">Config</span><span class="p">({})</span>
+
+    <span class="c1"># Load conf.d fragment files</span>
+    <span class="c1"># Remark: no error if root_dir/conf.d doesn&#39;t exist</span>
+    <span class="k">for</span> <span class="n">conf_filename</span> <span class="ow">in</span> <span class="n">root_dir</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;conf.d/*.yaml&quot;</span><span class="p">):</span>
+        <span class="n">conf</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">load_conf_file</span><span class="p">(</span><span class="n">conf_filename</span><span class="p">))</span>
+
+    <span class="c1"># Populate extra keys</span>
+    <span class="n">conf</span><span class="p">[</span><span class="s2">&quot;dataset_name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataset_name</span>
+    <span class="n">conf</span><span class="p">[</span><span class="s2">&quot;root_dir&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">root_dir</span>
+
+    <span class="c1"># populate result_dir if missing, create dir if needed</span>
+    <span class="n">result_dir</span> <span class="o">=</span> <span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;result_dir&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">result_dir</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">result_dir</span> <span class="o">=</span> <span class="n">root_dir</span>
+        <span class="n">result_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">result_dir</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">root_dir</span> <span class="o">/</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">result_dir</span><span class="p">))</span><span class="o">.</span><span class="n">resolve</span><span class="p">(</span>
+            <span class="n">strict</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+    <span class="n">conf</span><span class="p">[</span><span class="s2">&quot;result_dir&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">result_dir</span>
+
+    <span class="k">if</span> <span class="n">filepath_keys</span><span class="p">:</span>
+        <span class="n">_resolve_filenames</span><span class="p">(</span><span class="n">conf</span><span class="p">,</span> <span class="n">root_dir</span><span class="p">,</span> <span class="n">filepath_keys</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">conf</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_resolve_filenames</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">root_dir</span><span class="p">,</span> <span class="n">target_keys</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Replace target keys by an absolute pathlib.Path where the root dir</span>
+<span class="sd">    is `root_dir`</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    d : dict or anything</span>
+<span class="sd">    root_dir : pathlib.Path</span>
+<span class="sd">    target_keys : set</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    d</span>
+<span class="sd">        Updated dictionary</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="k">return</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">target_keys</span><span class="p">:</span>
+            <span class="n">d</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">root_dir</span> <span class="o">/</span> <span class="n">v</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">_resolve_filenames</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">root_dir</span><span class="p">,</span> <span class="n">target_keys</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="probe_from_conf">
+<a class="viewcode-back" href="../../../_autosummary/_autosummary/arim.io.native/arim.io.native.probe_from_conf.html#arim.io.native.probe_from_conf">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">probe_from_conf</span><span class="p">(</span><span class="n">conf</span><span class="p">,</span> <span class="n">apply_probe_location</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Load probe</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    conf : dict</span>
+<span class="sd">        Root conf</span>
+<span class="sd">    apply_probe_location: bool</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Probe</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># load from probe library</span>
+    <span class="k">if</span> <span class="s2">&quot;probe_key&quot;</span> <span class="ow">in</span> <span class="n">conf</span> <span class="ow">and</span> <span class="s2">&quot;probe&quot;</span> <span class="ow">in</span> <span class="n">conf</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">config</span><span class="o">.</span><span class="n">InvalidConf</span><span class="p">(</span><span class="s2">&quot;&#39;probe&#39; and &#39;probe_key&#39; mutually exclusive&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s2">&quot;probe_key&quot;</span> <span class="ow">in</span> <span class="n">conf</span><span class="p">:</span>
+        <span class="n">probe</span> <span class="o">=</span> <span class="n">_probes</span><span class="o">.</span><span class="n">probes</span><span class="p">[</span><span class="n">conf</span><span class="p">[</span><span class="s2">&quot;probe_key&quot;</span><span class="p">]]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">probe</span> <span class="o">=</span> <span class="n">core</span><span class="o">.</span><span class="n">Probe</span><span class="o">.</span><span class="n">make_matrix_probe</span><span class="p">(</span><span class="o">**</span><span class="n">conf</span><span class="p">[</span><span class="s2">&quot;probe&quot;</span><span class="p">])</span>
+
+    <span class="k">if</span> <span class="n">apply_probe_location</span><span class="p">:</span>
+        <span class="n">probe_location</span> <span class="o">=</span> <span class="n">conf</span><span class="p">[</span><span class="s2">&quot;probe_location&quot;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="s2">&quot;ref_element&quot;</span> <span class="ow">in</span> <span class="n">probe_location</span><span class="p">:</span>
+            <span class="n">probe</span><span class="o">.</span><span class="n">set_reference_element</span><span class="p">(</span><span class="n">conf</span><span class="p">[</span><span class="s2">&quot;probe_location&quot;</span><span class="p">][</span><span class="s2">&quot;ref_element&quot;</span><span class="p">])</span>
+            <span class="n">probe</span><span class="o">.</span><span class="n">translate_to_point_O</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="s2">&quot;angle_deg&quot;</span> <span class="ow">in</span> <span class="n">probe_location</span><span class="p">:</span>
+            <span class="n">probe</span><span class="o">.</span><span class="n">rotate</span><span class="p">(</span>
+                <span class="n">geometry</span><span class="o">.</span><span class="n">rotation_matrix_y</span><span class="p">(</span>
+                    <span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">conf</span><span class="p">[</span><span class="s2">&quot;probe_location&quot;</span><span class="p">][</span><span class="s2">&quot;angle_deg&quot;</span><span class="p">])</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="s2">&quot;standoff&quot;</span> <span class="ow">in</span> <span class="n">probe_location</span><span class="p">:</span>
+            <span class="n">probe</span><span class="o">.</span><span class="n">translate</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">conf</span><span class="p">[</span><span class="s2">&quot;probe_location&quot;</span><span class="p">][</span><span class="s2">&quot;standoff&quot;</span><span class="p">]])</span>
+
+    <span class="k">return</span> <span class="n">probe</span></div>
+
+
+
+<div class="viewcode-block" id="examination_object_from_conf">
+<a class="viewcode-back" href="../../../_autosummary/_autosummary/arim.io.native/arim.io.native.examination_object_from_conf.html#arim.io.native.examination_object_from_conf">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">examination_object_from_conf</span><span class="p">(</span><span class="n">conf</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Load examination object</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    conf : dict</span>
+<span class="sd">        Root conf</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    arim.core.ExaminationObject</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="p">(</span>
+        <span class="p">(</span>
+            <span class="p">(</span><span class="s2">&quot;frontwall&quot;</span> <span class="ow">in</span> <span class="n">conf</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">and</span> <span class="s2">&quot;backwall&quot;</span> <span class="ow">in</span> <span class="n">conf</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+            <span class="ow">or</span> <span class="s2">&quot;contiguous_geometry&quot;</span> <span class="ow">in</span> <span class="n">conf</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+        <span class="p">)</span>
+        <span class="ow">and</span> <span class="s2">&quot;couplant_material&quot;</span> <span class="ow">in</span> <span class="n">conf</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+        <span class="ow">and</span> <span class="s2">&quot;block_material&quot;</span> <span class="ow">in</span> <span class="n">conf</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+    <span class="p">):</span>
+        <span class="k">return</span> <span class="n">block_in_immersion_from_conf</span><span class="p">(</span><span class="n">conf</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="s2">&quot;block_material&quot;</span> <span class="ow">in</span> <span class="n">conf</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="k">return</span> <span class="n">block_in_contact_from_conf</span><span class="p">(</span><span class="n">conf</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+
+
+<div class="viewcode-block" id="material_attenuation_from_conf">
+<a class="viewcode-back" href="../../../_autosummary/_autosummary/arim.io.native/arim.io.native.material_attenuation_from_conf.html#arim.io.native.material_attenuation_from_conf">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">material_attenuation_from_conf</span><span class="p">(</span><span class="n">mat_att_conf</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Load material attenuation</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    mat_att_conf : dict</span>
+<span class="sd">        Material attenuation conf</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    func</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :func:`arim.core.material_attenuation_factory`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mat_att_conf</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">core</span><span class="o">.</span><span class="n">material_attenuation_factory</span><span class="p">(</span><span class="s2">&quot;constant&quot;</span><span class="p">,</span> <span class="n">mat_att_conf</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># at this stage, assume we have a dict</span>
+        <span class="k">return</span> <span class="n">core</span><span class="o">.</span><span class="n">material_attenuation_factory</span><span class="p">(</span><span class="o">**</span><span class="n">mat_att_conf</span><span class="p">)</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_material_from_conf</span><span class="p">(</span><span class="n">conf_or_none</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">conf_or_none</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">material_attenuation_from_conf</span><span class="p">(</span><span class="n">conf_or_none</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="material_from_conf">
+<a class="viewcode-back" href="../../../_autosummary/_autosummary/arim.io.native/arim.io.native.material_from_conf.html#arim.io.native.material_from_conf">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">material_from_conf</span><span class="p">(</span><span class="n">conf</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Load material</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    conf : dict</span>
+<span class="sd">        Material conf</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    arim.core.Material</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">material_kwargs</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">conf</span><span class="p">)</span>
+    <span class="n">material_kwargs</span><span class="p">[</span><span class="s2">&quot;longitudinal_att&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_material_from_conf</span><span class="p">(</span>
+        <span class="n">material_kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;longitudinal_att&quot;</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">material_kwargs</span><span class="p">[</span><span class="s2">&quot;transverse_att&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_material_from_conf</span><span class="p">(</span>
+        <span class="n">material_kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;transverse_att&quot;</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">core</span><span class="o">.</span><span class="n">Material</span><span class="p">(</span><span class="o">**</span><span class="n">material_kwargs</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="block_in_immersion_from_conf">
+<a class="viewcode-back" href="../../../_autosummary/_autosummary/arim.io.native/arim.io.native.block_in_immersion_from_conf.html#arim.io.native.block_in_immersion_from_conf">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">block_in_immersion_from_conf</span><span class="p">(</span><span class="n">conf</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Load block in immersion (examination object)</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    conf : dict</span>
+<span class="sd">        Root conf</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    arim.BlockInImmersion</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">couplant</span> <span class="o">=</span> <span class="n">material_from_conf</span><span class="p">(</span><span class="n">conf</span><span class="p">[</span><span class="s2">&quot;couplant_material&quot;</span><span class="p">])</span>
+    <span class="n">block</span> <span class="o">=</span> <span class="n">material_from_conf</span><span class="p">(</span><span class="n">conf</span><span class="p">[</span><span class="s2">&quot;block_material&quot;</span><span class="p">])</span>
+    <span class="c1"># Initialise geometry storage</span>
+    <span class="n">walls</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
+
+    <span class="c1"># Simple geometry</span>
+    <span class="k">if</span> <span class="s2">&quot;frontwall&quot;</span> <span class="ow">in</span> <span class="n">conf</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">or</span> <span class="s2">&quot;backwall&quot;</span> <span class="ow">in</span> <span class="n">conf</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="n">frontwall_conf</span> <span class="o">=</span> <span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;frontwall&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">backwall_conf</span> <span class="o">=</span> <span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;backwall&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">backwall_conf</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">walls</span><span class="p">[</span><span class="s2">&quot;Backwall&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">points_1d_wall_z</span><span class="p">(</span>
+                <span class="o">**</span><span class="n">backwall_conf</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Backwall&quot;</span><span class="p">,</span> <span class="n">is_block_above</span><span class="o">=</span><span class="kc">False</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">frontwall_conf</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">walls</span><span class="p">[</span><span class="s2">&quot;Frontwall&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">points_1d_wall_z</span><span class="p">(</span>
+                <span class="o">**</span><span class="n">frontwall_conf</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Frontwall&quot;</span>
+            <span class="p">)</span>
+
+    <span class="c1"># Contiguous (polygonal) geometry.</span>
+    <span class="c1"># By convention, if not already defined then frontwall is first and move clockwise.</span>
+    <span class="k">if</span> <span class="s2">&quot;contiguous_geometry&quot;</span> <span class="ow">in</span> <span class="n">conf</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="n">geom_conf</span> <span class="o">=</span> <span class="n">conf</span><span class="p">[</span><span class="s2">&quot;contiguous_geometry&quot;</span><span class="p">]</span>
+        <span class="n">geom_coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">geom_conf</span><span class="p">[</span><span class="s2">&quot;coords&quot;</span><span class="p">])</span>
+        <span class="n">geom_walls</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">make_contiguous_geometry</span><span class="p">(</span>
+            <span class="n">geom_coords</span><span class="p">,</span>
+            <span class="n">geom_conf</span><span class="p">[</span><span class="s2">&quot;numpoints&quot;</span><span class="p">],</span>
+            <span class="n">geom_conf</span><span class="p">[</span><span class="s2">&quot;names&quot;</span><span class="p">],</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">wall</span> <span class="ow">in</span> <span class="n">geom_walls</span><span class="p">:</span>
+            <span class="n">walls</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">wall</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">core</span><span class="o">.</span><span class="n">BlockInImmersion</span><span class="p">(</span><span class="n">block</span><span class="p">,</span> <span class="n">couplant</span><span class="p">,</span> <span class="n">walls</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="block_in_contact_from_conf">
+<a class="viewcode-back" href="../../../_autosummary/_autosummary/arim.io.native/arim.io.native.block_in_contact_from_conf.html#arim.io.native.block_in_contact_from_conf">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">block_in_contact_from_conf</span><span class="p">(</span><span class="n">conf</span><span class="p">):</span>
+    <span class="n">block</span> <span class="o">=</span> <span class="n">material_from_conf</span><span class="p">(</span><span class="n">conf</span><span class="p">[</span><span class="s2">&quot;block_material&quot;</span><span class="p">])</span>
+    <span class="c1"># Initialise geometry storage</span>
+    <span class="n">walls</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
+
+    <span class="c1"># Simple geometry</span>
+    <span class="k">if</span> <span class="s2">&quot;frontwall&quot;</span> <span class="ow">in</span> <span class="n">conf</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">or</span> <span class="s2">&quot;backwall&quot;</span> <span class="ow">in</span> <span class="n">conf</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="n">frontwall_conf</span> <span class="o">=</span> <span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;frontwall&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">backwall_conf</span> <span class="o">=</span> <span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;backwall&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">backwall_conf</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># Start with maximum x-point to ensure that basis points the right way.</span>
+            <span class="n">walls</span><span class="p">[</span><span class="s2">&quot;Backwall&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">points_1d_wall_z</span><span class="p">(</span>
+                <span class="o">**</span><span class="n">backwall_conf</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Backwall&quot;</span><span class="p">,</span> <span class="n">is_block_above</span><span class="o">=</span><span class="kc">False</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">frontwall_conf</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">walls</span><span class="p">[</span><span class="s2">&quot;Frontwall&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">points_1d_wall_z</span><span class="p">(</span>
+                <span class="o">**</span><span class="n">frontwall_conf</span><span class="p">,</span>
+                <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Frontwall&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+
+    <span class="c1"># Polygonal geometry.</span>
+    <span class="c1"># By convention, if not already defined then frontwall is first and move clockwise.</span>
+    <span class="k">if</span> <span class="s2">&quot;contiguous_geometry&quot;</span> <span class="ow">in</span> <span class="n">conf</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="n">geom_conf</span> <span class="o">=</span> <span class="n">conf</span><span class="p">[</span><span class="s2">&quot;contiguous_geometry&quot;</span><span class="p">]</span>
+        <span class="n">geom_coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">geom_conf</span><span class="p">[</span><span class="s2">&quot;coords&quot;</span><span class="p">])</span>
+        <span class="n">geom_walls</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">make_contiguous_geometry</span><span class="p">(</span>
+            <span class="n">geom_coords</span><span class="p">,</span>
+            <span class="n">geom_conf</span><span class="p">[</span><span class="s2">&quot;numpoints&quot;</span><span class="p">],</span>
+            <span class="n">geom_conf</span><span class="p">[</span><span class="s2">&quot;names&quot;</span><span class="p">],</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">wall</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">geom_walls</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+            <span class="n">walls</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">wall</span>
+    <span class="n">under_material_conf</span> <span class="o">=</span> <span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;under_material&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">under_material_conf</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">under_material</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">under_material</span> <span class="o">=</span> <span class="n">material_from_conf</span><span class="p">(</span><span class="n">under_material_conf</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">core</span><span class="o">.</span><span class="n">BlockInContact</span><span class="p">(</span><span class="n">block</span><span class="p">,</span> <span class="n">walls</span><span class="p">,</span> <span class="n">under_material</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="grid_from_conf">
+<a class="viewcode-back" href="../../../_autosummary/_autosummary/arim.io.native/arim.io.native.grid_from_conf.html#arim.io.native.grid_from_conf">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">grid_from_conf</span><span class="p">(</span><span class="n">conf</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Load grid</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    conf : dict</span>
+<span class="sd">        Root conf</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    arim.Grid</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">conf_grid</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">conf</span><span class="p">[</span><span class="s2">&quot;grid&quot;</span><span class="p">])</span>
+    <span class="k">if</span> <span class="s2">&quot;ymin&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">conf_grid</span><span class="p">:</span>
+        <span class="n">conf_grid</span><span class="p">[</span><span class="s2">&quot;ymin&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="k">if</span> <span class="s2">&quot;ymax&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">conf_grid</span><span class="p">:</span>
+        <span class="n">conf_grid</span><span class="p">[</span><span class="s2">&quot;ymax&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="k">return</span> <span class="n">geometry</span><span class="o">.</span><span class="n">Grid</span><span class="p">(</span><span class="o">**</span><span class="n">conf_grid</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="frame_from_conf">
+<a class="viewcode-back" href="../../../_autosummary/_autosummary/arim.io.native/arim.io.native.frame_from_conf.html#arim.io.native.frame_from_conf">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">frame_from_conf</span><span class="p">(</span>
+    <span class="n">conf</span><span class="p">,</span> <span class="n">use_probe_from_conf</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">use_examination_object_from_conf</span><span class="o">=</span><span class="kc">True</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Load a Frame.</span>
+
+<span class="sd">    Current limitation: read only from Brain (relies on :func:`arim.io.brain.load_expdata`).</span>
+
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    conf : dict or Conf</span>
+<span class="sd">        Root configuration</span>
+<span class="sd">    use_probe_from_conf : bool</span>
+<span class="sd">        If True, load probe from conf (ignores the one defined in datafile)</span>
+<span class="sd">    use_examination_object_from_conf : bool</span>
+<span class="sd">        If True, load examination from conf (ignores the one defined in datafile)</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Frame</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">frame_conf</span> <span class="o">=</span> <span class="n">conf</span><span class="p">[</span><span class="s2">&quot;frame&quot;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="s2">&quot;datafile&quot;</span> <span class="ow">in</span> <span class="n">frame_conf</span><span class="p">:</span>
+        <span class="c1"># Load from absolute or relative path:</span>
+        <span class="n">fname</span> <span class="o">=</span> <span class="n">frame_conf</span><span class="p">[</span><span class="s2">&quot;datafile&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s2">&quot;dataset_name&quot;</span> <span class="ow">in</span> <span class="n">frame_conf</span><span class="p">:</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;ignoring frame.dataset_name&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">&quot;dataset_item&quot;</span> <span class="ow">in</span> <span class="n">frame_conf</span><span class="p">:</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;ignoring frame.dataset_item&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Load from arim.datasets:</span>
+        <span class="n">dataset_name</span> <span class="o">=</span> <span class="n">frame_conf</span><span class="p">[</span><span class="s2">&quot;dataset_name&quot;</span><span class="p">]</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">dataset_pooch</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">DATASETS</span><span class="p">[</span><span class="n">dataset_name</span><span class="p">]</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">KeyError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Unknown dataset: &#39;</span><span class="si">{</span><span class="n">dataset_name</span><span class="si">}</span><span class="s2">&#39;. Valid values are: </span><span class="si">{</span><span class="nb">tuple</span><span class="p">(</span><span class="n">datasets</span><span class="o">.</span><span class="n">DATASETS</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        <span class="n">fname</span> <span class="o">=</span> <span class="n">dataset_pooch</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span><span class="n">frame_conf</span><span class="p">[</span><span class="s2">&quot;dataset_item&quot;</span><span class="p">])</span>
+
+    <span class="n">frame</span> <span class="o">=</span> <span class="n">brain</span><span class="o">.</span><span class="n">load_expdata</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+
+    <span class="n">instrument_delay</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">instrument_delay</span> <span class="o">=</span> <span class="n">frame_conf</span><span class="p">[</span><span class="s2">&quot;instrument_delay&quot;</span><span class="p">]</span>
+    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+        <span class="k">pass</span>
+
+    <span class="k">if</span> <span class="n">instrument_delay</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># Adjust time vector</span>
+        <span class="n">frame</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="n">core</span><span class="o">.</span><span class="n">Time</span><span class="p">(</span>
+            <span class="n">frame</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">start</span> <span class="o">-</span> <span class="n">instrument_delay</span><span class="p">,</span> <span class="n">frame</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">step</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">frame</span><span class="o">.</span><span class="n">time</span><span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">use_probe_from_conf</span><span class="p">:</span>
+        <span class="n">frame</span><span class="o">.</span><span class="n">probe</span> <span class="o">=</span> <span class="n">probe_from_conf</span><span class="p">(</span><span class="n">conf</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">use_examination_object_from_conf</span><span class="p">:</span>
+        <span class="n">frame</span><span class="o">.</span><span class="n">examination_object</span> <span class="o">=</span> <span class="n">examination_object_from_conf</span><span class="p">(</span><span class="n">conf</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">frame</span></div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2016–2025, arim contributors.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.4.7.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

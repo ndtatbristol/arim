@@ -1,0 +1,6 @@
+arim.plot.plot_oxz_many
+=======================
+
+.. currentmodule:: arim.plot
+
+.. autofunction:: plot_oxz_many

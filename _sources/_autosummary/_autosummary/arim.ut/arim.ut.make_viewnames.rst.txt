@@ -1,0 +1,6 @@
+arim.ut.make_viewnames
+======================
+
+.. currentmodule:: arim.ut
+
+.. autofunction:: make_viewnames

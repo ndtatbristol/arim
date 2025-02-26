@@ -1,0 +1,936 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>arim.ut &#8212; arim 0.10.0.a0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../_static/documentation_options.js?v=51601fd6"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/arim/ut';</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">arim 0.10.0.a0 documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../installation/index.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../installation/index.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">arim.ut</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for arim.ut</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Toolbox of functions for ultrasonic testing/acoustics.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># Only function that does not require any arim-specific logic should be put here.</span>
+<span class="c1"># This module must be kept free of any arim dependencies because so that it could be used</span>
+<span class="c1"># without arim.</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">UtWarning</span><span class="p">(</span><span class="ne">UserWarning</span><span class="p">):</span>
+    <span class="k">pass</span>
+
+
+<div class="viewcode-block" id="fmc">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.ut/arim.ut.fmc.html#arim.ut.fmc">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">fmc</span><span class="p">(</span><span class="n">numelements</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return all pairs of elements for a FMC.</span>
+<span class="sd">    HMC as performed by Brain.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    tx : ndarray [numelements^2]</span>
+<span class="sd">        Transmitter for each timetrace: 0, 0, ..., 1, 1, ...</span>
+<span class="sd">    rx : ndarray</span>
+<span class="sd">        Receiver for each timetrace: 1, 2, ..., 1, 2, ...</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">numelements</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">numelements</span><span class="p">)</span>
+    <span class="n">elements</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">numelements</span><span class="p">)</span>
+
+    <span class="c1"># 0 0 0    1 1 1    2 2 2</span>
+    <span class="n">tx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">elements</span><span class="p">,</span> <span class="n">numelements</span><span class="p">)</span>
+
+    <span class="c1"># 0 1 2    0 1 2    0 1 2</span>
+    <span class="n">rx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">elements</span><span class="p">,</span> <span class="n">numelements</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">tx</span><span class="p">,</span> <span class="n">rx</span></div>
+
+
+
+<div class="viewcode-block" id="hmc">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.ut/arim.ut.hmc.html#arim.ut.hmc">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">hmc</span><span class="p">(</span><span class="n">numelements</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return all pairs of elements for a HMC.</span>
+<span class="sd">    HMC as performed by Brain (rx &gt;= tx)</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    tx : ndarray [numelements^2]</span>
+<span class="sd">        Transmitter for each timetrace: 0, 0, 0, ..., 1, 1, 1, ...</span>
+<span class="sd">    rx : ndarray</span>
+<span class="sd">        Receiver for each timetrace: 0, 1, 2, ..., 1, 2, ...</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">numelements</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">numelements</span><span class="p">)</span>
+    <span class="n">elements</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">numelements</span><span class="p">)</span>
+
+    <span class="c1"># 0 0 0    1 1    2</span>
+    <span class="n">tx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">elements</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="n">numelements</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+
+    <span class="c1"># 0 1 2    0 1    2</span>
+    <span class="n">rx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">tx</span><span class="p">)</span>
+    <span class="n">take_n_last</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">numelements</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">start</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">take_n_last</span><span class="p">:</span>
+        <span class="n">stop</span> <span class="o">=</span> <span class="n">start</span> <span class="o">+</span> <span class="n">n</span>
+        <span class="n">rx</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">stop</span><span class="p">]</span> <span class="o">=</span> <span class="n">elements</span><span class="p">[</span><span class="o">-</span><span class="n">n</span><span class="p">:]</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="n">stop</span>
+    <span class="k">return</span> <span class="n">tx</span><span class="p">,</span> <span class="n">rx</span></div>
+
+
+
+<div class="viewcode-block" id="infer_capture_method">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.ut/arim.ut.infer_capture_method.html#arim.ut.infer_capture_method">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">infer_capture_method</span><span class="p">(</span><span class="n">tx</span><span class="p">,</span> <span class="n">rx</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Infers the capture method from the indices of transmitters and receivers.</span>
+
+<span class="sd">    Returns: &#39;hmc&#39;, &#39;fmc&#39;, &#39;unsupported&#39;</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    tx : list</span>
+<span class="sd">        One per timetrace</span>
+<span class="sd">    rx : list</span>
+<span class="sd">        One per timetrace</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    capture_method : string</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">numelements</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">tx</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">rx</span><span class="p">))</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">tx</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">rx</span><span class="p">)</span>
+
+    <span class="c1"># Get the unique combinations tx/rx of the input.</span>
+    <span class="c1"># By using set, we ignore the order of the combinations tx/rx.</span>
+    <span class="n">combinations</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">tx</span><span class="p">,</span> <span class="n">rx</span><span class="p">))</span>
+
+    <span class="c1"># Could it be a HMC? Most frequent case, go first.</span>
+    <span class="c1"># Remark: HMC can be made with tx &gt;= rx or tx &lt;= rx. Check both.</span>
+    <span class="n">tx_hmc</span><span class="p">,</span> <span class="n">rx_hmc</span> <span class="o">=</span> <span class="n">hmc</span><span class="p">(</span><span class="n">numelements</span><span class="p">)</span>
+    <span class="n">combinations_hmc1</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">tx_hmc</span><span class="p">,</span> <span class="n">rx_hmc</span><span class="p">))</span>
+    <span class="n">combinations_hmc2</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">rx_hmc</span><span class="p">,</span> <span class="n">tx_hmc</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">tx_hmc</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">tx</span><span class="p">))</span> <span class="ow">and</span> <span class="p">(</span>
+        <span class="p">(</span><span class="n">combinations</span> <span class="o">==</span> <span class="n">combinations_hmc1</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">combinations</span> <span class="o">==</span> <span class="n">combinations_hmc2</span><span class="p">)</span>
+    <span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;hmc&quot;</span>
+
+    <span class="c1"># Could it be a FMC?</span>
+    <span class="n">tx_fmc</span><span class="p">,</span> <span class="n">rx_fmc</span> <span class="o">=</span> <span class="n">fmc</span><span class="p">(</span><span class="n">numelements</span><span class="p">)</span>
+    <span class="n">combinations_fmc</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">tx_fmc</span><span class="p">,</span> <span class="n">rx_fmc</span><span class="p">))</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">tx_fmc</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">tx</span><span class="p">))</span> <span class="ow">and</span> <span class="p">(</span><span class="n">combinations</span> <span class="o">==</span> <span class="n">combinations_fmc</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;fmc&quot;</span>
+
+    <span class="c1"># At this point we are hopeless</span>
+    <span class="k">return</span> <span class="s2">&quot;unsupported&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="default_timetrace_weights">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.ut/arim.ut.default_timetrace_weights.html#arim.ut.default_timetrace_weights">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">default_timetrace_weights</span><span class="p">(</span><span class="n">tx</span><span class="p">,</span> <span class="n">rx</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    timetrace weights for TFM.</span>
+
+<span class="sd">    Consider a timetrace obtained by the transmitter i and the receiver j; this</span>
+<span class="sd">    timetrace is denoted (i,j). If the response matrix contains both (i, j) and (j, i),</span>
+<span class="sd">    the corresponding timetrace weight is 1. Otherwise, the timetrace weight is 2.</span>
+
+<span class="sd">    Example: for a FMC, all timetrace weights are 1.</span>
+<span class="sd">    Example: for a HMC, timetrace weights for the pulse-echo timetraces are 1,</span>
+<span class="sd">    timetrace weights for the non-pulse-echo timetraces are 2.</span>
+
+<span class="sd">    Remark: the function does not check if there are duplicated signals.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    tx : list[int] or ndarray</span>
+<span class="sd">        tx[i] is the index of the transmitter (between 0 and numelements-1) for</span>
+<span class="sd">        the i-th timetrace.</span>
+<span class="sd">    rx : list[int] or ndarray</span>
+<span class="sd">        rx[i] is the index of the receiver (between 0 and numelements-1) for</span>
+<span class="sd">        the i-th timetrace.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    timetrace_weights : ndarray</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">tx</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">rx</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;tx and rx must have the same lengths (numtimetraces)&quot;</span><span class="p">)</span>
+    <span class="n">numtimetraces</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">tx</span><span class="p">)</span>
+
+    <span class="c1"># elements_pairs contains (tx[0], rx[0]), (tx[1], rx[1]), etc.</span>
+    <span class="n">elements_pairs</span> <span class="o">=</span> <span class="p">{</span><span class="o">*</span><span class="nb">zip</span><span class="p">(</span><span class="n">tx</span><span class="p">,</span> <span class="n">rx</span><span class="p">)}</span>
+    <span class="n">timetrace_weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">numtimetraces</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">this_tx</span><span class="p">,</span> <span class="n">this_rx</span><span class="p">,</span> <span class="n">timetrace_weight</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
+        <span class="n">tx</span><span class="p">,</span> <span class="n">rx</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nditer</span><span class="p">(</span><span class="n">timetrace_weights</span><span class="p">,</span> <span class="n">op_flags</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;readwrite&quot;</span><span class="p">])</span>
+    <span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">this_rx</span><span class="p">,</span> <span class="n">this_tx</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">elements_pairs</span><span class="p">:</span>
+            <span class="n">timetrace_weight</span><span class="p">[</span><span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="mf">2.0</span>
+    <span class="k">return</span> <span class="n">timetrace_weights</span></div>
+
+
+
+<div class="viewcode-block" id="default_scanline_weights">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.ut/arim.ut.default_scanline_weights.html#arim.ut.default_scanline_weights">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">default_scanline_weights</span><span class="p">(</span><span class="n">tx</span><span class="p">,</span> <span class="n">rx</span><span class="p">):</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+        <span class="ne">DeprecationWarning</span><span class="p">(</span>
+            <span class="s2">&quot;default_scanline_weights is deprecated. Use default_timetrace_weights&quot;</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">default_timetrace_weights</span><span class="p">(</span><span class="n">tx</span><span class="p">,</span> <span class="n">rx</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="decibel">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.ut/arim.ut.decibel.html#arim.ut.decibel">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">decibel</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">reference</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">neginf_value</span><span class="o">=-</span><span class="mf">1000.0</span><span class="p">,</span> <span class="n">return_reference</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return 20*log10(abs(arr) / reference)</span>
+
+<span class="sd">    If reference is None, use:</span>
+
+<span class="sd">        reference := max(abs(arr))</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    arr : ndarray</span>
+<span class="sd">        Values to convert in dB.</span>
+<span class="sd">    reference : float or None</span>
+<span class="sd">        Reference value for 0 dB. Default: None</span>
+<span class="sd">    neginf_value : float or None</span>
+<span class="sd">        If not None, convert -inf dB values to this parameter. If None, -inf</span>
+<span class="sd">        dB values are not changed.</span>
+<span class="sd">    return_max : bool</span>
+<span class="sd">        Default: False.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    arr_db</span>
+<span class="sd">        Array in decibel.</span>
+<span class="sd">    arr_max: float</span>
+<span class="sd">        Return ``max(abs(arr))``. This value is returned only if return_max is true.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Disable warnings messages for log10(0.0)</span>
+    <span class="n">arr_abs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">arr_abs</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">():</span>
+        <span class="n">orig_shape</span> <span class="o">=</span> <span class="p">()</span>
+        <span class="n">arr_abs</span> <span class="o">=</span> <span class="n">arr_abs</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">1</span><span class="p">,))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">orig_shape</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">if</span> <span class="n">reference</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">reference</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmax</span><span class="p">(</span><span class="n">arr_abs</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="n">reference</span> <span class="o">&gt;</span> <span class="mf">0.0</span>
+
+    <span class="k">with</span> <span class="n">np</span><span class="o">.</span><span class="n">errstate</span><span class="p">(</span><span class="n">divide</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">):</span>
+        <span class="n">arr_db</span> <span class="o">=</span> <span class="mi">20</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">arr_abs</span> <span class="o">/</span> <span class="n">reference</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">neginf_value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">arr_db</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">isneginf</span><span class="p">(</span><span class="n">arr_db</span><span class="p">)]</span> <span class="o">=</span> <span class="n">neginf_value</span>
+
+    <span class="k">if</span> <span class="n">orig_shape</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">arr_db</span> <span class="o">=</span> <span class="n">arr_db</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">orig_shape</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">return_reference</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">arr_db</span><span class="p">,</span> <span class="n">reference</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">arr_db</span></div>
+
+
+
+<div class="viewcode-block" id="wrap_phase">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.ut/arim.ut.wrap_phase.html#arim.ut.wrap_phase">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">wrap_phase</span><span class="p">(</span><span class="n">phases</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a phase in [-pi, pi[</span>
+
+<span class="sd">    http://stackoverflow.com/questions/15927755/opposite-of-numpy-unwrap</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">phases</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">phases</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">phases</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span> <span class="o">%</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span></div>
+
+
+
+<div class="viewcode-block" id="instantaneous_phase_shift">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.ut/arim.ut.instantaneous_phase_shift.html#arim.ut.instantaneous_phase_shift">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">instantaneous_phase_shift</span><span class="p">(</span><span class="n">analytic_sig</span><span class="p">,</span> <span class="n">time_vect</span><span class="p">,</span> <span class="n">carrier_frequency</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    For a signal $x(ray) = A * exp(i (2 pi f_0 ray + phi(ray)))$, returns phi(ray) in [-pi, pi[.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    analytic_sig: ndarray</span>
+<span class="sd">    time_vect: ndarray</span>
+<span class="sd">    carrier_frequency: float</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    phase_shift</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">analytic_sig</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">analytic_sig</span><span class="p">)</span>
+    <span class="n">dtype</span> <span class="o">=</span> <span class="n">analytic_sig</span><span class="o">.</span><span class="n">dtype</span>
+    <span class="k">if</span> <span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="o">!=</span> <span class="s2">&quot;c&quot;</span><span class="p">:</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Expected an analytic (complex) signal, got </span><span class="si">{</span><span class="n">dtype</span><span class="si">}</span><span class="s2">. Use a Hilbert &quot;</span>
+            <span class="s2">&quot;transform to get the analytic signal.&quot;</span><span class="p">,</span>
+            <span class="n">UtWarning</span><span class="p">,</span>
+            <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="n">phase_correction</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">carrier_frequency</span> <span class="o">*</span> <span class="n">time_vect</span>
+    <span class="n">phase</span> <span class="o">=</span> <span class="n">wrap_phase</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">angle</span><span class="p">(</span><span class="n">analytic_sig</span><span class="p">)</span> <span class="o">-</span> <span class="n">phase_correction</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">phase</span></div>
+
+
+
+<div class="viewcode-block" id="make_timevect">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.ut/arim.ut.make_timevect.html#arim.ut.make_timevect">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">make_timevect</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return a linearly spaced time vector.</span>
+
+<span class="sd">    Remark: using this method is preferable to ``numpy.arange(start, start + num * step, step``</span>
+<span class="sd">    which may yield an incorrect number of samples due to numerical inaccuracy.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    num : int</span>
+<span class="sd">        Number of samples to generate.</span>
+<span class="sd">    step : float, optional</span>
+<span class="sd">        Time step (time between consecutive samples).</span>
+<span class="sd">    start : scalar</span>
+<span class="sd">        Starting value of the sequence. Default: 0.</span>
+<span class="sd">    dtype : numpy.dtype</span>
+<span class="sd">        Optional, the type of the output array.  If `dtype` is not given, infer the data</span>
+<span class="sd">        type from the other input arguments.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    samples : ndarray</span>
+<span class="sd">        Linearly spaced vector ``[start, stop]`` where ``end = start + (num - 1)*step``</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; make_timevect(10, .1)</span>
+<span class="sd">    array([ 0. ,  0.1,  0.2,  0.3,  0.4,  0.5,  0.6,  0.7,  0.8,  0.9])</span>
+<span class="sd">    &gt;&gt;&gt; make_timevect(10, .1, start=1.)</span>
+<span class="sd">    array([ 1. ,  1.1,  1.2,  1.3,  1.4,  1.5,  1.6,  1.7,  1.8,  1.9])</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+
+<span class="sd">    Adapted from ``numpy.linspace``</span>
+<span class="sd">    (License: http://www.numpy.org/license.html ; 3 clause BSD)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;num must be an integer (got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">num</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">num</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Number of samples, </span><span class="si">%s</span><span class="s2">, must be non-negative.&quot;</span> <span class="o">%</span> <span class="n">num</span><span class="p">)</span>
+
+    <span class="c1"># Convert float/complex array scalars to float</span>
+    <span class="n">start</span> <span class="o">=</span> <span class="n">start</span> <span class="o">*</span> <span class="mf">1.0</span>
+    <span class="n">step</span> <span class="o">=</span> <span class="n">step</span> <span class="o">*</span> <span class="mf">1.0</span>
+
+    <span class="n">dt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">result_type</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">dtype</span> <span class="o">=</span> <span class="n">dt</span>
+
+    <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">num</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dt</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">num</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">y</span> <span class="o">*=</span> <span class="n">step</span>
+
+    <span class="n">y</span> <span class="o">+=</span> <span class="n">start</span>
+
+    <span class="k">return</span> <span class="n">y</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="reciprocal_viewname">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.ut/arim.ut.reciprocal_viewname.html#arim.ut.reciprocal_viewname">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">reciprocal_viewname</span><span class="p">(</span><span class="n">viewname</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return the name of the reciprocal view</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    viewname : str</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    reciprocal_viewname : str</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; reciprocal_viewname(&#39;L-LT&#39;)</span>
+<span class="sd">    &#39;TL-L&#39;</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">tx_path</span><span class="p">,</span> <span class="n">rx_path</span> <span class="o">=</span> <span class="n">viewname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">rx_path</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">+</span> <span class="n">tx_path</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span></div>
+
+
+
+<span class="n">IMAGING_MODES</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;L-L&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;L-T&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;T-T&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;LL-L&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;LL-T&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;LT-L&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;LT-T&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;TL-L&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;TL-T&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;TT-L&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;TT-T&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;LL-LL&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;LL-LT&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;LL-TL&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;LL-TT&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;LT-LT&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;LT-TL&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;LT-TT&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;TL-LT&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;TL-TT&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;TT-TT&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+<span class="n">DIRECT_PATHS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;L&quot;</span><span class="p">,</span> <span class="s2">&quot;T&quot;</span><span class="p">]</span>
+<span class="n">SKIP_PATHS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;LL&quot;</span><span class="p">,</span> <span class="s2">&quot;LT&quot;</span><span class="p">,</span> <span class="s2">&quot;TL&quot;</span><span class="p">,</span> <span class="s2">&quot;TT&quot;</span><span class="p">]</span>
+<span class="n">DOUBLE_SKIP_PATHS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;LLL&quot;</span><span class="p">,</span> <span class="s2">&quot;LLT&quot;</span><span class="p">,</span> <span class="s2">&quot;LTL&quot;</span><span class="p">,</span> <span class="s2">&quot;LTT&quot;</span><span class="p">,</span> <span class="s2">&quot;TLL&quot;</span><span class="p">,</span> <span class="s2">&quot;TLT&quot;</span><span class="p">,</span> <span class="s2">&quot;TTL&quot;</span><span class="p">,</span> <span class="s2">&quot;TTT&quot;</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="default_viewname_order">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.ut/arim.ut.default_viewname_order.html#arim.ut.default_viewname_order">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">default_viewname_order</span><span class="p">(</span><span class="n">tx_rx_tuple</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The views are sorted in ascending order with the following criteria (in this order):</span>
+
+<span class="sd">    1) the total number of legs,</span>
+<span class="sd">    2) the maximum number of legs for transmit and receive paths,</span>
+<span class="sd">    3) the number of legs for receive path,</span>
+<span class="sd">    4) the number of legs for transmit path,</span>
+<span class="sd">    5) lexicographic order for transmit path,</span>
+<span class="sd">    6) lexicographic order for receive path.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    tx_rx_tuple</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    order_tuple</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">tx</span><span class="p">,</span> <span class="n">rx</span> <span class="o">=</span> <span class="n">tx_rx_tuple</span>
+    <span class="k">return</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">tx</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">rx</span><span class="p">),</span> <span class="nb">max</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">tx</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">rx</span><span class="p">)),</span> <span class="nb">len</span><span class="p">(</span><span class="n">rx</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">tx</span><span class="p">),</span> <span class="n">tx</span><span class="p">,</span> <span class="n">rx</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="filter_unique_views">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.ut/arim.ut.filter_unique_views.html#arim.ut.filter_unique_views">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">filter_unique_views</span><span class="p">(</span><span class="n">viewnames</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns the view names that that give different results in linear imaging.</span>
+
+<span class="sd">    If views AB-CD and DC-BA are in &#39;viewnames&#39; in this order, DC-BA will not</span>
+<span class="sd">    be in the filtered list. Order is unchanged.</span>
+
+<span class="sd">    Remove views that would give the same result because of time reciprocity</span>
+<span class="sd">    (under linear assumption).</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    viewnames : list[tuple[str]]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    list[tuple[str]]</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    &gt;&gt;&gt; filter_unique_views([(&#39;AB&#39;, &#39;CD&#39;), (&#39;DC&#39;, &#39;BA&#39;), (&#39;X&#39;, &#39;YZ&#39;), (&#39;ZY&#39;, &#39;X&#39;)])</span>
+<span class="sd">    ... [(&#39;AB&#39;, &#39;CD&#39;), (&#39;X&#39;, &#39;YZ&#39;)]</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">unique_views</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">seen_so_far</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">view</span> <span class="ow">in</span> <span class="n">viewnames</span><span class="p">:</span>
+        <span class="n">tx</span><span class="p">,</span> <span class="n">rx</span> <span class="o">=</span> <span class="n">view</span>
+        <span class="n">rev_view</span> <span class="o">=</span> <span class="p">(</span><span class="n">rx</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">tx</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">rev_view</span> <span class="ow">in</span> <span class="n">seen_so_far</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">seen_so_far</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">view</span><span class="p">)</span>
+            <span class="n">unique_views</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">view</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">unique_views</span></div>
+
+
+
+<div class="viewcode-block" id="make_viewnames">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.ut/arim.ut.make_viewnames.html#arim.ut.make_viewnames">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">make_viewnames</span><span class="p">(</span><span class="n">pathnames</span><span class="p">,</span> <span class="n">tfm_unique_only</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">order_func</span><span class="o">=</span><span class="n">default_viewname_order</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Make all view names from the paths given as arguments.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    pathnames : list[str]</span>
+<span class="sd">    tfm_unique_only : bool</span>
+<span class="sd">        Default: False. If True, returns only the views that give *different* imaging</span>
+<span class="sd">        results with TFM (AB-CD and DC-BA give the same imaging result).</span>
+<span class="sd">    order_func : func</span>
+<span class="sd">        Function for sorting the views.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    list[tuple[str]</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">viewnames</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">tx</span> <span class="ow">in</span> <span class="n">pathnames</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">rx</span> <span class="ow">in</span> <span class="n">pathnames</span><span class="p">:</span>
+            <span class="n">viewnames</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">tx</span><span class="p">,</span> <span class="n">rx</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">order_func</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">viewnames</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">viewnames</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">default_viewname_order</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">tfm_unique_only</span><span class="p">:</span>
+        <span class="n">viewnames</span> <span class="o">=</span> <span class="n">filter_unique_views</span><span class="p">(</span><span class="n">viewnames</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">viewnames</span></div>
+
+
+
+<div class="viewcode-block" id="rayleigh_vel">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.ut/arim.ut.rayleigh_vel.html#arim.ut.rayleigh_vel">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">rayleigh_vel</span><span class="p">(</span><span class="n">longitudinal_vel</span><span class="p">,</span> <span class="n">transverse_vel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Approximate Rayleigh velocitiy.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    longitudinal_vel : float</span>
+<span class="sd">    transverse_vel : float</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    rayleigh_vel : float</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    [Freund98] Freund, L. B.. 1998. `Dynamic Fracture Mechanics`.</span>
+<span class="sd">    Cambridge University Press. p. 83. ISBN 978-0521629225.</span>
+
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">poisson</span> <span class="o">=</span> <span class="p">(</span><span class="n">longitudinal_vel</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">transverse_vel</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span>
+        <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">longitudinal_vel</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="n">transverse_vel</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">poisson</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span>
+    <span class="k">return</span> <span class="n">transverse_vel</span> <span class="o">*</span> <span class="p">(</span><span class="mf">0.862</span> <span class="o">+</span> <span class="mf">1.14</span> <span class="o">*</span> <span class="n">poisson</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">poisson</span><span class="p">)</span></div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2016–2025, arim contributors.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.4.7.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

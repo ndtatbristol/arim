@@ -1,0 +1,1039 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>arim.im.tfm &#8212; arim 0.10.0.a0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../../_static/documentation_options.js?v=51601fd6"></script>
+    <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/arim/im/tfm';</script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">arim 0.10.0.a0 documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../installation/index.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../installation/index.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">arim.im.tfm</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for arim.im.tfm</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Main functions: :func:`contact_tfm`, :func:`tfm_for_view`</span>
+
+<span class="sd">.. seealso::</span>
+
+<span class="sd">    :ref:`tfm`</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">namedtuple</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numba</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">..</span><span class="w"> </span><span class="kn">import</span> <span class="n">geometry</span> <span class="k">as</span> <span class="n">g</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..</span><span class="w"> </span><span class="kn">import</span> <span class="n">ut</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArimWarning</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..ray</span><span class="w"> </span><span class="kn">import</span> <span class="n">RayGeometry</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">das</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">IncompleteFrameWarning</span><span class="p">(</span><span class="n">ArimWarning</span><span class="p">):</span>
+    <span class="k">pass</span>
+
+
+<div class="viewcode-block" id="TxRxAmplitudes">
+<a class="viewcode-back" href="../../../_autosummary/_autosummary/arim.im.tfm/arim.im.tfm.TxRxAmplitudes.html#arim.im.tfm.TxRxAmplitudes">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">TxRxAmplitudes</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Tfm amplitudes where A_ij = B_i * B&#39;_j</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    amplitudes_tx : ndarray</span>
+<span class="sd">        Shape (numtx, numgridpoints)</span>
+<span class="sd">    amplitudes_rx : ndarray</span>
+<span class="sd">        Shape (numrx, numgridpoints)</span>
+<span class="sd">    force_c_order : bool</span>
+<span class="sd">        Default True</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;amplitudes_tx&quot;</span><span class="p">,</span> <span class="s2">&quot;amplitudes_rx&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">amplitudes_tx</span><span class="p">,</span> <span class="n">amplitudes_rx</span><span class="p">,</span> <span class="n">force_c_order</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">force_c_order</span><span class="p">:</span>
+            <span class="n">amplitudes_tx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">amplitudes_tx</span><span class="p">)</span>
+            <span class="n">amplitudes_rx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">amplitudes_rx</span><span class="p">)</span>
+
+        <span class="k">assert</span> <span class="n">amplitudes_tx</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">amplitudes_rx</span><span class="o">.</span><span class="n">dtype</span>
+
+        <span class="k">assert</span> <span class="n">amplitudes_tx</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="n">amplitudes_rx</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">amplitudes_tx</span> <span class="o">=</span> <span class="n">amplitudes_tx</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">amplitudes_rx</span> <span class="o">=</span> <span class="n">amplitudes_rx</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">shape</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="ne">DeprecationWarning</span><span class="p">(</span><span class="s2">&quot;TxRxAmplitudes.shape is deprecated because ambiguous&quot;</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">amplitudes_tx</span><span class="o">.</span><span class="n">shape</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">dtype</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">amplitudes_tx</span><span class="o">.</span><span class="n">dtype</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># easy unpacking</span>
+        <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">amplitudes_tx</span>
+        <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">amplitudes_rx</span></div>
+
+
+
+<div class="viewcode-block" id="angle_limit">
+<a class="viewcode-back" href="../../../_autosummary/_autosummary/arim.im.tfm/arim.im.tfm.angle_limit.html#arim.im.tfm.angle_limit">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">angle_limit</span><span class="p">(</span><span class="n">theta</span><span class="p">,</span> <span class="n">phi</span><span class="p">,</span> <span class="n">limit</span><span class="p">,</span> <span class="n">elev</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">azim</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="s2">&quot;hanning&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Apply an angle limit to the provided angles. Hanning window applied over</span>
+<span class="sd">    limit centred on elevation. Assumes 2D.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    theta : ndarray</span>
+<span class="sd">        Shape (numtx, numgridpoints)</span>
+<span class="sd">        Angle made by the ray from the probe.</span>
+<span class="sd">    limit : float</span>
+<span class="sd">    elev : float, optional</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    TxRxAmplitudes</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">lookvec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
+        <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">azim</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">elev</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">azim</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">elev</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">elev</span><span class="p">)]</span>
+    <span class="p">)</span>
+    <span class="n">radial</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
+        <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span><span class="p">)]</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">gamma</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arccos</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">radial</span><span class="p">,</span> <span class="n">lookvec</span><span class="p">))</span>
+    <span class="n">amplitudes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">gamma</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">window</span> <span class="o">==</span> <span class="s2">&quot;hanning&quot;</span><span class="p">:</span>
+        <span class="n">amplitudes</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">gamma</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">limit</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">gamma</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">gamma</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">limit</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="n">limit</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+    <span class="k">elif</span> <span class="n">window</span> <span class="o">==</span> <span class="s2">&quot;rectangular&quot;</span><span class="p">:</span>
+        <span class="n">amplitudes</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">gamma</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">limit</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Invalid angle limit window.&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">amplitudes</span></div>
+
+
+
+<div class="viewcode-block" id="angle_limit_in_contact">
+<a class="viewcode-back" href="../../../_autosummary/_autosummary/arim.im.tfm/arim.im.tfm.angle_limit_in_contact.html#arim.im.tfm.angle_limit_in_contact">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">angle_limit_in_contact</span><span class="p">(</span>
+    <span class="n">grid</span><span class="p">,</span> <span class="n">probe</span><span class="p">,</span> <span class="n">limit</span><span class="p">,</span> <span class="n">elev</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">azim</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="s2">&quot;hanning&quot;</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the amplitudes required to implement an amplitude limit for the</span>
+<span class="sd">    focal law when the grid is in contact with the probe (i.e. one leg, no</span>
+<span class="sd">    reflections).</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    grid : Points</span>
+<span class="sd">    probe : Probe</span>
+<span class="sd">    limit : float</span>
+<span class="sd">    elev : float, optional</span>
+<span class="sd">    azim : float, optional</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    TxRxAmplitudes</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">grid</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">to_1d_points</span><span class="p">()</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="n">probe</span> <span class="o">=</span> <span class="n">probe</span><span class="o">.</span><span class="n">locations</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">x</span> <span class="o">-</span> <span class="n">probe</span><span class="o">.</span><span class="n">x</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">y</span> <span class="o">-</span> <span class="n">probe</span><span class="o">.</span><span class="n">y</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">z</span> <span class="o">-</span> <span class="n">probe</span><span class="o">.</span><span class="n">z</span>
+
+    <span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan2</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">x</span> <span class="o">*</span> <span class="n">x</span> <span class="o">+</span> <span class="n">y</span> <span class="o">*</span> <span class="n">y</span><span class="p">),</span> <span class="n">z</span><span class="p">)</span>
+    <span class="n">phi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan2</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+    <span class="n">amplitudes</span> <span class="o">=</span> <span class="n">angle_limit</span><span class="p">(</span><span class="n">theta</span><span class="p">,</span> <span class="n">phi</span><span class="p">,</span> <span class="n">limit</span><span class="p">,</span> <span class="n">elev</span><span class="p">,</span> <span class="n">azim</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="n">window</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">TxRxAmplitudes</span><span class="p">(</span><span class="n">amplitudes</span><span class="p">,</span> <span class="n">amplitudes</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="angle_limit_for_view">
+<a class="viewcode-back" href="../../../_autosummary/_autosummary/arim.im.tfm/arim.im.tfm.angle_limit_for_view.html#arim.im.tfm.angle_limit_for_view">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">angle_limit_for_view</span><span class="p">(</span>
+    <span class="n">view</span><span class="p">,</span>
+    <span class="n">limit</span><span class="p">,</span>
+    <span class="n">tx_elev</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+    <span class="n">tx_azim</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="n">rx_elev</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+    <span class="n">rx_azim</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="n">window</span><span class="o">=</span><span class="s2">&quot;hanning&quot;</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the amplitudes required to implement an amplitude limit for the</span>
+<span class="sd">    focal law for a provided view (i.e. angle limit applied to the final leg of</span>
+<span class="sd">    the view).</span>
+
+<span class="sd">    Note that `elev` and `azim` are defined in terms of the basis of the last</span>
+<span class="sd">    interface. For view LL-T with transmit path reflecting from the backwall,</span>
+<span class="sd">    `tx_elev = 0.0` points in the opposite direction to `rx_elev` because the</span>
+<span class="sd">    basis of the backwall should have `z_hat = [0, 0, -1]`, and the basis of</span>
+<span class="sd">    the probe should have `z_hat = [0, 0, 1]`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    view : View</span>
+<span class="sd">    limit : float</span>
+<span class="sd">    elev : float, optional</span>
+<span class="sd">    azim : float, optional</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    TxRxAmplitudes</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">tx_ray</span> <span class="o">=</span> <span class="n">RayGeometry</span><span class="o">.</span><span class="n">from_path</span><span class="p">(</span><span class="n">view</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">rx_ray</span> <span class="o">=</span> <span class="n">RayGeometry</span><span class="o">.</span><span class="n">from_path</span><span class="p">(</span><span class="n">view</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="n">tx_amps</span> <span class="o">=</span> <span class="n">angle_limit</span><span class="p">(</span>
+        <span class="n">tx_ray</span><span class="o">.</span><span class="n">out_leg_polar</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">),</span>
+        <span class="n">tx_ray</span><span class="o">.</span><span class="n">out_leg_azimuth</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">),</span>
+        <span class="n">limit</span><span class="p">,</span>
+        <span class="n">tx_elev</span><span class="p">,</span>
+        <span class="n">tx_azim</span><span class="p">,</span>
+        <span class="n">window</span><span class="o">=</span><span class="n">window</span><span class="p">,</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
+    <span class="n">rx_amps</span> <span class="o">=</span> <span class="n">angle_limit</span><span class="p">(</span>
+        <span class="n">rx_ray</span><span class="o">.</span><span class="n">out_leg_polar</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">),</span>
+        <span class="n">rx_ray</span><span class="o">.</span><span class="n">out_leg_azimuth</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">),</span>
+        <span class="n">limit</span><span class="p">,</span>
+        <span class="n">rx_elev</span><span class="p">,</span>
+        <span class="n">rx_azim</span><span class="p">,</span>
+        <span class="n">window</span><span class="o">=</span><span class="n">window</span><span class="p">,</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">TxRxAmplitudes</span><span class="p">(</span><span class="n">tx_amps</span><span class="p">,</span> <span class="n">rx_amps</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="FocalLaw">
+<a class="viewcode-back" href="../../../_autosummary/_autosummary/arim.im.tfm/arim.im.tfm.FocalLaw.html#arim.im.tfm.FocalLaw">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">FocalLaw</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Focal law for TFM.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    lookup_times_tx : ndarray</span>
+<span class="sd">    lookup_times_rx : ndarray</span>
+<span class="sd">    amplitudes : TxRxAmplitudes or ndarray or None</span>
+<span class="sd">    timetrace_weights : ndarray or None</span>
+<span class="sd">        Use</span>
+<span class="sd">    force_c_order</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    lookup_times_tx : ndarray</span>
+<span class="sd">    lookup_times_rx : ndarray</span>
+<span class="sd">    amplitudes : TxRxAmplitudes or ndarray or None</span>
+<span class="sd">    timetrace_weights : ndarray or None</span>
+<span class="sd">    numtimetraces : int</span>
+<span class="sd">    numelements</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;lookup_times_tx&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;lookup_times_rx&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;amplitudes&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;timetrace_weights&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;_numtimetraces&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">lookup_times_tx</span><span class="p">,</span>
+        <span class="n">lookup_times_rx</span><span class="p">,</span>
+        <span class="n">amplitudes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">timetrace_weights</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">force_c_order</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="k">if</span> <span class="n">force_c_order</span><span class="p">:</span>
+            <span class="n">lookup_times_tx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">lookup_times_tx</span><span class="p">)</span>
+            <span class="n">lookup_times_rx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">lookup_times_rx</span><span class="p">)</span>
+
+        <span class="k">assert</span> <span class="n">lookup_times_tx</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="n">lookup_times_rx</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span>
+        <span class="k">assert</span> <span class="n">lookup_times_tx</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">lookup_times_rx</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">timetrace_weights</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">force_c_order</span><span class="p">:</span>
+                <span class="n">timetrace_weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">timetrace_weights</span><span class="p">)</span>
+            <span class="k">assert</span> <span class="n">timetrace_weights</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span>
+            <span class="n">numtimetraces</span> <span class="o">=</span> <span class="n">timetrace_weights</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">numtimetraces</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="n">amplitudes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># don&#39;t force to C order because &#39;amplitudes&#39; may be a arim.model.ModelAmplitudes or a TxRxAmplitudes</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">amplitudes</span><span class="p">,</span> <span class="n">TxRxAmplitudes</span><span class="p">):</span>
+                <span class="c1"># arrays of shape (numgridpoints, num{tx,rx})</span>
+                <span class="k">assert</span> <span class="n">amplitudes</span><span class="o">.</span><span class="n">amplitudes_tx</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="n">lookup_times_tx</span><span class="o">.</span><span class="n">shape</span>
+                <span class="k">assert</span> <span class="n">amplitudes</span><span class="o">.</span><span class="n">amplitudes_rx</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="n">lookup_times_rx</span><span class="o">.</span><span class="n">shape</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># arrays of shape (numgridpoints, numtimetraces)</span>
+                <span class="k">assert</span> <span class="n">amplitudes</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span>
+                <span class="k">assert</span> <span class="n">amplitudes</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">lookup_times_tx</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">numtimetraces</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">assert</span> <span class="n">amplitudes</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">numtimetraces</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">numtimetraces</span> <span class="o">=</span> <span class="n">amplitudes</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lookup_times_tx</span> <span class="o">=</span> <span class="n">lookup_times_tx</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lookup_times_rx</span> <span class="o">=</span> <span class="n">lookup_times_rx</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">amplitudes</span> <span class="o">=</span> <span class="n">amplitudes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timetrace_weights</span> <span class="o">=</span> <span class="n">timetrace_weights</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_numtimetraces</span> <span class="o">=</span> <span class="n">numtimetraces</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">scanline_weights</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="ne">DeprecationWarning</span><span class="p">(</span>
+                <span class="s2">&quot;FocalLaw.scanline_weights is deprecated. Use FocalLaw.timetrace_weights&quot;</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">timetrace_weights</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">numelements</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="ne">DeprecationWarning</span><span class="p">(</span>
+                <span class="s2">&quot;FocalLaw.numelements is deprecated. Use FocalLaw.numtx or FocalLaw.numrx&quot;</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">lookup_times_tx</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">numtx</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">lookup_times_tx</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">numrx</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">lookup_times_rx</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">numgridpoints</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">lookup_times_tx</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">numtimetraces</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_numtimetraces</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;no data for inferring the number of timetraces&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_numtimetraces</span>
+
+<div class="viewcode-block" id="FocalLaw.weigh_timetraces">
+<a class="viewcode-back" href="../../../_autosummary/_autosummary/arim.im.tfm/arim.im.tfm.FocalLaw.html#arim.im.tfm.FocalLaw.weigh_timetraces">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">weigh_timetraces</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timetraces</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Multiply each timetrace by a weight</span>
+
+<span class="sd">        Canonical usage: use a weight of 2 for the timetraces i != j in the HMC for contact TFM.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        timetraces : ndarray</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        weighted_timetraces : ndarray</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="n">timetraces</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">timetrace_weights</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">timetraces</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="n">timetraces</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">timetrace_weights</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
+            <span class="k">assert</span> <span class="n">out</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span>
+            <span class="k">return</span> <span class="n">out</span></div>
+
+
+<div class="viewcode-block" id="FocalLaw.weigh_scanlines">
+<a class="viewcode-back" href="../../../_autosummary/_autosummary/arim.im.tfm/arim.im.tfm.FocalLaw.html#arim.im.tfm.FocalLaw.weigh_scanlines">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">weigh_scanlines</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timetraces</span><span class="p">):</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="ne">DeprecationWarning</span><span class="p">(</span>
+                <span class="s2">&quot;FocalLaw.weigh_scanlines is deprecated. Use FocalLaw.weigh_timetraces&quot;</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">weigh_timetraces</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timetraces</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FocalLaw.amp_dtype">
+<a class="viewcode-back" href="../../../_autosummary/_autosummary/arim.im.tfm/arim.im.tfm.FocalLaw.html#arim.im.tfm.FocalLaw.amp_dtype">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">amp_dtype</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">amplitudes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">amplitudes</span><span class="o">.</span><span class="n">dtype</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="TfmResult">
+<a class="viewcode-back" href="../../../_autosummary/_autosummary/arim.im.tfm/arim.im.tfm.TfmResult.html#arim.im.tfm.TfmResult">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">TfmResult</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Data container for TFM result</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;res&quot;</span><span class="p">,</span> <span class="s2">&quot;grid&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">grid</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="n">res</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="n">grid</span><span class="o">.</span><span class="n">shape</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">res</span> <span class="o">=</span> <span class="n">res</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">grid</span> <span class="o">=</span> <span class="n">grid</span>
+
+<div class="viewcode-block" id="TfmResult.maximum_intensity_in_rectbox">
+<a class="viewcode-back" href="../../../_autosummary/_autosummary/arim.im.tfm/arim.im.tfm.TfmResult.html#arim.im.tfm.TfmResult.maximum_intensity_in_rectbox">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">maximum_intensity_in_rectbox</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">xmin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">xmax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ymin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ymax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">zmin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">zmax</span><span class="o">=</span><span class="kc">None</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the maximum absolute intensity of the TFM image in the rectangular box</span>
+<span class="sd">        defined by the parameters. If a parameter is None, the box is unbounded in the</span>
+<span class="sd">        corresponding direction.</span>
+
+<span class="sd">        Intensity is given as it is (no dB conversion).</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        xmin : float or None</span>
+<span class="sd">        xmax : float or None</span>
+<span class="sd">        ymin : float or None</span>
+<span class="sd">        ymax : float or None</span>
+<span class="sd">        zmin : float or None</span>
+<span class="sd">        zmax : float or None</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        intensity : float</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">res</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="n">area_of_interest</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">points_in_rectbox</span><span class="p">(</span>
+            <span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">,</span> <span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span><span class="p">,</span> <span class="n">zmin</span><span class="p">,</span> <span class="n">zmax</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">maximum_intensity_in_area</span><span class="p">(</span><span class="n">area_of_interest</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TfmResult.maximum_intensity_in_area">
+<a class="viewcode-back" href="../../../_autosummary/_autosummary/arim.im.tfm/arim.im.tfm.TfmResult.html#arim.im.tfm.TfmResult.maximum_intensity_in_area">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">maximum_intensity_in_area</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">area</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the maximum absolute intensity of the TFM image in an area.</span>
+
+<span class="sd">        Intensity is given as it is (no dB conversion).</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        area : ndarray or None or slice</span>
+<span class="sd">            Indices of the grid.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        intensity : float</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">area</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">area</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmax</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">res</span><span class="p">[</span><span class="n">area</span><span class="p">]))</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="contact_tfm">
+<a class="viewcode-back" href="../../../_autosummary/_autosummary/arim.im.tfm/arim.im.tfm.contact_tfm.html#arim.im.tfm.contact_tfm">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">contact_tfm</span><span class="p">(</span>
+    <span class="n">frame</span><span class="p">,</span>
+    <span class="n">grid</span><span class="p">,</span>
+    <span class="n">velocity</span><span class="p">,</span>
+    <span class="n">amplitudes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">timetrace_weights</span><span class="o">=</span><span class="s2">&quot;default&quot;</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs_delay_and_sum</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Contact TFM</span>
+
+<span class="sd">    Supports HMC and FMC frame.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    frame : Frame</span>
+<span class="sd">    grid : Points</span>
+<span class="sd">    velocity : float</span>
+<span class="sd">    amplitudes : None or ndarray or TxRxAmplitudes</span>
+<span class="sd">    timetrace_weights : None or ndarray or &#39;default&#39;</span>
+<span class="sd">        Default: 2 for i!=j, 1 for i==j. None: 1 for all timetraces.</span>
+<span class="sd">    kwargs_delay_and_sum : dict</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    tfm_res : TfmResult</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">lookup_times</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">g</span><span class="o">.</span><span class="n">distance_pairwise</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">to_1d_points</span><span class="p">(),</span> <span class="n">frame</span><span class="o">.</span><span class="n">probe</span><span class="o">.</span><span class="n">locations</span><span class="p">)</span> <span class="o">/</span> <span class="n">velocity</span>
+    <span class="p">)</span>
+    <span class="k">assert</span> <span class="n">lookup_times</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span>
+    <span class="k">assert</span> <span class="n">lookup_times</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">numpoints</span><span class="p">,</span> <span class="n">frame</span><span class="o">.</span><span class="n">probe</span><span class="o">.</span><span class="n">numelements</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">amplitudes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">__debug__</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">frame</span><span class="o">.</span><span class="n">is_complete_assuming_reciprocity</span><span class="p">():</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s2">&quot;Possible erroneous usage of a noncomplete frame in TFM; &quot;</span>
+                <span class="s2">&quot;use Frame.expand_frame_assuming_reciprocity()&quot;</span>
+            <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">timetrace_weights</span> <span class="o">==</span> <span class="s2">&quot;default&quot;</span><span class="p">:</span>
+        <span class="n">timetrace_weights</span> <span class="o">=</span> <span class="n">ut</span><span class="o">.</span><span class="n">default_timetrace_weights</span><span class="p">(</span><span class="n">frame</span><span class="o">.</span><span class="n">tx</span><span class="p">,</span> <span class="n">frame</span><span class="o">.</span><span class="n">rx</span><span class="p">)</span>
+    <span class="n">focal_law</span> <span class="o">=</span> <span class="n">FocalLaw</span><span class="p">(</span><span class="n">lookup_times</span><span class="p">,</span> <span class="n">lookup_times</span><span class="p">,</span> <span class="n">amplitudes</span><span class="p">,</span> <span class="n">timetrace_weights</span><span class="p">)</span>
+
+    <span class="n">res</span> <span class="o">=</span> <span class="n">das</span><span class="o">.</span><span class="n">delay_and_sum</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">focal_law</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs_delay_and_sum</span><span class="p">)</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">TfmResult</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">grid</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="tfm_for_view">
+<a class="viewcode-back" href="../../../_autosummary/_autosummary/arim.im.tfm/arim.im.tfm.tfm_for_view.html#arim.im.tfm.tfm_for_view">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">tfm_for_view</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">view</span><span class="p">,</span> <span class="n">amplitudes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs_delay_and_sum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    TFM for a view</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    frame : Frame</span>
+<span class="sd">    grid : Points</span>
+<span class="sd">    velocity : float</span>
+<span class="sd">    amplitudes : None or ndarray or TxRxAmplitudes</span>
+<span class="sd">    mask : ndarray[bool]</span>
+<span class="sd">        Mask which is applied to `grid.to_oriented_points()` when making views.</span>
+<span class="sd">    kwargs_delay_and_sum : dict</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    tfm_res : TfmResult</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    No check is performed to ensure that the calculation is safe for incomplete frames (HMC for example).</span>
+<span class="sd">    In this case, an :exc:`IncompleteFrameWarning` is emitted.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># do not use timetrace weights, it is likely to be ill-defined here</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">frame</span><span class="o">.</span><span class="n">is_complete_assuming_reciprocity</span><span class="p">():</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+            <span class="s2">&quot;Possible erroneous usage of a noncomplete frame in TFM; &quot;</span>
+            <span class="s2">&quot;use Frame.expand_frame_assuming_reciprocity()&quot;</span>
+        <span class="p">)</span>
+
+    <span class="n">lookup_times_tx</span> <span class="o">=</span> <span class="n">view</span><span class="o">.</span><span class="n">tx_path</span><span class="o">.</span><span class="n">rays</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">T</span>
+    <span class="n">lookup_times_rx</span> <span class="o">=</span> <span class="n">view</span><span class="o">.</span><span class="n">rx_path</span><span class="o">.</span><span class="n">rays</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">T</span>
+
+    <span class="n">focal_law</span> <span class="o">=</span> <span class="n">FocalLaw</span><span class="p">(</span><span class="n">lookup_times_tx</span><span class="p">,</span> <span class="n">lookup_times_rx</span><span class="p">,</span> <span class="n">amplitudes</span><span class="p">)</span>
+
+    <span class="n">res</span> <span class="o">=</span> <span class="n">das</span><span class="o">.</span><span class="n">delay_and_sum</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">focal_law</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs_delay_and_sum</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="n">res</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># N.B. `mask` could be a new attribute of `grid`. Only used in this function so leave it for now.</span>
+        <span class="n">res_all</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="n">grid</span><span class="o">.</span><span class="n">size</span><span class="p">,</span>
+            <span class="p">],</span>
+            <span class="n">dtype</span><span class="o">=</span><span class="n">res</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">res_all</span><span class="p">[</span><span class="n">mask</span><span class="o">.</span><span class="n">ravel</span><span class="p">()]</span> <span class="o">=</span> <span class="n">res</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">res_all</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">TfmResult</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">grid</span><span class="p">)</span></div>
+
+
+
+<span class="n">ExtramaLookupTimes</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span>
+    <span class="s2">&quot;ExtramaLookupTimes&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;tmin tmax tx_elt_for_tmin rx_elt_for_tmin tx_elt_for_tmax rx_elt_for_tmax&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<div class="viewcode-block" id="extrema_lookup_times_in_rectbox">
+<a class="viewcode-back" href="../../../_autosummary/_autosummary/arim.im.tfm/arim.im.tfm.extrema_lookup_times_in_rectbox.html#arim.im.tfm.extrema_lookup_times_in_rectbox">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">extrema_lookup_times_in_rectbox</span><span class="p">(</span>
+    <span class="n">grid</span><span class="p">,</span>
+    <span class="n">lookup_times_tx</span><span class="p">,</span>
+    <span class="n">lookup_times_rx</span><span class="p">,</span>
+    <span class="n">tx</span><span class="p">,</span>
+    <span class="n">rx</span><span class="p">,</span>
+    <span class="n">xmin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">xmax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">ymin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">ymax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">zmin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">zmax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns the minimum and maximum of the lookup times in an rectangular box.</span>
+<span class="sd">    The output is returned as a named tuple for convenience.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    xmin : float or None</span>
+<span class="sd">    xmax : float or None</span>
+<span class="sd">    ymin : float or None</span>
+<span class="sd">    ymax : float or None</span>
+<span class="sd">    zmin : float or None</span>
+<span class="sd">    zmax : float or None</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : ExtramaLookupTimes</span>
+<span class="sd">        Respectively: returns the minimum and maximum times (fields ``tmin`` and ``tmax``) and the elements indices</span>
+<span class="sd">        corresponding to these values. If several couples of elements are matching, the first couple is returned.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">area_of_interest</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">points_in_rectbox</span><span class="p">(</span>
+        <span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">,</span> <span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span><span class="p">,</span> <span class="n">zmin</span><span class="p">,</span> <span class="n">zmax</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+
+    <span class="n">sub_lookup_times_tx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">lookup_times_tx</span><span class="p">[</span><span class="n">area_of_interest</span><span class="p">,</span> <span class="o">...</span><span class="p">])</span>
+    <span class="n">sub_lookup_times_rx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">lookup_times_rx</span><span class="p">[</span><span class="n">area_of_interest</span><span class="p">,</span> <span class="o">...</span><span class="p">])</span>
+    <span class="n">tx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">tx</span><span class="p">)</span>
+    <span class="n">rx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">rx</span><span class="p">)</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="n">_extrema_lookup_times</span><span class="p">(</span><span class="n">sub_lookup_times_tx</span><span class="p">,</span> <span class="n">sub_lookup_times_rx</span><span class="p">,</span> <span class="n">tx</span><span class="p">,</span> <span class="n">rx</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ExtramaLookupTimes</span><span class="p">(</span><span class="o">*</span><span class="n">out</span><span class="p">)</span></div>
+
+
+
+<span class="nd">@numba</span><span class="o">.</span><span class="n">jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_extrema_lookup_times</span><span class="p">(</span><span class="n">lookup_times_tx</span><span class="p">,</span> <span class="n">lookup_times_rx</span><span class="p">,</span> <span class="n">tx_list</span><span class="p">,</span> <span class="n">rx_list</span><span class="p">):</span>
+    <span class="n">numpoints</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">lookup_times_tx</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">numtimetraces</span> <span class="o">=</span> <span class="n">tx_list</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">tmin</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+    <span class="n">tmax</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+    <span class="n">tx_elt_for_tmin</span> <span class="o">=</span> <span class="n">tx_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">tx_elt_for_tmax</span> <span class="o">=</span> <span class="n">tx_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">rx_elt_for_tmin</span> <span class="o">=</span> <span class="n">rx_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">rx_elt_for_tmax</span> <span class="o">=</span> <span class="n">rx_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">numpoints</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">timetrace</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">numtimetraces</span><span class="p">):</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="n">lookup_times_tx</span><span class="p">[</span><span class="n">point</span><span class="p">,</span> <span class="n">timetrace</span><span class="p">]</span> <span class="o">+</span> <span class="n">lookup_times_rx</span><span class="p">[</span><span class="n">point</span><span class="p">,</span> <span class="n">timetrace</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">t</span> <span class="o">&gt;</span> <span class="n">tmax</span><span class="p">:</span>
+                <span class="n">tmax</span> <span class="o">=</span> <span class="n">t</span>
+                <span class="n">tx_elt_for_tmax</span> <span class="o">=</span> <span class="n">tx_list</span><span class="p">[</span><span class="n">timetrace</span><span class="p">]</span>
+                <span class="n">rx_elt_for_tmax</span> <span class="o">=</span> <span class="n">rx_list</span><span class="p">[</span><span class="n">timetrace</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">t</span> <span class="o">&lt;</span> <span class="n">tmin</span><span class="p">:</span>
+                <span class="n">tmin</span> <span class="o">=</span> <span class="n">t</span>
+                <span class="n">tx_elt_for_tmin</span> <span class="o">=</span> <span class="n">tx_list</span><span class="p">[</span><span class="n">timetrace</span><span class="p">]</span>
+                <span class="n">rx_elt_for_tmin</span> <span class="o">=</span> <span class="n">rx_list</span><span class="p">[</span><span class="n">timetrace</span><span class="p">]</span>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="n">tmin</span><span class="p">,</span>
+        <span class="n">tmax</span><span class="p">,</span>
+        <span class="n">tx_elt_for_tmin</span><span class="p">,</span>
+        <span class="n">rx_elt_for_tmin</span><span class="p">,</span>
+        <span class="n">tx_elt_for_tmax</span><span class="p">,</span>
+        <span class="n">rx_elt_for_tmax</span><span class="p">,</span>
+    <span class="p">)</span>
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2016–2025, arim contributors.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.4.7.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

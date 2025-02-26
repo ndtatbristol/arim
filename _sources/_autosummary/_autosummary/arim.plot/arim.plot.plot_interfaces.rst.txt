@@ -1,0 +1,6 @@
+arim.plot.plot_interfaces
+=========================
+
+.. currentmodule:: arim.plot
+
+.. autofunction:: plot_interfaces

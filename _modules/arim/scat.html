@@ -1,0 +1,1893 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>arim.scat &#8212; arim 0.10.0.a0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../_static/documentation_options.js?v=51601fd6"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/arim/scat';</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">arim 0.10.0.a0 documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../installation/index.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../installation/index.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">arim.scat</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for arim.scat</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Scattering functions and helpers</span>
+
+<span class="sd">In a nutshell: use :func:`scat_factory` to create a :class:`Scattering2d` object.</span>
+
+<span class="sd">Single frequency scattering matrices are defined formally as::</span>
+
+<span class="sd">    S_LL[j, i] = scat_func_LL(phi_in[i], phi_out[j], frequency) for i, j in 0..numangles-1</span>
+
+<span class="sd">where `phi_in` and `phi_out` are linearly spaced 1d array between `-pi` (included) and `pi`</span>
+<span class="sd">(excluded), as returned by :func:`make_angles`. NB: ``S_LL[phi_out_idx, phi_in_idx]``</span>
+
+<span class="sd">Multiple frequency scattering matrices are defined formally as::</span>
+
+<span class="sd">    S_LL[k, j, i] = scat_func_LL(phi_in[i], phi_out[j], frequencies[k])</span>
+
+<span class="sd">.. data:: SCAT_KEYS</span>
+<span class="sd">   :annotation: = frozenset((&#39;LL&#39;, &#39;LT&#39;, &#39;TL&#39;, &#39;TT&#39;))</span>
+
+<span class="sd">   Keys for the different kinds of scattering.</span>
+<span class="sd">   The first letter is the mode of the</span>
+<span class="sd">   incident wave; the second letter is the mode of the scattered wave.</span>
+<span class="sd">   In this module, functions that take an argument ``to_compute`` expects a subset of</span>
+<span class="sd">   these keys.</span>
+
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">abc</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">contextlib</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">ctypes</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">functools</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numba</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">scipy.integrate</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numpy.core.umath</span><span class="w"> </span><span class="kn">import</span> <span class="n">cos</span><span class="p">,</span> <span class="n">pi</span><span class="p">,</span> <span class="n">sin</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="kn">import</span> <span class="n">interpolate</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.special._ufuncs</span><span class="w"> </span><span class="kn">import</span> <span class="n">hankel1</span><span class="p">,</span> <span class="n">hankel2</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">_scat</span><span class="p">,</span> <span class="n">_scat_crack</span><span class="p">,</span> <span class="n">exceptions</span><span class="p">,</span> <span class="n">ut</span>
+
+<span class="n">SCAT_KEYS</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">((</span><span class="s2">&quot;LL&quot;</span><span class="p">,</span> <span class="s2">&quot;LT&quot;</span><span class="p">,</span> <span class="s2">&quot;TL&quot;</span><span class="p">,</span> <span class="s2">&quot;TT&quot;</span><span class="p">))</span>
+
+
+<div class="viewcode-block" id="make_angles">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.scat/arim.scat.make_angles.html#arim.scat.make_angles">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">make_angles</span><span class="p">(</span><span class="n">numpoints</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return angles for scattering matrices. Linearly spaced vector in [-pi, pi[.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">numpoints</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="make_angles_grid">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.scat/arim.scat.make_angles_grid.html#arim.scat.make_angles_grid">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">make_angles_grid</span><span class="p">(</span><span class="n">numpoints</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return angles for scattering matrices as a grid of incident and outgoing angles.&quot;&quot;&quot;</span>
+    <span class="n">theta</span> <span class="o">=</span> <span class="n">make_angles</span><span class="p">(</span><span class="n">numpoints</span><span class="p">)</span>
+    <span class="n">inc_theta</span><span class="p">,</span> <span class="n">out_theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">theta</span><span class="p">,</span> <span class="n">theta</span><span class="p">,</span> <span class="n">indexing</span><span class="o">=</span><span class="s2">&quot;xy&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">inc_theta</span><span class="p">,</span> <span class="n">out_theta</span></div>
+
+
+
+<div class="viewcode-block" id="interpolate_matrix">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.scat/arim.scat.interpolate_matrix.html#arim.scat.interpolate_matrix">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">interpolate_matrix</span><span class="p">(</span><span class="n">scattering_matrix</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a function that takes as input the incident angles and the scattering angles.</span>
+<span class="sd">    This returned function returns the scattering amplitudes, obtained by bilinear</span>
+<span class="sd">    interpolation of the scattering matrix.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    scattering_matrix : ndarray</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    func</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="n">scattering_matrix</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span>
+    <span class="k">assert</span> <span class="n">scattering_matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">scattering_matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span>
+        <span class="n">_scat</span><span class="o">.</span><span class="n">_interpolate_scattering_matrix_ufunc</span><span class="p">,</span> <span class="n">scattering_matrix</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="interpolate_matrices">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.scat/arim.scat.interpolate_matrices.html#arim.scat.interpolate_matrices">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">interpolate_matrices</span><span class="p">(</span><span class="n">scattering_matrices</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert a dictionary containing scattering matrices to a dictionary containing</span>
+<span class="sd">    functions that interpolate the values of the scattering matrices.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    scattering_matrices : dict[str, ndarray]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dict[str, function]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">interpolate_matrix</span><span class="p">(</span><span class="n">mat</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">mat</span> <span class="ow">in</span> <span class="n">scattering_matrices</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span></div>
+
+
+
+<div class="viewcode-block" id="sdh_2d_scat">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.scat/arim.scat.sdh_2d_scat.html#arim.scat.sdh_2d_scat">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">sdh_2d_scat</span><span class="p">(</span>
+    <span class="n">inc_theta</span><span class="p">,</span>
+    <span class="n">out_theta</span><span class="p">,</span>
+    <span class="n">frequency</span><span class="p">,</span>
+    <span class="n">radius</span><span class="p">,</span>
+    <span class="n">longitudinal_vel</span><span class="p">,</span>
+    <span class="n">transverse_vel</span><span class="p">,</span>
+    <span class="n">min_terms</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+    <span class="n">term_factor</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+    <span class="n">to_compute</span><span class="o">=</span><span class="n">SCAT_KEYS</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Scattering coefficients for a side-drilled hole in 2D</span>
+
+<span class="sd">    The scattered field is given by::</span>
+
+<span class="sd">        u_scat(r, theta) = u0 * sqrt(1 / r) * exp(-i k r + i omega i ray) *</span>
+<span class="sd">                           (sqrt(lambda_L) A(theta) e_r +</span>
+<span class="sd">                            sqrt(lambda_T) B(theta) e_theta)</span>
+
+<span class="sd">    where A(theta) and B(theta) are the scattering coefficients for respectively L and</span>
+<span class="sd">    T scattered waves and where e_r and e_theta are the two vectors of the cylindrical</span>
+<span class="sd">    coordinate system.</span>
+
+<span class="sd">    The coefficient for LL, LT, TL and TT are obtained from Lopez-Sanchez&#39;s paper,</span>
+<span class="sd">    equations 33, 34, 39, 40. See also Brind&#39;s paper.</span>
+
+<span class="sd">    Another difference with these papers is the definition of theta. We use the NDT</span>
+<span class="sd">    convention where pulse-echo corresponds to theta=0. For Brind, Lopez-Sanchez et al.</span>
+<span class="sd">    pulse-echo corresponds to theta=pi.</span>
+
+<span class="sd">    The number of factor in the sum is::</span>
+
+<span class="sd">        maxn = max(min_terms, ceil(term_factor * alpha), ceil(term_factor * beta))</span>
+
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    inc_theta : ndarray</span>
+<span class="sd">        Angle in radians. Pulse echo case corresponds to inc_theta = out_theta</span>
+<span class="sd">    out_theta : ndarray</span>
+<span class="sd">        Angle in radians.</span>
+<span class="sd">    frequency : float</span>
+<span class="sd">    radius : float</span>
+<span class="sd">    longitudinal_vel : float</span>
+<span class="sd">    transverse_vel : float</span>
+<span class="sd">    min_terms : int</span>
+<span class="sd">    term_factor : int</span>
+<span class="sd">    to_compute : set</span>
+<span class="sd">        See :data:`SCAT_KEYS`</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    result : dict</span>
+<span class="sd">        Keys corresponds to &#39;to_compute&#39; argument. Values have the shape of theta.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [Lopez-Sanchez] Lopez-Sanchez, Ana L., Hak-Joon Kim, Lester W. Schmerr, and Alexander</span>
+<span class="sd">    Sedov. 2005. ‘Measurement Models and Scattering Models for Predicting the Ultrasonic</span>
+<span class="sd">    Pulse-Echo Response From Side-Drilled Holes’. Journal of Nondestructive Evaluation 24</span>
+<span class="sd">    3): 83–96. doi:10.1007/s10921-005-7658-4.</span>
+
+<span class="sd">    [Brind] Brind, R. J., J. D. Achenbach, and J. E. Gubernatis. 1984. ‘High-Frequency</span>
+<span class="sd">    Scattering of Elastic Waves from Cylindrical Cavities’. Wave Motion 6 (1):</span>
+<span class="sd">    41–60. doi:10.1016/0165-2125(84)90022-2.</span>
+
+<span class="sd">    [Zhang] Zhang, Jie, B.W. Drinkwater, and P.D. Wilcox. 2008. ‘Defect Characterization</span>
+<span class="sd">    Using an Ultrasonic Array to Measure the Scattering Coefficient Matrix’. IEEE</span>
+<span class="sd">    Transactions on Ultrasonics, Ferroelectrics, and Frequency Control 55 (10): 2254–65.</span>
+<span class="sd">    doi:10.1109/TUFFC.924.</span>
+
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">theta</span> <span class="o">=</span> <span class="n">out_theta</span> <span class="o">-</span> <span class="n">inc_theta</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">SCAT_KEYS</span><span class="o">.</span><span class="n">issuperset</span><span class="p">(</span><span class="n">to_compute</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Valid &#39;to_compute&#39; arguments are </span><span class="si">{</span><span class="n">SCAT_KEYS</span><span class="si">}</span><span class="s2"> (got </span><span class="si">{</span><span class="n">to_compute</span><span class="si">}</span><span class="s2">)&quot;</span>
+        <span class="p">)</span>
+
+    <span class="c1"># wavenumber</span>
+
+    <span class="n">kl</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">pi</span> <span class="o">*</span> <span class="n">frequency</span> <span class="o">/</span> <span class="n">longitudinal_vel</span>
+    <span class="n">kt</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">pi</span> <span class="o">*</span> <span class="n">frequency</span> <span class="o">/</span> <span class="n">transverse_vel</span>
+
+    <span class="c1"># Brind eq 2.8</span>
+    <span class="n">alpha</span> <span class="o">=</span> <span class="n">kl</span> <span class="o">*</span> <span class="n">radius</span>
+    <span class="n">beta</span> <span class="o">=</span> <span class="n">kt</span> <span class="o">*</span> <span class="n">radius</span>
+    <span class="n">beta2</span> <span class="o">=</span> <span class="n">beta</span> <span class="o">*</span> <span class="n">beta</span>
+
+    <span class="c1"># sum from n=0 to n=maxn (inclusive)</span>
+    <span class="c1"># The larger maxn, the better the axppromixation</span>
+    <span class="n">maxn</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span>
+        <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">min_terms</span><span class="p">),</span> <span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">term_factor</span> <span class="o">*</span> <span class="n">alpha</span><span class="p">),</span> <span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">term_factor</span> <span class="o">*</span> <span class="n">beta</span><span class="p">)]</span>
+    <span class="p">)</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">maxn</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">n2</span> <span class="o">=</span> <span class="n">n</span> <span class="o">*</span> <span class="n">n</span>
+
+    <span class="c1"># Brind eq 2.8</span>
+    <span class="n">epsilon</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">)</span>
+    <span class="n">epsilon</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+
+    <span class="c1"># Definition of C_n^(i)(x) and D_n^(i)(x)</span>
+    <span class="c1"># Brind, eq 31</span>
+    <span class="n">c1</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="p">(</span><span class="n">n2</span> <span class="o">+</span> <span class="n">n</span> <span class="o">-</span> <span class="n">beta2</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">hankel1</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span> <span class="o">-</span> <span class="n">x</span> <span class="o">*</span> <span class="n">hankel1</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+    <span class="n">c2</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="p">(</span><span class="n">n2</span> <span class="o">+</span> <span class="n">n</span> <span class="o">-</span> <span class="n">beta2</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">hankel2</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span> <span class="o">-</span> <span class="n">x</span> <span class="o">*</span> <span class="n">hankel2</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+    <span class="n">d1</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="p">(</span><span class="n">n2</span> <span class="o">+</span> <span class="n">n</span><span class="p">)</span> <span class="o">*</span> <span class="n">hankel1</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span> <span class="o">-</span> <span class="n">n</span> <span class="o">*</span> <span class="n">x</span> <span class="o">*</span> <span class="n">hankel1</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+    <span class="n">d2</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="p">(</span><span class="n">n2</span> <span class="o">+</span> <span class="n">n</span><span class="p">)</span> <span class="o">*</span> <span class="n">hankel2</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span> <span class="o">-</span> <span class="n">n</span> <span class="o">*</span> <span class="n">x</span> <span class="o">*</span> <span class="n">hankel2</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+    <span class="n">c1_alpha</span> <span class="o">=</span> <span class="n">c1</span><span class="p">(</span><span class="n">alpha</span><span class="p">)</span>
+    <span class="n">c2_alpha</span> <span class="o">=</span> <span class="n">c2</span><span class="p">(</span><span class="n">alpha</span><span class="p">)</span>
+    <span class="n">d1_alpha</span> <span class="o">=</span> <span class="n">d1</span><span class="p">(</span><span class="n">alpha</span><span class="p">)</span>
+    <span class="n">d2_alpha</span> <span class="o">=</span> <span class="n">d2</span><span class="p">(</span><span class="n">alpha</span><span class="p">)</span>
+    <span class="n">c1_beta</span> <span class="o">=</span> <span class="n">c1</span><span class="p">(</span><span class="n">beta</span><span class="p">)</span>
+    <span class="n">c2_beta</span> <span class="o">=</span> <span class="n">c2</span><span class="p">(</span><span class="n">beta</span><span class="p">)</span>
+    <span class="n">d1_beta</span> <span class="o">=</span> <span class="n">d1</span><span class="p">(</span><span class="n">beta</span><span class="p">)</span>
+    <span class="n">d2_beta</span> <span class="o">=</span> <span class="n">d2</span><span class="p">(</span><span class="n">beta</span><span class="p">)</span>
+
+    <span class="c1"># in angle</span>
+    <span class="n">phi</span> <span class="o">=</span> <span class="n">theta</span> <span class="o">+</span> <span class="n">pi</span>
+
+    <span class="c1"># n_phi[i1, ..., id, j] := phi[i1, ..., id] * n[j]</span>
+    <span class="n">n_phi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">&quot;...,j-&gt;...j&quot;</span><span class="p">,</span> <span class="n">phi</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+    <span class="n">cos_n_phi</span> <span class="o">=</span> <span class="n">cos</span><span class="p">(</span><span class="n">n_phi</span><span class="p">)</span>
+    <span class="n">sin_n_phi</span> <span class="o">=</span> <span class="n">sin</span><span class="p">(</span><span class="n">n_phi</span><span class="p">)</span>
+    <span class="k">del</span> <span class="n">n_phi</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+    <span class="c1"># NB: sqrt(2j/(pi * k)) = sqrt(i) / pi</span>
+
+    <span class="k">if</span> <span class="s2">&quot;LL&quot;</span> <span class="ow">in</span> <span class="n">to_compute</span><span class="p">:</span>
+        <span class="c1"># Lopez-Sanchez eq (29)</span>
+        <span class="n">A_n</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="mi">1</span><span class="n">j</span>
+            <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">alpha</span><span class="p">)</span>
+            <span class="o">*</span> <span class="p">(</span>
+                <span class="mi">1</span>
+                <span class="o">+</span> <span class="p">(</span><span class="n">c2_alpha</span> <span class="o">*</span> <span class="n">c1_beta</span> <span class="o">-</span> <span class="n">d2_alpha</span> <span class="o">*</span> <span class="n">d1_beta</span><span class="p">)</span>
+                <span class="o">/</span> <span class="p">(</span><span class="n">c1_alpha</span> <span class="o">*</span> <span class="n">c1_beta</span> <span class="o">-</span> <span class="n">d1_alpha</span> <span class="o">*</span> <span class="n">d1_beta</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Brind (2.9) without:</span>
+        <span class="c1">#   - u0, the amplitude of the incident wave,</span>
+        <span class="c1">#   - &#39;exp(i k r)&#39;  which in Bristol LTI model is in the propagation term,</span>
+        <span class="c1">#   - &#39;lambda/sqrt(r)&#39; which in Bristol LTI model is the 2D beamspread term,</span>
+        <span class="c1">#</span>
+        <span class="c1"># This is consistent with Lopez-Sanchez eq (33).</span>
+        <span class="c1">#</span>
+        <span class="c1"># NB: exp(i pi /4) = sqrt(i)</span>
+        <span class="c1">#</span>
+        <span class="c1"># The line:</span>
+        <span class="c1">#   out = np.einsum(&#39;...j,j-&gt;...&#39;, n_phi, coeff)</span>
+        <span class="c1"># gives the result:</span>
+        <span class="c1">#   out[i1, ..., id] = sum_j (n_phi[i1, ..., id, j] * coeff[j])</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span><span class="n">j</span><span class="p">)</span> <span class="o">/</span> <span class="n">pi</span> <span class="o">*</span> <span class="n">alpha</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span>
+            <span class="s2">&quot;...j,j-&gt;...&quot;</span><span class="p">,</span> <span class="n">cos_n_phi</span><span class="p">,</span> <span class="n">epsilon</span> <span class="o">*</span> <span class="n">A_n</span>
+        <span class="p">)</span>
+
+        <span class="n">result</span><span class="p">[</span><span class="s2">&quot;LL&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">r</span>
+
+    <span class="k">if</span> <span class="s2">&quot;LT&quot;</span> <span class="ow">in</span> <span class="n">to_compute</span><span class="p">:</span>
+        <span class="c1"># Lopez-Sanchez eq (30)</span>
+        <span class="n">B_n</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="mi">2</span>
+            <span class="o">*</span> <span class="n">n</span>
+            <span class="o">/</span> <span class="p">(</span><span class="n">pi</span> <span class="o">*</span> <span class="n">alpha</span><span class="p">)</span>
+            <span class="o">*</span> <span class="p">((</span><span class="n">n2</span> <span class="o">-</span> <span class="n">beta2</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">c1_alpha</span> <span class="o">*</span> <span class="n">c1_beta</span> <span class="o">-</span> <span class="n">d1_alpha</span> <span class="o">*</span> <span class="n">d1_beta</span><span class="p">))</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Lopez-Sanchez (34)</span>
+        <span class="c1"># Warning: there is a minus sign in Brind (2.10). We trust LS here.</span>
+        <span class="c1"># See also comments for result[&#39;LL&#39;]</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span><span class="n">j</span><span class="p">)</span> <span class="o">/</span> <span class="n">pi</span> <span class="o">*</span> <span class="n">beta</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span>
+            <span class="s2">&quot;...j,j-&gt;...&quot;</span><span class="p">,</span> <span class="n">sin_n_phi</span><span class="p">,</span> <span class="n">epsilon</span> <span class="o">*</span> <span class="n">B_n</span>
+        <span class="p">)</span>
+        <span class="n">result</span><span class="p">[</span><span class="s2">&quot;LT&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">r</span>
+
+    <span class="k">if</span> <span class="s2">&quot;TL&quot;</span> <span class="ow">in</span> <span class="n">to_compute</span><span class="p">:</span>
+        <span class="c1"># Lopez-Sanchez eq (41)</span>
+        <span class="n">A_n</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="mi">2</span>
+            <span class="o">*</span> <span class="n">n</span>
+            <span class="o">/</span> <span class="p">(</span><span class="n">pi</span> <span class="o">*</span> <span class="n">beta</span><span class="p">)</span>
+            <span class="o">*</span> <span class="p">(</span><span class="n">n2</span> <span class="o">-</span> <span class="n">beta2</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="o">/</span> <span class="p">(</span><span class="n">c1_alpha</span> <span class="o">*</span> <span class="n">c1_beta</span> <span class="o">-</span> <span class="n">d1_alpha</span> <span class="o">*</span> <span class="n">d1_beta</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Lopez-Sanchez eq (39)</span>
+        <span class="c1"># See also comments for result[&#39;LL&#39;]</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span><span class="n">j</span><span class="p">)</span> <span class="o">/</span> <span class="n">pi</span> <span class="o">*</span> <span class="n">alpha</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span>
+            <span class="s2">&quot;...j,j-&gt;...&quot;</span><span class="p">,</span> <span class="n">sin_n_phi</span><span class="p">,</span> <span class="n">epsilon</span> <span class="o">*</span> <span class="n">A_n</span>
+        <span class="p">)</span>
+        <span class="n">result</span><span class="p">[</span><span class="s2">&quot;TL&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">r</span>
+
+    <span class="k">if</span> <span class="s2">&quot;TT&quot;</span> <span class="ow">in</span> <span class="n">to_compute</span><span class="p">:</span>
+        <span class="c1"># Lopez-Sanchez eq (42)</span>
+        <span class="n">B_n</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="mi">1</span><span class="n">j</span>
+            <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">beta</span><span class="p">)</span>
+            <span class="o">*</span> <span class="p">(</span>
+                <span class="mi">1</span>
+                <span class="o">+</span> <span class="p">(</span><span class="n">c2_beta</span> <span class="o">*</span> <span class="n">c1_alpha</span> <span class="o">-</span> <span class="n">d2_beta</span> <span class="o">*</span> <span class="n">d1_alpha</span><span class="p">)</span>
+                <span class="o">/</span> <span class="p">(</span><span class="n">c1_alpha</span> <span class="o">*</span> <span class="n">c1_beta</span> <span class="o">-</span> <span class="n">d1_alpha</span> <span class="o">*</span> <span class="n">d1_beta</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Lopez-Sanchez eq (40)</span>
+        <span class="c1"># See also comments for result[&#39;LL&#39;]</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span><span class="n">j</span><span class="p">)</span> <span class="o">/</span> <span class="n">pi</span> <span class="o">*</span> <span class="n">beta</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span>
+            <span class="s2">&quot;...j,j-&gt;...&quot;</span><span class="p">,</span> <span class="n">cos_n_phi</span><span class="p">,</span> <span class="n">epsilon</span> <span class="o">*</span> <span class="n">B_n</span>
+        <span class="p">)</span>
+        <span class="n">result</span><span class="p">[</span><span class="s2">&quot;TT&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">r</span>
+
+    <span class="k">return</span> <span class="n">result</span></div>
+
+
+
+<div class="viewcode-block" id="crack_2d_scat">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.scat/arim.scat.crack_2d_scat.html#arim.scat.crack_2d_scat">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">crack_2d_scat</span><span class="p">(</span>
+    <span class="n">inc_theta</span><span class="p">,</span>
+    <span class="n">out_theta</span><span class="p">,</span>
+    <span class="n">frequency</span><span class="p">,</span>
+    <span class="n">crack_length</span><span class="p">,</span>
+    <span class="n">longitudinal_vel</span><span class="p">,</span>
+    <span class="n">transverse_vel</span><span class="p">,</span>
+    <span class="n">density</span><span class="p">,</span>
+    <span class="n">nodes_per_wavelength</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+    <span class="n">assume_safe_for_opt</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">to_compute</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;LL&quot;</span><span class="p">,</span> <span class="s2">&quot;LT&quot;</span><span class="p">,</span> <span class="s2">&quot;TL&quot;</span><span class="p">,</span> <span class="s2">&quot;TT&quot;</span><span class="p">},</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Scattering matrix of the centre of a crack.</span>
+
+<span class="sd">    The model assumes there is little interaction with the walls, ie the crack is deep</span>
+<span class="sd">    enough (not a surface crack). Resolution with a Galerkin method.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    inc_theta : ndarray</span>
+<span class="sd">    out_theta : ndarray</span>
+<span class="sd">    frequency : float</span>
+<span class="sd">    crack_length : float</span>
+<span class="sd">    longitudinal_vel : float</span>
+<span class="sd">    transverse_vel : float</span>
+<span class="sd">    density : float</span>
+<span class="sd">    nodes_per_wavelength : int</span>
+<span class="sd">        Default: 20</span>
+<span class="sd">    assume_safe_for_opt : bool</span>
+<span class="sd">        Default: False. If True, use an optimised implementation which requires that</span>
+<span class="sd">        ``inc_theta[i, j] = inc_theta[i, 0]`` for all i and j. If False, use slower but</span>
+<span class="sd">        more general implementation. Warning: no check is  performed to ensure the</span>
+<span class="sd">        assumption holds.</span>
+<span class="sd">    to_compute : set[str]</span>
+<span class="sd">        See :data:`SCAT_KEYS`</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dict of ndarray</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Original code: function ``fn_s_matrices_for_crack_2d`` by Alexander Velichko and</span>
+<span class="sd">    Paul D. Wilcox from the University of Bristol NDT library.</span>
+<span class="sd">    Python code by Nicolas Budyn.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [Glushkov] Glushkov, Evgeny, Natalia Glushkova, Alexander Ekhlakov, and</span>
+<span class="sd">    Elena Shapar. 2006. ‘An Analytically Based Computer Model for Surface</span>
+<span class="sd">    Measurements in Ultrasonic Crack Detection’. Wave Motion 43 (6): 458–73.</span>
+<span class="sd">    doi:10.1016/j.wavemoti.2006.03.002.</span>
+
+<span class="sd">    Unpublished work from Alexander Velichko</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">valid_keys</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;LL&quot;</span><span class="p">,</span> <span class="s2">&quot;LT&quot;</span><span class="p">,</span> <span class="s2">&quot;TL&quot;</span><span class="p">,</span> <span class="s2">&quot;TT&quot;</span><span class="p">}</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">valid_keys</span><span class="o">.</span><span class="n">issuperset</span><span class="p">(</span><span class="n">to_compute</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Valid &#39;to_compute&#39; arguments are </span><span class="si">{</span><span class="n">valid_keys</span><span class="si">}</span><span class="s2"> (got </span><span class="si">{</span><span class="n">to_compute</span><span class="si">}</span><span class="s2">)&quot;</span>
+        <span class="p">)</span>
+
+    <span class="n">final_broadcast</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">broadcast</span><span class="p">(</span><span class="n">inc_theta</span><span class="p">,</span> <span class="n">out_theta</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">final_broadcast</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="n">inc_theta</span><span class="p">,</span> <span class="n">out_theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">inc_theta</span><span class="p">,</span> <span class="n">out_theta</span><span class="p">)</span>
+    <span class="n">inc_theta</span><span class="p">,</span> <span class="n">out_theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">broadcast_arrays</span><span class="p">(</span><span class="n">inc_theta</span><span class="p">,</span> <span class="n">out_theta</span><span class="p">)</span>
+    <span class="c1"># Explicitly mark the broadcasted arrays as read-only, to prevent</span>
+    <span class="c1"># a FutureWarning and anticipate the future behaviour of numpy.</span>
+    <span class="n">inc_theta</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">writeable</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">out_theta</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">writeable</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">comp_broadcast</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">broadcast</span><span class="p">(</span><span class="n">inc_theta</span><span class="p">,</span> <span class="n">out_theta</span><span class="p">)</span>
+
+    <span class="n">v_L</span> <span class="o">=</span> <span class="n">longitudinal_vel</span>
+    <span class="n">v_T</span> <span class="o">=</span> <span class="n">transverse_vel</span>
+    <span class="n">use_incident_L</span> <span class="o">=</span> <span class="s2">&quot;LL&quot;</span> <span class="ow">in</span> <span class="n">to_compute</span> <span class="ow">or</span> <span class="s2">&quot;LT&quot;</span> <span class="ow">in</span> <span class="n">to_compute</span>
+    <span class="n">use_incident_T</span> <span class="o">=</span> <span class="s2">&quot;TL&quot;</span> <span class="ow">in</span> <span class="n">to_compute</span> <span class="ow">or</span> <span class="s2">&quot;TT&quot;</span> <span class="ow">in</span> <span class="n">to_compute</span>
+
+    <span class="n">lambda_L</span> <span class="o">=</span> <span class="n">v_L</span> <span class="o">/</span> <span class="n">frequency</span>
+    <span class="n">xi2</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">pi</span> <span class="o">*</span> <span class="n">frequency</span> <span class="o">/</span> <span class="n">v_T</span>
+    <span class="n">xi</span> <span class="o">=</span> <span class="n">v_T</span> <span class="o">/</span> <span class="n">v_L</span>
+
+    <span class="c1"># mesh definition</span>
+    <span class="n">num_nodes</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">crack_length</span> <span class="o">/</span> <span class="n">lambda_L</span> <span class="o">*</span> <span class="n">nodes_per_wavelength</span><span class="p">))</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="mf">0.113_340_798_6</span>  <span class="c1"># magic constant</span>
+    <span class="n">h_nodes</span> <span class="o">=</span> <span class="n">crack_length</span> <span class="o">/</span> <span class="p">(</span><span class="n">num_nodes</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">p</span><span class="p">)</span>
+    <span class="n">x_nodes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">num_nodes</span><span class="p">)</span> <span class="o">*</span> <span class="n">h_nodes</span> <span class="o">+</span> <span class="p">(</span>
+        <span class="n">h_nodes</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">p</span><span class="p">)</span> <span class="o">-</span> <span class="n">crack_length</span> <span class="o">/</span> <span class="mi">2</span>
+    <span class="p">)</span>
+
+    <span class="c1"># get matrices for the linear system</span>
+    <span class="n">A_x</span> <span class="o">=</span> <span class="n">_scat_crack</span><span class="o">.</span><span class="n">A_x</span><span class="p">(</span><span class="n">xi</span><span class="p">,</span> <span class="n">xi2</span><span class="p">,</span> <span class="n">h_nodes</span><span class="p">,</span> <span class="n">num_nodes</span><span class="p">)</span>
+    <span class="n">A_z</span> <span class="o">=</span> <span class="n">_scat_crack</span><span class="o">.</span><span class="n">A_z</span><span class="p">(</span><span class="n">xi</span><span class="p">,</span> <span class="n">xi2</span><span class="p">,</span> <span class="n">h_nodes</span><span class="p">,</span> <span class="n">num_nodes</span><span class="p">)</span>
+
+    <span class="c1"># init output (always in 2D)</span>
+    <span class="n">S_LL</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">comp_broadcast</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">)</span>
+    <span class="n">S_LT</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">comp_broadcast</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">)</span>
+    <span class="n">S_TL</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">comp_broadcast</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">)</span>
+    <span class="n">S_TT</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">comp_broadcast</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">assume_safe_for_opt</span><span class="p">:</span>
+        <span class="n">inc_theta_vect</span> <span class="o">=</span> <span class="n">inc_theta</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">matrices</span> <span class="o">=</span> <span class="n">_scat_crack</span><span class="o">.</span><span class="n">crack_2d_scat_matrix</span><span class="p">(</span>
+            <span class="n">inc_theta_vect</span><span class="p">,</span>
+            <span class="n">out_theta</span><span class="p">,</span>
+            <span class="n">v_L</span><span class="p">,</span>
+            <span class="n">v_T</span><span class="p">,</span>
+            <span class="n">density</span><span class="p">,</span>
+            <span class="n">frequency</span><span class="p">,</span>
+            <span class="n">use_incident_L</span><span class="p">,</span>
+            <span class="n">use_incident_T</span><span class="p">,</span>
+            <span class="n">x_nodes</span><span class="p">,</span>
+            <span class="n">h_nodes</span><span class="p">,</span>
+            <span class="n">A_x</span><span class="p">,</span>
+            <span class="n">A_z</span><span class="p">,</span>
+            <span class="n">S_LL</span><span class="p">,</span>
+            <span class="n">S_LT</span><span class="p">,</span>
+            <span class="n">S_TL</span><span class="p">,</span>
+            <span class="n">S_TT</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">matrices</span> <span class="o">=</span> <span class="n">_scat_crack</span><span class="o">.</span><span class="n">crack_2d_scat_general</span><span class="p">(</span>
+            <span class="n">inc_theta</span><span class="p">,</span>
+            <span class="n">out_theta</span><span class="p">,</span>
+            <span class="n">v_L</span><span class="p">,</span>
+            <span class="n">v_T</span><span class="p">,</span>
+            <span class="n">density</span><span class="p">,</span>
+            <span class="n">frequency</span><span class="p">,</span>
+            <span class="n">use_incident_L</span><span class="p">,</span>
+            <span class="n">use_incident_T</span><span class="p">,</span>
+            <span class="n">x_nodes</span><span class="p">,</span>
+            <span class="n">h_nodes</span><span class="p">,</span>
+            <span class="n">A_x</span><span class="p">,</span>
+            <span class="n">A_z</span><span class="p">,</span>
+            <span class="n">S_LL</span><span class="p">,</span>
+            <span class="n">S_LT</span><span class="p">,</span>
+            <span class="n">S_TL</span><span class="p">,</span>
+            <span class="n">S_TT</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="c1"># reshape output to the requested shape</span>
+    <span class="n">final_matrices</span> <span class="o">=</span> <span class="p">[</span><span class="n">m</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">final_broadcast</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">matrices</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">((</span><span class="s2">&quot;LL&quot;</span><span class="p">,</span> <span class="s2">&quot;LT&quot;</span><span class="p">,</span> <span class="s2">&quot;TL&quot;</span><span class="p">,</span> <span class="s2">&quot;TT&quot;</span><span class="p">),</span> <span class="n">final_matrices</span><span class="p">))</span></div>
+
+
+
+<span class="nd">@numba</span><span class="o">.</span><span class="n">cfunc</span><span class="p">(</span><span class="s2">&quot;f8(f8, voidptr)&quot;</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_crack_tip_integrand</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+    <span class="n">alpha</span><span class="p">,</span> <span class="n">k_p</span><span class="p">,</span> <span class="n">k_s</span> <span class="o">=</span> <span class="n">numba</span><span class="o">.</span><span class="n">carray</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">numba</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+    <span class="k">return</span> <span class="o">-</span><span class="n">math</span><span class="o">.</span><span class="n">atan</span><span class="p">(</span>
+        <span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="n">k_p</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">k_s</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+        <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="n">k_s</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+    <span class="p">)</span> <span class="o">/</span> <span class="p">((</span><span class="n">x</span> <span class="o">+</span> <span class="n">alpha</span><span class="p">)</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_crack_tip_k_plus_integral</span><span class="p">(</span><span class="n">alpha</span><span class="p">,</span> <span class="n">k_p</span><span class="p">,</span> <span class="n">k_s</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span> <span class="o">**</span><span class="n">quad_kwargs</span><span class="p">):</span>
+    <span class="c1"># integral in equation 2b</span>
+    <span class="c1"># includes the -1/pi factor</span>
+    <span class="n">integrand_params</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">alpha</span><span class="p">,</span> <span class="n">k_p</span><span class="p">,</span> <span class="n">k_s</span><span class="p">])</span>
+    <span class="n">integrand_params_ptr</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="n">integrand_params</span><span class="o">.</span><span class="n">ctypes</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_void_p</span><span class="p">)</span>
+    <span class="n">integrand_c</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">LowLevelCallable</span><span class="p">(</span>
+        <span class="n">_crack_tip_integrand</span><span class="o">.</span><span class="n">ctypes</span><span class="p">,</span> <span class="n">integrand_params_ptr</span>
+    <span class="p">)</span>
+
+    <span class="c1"># singularity at x = -alpha = beta</span>
+    <span class="n">beta</span> <span class="o">=</span> <span class="o">-</span><span class="n">alpha</span>
+
+    <span class="k">assert</span> <span class="n">k_p</span> <span class="o">&lt;</span> <span class="n">k_s</span>
+    <span class="k">assert</span> <span class="n">eps</span> <span class="o">&gt;</span> <span class="mi">0</span>
+
+    <span class="k">if</span> <span class="n">k_p</span> <span class="o">&lt;</span> <span class="n">beta</span> <span class="o">&lt;</span> <span class="n">k_s</span><span class="p">:</span>
+        <span class="c1"># enforce k_p &lt;= beta - eps/2</span>
+        <span class="c1">#   and  beta + eps/2 &lt;= k_s</span>
+        <span class="n">max_allowable_eps</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">beta</span> <span class="o">-</span> <span class="n">k_p</span><span class="p">),</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">k_s</span> <span class="o">-</span> <span class="n">beta</span><span class="p">))</span>
+        <span class="k">assert</span> <span class="n">max_allowable_eps</span> <span class="o">&gt;</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="n">eps</span> <span class="o">&gt;=</span> <span class="n">max_allowable_eps</span><span class="p">:</span>
+            <span class="c1"># overwrite eps if too big</span>
+            <span class="n">eps</span> <span class="o">=</span> <span class="n">max_allowable_eps</span> <span class="o">/</span> <span class="mi">2</span>
+
+        <span class="n">integral_left</span><span class="p">,</span> <span class="n">error_left</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">integrate</span><span class="o">.</span><span class="n">quad</span><span class="p">(</span>
+            <span class="n">integrand_c</span><span class="p">,</span> <span class="n">k_p</span><span class="p">,</span> <span class="n">beta</span> <span class="o">-</span> <span class="n">eps</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="o">**</span><span class="n">quad_kwargs</span>
+        <span class="p">)</span>
+        <span class="n">integral_right</span><span class="p">,</span> <span class="n">error_right</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">integrate</span><span class="o">.</span><span class="n">quad</span><span class="p">(</span>
+            <span class="n">integrand_c</span><span class="p">,</span> <span class="n">beta</span> <span class="o">+</span> <span class="n">eps</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">k_s</span><span class="p">,</span> <span class="o">**</span><span class="n">quad_kwargs</span>
+        <span class="p">)</span>
+
+        <span class="n">integral</span> <span class="o">=</span> <span class="n">integral_left</span> <span class="o">+</span> <span class="n">integral_right</span>
+        <span class="n">error</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">error_left</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">error_right</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">integral</span><span class="p">,</span> <span class="n">error</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">integrate</span><span class="o">.</span><span class="n">quad</span><span class="p">(</span><span class="n">integrand_c</span><span class="p">,</span> <span class="n">k_p</span><span class="p">,</span> <span class="n">k_s</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">integral</span><span class="p">,</span> <span class="n">error</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_crack_tip_k_plus_integral_arr</span><span class="p">(</span><span class="n">alpha_arr</span><span class="p">,</span> <span class="n">k_p</span><span class="p">,</span> <span class="n">k_s</span><span class="p">,</span> <span class="o">**</span><span class="n">quad_kwargs</span><span class="p">):</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">alpha_arr</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
+    <span class="n">it</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nditer</span><span class="p">([</span><span class="n">alpha_arr</span><span class="p">,</span> <span class="n">out</span><span class="p">],</span> <span class="n">op_flags</span><span class="o">=</span><span class="p">([</span><span class="s2">&quot;readonly&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;writeonly&quot;</span><span class="p">,</span> <span class="s2">&quot;allocate&quot;</span><span class="p">]))</span>
+    <span class="k">for</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">it</span><span class="p">:</span>
+        <span class="n">res</span><span class="p">[</span><span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">_crack_tip_k_plus_integral</span><span class="p">(</span><span class="n">alpha</span><span class="p">,</span> <span class="n">k_p</span><span class="p">,</span> <span class="n">k_s</span><span class="p">,</span> <span class="o">**</span><span class="n">quad_kwargs</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">it</span><span class="o">.</span><span class="n">operands</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_crack_tip_k_plus</span><span class="p">(</span><span class="n">alpha_arr</span><span class="p">,</span> <span class="n">k_p</span><span class="p">,</span> <span class="n">k_s</span><span class="p">,</span> <span class="o">**</span><span class="n">quad_kwargs</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">_crack_tip_k_plus_integral_arr</span><span class="p">(</span><span class="n">alpha_arr</span><span class="p">,</span> <span class="n">k_p</span><span class="p">,</span> <span class="n">k_s</span><span class="p">,</span> <span class="o">**</span><span class="n">quad_kwargs</span><span class="p">))</span>
+
+
+<div class="viewcode-block" id="crack_tip_2d">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.scat/arim.scat.crack_tip_2d.html#arim.scat.crack_tip_2d">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">crack_tip_2d</span><span class="p">(</span>
+    <span class="n">inc_theta</span><span class="p">,</span>
+    <span class="n">out_theta</span><span class="p">,</span>
+    <span class="n">longitudinal_vel</span><span class="p">,</span>
+    <span class="n">transverse_vel</span><span class="p">,</span>
+    <span class="n">rayleigh_vel</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">to_compute</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;LL&quot;</span><span class="p">,</span> <span class="s2">&quot;LT&quot;</span><span class="p">,</span> <span class="s2">&quot;TL&quot;</span><span class="p">,</span> <span class="s2">&quot;TT&quot;</span><span class="p">),</span>
+    <span class="o">**</span><span class="n">quad_kwargs</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Analytical model of the diffraction of elastic waves by a crack tip. The crack length is infinite.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    inc_theta</span>
+<span class="sd">    out_theta</span>
+<span class="sd">    longitudinal_vel</span>
+<span class="sd">    transverse_vel</span>
+<span class="sd">    rayleigh_vel : float or None</span>
+<span class="sd">        If None, use :func:`arim.ut.rayleigh_vel`</span>
+<span class="sd">    to_compute</span>
+<span class="sd">    quad_kwargs</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    res</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    [Ogilvy83] Ogilvy, J. A., and J. A. G. Temple. 1983. ‘Diffraction of Elastic Waves by Cracks: Application to</span>
+<span class="sd">    Time-of-Flight Inspection’. Ultrasonics 21 (6):259–69. https://doi.org/10.1016/0041-624X(83)90058-6.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+    <span class="c1"># use paper notations</span>
+    <span class="c1"># 1e7 is a scaling factor. The theoretical result does not depend on the frequency</span>
+    <span class="c1"># but the numerical result because of finite numerical precision.</span>
+    <span class="n">k_p</span> <span class="o">=</span> <span class="mf">1e7</span> <span class="o">/</span> <span class="n">longitudinal_vel</span>
+    <span class="n">k_s</span> <span class="o">=</span> <span class="mf">1e7</span> <span class="o">/</span> <span class="n">transverse_vel</span>
+
+    <span class="k">if</span> <span class="n">rayleigh_vel</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">rayleigh_vel</span> <span class="o">=</span> <span class="n">ut</span><span class="o">.</span><span class="n">rayleigh_vel</span><span class="p">(</span><span class="n">longitudinal_vel</span><span class="p">,</span> <span class="n">transverse_vel</span><span class="p">)</span>
+    <span class="n">k_0</span> <span class="o">=</span> <span class="mf">1e7</span> <span class="o">/</span> <span class="n">rayleigh_vel</span>
+
+    <span class="n">k_p2</span> <span class="o">=</span> <span class="n">k_p</span><span class="o">**</span><span class="mi">2</span>
+    <span class="n">k_s2</span> <span class="o">=</span> <span class="n">k_s</span><span class="o">**</span><span class="mi">2</span>
+
+    <span class="n">beta</span> <span class="o">=</span> <span class="n">inc_theta</span>
+    <span class="n">theta</span> <span class="o">=</span> <span class="n">out_theta</span>
+
+    <span class="n">e_ipi4</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span><span class="n">j</span><span class="p">)</span>  <span class="c1"># exp(1j pi / 4)</span>
+
+    <span class="n">sin</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span>
+    <span class="n">cos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span>
+    <span class="n">sqrt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span>
+    <span class="n">pi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span>
+
+    <span class="n">cos_theta</span> <span class="o">=</span> <span class="n">cos</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
+    <span class="n">cos_beta</span> <span class="o">=</span> <span class="n">cos</span><span class="p">(</span><span class="n">beta</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="s2">&quot;LT&quot;</span> <span class="ow">in</span> <span class="n">to_compute</span> <span class="ow">or</span> <span class="s2">&quot;TT&quot;</span> <span class="ow">in</span> <span class="n">to_compute</span><span class="p">:</span>
+        <span class="n">k_plus_ks_cos_theta</span> <span class="o">=</span> <span class="n">_crack_tip_k_plus</span><span class="p">(</span>
+            <span class="o">-</span><span class="n">k_s</span> <span class="o">*</span> <span class="n">cos_theta</span><span class="p">,</span> <span class="n">k_p</span><span class="p">,</span> <span class="n">k_s</span><span class="p">,</span> <span class="o">**</span><span class="n">quad_kwargs</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">k_plus_ks_cos_theta</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="s2">&quot;LL&quot;</span> <span class="ow">in</span> <span class="n">to_compute</span> <span class="ow">or</span> <span class="s2">&quot;TL&quot;</span> <span class="ow">in</span> <span class="n">to_compute</span><span class="p">:</span>
+        <span class="n">k_plus_kp_cos_theta</span> <span class="o">=</span> <span class="n">_crack_tip_k_plus</span><span class="p">(</span>
+            <span class="o">-</span><span class="n">k_p</span> <span class="o">*</span> <span class="n">cos_theta</span><span class="p">,</span> <span class="n">k_p</span><span class="p">,</span> <span class="n">k_s</span><span class="p">,</span> <span class="o">**</span><span class="n">quad_kwargs</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">k_plus_kp_cos_theta</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="s2">&quot;TL&quot;</span> <span class="ow">in</span> <span class="n">to_compute</span> <span class="ow">or</span> <span class="s2">&quot;TT&quot;</span> <span class="ow">in</span> <span class="n">to_compute</span><span class="p">:</span>
+        <span class="n">k_plus_ks_cos_beta</span> <span class="o">=</span> <span class="n">_crack_tip_k_plus</span><span class="p">(</span><span class="o">-</span><span class="n">k_s</span> <span class="o">*</span> <span class="n">cos_beta</span><span class="p">,</span> <span class="n">k_p</span><span class="p">,</span> <span class="n">k_s</span><span class="p">,</span> <span class="o">**</span><span class="n">quad_kwargs</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">k_plus_ks_cos_beta</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="s2">&quot;LL&quot;</span> <span class="ow">in</span> <span class="n">to_compute</span> <span class="ow">or</span> <span class="s2">&quot;LT&quot;</span> <span class="ow">in</span> <span class="n">to_compute</span><span class="p">:</span>
+        <span class="n">k_plus_kp_cos_beta</span> <span class="o">=</span> <span class="n">_crack_tip_k_plus</span><span class="p">(</span><span class="o">-</span><span class="n">k_p</span> <span class="o">*</span> <span class="n">cos_beta</span><span class="p">,</span> <span class="n">k_p</span><span class="p">,</span> <span class="n">k_s</span><span class="p">,</span> <span class="o">**</span><span class="n">quad_kwargs</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">k_plus_kp_cos_beta</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">if</span> <span class="s2">&quot;LL&quot;</span> <span class="ow">in</span> <span class="n">to_compute</span><span class="p">:</span>
+        <span class="c1"># Gp(theta, beta)</span>
+        <span class="n">res</span><span class="p">[</span><span class="s2">&quot;LL&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">e_ipi4</span>
+            <span class="o">*</span> <span class="n">sin</span><span class="p">(</span><span class="n">beta</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="o">*</span> <span class="p">(</span>
+                <span class="n">sin</span><span class="p">(</span><span class="n">theta</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+                <span class="o">*</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">k_p2</span> <span class="o">*</span> <span class="n">cos_beta</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="n">k_s2</span><span class="p">)</span>
+                <span class="o">*</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">k_p2</span> <span class="o">*</span> <span class="n">cos_theta</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="n">k_s2</span><span class="p">)</span>
+                <span class="o">+</span> <span class="mi">2</span>
+                <span class="o">*</span> <span class="n">k_p</span><span class="o">**</span><span class="mi">3</span>
+                <span class="o">*</span> <span class="n">cos</span><span class="p">(</span><span class="n">beta</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+                <span class="o">*</span> <span class="n">cos_beta</span>
+                <span class="o">*</span> <span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">theta</span><span class="p">)</span>
+                <span class="o">*</span> <span class="n">sqrt</span><span class="p">(</span><span class="n">k_s</span> <span class="o">-</span> <span class="n">k_p</span> <span class="o">*</span> <span class="n">cos_theta</span><span class="p">)</span>
+                <span class="o">*</span> <span class="n">sqrt</span><span class="p">(</span><span class="n">k_s</span> <span class="o">-</span> <span class="n">k_p</span> <span class="o">*</span> <span class="n">cos_beta</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="o">/</span> <span class="p">(</span>
+                <span class="mi">2</span>
+                <span class="o">*</span> <span class="n">pi</span>
+                <span class="o">*</span> <span class="p">(</span><span class="n">k_s2</span> <span class="o">-</span> <span class="n">k_p2</span><span class="p">)</span>
+                <span class="o">*</span> <span class="p">(</span><span class="n">cos_theta</span> <span class="o">+</span> <span class="n">cos_beta</span><span class="p">)</span>
+                <span class="o">*</span> <span class="p">(</span><span class="n">k_0</span> <span class="o">-</span> <span class="n">k_p</span> <span class="o">*</span> <span class="n">cos_theta</span><span class="p">)</span>
+                <span class="o">*</span> <span class="p">(</span><span class="n">k_0</span> <span class="o">-</span> <span class="n">k_p</span> <span class="o">*</span> <span class="n">cos_beta</span><span class="p">)</span>
+                <span class="o">*</span> <span class="n">k_plus_kp_cos_theta</span>
+                <span class="o">*</span> <span class="n">k_plus_kp_cos_beta</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="s2">&quot;LT&quot;</span> <span class="ow">in</span> <span class="n">to_compute</span><span class="p">:</span>
+        <span class="c1"># G_s(theta, beta)</span>
+        <span class="n">res</span><span class="p">[</span><span class="s2">&quot;LT&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">e_ipi4</span>
+            <span class="o">*</span> <span class="n">sqrt</span><span class="p">(</span><span class="n">k_p</span> <span class="o">/</span> <span class="n">k_s</span><span class="p">)</span>
+            <span class="o">*</span> <span class="p">(</span>
+                <span class="n">k_s2</span>
+                <span class="o">*</span> <span class="n">sin</span><span class="p">(</span><span class="n">beta</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+                <span class="o">*</span> <span class="p">(</span>
+                    <span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">k_p</span><span class="p">)</span>
+                    <span class="o">*</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">k_p2</span> <span class="o">*</span> <span class="n">cos_beta</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="n">k_s2</span><span class="p">)</span>
+                    <span class="o">*</span> <span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">theta</span><span class="p">)</span>
+                    <span class="o">*</span> <span class="n">sqrt</span><span class="p">((</span><span class="n">k_p</span> <span class="o">-</span> <span class="n">k_s</span> <span class="o">*</span> <span class="n">cos_theta</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">complex</span><span class="p">))</span>
+                    <span class="o">-</span> <span class="mi">4</span>
+                    <span class="o">*</span> <span class="n">k_p2</span>
+                    <span class="o">*</span> <span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">k_s</span><span class="p">)</span>
+                    <span class="o">*</span> <span class="n">cos</span><span class="p">(</span><span class="n">beta</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+                    <span class="o">*</span> <span class="n">cos_beta</span>
+                    <span class="o">*</span> <span class="n">sin</span><span class="p">(</span><span class="n">theta</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+                    <span class="o">*</span> <span class="n">cos</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">theta</span><span class="p">)</span>
+                    <span class="o">*</span> <span class="n">sqrt</span><span class="p">(</span><span class="n">k_s</span> <span class="o">-</span> <span class="n">k_p</span> <span class="o">*</span> <span class="n">cos_beta</span><span class="p">)</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+            <span class="o">/</span> <span class="p">(</span>
+                <span class="mi">4</span>
+                <span class="o">*</span> <span class="n">pi</span>
+                <span class="o">*</span> <span class="p">(</span><span class="n">k_s2</span> <span class="o">-</span> <span class="n">k_p2</span><span class="p">)</span>
+                <span class="o">*</span> <span class="p">(</span><span class="n">k_s</span> <span class="o">*</span> <span class="n">cos_theta</span> <span class="o">+</span> <span class="n">k_p</span> <span class="o">*</span> <span class="n">cos_beta</span><span class="p">)</span>
+                <span class="o">*</span> <span class="p">(</span><span class="n">k_0</span> <span class="o">-</span> <span class="n">k_s</span> <span class="o">*</span> <span class="n">cos_theta</span><span class="p">)</span>
+                <span class="o">*</span> <span class="p">(</span><span class="n">k_0</span> <span class="o">-</span> <span class="n">k_p</span> <span class="o">*</span> <span class="n">cos_beta</span><span class="p">)</span>
+                <span class="o">*</span> <span class="n">k_plus_ks_cos_theta</span>
+                <span class="o">*</span> <span class="n">k_plus_kp_cos_beta</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="s2">&quot;TL&quot;</span> <span class="ow">in</span> <span class="n">to_compute</span><span class="p">:</span>
+        <span class="c1"># F_p(theta, beta)</span>
+        <span class="n">res</span><span class="p">[</span><span class="s2">&quot;TL&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">e_ipi4</span>
+            <span class="o">*</span> <span class="n">sqrt</span><span class="p">(</span><span class="n">k_s</span> <span class="o">/</span> <span class="n">k_p</span><span class="p">)</span>
+            <span class="o">*</span> <span class="p">(</span>
+                <span class="n">k_s2</span>
+                <span class="o">*</span> <span class="n">sin</span><span class="p">(</span><span class="n">beta</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+                <span class="o">*</span> <span class="p">(</span>
+                    <span class="o">-</span><span class="n">k_p2</span>
+                    <span class="o">*</span> <span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">k_s</span><span class="p">)</span>
+                    <span class="o">*</span> <span class="n">cos</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">beta</span><span class="p">)</span>
+                    <span class="o">*</span> <span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">theta</span><span class="p">)</span>
+                    <span class="o">*</span> <span class="n">sqrt</span><span class="p">(</span><span class="n">k_s</span> <span class="o">-</span> <span class="n">k_p</span> <span class="o">*</span> <span class="n">cos</span><span class="p">(</span><span class="n">theta</span><span class="p">))</span>
+                    <span class="o">+</span> <span class="mi">4</span>
+                    <span class="o">*</span> <span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">k_p</span><span class="p">)</span>
+                    <span class="o">*</span> <span class="n">cos</span><span class="p">(</span><span class="n">beta</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+                    <span class="o">*</span> <span class="n">cos</span><span class="p">(</span><span class="n">beta</span><span class="p">)</span>
+                    <span class="o">*</span> <span class="n">sin</span><span class="p">(</span><span class="n">theta</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+                    <span class="o">*</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">k_p2</span> <span class="o">*</span> <span class="n">cos_theta</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="n">k_s2</span><span class="p">)</span>
+                    <span class="o">*</span> <span class="n">sqrt</span><span class="p">((</span><span class="n">k_p</span> <span class="o">-</span> <span class="n">k_s</span> <span class="o">*</span> <span class="n">cos_beta</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">complex</span><span class="p">))</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+            <span class="o">/</span> <span class="p">(</span>
+                <span class="mi">4</span>
+                <span class="o">*</span> <span class="n">pi</span>
+                <span class="o">*</span> <span class="p">(</span><span class="n">k_s2</span> <span class="o">-</span> <span class="n">k_p2</span><span class="p">)</span>
+                <span class="o">*</span> <span class="p">(</span><span class="n">k_p</span> <span class="o">*</span> <span class="n">cos_theta</span> <span class="o">+</span> <span class="n">k_s</span> <span class="o">*</span> <span class="n">cos_beta</span><span class="p">)</span>
+                <span class="o">*</span> <span class="p">(</span><span class="n">k_0</span> <span class="o">-</span> <span class="n">k_p</span> <span class="o">*</span> <span class="n">cos_theta</span><span class="p">)</span>
+                <span class="o">*</span> <span class="p">(</span><span class="n">k_0</span> <span class="o">-</span> <span class="n">k_s</span> <span class="o">*</span> <span class="n">cos_beta</span><span class="p">)</span>
+                <span class="o">*</span> <span class="n">k_plus_kp_cos_theta</span>
+                <span class="o">*</span> <span class="n">k_plus_ks_cos_beta</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="s2">&quot;TT&quot;</span> <span class="ow">in</span> <span class="n">to_compute</span><span class="p">:</span>
+        <span class="c1"># F_s(theta, beta)</span>
+        <span class="n">res</span><span class="p">[</span><span class="s2">&quot;TT&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">e_ipi4</span>
+            <span class="o">*</span> <span class="n">k_s</span><span class="o">**</span><span class="mi">3</span>
+            <span class="o">*</span> <span class="n">sin</span><span class="p">(</span><span class="n">beta</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="o">*</span> <span class="p">(</span>
+                <span class="n">k_s</span> <span class="o">*</span> <span class="n">cos</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">beta</span><span class="p">)</span> <span class="o">*</span> <span class="n">cos</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">theta</span><span class="p">)</span> <span class="o">*</span> <span class="n">sin</span><span class="p">(</span><span class="n">theta</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+                <span class="o">+</span> <span class="mi">2</span>
+                <span class="o">*</span> <span class="n">cos</span><span class="p">(</span><span class="n">beta</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+                <span class="o">*</span> <span class="n">cos</span><span class="p">(</span><span class="n">beta</span><span class="p">)</span>
+                <span class="o">*</span> <span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">theta</span><span class="p">)</span>
+                <span class="o">*</span> <span class="n">sqrt</span><span class="p">((</span><span class="n">k_p</span> <span class="o">-</span> <span class="n">k_s</span> <span class="o">*</span> <span class="n">cos_theta</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">complex</span><span class="p">))</span>
+                <span class="o">*</span> <span class="n">sqrt</span><span class="p">((</span><span class="n">k_p</span> <span class="o">-</span> <span class="n">k_s</span> <span class="o">*</span> <span class="n">cos_beta</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">complex</span><span class="p">))</span>
+            <span class="p">)</span>
+            <span class="o">/</span> <span class="p">(</span>
+                <span class="mi">2</span>
+                <span class="o">*</span> <span class="n">pi</span>
+                <span class="o">*</span> <span class="p">(</span><span class="n">k_s2</span> <span class="o">-</span> <span class="n">k_p2</span><span class="p">)</span>
+                <span class="o">*</span> <span class="p">(</span><span class="n">cos_theta</span> <span class="o">+</span> <span class="n">cos_beta</span><span class="p">)</span>
+                <span class="o">*</span> <span class="p">(</span><span class="n">k_0</span> <span class="o">-</span> <span class="n">k_s</span> <span class="o">*</span> <span class="n">cos_theta</span><span class="p">)</span>
+                <span class="o">*</span> <span class="p">(</span><span class="n">k_0</span> <span class="o">-</span> <span class="n">k_s</span> <span class="o">*</span> <span class="n">cos_beta</span><span class="p">)</span>
+                <span class="o">*</span> <span class="n">k_plus_ks_cos_theta</span>
+                <span class="o">*</span> <span class="n">k_plus_ks_cos_beta</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">res</span></div>
+
+
+
+<div class="viewcode-block" id="rotate_matrix">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.scat/arim.scat.rotate_matrix.html#arim.scat.rotate_matrix">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">rotate_matrix</span><span class="p">(</span><span class="n">scat_matrix</span><span class="p">,</span> <span class="n">phi</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return the scattering matrix S&#39; of the scatterer rotated by an angle phi,</span>
+<span class="sd">    knowing the scattering matrix S of the unrotated scatterer::</span>
+
+<span class="sd">        S&#39;(theta_1, theta_2) = S(theta_1 - phi, theta_2 - phi)</span>
+
+<span class="sd">    Use FFT internally.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    scat_matrix : ndarray</span>
+<span class="sd">        Shape (numangles, numangles)</span>
+<span class="sd">    phi : float</span>
+<span class="sd">        Defect&#39;s rotation angle in radian.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    ------</span>
+<span class="sd">    roated_scat_matrix: ndarray</span>
+<span class="sd">        Shape : (numangles, numangles)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">n</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">scat_matrix</span><span class="o">.</span><span class="n">shape</span>
+
+    <span class="n">freq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fftfreq</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="n">n</span><span class="p">)</span>
+
+    <span class="n">freq_x</span><span class="p">,</span> <span class="n">freq_y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">freq</span><span class="p">,</span> <span class="n">freq</span><span class="p">,</span> <span class="n">indexing</span><span class="o">=</span><span class="s2">&quot;ij&quot;</span><span class="p">)</span>
+
+    <span class="n">freqshift</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="n">j</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="p">(</span><span class="n">freq_x</span> <span class="o">+</span> <span class="n">freq_y</span><span class="p">)</span> <span class="o">*</span> <span class="n">phi</span><span class="p">)</span>
+    <span class="n">scat_matrix_f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fft2</span><span class="p">(</span><span class="n">scat_matrix</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">ifft2</span><span class="p">(</span><span class="n">freqshift</span> <span class="o">*</span> <span class="n">scat_matrix_f</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="rotate_matrices">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.scat/arim.scat.rotate_matrices.html#arim.scat.rotate_matrices">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">rotate_matrices</span><span class="p">(</span><span class="n">scat_matrices</span><span class="p">,</span> <span class="n">phi</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Call :func:`rotate_matrix` on each matrix in a dict.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    scat_matrices : dict</span>
+<span class="sd">    phi : float</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dict</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="n">scat_key</span><span class="p">:</span> <span class="n">rotate_matrix</span><span class="p">(</span><span class="n">scat_matrix</span><span class="p">,</span> <span class="n">phi</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">scat_key</span><span class="p">,</span> <span class="n">scat_matrix</span> <span class="ow">in</span> <span class="n">scat_matrices</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+    <span class="p">}</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_partial_one_scat_key</span><span class="p">(</span><span class="n">scat_func</span><span class="p">,</span> <span class="n">scat_key</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a dict of functions.</span>
+
+<span class="sd">        &gt;&gt;&gt; assert scat_func(x, y, z, to_compute=[&#39;LT&#39;])[&#39;LT&#39;] == _partial_one_scat_key(scat_func, &#39;LT&#39;, z)(x, y)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Remark: do not try to replace this by a lambda function, a proper closure is needed</span>
+    <span class="c1"># here.</span>
+    <span class="c1"># See https://stackoverflow.com/questions/3252228/python-why-is-functools-partial-necessary</span>
+    <span class="c1"># Inspired by https://docs.python.org/3/library/functools.html#functools.partial</span>
+    <span class="n">to_compute</span> <span class="o">=</span> <span class="p">{</span><span class="n">scat_key</span><span class="p">}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">new_scat_func</span><span class="p">(</span><span class="o">*</span><span class="n">fargs</span><span class="p">,</span> <span class="o">**</span><span class="n">fkeywords</span><span class="p">):</span>
+        <span class="n">newkeywords</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">newkeywords</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">fkeywords</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">scat_func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">*</span><span class="n">fargs</span><span class="p">,</span> <span class="n">to_compute</span><span class="o">=</span><span class="n">to_compute</span><span class="p">,</span> <span class="o">**</span><span class="n">newkeywords</span><span class="p">)[</span><span class="n">scat_key</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">new_scat_func</span>
+
+
+<div class="viewcode-block" id="scat_factory">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.scat/arim.scat.scat_factory.html#arim.scat.scat_factory">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">scat_factory</span><span class="p">(</span><span class="n">kind</span><span class="p">,</span> <span class="n">material</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates a Scattering2d object in a simple way</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    kind : str</span>
+<span class="sd">    material : Material</span>
+<span class="sd">    args</span>
+<span class="sd">    kwargs</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Scattering2d</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; material = arim.Material(6300., 3120., 2700., &#39;solid&#39;, metadata={&#39;long_name&#39;: &#39;Aluminium&#39;})</span>
+
+<span class="sd">    Creating the scattering object:</span>
+
+<span class="sd">    &gt;&gt;&gt; scat_obj = scat_factory(&#39;file&#39;, material, &#39;scattering_data.mat&#39;)</span>
+
+<span class="sd">    &gt;&gt;&gt; scat_obj = scat_factory(&#39;crack_centre&#39;, material, crack_length=2.0e-3)</span>
+
+<span class="sd">    &gt;&gt;&gt; scat_obj = scat_factory(&#39;crack_tip&#39;, material)</span>
+
+<span class="sd">    &gt;&gt;&gt; scat_obj = scat_factory(&#39;sdh&#39;, material, radius=0.5e-3)</span>
+
+<span class="sd">    &gt;&gt;&gt; scat_obj = scat_factory(&#39;point&#39;, material) # unphysical, debug only</span>
+
+<span class="sd">    Each ``scat_obj`` is a :class:`Scattering2d` object.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">kind</span> <span class="o">=</span> <span class="n">kind</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>  <span class="c1"># ignore case</span>
+    <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;file&quot;</span><span class="p">:</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">io</span>
+
+        <span class="k">return</span> <span class="n">io</span><span class="o">.</span><span class="n">scat</span><span class="o">.</span><span class="n">load_scat</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;crack_centre&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">CrackCentreScat</span><span class="p">(</span>
+            <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+            <span class="n">longitudinal_vel</span><span class="o">=</span><span class="n">material</span><span class="o">.</span><span class="n">longitudinal_vel</span><span class="p">,</span>
+            <span class="n">transverse_vel</span><span class="o">=</span><span class="n">material</span><span class="o">.</span><span class="n">transverse_vel</span><span class="p">,</span>
+            <span class="n">density</span><span class="o">=</span><span class="n">material</span><span class="o">.</span><span class="n">density</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="k">elif</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;crack_tip&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">CrackTipScat</span><span class="p">(</span>
+            <span class="n">material</span><span class="o">.</span><span class="n">longitudinal_vel</span><span class="p">,</span> <span class="n">material</span><span class="o">.</span><span class="n">transverse_vel</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+        <span class="p">)</span>
+    <span class="k">elif</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;sdh&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">SdhScat</span><span class="p">(</span>
+            <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+            <span class="n">longitudinal_vel</span><span class="o">=</span><span class="n">material</span><span class="o">.</span><span class="n">longitudinal_vel</span><span class="p">,</span>
+            <span class="n">transverse_vel</span><span class="o">=</span><span class="n">material</span><span class="o">.</span><span class="n">transverse_vel</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="k">elif</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;point&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">PointSourceScat</span><span class="p">(</span>
+            <span class="n">material</span><span class="o">.</span><span class="n">longitudinal_vel</span><span class="p">,</span> <span class="n">material</span><span class="o">.</span><span class="n">transverse_vel</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;no strategy for kind=&#39;</span><span class="si">{</span><span class="n">kind</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="Scattering2d">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.scat/arim.scat.Scattering2d.html#arim.scat.Scattering2d">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Scattering2d</span><span class="p">(</span><span class="n">abc</span><span class="o">.</span><span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base object for computing the scattering functions in 2D.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; material = arim.Material(6300., 3120., 2700., &#39;solid&#39;, metadata={&#39;long_name&#39;: &#39;Aluminium&#39;})</span>
+<span class="sd">    &gt;&gt;&gt; scat_obj = scat_factory(&#39;sdh&#39;, material, radius=0.5e-3)</span>
+
+<span class="sd">    A :class:`Scattering2d` can be used a function of the incident angles, the scattered</span>
+<span class="sd">    angles and the frequency:</span>
+
+<span class="sd">    &gt;&gt;&gt; inc_theta = np.deg2rad([0., 0., 0.])</span>
+<span class="sd">    &gt;&gt;&gt; out_theta = np.deg2rad([0., 10., 20])</span>
+<span class="sd">    &gt;&gt;&gt; frequency = 5e6  # Hz</span>
+<span class="sd">    &gt;&gt;&gt; result = scat_obj(inc_theta, out_theta, frequency)</span>
+
+<span class="sd">    ``result`` is a dict with keys &#39;LL&#39;, &#39;LT&#39;, &#39;TL&#39;, &#39;TT&#39;. Each value of the dict is an</span>
+<span class="sd">    array of shape (3, ).</span>
+
+<span class="sd">    &gt;&gt;&gt; result2 = scat_obj(inc_theta, out_theta, frequency, to_compute=[&#39;LL&#39;])</span>
+
+
+<span class="sd">    ``result2`` is a dict which contains the key &#39;LL&#39;. Use this feature to reduce the amount</span>
+<span class="sd">    of computation. Depending on how the function is written, other keys may be returned.</span>
+
+<span class="sd">    To generate scattering matrices:</span>
+
+<span class="sd">    &gt;&gt;&gt; numangles = 10  # number of angles between -pi (included) and +pi (excluded)</span>
+<span class="sd">    &gt;&gt;&gt; single_freq_matrices = scat_obj.as_single_freq_matrices(numangles, frequency)</span>
+
+<span class="sd">    ``single_freq_matrices[&#39;LL&#39;]`` is here a 2d array of shape (10, 10).</span>
+
+<span class="sd">    &gt;&gt;&gt; frequencies = [1e6, 2e6, 3e6, 4e6, 5e6]  # Hz</span>
+<span class="sd">    &gt;&gt;&gt; multi_freq_matrices = scat_obj.as_multi_freq_matrices(numangles, frequencies)</span>
+
+<span class="sd">    ``multi_freq_matrices[&#39;LL&#39;]`` is here a 3d array of shape (5, 10, 10).</span>
+
+<span class="sd">    For convenience, functions that return an array instead of a dict of array are</span>
+<span class="sd">    provided.</span>
+
+<span class="sd">    &gt;&gt;&gt; func_dict = scat_obj.as_freq_angles_funcs()</span>
+<span class="sd">    &gt;&gt;&gt; scat_LL_func = func_dict[&#39;LL&#39;]</span>
+<span class="sd">    &gt;&gt;&gt; scat_LL_func(phi_in, phi_out, frequency)</span>
+<span class="sd">    ...  # return an array</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inc_theta</span><span class="p">,</span> <span class="n">out_theta</span><span class="p">,</span> <span class="n">frequency</span><span class="p">,</span> <span class="n">to_compute</span><span class="o">=</span><span class="n">SCAT_KEYS</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the scattering values for the given angles and frequency.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        inc_theta : ndarray</span>
+<span class="sd">        out_theta : ndarray</span>
+<span class="sd">        frequency : float</span>
+<span class="sd">        to_compute : set[str]</span>
+<span class="sd">            See :data:`SCAT_KEYS`</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        scat_values : dict[ndarray]</span>
+<span class="sd">            Keys: at least the ones given in ``to_compute``.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Scattering2d.as_freq_angles_funcs">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.scat/arim.scat.Scattering2d.html#arim.scat.Scattering2d.as_freq_angles_funcs">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">as_freq_angles_funcs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a dict of scattering functions that take as input the incident angle,</span>
+<span class="sd">        the outgoing angle and the frequency.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">scat_funcs</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">for</span> <span class="n">scat_key</span> <span class="ow">in</span> <span class="n">SCAT_KEYS</span><span class="p">:</span>
+            <span class="n">scat_funcs</span><span class="p">[</span><span class="n">scat_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">_partial_one_scat_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scat_key</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">scat_funcs</span></div>
+
+
+<div class="viewcode-block" id="Scattering2d.as_angles_funcs">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.scat/arim.scat.Scattering2d.html#arim.scat.Scattering2d.as_angles_funcs">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">as_angles_funcs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frequency</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a dict of scattering functions that take as input the incident angle</span>
+<span class="sd">        and the outgoing angle.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">scat_funcs</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">for</span> <span class="n">scat_key</span> <span class="ow">in</span> <span class="n">SCAT_KEYS</span><span class="p">:</span>
+            <span class="n">scat_funcs</span><span class="p">[</span><span class="n">scat_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">_partial_one_scat_key</span><span class="p">(</span>
+                <span class="bp">self</span><span class="p">,</span> <span class="n">scat_key</span><span class="p">,</span> <span class="n">frequency</span><span class="o">=</span><span class="n">frequency</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">scat_funcs</span></div>
+
+
+<div class="viewcode-block" id="Scattering2d.as_multi_freq_matrices">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.scat/arim.scat.Scattering2d.html#arim.scat.Scattering2d.as_multi_freq_matrices">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">as_multi_freq_matrices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frequencies</span><span class="p">,</span> <span class="n">numangles</span><span class="p">,</span> <span class="n">to_compute</span><span class="o">=</span><span class="n">SCAT_KEYS</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns scattering matrices at different frequencies.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        frequency : ndarray</span>
+<span class="sd">            Shape: (numfreq, )</span>
+<span class="sd">        numangles : int</span>
+<span class="sd">        to_compute</span>
+<span class="sd">            See :data:`SCAT_KEYS`</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        dict[str, ndarray]</span>
+<span class="sd">            Shape of each matrix: ``(numfreq, numpoints, numpoints)``</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">inc_theta</span><span class="p">,</span> <span class="n">out_theta</span> <span class="o">=</span> <span class="n">make_angles_grid</span><span class="p">(</span><span class="n">numangles</span><span class="p">)</span>
+
+        <span class="n">out</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">frequency</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">frequencies</span><span class="p">):</span>
+            <span class="n">matrices</span> <span class="o">=</span> <span class="bp">self</span><span class="p">(</span><span class="n">inc_theta</span><span class="p">,</span> <span class="n">out_theta</span><span class="p">,</span> <span class="n">frequency</span><span class="p">,</span> <span class="n">to_compute</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># Late initialisation for getting the datatype of matrices</span>
+                <span class="n">out</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="n">scat_key</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
+                        <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">frequencies</span><span class="p">),</span> <span class="n">numangles</span><span class="p">,</span> <span class="n">numangles</span><span class="p">),</span>
+                        <span class="n">matrices</span><span class="p">[</span><span class="n">scat_key</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
+                    <span class="p">)</span>
+                    <span class="k">for</span> <span class="n">scat_key</span> <span class="ow">in</span> <span class="n">to_compute</span>
+                <span class="p">}</span>
+            <span class="k">for</span> <span class="n">scat_key</span> <span class="ow">in</span> <span class="n">to_compute</span><span class="p">:</span>
+                <span class="n">out</span><span class="p">[</span><span class="n">scat_key</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">matrices</span><span class="p">[</span><span class="n">scat_key</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">out</span></div>
+
+
+<div class="viewcode-block" id="Scattering2d.as_single_freq_matrices">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.scat/arim.scat.Scattering2d.html#arim.scat.Scattering2d.as_single_freq_matrices">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">as_single_freq_matrices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frequency</span><span class="p">,</span> <span class="n">numangles</span><span class="p">,</span> <span class="n">to_compute</span><span class="o">=</span><span class="n">SCAT_KEYS</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns scattering matrices at a given frequency.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        frequency : float</span>
+<span class="sd">        numangles : int</span>
+<span class="sd">        to_compute : set[str]</span>
+
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        dict[str, ndarray]</span>
+<span class="sd">            Shape of each matrix: ``(numpoints, numpoints)``</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">inc_theta</span><span class="p">,</span> <span class="n">out_theta</span> <span class="o">=</span> <span class="n">make_angles_grid</span><span class="p">(</span><span class="n">numangles</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="p">(</span><span class="n">inc_theta</span><span class="p">,</span> <span class="n">out_theta</span><span class="p">,</span> <span class="n">frequency</span><span class="p">,</span> <span class="n">to_compute</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Scattering2d.as_multi_freq_matrices_obj">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.scat/arim.scat.Scattering2d.html#arim.scat.Scattering2d.as_multi_freq_matrices_obj">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">as_multi_freq_matrices_obj</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frequencies</span><span class="p">,</span> <span class="n">numangles</span><span class="p">,</span> <span class="n">to_compute</span><span class="o">=</span><span class="n">SCAT_KEYS</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns scattering matrices at different frequencies as a ScatFromData object.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        frequencies : ndarray</span>
+<span class="sd">        numangles : int</span>
+<span class="sd">        to_compute : set[str]</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        ScatFromData</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">matrices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">as_multi_freq_matrices</span><span class="p">(</span><span class="n">frequencies</span><span class="p">,</span> <span class="n">numangles</span><span class="p">,</span> <span class="n">to_compute</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ScatFromData</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">frequencies</span><span class="p">,</span> <span class="n">matrices</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="Scattering2dFromFunc">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.scat/arim.scat.Scattering2dFromFunc.html#arim.scat.Scattering2dFromFunc">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Scattering2dFromFunc</span><span class="p">(</span><span class="n">Scattering2d</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Wrapper for scattering functions that take as three first arguments &#39;inc_theta&#39;,</span>
+<span class="sd">    &#39;out_theta&#39; and &#39;frequency&#39;, and that accepts an argument &#39;to_compute&#39;.</span>
+
+<span class="sd">    To wrap a scattering function with this class:</span>
+
+<span class="sd">    - create a class that inherit this class,</span>
+<span class="sd">    - set the wrapped function as the &#39;_scat_func&#39; attribute,</span>
+<span class="sd">    - populate the ``_scat_kwargs`` attribute with the extra arguments to pass to ``_scat_func``,</span>
+<span class="sd">      ie any argument but ``inc_theta``, ``out_theta``, ``frequency`` and ``to_compute``.</span>
+
+<span class="sd">    This class is abstract.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_scat_kwargs</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># placeholder</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_scat_func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Wrapped function.&quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inc_theta</span><span class="p">,</span> <span class="n">out_theta</span><span class="p">,</span> <span class="n">frequency</span><span class="p">,</span> <span class="n">to_compute</span><span class="o">=</span><span class="n">SCAT_KEYS</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scat_func</span><span class="p">(</span>
+            <span class="n">inc_theta</span><span class="p">,</span> <span class="n">out_theta</span><span class="p">,</span> <span class="n">frequency</span><span class="p">,</span> <span class="n">to_compute</span><span class="o">=</span><span class="n">to_compute</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_scat_kwargs</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Returns something like &#39;Scattering(x=1, y=2)&#39;</span>
+        <span class="n">arg_str</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="n">val</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scat_kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">()])</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__qualname__</span> <span class="o">+</span> <span class="s2">&quot;(&quot;</span> <span class="o">+</span> <span class="n">arg_str</span> <span class="o">+</span> <span class="s2">&quot;)&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="SdhScat">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.scat/arim.scat.SdhScat.html#arim.scat.SdhScat">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">SdhScat</span><span class="p">(</span><span class="n">Scattering2dFromFunc</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Scattering for side-drilled hole</span>
+
+<span class="sd">    This class provides the :class:`Scattering2d` interface for :func:`sdh_2d_scat`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_scat_func</span> <span class="o">=</span> <span class="nb">staticmethod</span><span class="p">(</span><span class="n">sdh_2d_scat</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="n">longitudinal_vel</span><span class="p">,</span> <span class="n">transverse_vel</span><span class="p">,</span> <span class="n">min_terms</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">term_factor</span><span class="o">=</span><span class="mi">4</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_scat_kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">radius</span><span class="o">=</span><span class="n">radius</span><span class="p">,</span>
+            <span class="n">longitudinal_vel</span><span class="o">=</span><span class="n">longitudinal_vel</span><span class="p">,</span>
+            <span class="n">transverse_vel</span><span class="o">=</span><span class="n">transverse_vel</span><span class="p">,</span>
+            <span class="n">min_terms</span><span class="o">=</span><span class="n">min_terms</span><span class="p">,</span>
+            <span class="n">term_factor</span><span class="o">=</span><span class="n">term_factor</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="CrackCentreScat">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.scat/arim.scat.CrackCentreScat.html#arim.scat.CrackCentreScat">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">CrackCentreScat</span><span class="p">(</span><span class="n">Scattering2dFromFunc</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Scattering of a crack at its centre.</span>
+
+<span class="sd">    This class provides the :class:`Scattering2d` interface for :func:`crack_2d_scat`.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_scat_func</span> <span class="o">=</span> <span class="nb">staticmethod</span><span class="p">(</span><span class="n">crack_2d_scat</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">crack_length</span><span class="p">,</span>
+        <span class="n">longitudinal_vel</span><span class="p">,</span>
+        <span class="n">transverse_vel</span><span class="p">,</span>
+        <span class="n">density</span><span class="p">,</span>
+        <span class="n">nodes_per_wavelength</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_scat_kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">crack_length</span><span class="o">=</span><span class="n">crack_length</span><span class="p">,</span>
+            <span class="n">longitudinal_vel</span><span class="o">=</span><span class="n">longitudinal_vel</span><span class="p">,</span>
+            <span class="n">transverse_vel</span><span class="o">=</span><span class="n">transverse_vel</span><span class="p">,</span>
+            <span class="n">density</span><span class="o">=</span><span class="n">density</span><span class="p">,</span>
+            <span class="n">nodes_per_wavelength</span><span class="o">=</span><span class="n">nodes_per_wavelength</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_in_matrix_calculation</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inc_theta</span><span class="p">,</span> <span class="n">out_theta</span><span class="p">,</span> <span class="n">frequency</span><span class="p">,</span> <span class="n">to_compute</span><span class="o">=</span><span class="n">SCAT_KEYS</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scat_func</span><span class="p">(</span>
+            <span class="n">inc_theta</span><span class="p">,</span>
+            <span class="n">out_theta</span><span class="p">,</span>
+            <span class="n">frequency</span><span class="p">,</span>
+            <span class="n">to_compute</span><span class="o">=</span><span class="n">to_compute</span><span class="p">,</span>
+            <span class="n">assume_safe_for_opt</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_in_matrix_calculation</span><span class="p">,</span>
+            <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_scat_kwargs</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="nd">@contextlib</span><span class="o">.</span><span class="n">contextmanager</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_scat_matrix_calculation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;context manager to flag we are doing a scattering matrix calculation&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_in_matrix_calculation</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">yield</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_in_matrix_calculation</span> <span class="o">=</span> <span class="kc">False</span>
+
+<div class="viewcode-block" id="CrackCentreScat.as_multi_freq_matrices">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.scat/arim.scat.CrackCentreScat.html#arim.scat.CrackCentreScat.as_multi_freq_matrices">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">as_multi_freq_matrices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frequencies</span><span class="p">,</span> <span class="n">numangles</span><span class="p">,</span> <span class="n">to_compute</span><span class="o">=</span><span class="n">SCAT_KEYS</span><span class="p">):</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scat_matrix_calculation</span><span class="p">():</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">as_multi_freq_matrices</span><span class="p">(</span><span class="n">frequencies</span><span class="p">,</span> <span class="n">numangles</span><span class="p">,</span> <span class="n">to_compute</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CrackCentreScat.as_single_freq_matrices">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.scat/arim.scat.CrackCentreScat.html#arim.scat.CrackCentreScat.as_single_freq_matrices">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">as_single_freq_matrices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frequency</span><span class="p">,</span> <span class="n">numangles</span><span class="p">,</span> <span class="n">to_compute</span><span class="o">=</span><span class="n">SCAT_KEYS</span><span class="p">):</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scat_matrix_calculation</span><span class="p">():</span>
+            <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">_in_matrix_calculation</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">as_single_freq_matrices</span><span class="p">(</span><span class="n">frequency</span><span class="p">,</span> <span class="n">numangles</span><span class="p">,</span> <span class="n">to_compute</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_in_matrix_calculation</span>
+        <span class="k">return</span> <span class="n">result</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="PointSourceScat">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.scat/arim.scat.PointSourceScat.html#arim.scat.PointSourceScat">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">PointSourceScat</span><span class="p">(</span><span class="n">Scattering2dFromFunc</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Scattering of an unphysical point source. For debug only.</span>
+
+<span class="sd">    For any incident and scattered angles, the scattering is defined as::</span>
+
+<span class="sd">        S_LL = 1</span>
+<span class="sd">        S_LT = v_L / v_T</span>
+<span class="sd">        S_TL = -v_T / v_L</span>
+<span class="sd">        S_TT = 1</span>
+
+<span class="sd">    Remark: these scattering functions could have been defined as::</span>
+
+<span class="sd">        S_LL = a</span>
+<span class="sd">        S_LT = b * v_L / v_T</span>
+<span class="sd">        S_TL = -b * v_T / v_L</span>
+<span class="sd">        S_TT = c</span>
+
+<span class="sd">    with any a, b, c. These coefficients were chosen arbitrarily in the present function.</span>
+<span class="sd">    Therefore drawing quantitative conclusions from a model using this function must be</span>
+<span class="sd">    done with care.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_scat_func</span><span class="p">(</span>
+        <span class="n">phi_in</span><span class="p">,</span>
+        <span class="n">phi_out</span><span class="p">,</span>
+        <span class="n">frequency</span><span class="p">,</span>
+        <span class="n">longitudinal_vel</span><span class="p">,</span>
+        <span class="n">transverse_vel</span><span class="p">,</span>
+        <span class="n">to_compute</span><span class="o">=</span><span class="n">SCAT_KEYS</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="n">shape</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">broadcast</span><span class="p">(</span><span class="n">phi_in</span><span class="p">,</span> <span class="n">phi_out</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span>
+
+        <span class="n">v_L</span> <span class="o">=</span> <span class="n">longitudinal_vel</span>
+        <span class="n">v_T</span> <span class="o">=</span> <span class="n">transverse_vel</span>
+
+        <span class="n">out</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="k">if</span> <span class="s2">&quot;LL&quot;</span> <span class="ow">in</span> <span class="n">to_compute</span><span class="p">:</span>
+            <span class="n">out</span><span class="p">[</span><span class="s2">&quot;LL&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">&quot;LT&quot;</span> <span class="ow">in</span> <span class="n">to_compute</span><span class="p">:</span>
+            <span class="n">out</span><span class="p">[</span><span class="s2">&quot;LT&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">v_L</span> <span class="o">/</span> <span class="n">v_T</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">&quot;TL&quot;</span> <span class="ow">in</span> <span class="n">to_compute</span><span class="p">:</span>
+            <span class="n">out</span><span class="p">[</span><span class="s2">&quot;TL&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="o">-</span><span class="n">v_T</span> <span class="o">/</span> <span class="n">v_L</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">&quot;TT&quot;</span> <span class="ow">in</span> <span class="n">to_compute</span><span class="p">:</span>
+            <span class="n">out</span><span class="p">[</span><span class="s2">&quot;TT&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">out</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">longitudinal_vel</span><span class="p">,</span> <span class="n">transverse_vel</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_scat_kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">longitudinal_vel</span><span class="o">=</span><span class="n">longitudinal_vel</span><span class="p">,</span> <span class="n">transverse_vel</span><span class="o">=</span><span class="n">transverse_vel</span>
+        <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="CrackTipScat">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.scat/arim.scat.CrackTipScat.html#arim.scat.CrackTipScat">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">CrackTipScat</span><span class="p">(</span><span class="n">Scattering2dFromFunc</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Crack tip diffraction</span>
+
+<span class="sd">    Wrapper for :func:`crack_tip_2d`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_scat_func</span> <span class="o">=</span> <span class="nb">staticmethod</span><span class="p">(</span><span class="n">crack_tip_2d</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inc_theta</span><span class="p">,</span> <span class="n">out_theta</span><span class="p">,</span> <span class="n">frequency</span><span class="p">,</span> <span class="n">to_compute</span><span class="o">=</span><span class="n">SCAT_KEYS</span><span class="p">):</span>
+        <span class="c1"># drop frequency argument</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scat_func</span><span class="p">(</span>
+            <span class="n">inc_theta</span><span class="p">,</span> <span class="n">out_theta</span><span class="p">,</span> <span class="n">to_compute</span><span class="o">=</span><span class="n">to_compute</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_scat_kwargs</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">longitudinal_vel</span><span class="p">,</span> <span class="n">transverse_vel</span><span class="p">,</span> <span class="n">rayleigh_vel</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">quad_args</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_scat_kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">longitudinal_vel</span><span class="o">=</span><span class="n">longitudinal_vel</span><span class="p">,</span>
+            <span class="n">transverse_vel</span><span class="o">=</span><span class="n">transverse_vel</span><span class="p">,</span>
+            <span class="n">rayleigh_vel</span><span class="o">=</span><span class="n">rayleigh_vel</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">quad_args</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="ScatFromData">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.scat/arim.scat.ScatFromData.html#arim.scat.ScatFromData">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ScatFromData</span><span class="p">(</span><span class="n">Scattering2d</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Scattering functions from a set of data.</span>
+
+<span class="sd">    This class provides the regular :class:`Scattering2d` interface for a dataset of</span>
+<span class="sd">    scattering matrices. The typical usage is to use this class for wrapping</span>
+<span class="sd">    data generated with another software in arim.</span>
+
+<span class="sd">    By default, this class uses a **linear interpolation** for generating values</span>
+<span class="sd">    at new angles.</span>
+
+<span class="sd">    By default, this class uses a **linear interpolation** for generating values at new</span>
+<span class="sd">    frequencies when at least two frequencies point are given. Outside the frequency range</span>
+<span class="sd">    of the data, values are extrapolated. This can be changed by modifying</span>
+<span class="sd">    :attr:`interp_freq_kwargs`, the arguments passed to `scipy.interpolate.interp1d`.</span>
+<span class="sd">    If the data contains only one frequency, this data will be used at any new frequency.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    numfreq : int</span>
+<span class="sd">    numangles : int</span>
+<span class="sd">    orig_matrices : dict</span>
+<span class="sd">        Shape of each value: (numfreq, numangles, numangles)</span>
+<span class="sd">    frequencies : ndarray</span>
+<span class="sd">        1d array</span>
+<span class="sd">    interp_freq_kwargs : dict</span>
+<span class="sd">        Passed to ``scipy.interpolate.interp1d``.</span>
+<span class="sd">        Default: ``bounds_error=False, fill_value=&#39;extrapolate&#39;``</span>
+
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">frequencies</span><span class="p">,</span>
+        <span class="n">scat_matrix_LL</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">scat_matrix_LT</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">scat_matrix_TL</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">scat_matrix_TT</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="n">frequencies</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">frequencies</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">frequencies</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">frequencies</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">frequencies</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="n">frequencies</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;&#39;frequencies&#39; must be 1d&quot;</span><span class="p">)</span>
+        <span class="n">numfreq</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">frequencies</span><span class="p">)</span>
+
+        <span class="n">shapes</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">scat_matrix_LL</span><span class="p">)</span> <span class="k">if</span> <span class="n">scat_matrix_LL</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">scat_matrix_LT</span><span class="p">)</span> <span class="k">if</span> <span class="n">scat_matrix_LT</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">scat_matrix_TL</span><span class="p">)</span> <span class="k">if</span> <span class="n">scat_matrix_TL</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">scat_matrix_TT</span><span class="p">)</span> <span class="k">if</span> <span class="n">scat_matrix_TT</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="n">shapes</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">shapes</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;at least one scattering matrix must be passed&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">shapes</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;scattering matrices must have the same shape&quot;</span><span class="p">)</span>
+
+        <span class="n">shape</span> <span class="o">=</span> <span class="n">shapes</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+        <span class="n">wrong_shape_err</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;Scattering matrices&#39; shape must be (numfreq, numangles, numangles)&quot;</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">wrong_shape_err</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">wrong_shape_err</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">numfreq</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">wrong_shape_err</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">frequencies</span> <span class="o">=</span> <span class="n">frequencies</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">numfreq</span> <span class="o">=</span> <span class="n">numfreq</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">numangles</span> <span class="o">=</span> <span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">orig_matrices</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">scat_matrix_LL</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">orig_matrices</span><span class="p">[</span><span class="s2">&quot;LL&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">scat_matrix_LL</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">scat_matrix_LT</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">orig_matrices</span><span class="p">[</span><span class="s2">&quot;LT&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">scat_matrix_LT</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">scat_matrix_TL</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">orig_matrices</span><span class="p">[</span><span class="s2">&quot;TL&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">scat_matrix_TL</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">scat_matrix_TT</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">orig_matrices</span><span class="p">[</span><span class="s2">&quot;TT&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">scat_matrix_TT</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">interp_freq_kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">bounds_error</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="s2">&quot;extrapolate&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ScatFromData.from_dict">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.scat/arim.scat.ScatFromData.html#arim.scat.ScatFromData.from_dict">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">frequencies</span><span class="p">,</span> <span class="n">scat_matrix_dict</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Alternative constructor: takes as input a dict of scattering matrices</span>
+<span class="sd">        (keys: LL, LT, TL, TT)</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        frequencies</span>
+<span class="sd">        scat_matrix_dict</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        obj : ScatFromData</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">scat_matrix_LL</span> <span class="o">=</span> <span class="n">scat_matrix_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;LL&quot;</span><span class="p">)</span>
+        <span class="n">scat_matrix_LT</span> <span class="o">=</span> <span class="n">scat_matrix_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;LT&quot;</span><span class="p">)</span>
+        <span class="n">scat_matrix_TL</span> <span class="o">=</span> <span class="n">scat_matrix_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;TL&quot;</span><span class="p">)</span>
+        <span class="n">scat_matrix_TT</span> <span class="o">=</span> <span class="n">scat_matrix_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;TT&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span>
+            <span class="n">frequencies</span><span class="p">,</span> <span class="n">scat_matrix_LL</span><span class="p">,</span> <span class="n">scat_matrix_LT</span><span class="p">,</span> <span class="n">scat_matrix_TL</span><span class="p">,</span> <span class="n">scat_matrix_TT</span>
+        <span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inc_theta</span><span class="p">,</span> <span class="n">out_theta</span><span class="p">,</span> <span class="n">frequency</span><span class="p">,</span> <span class="n">to_compute</span><span class="o">=</span><span class="n">SCAT_KEYS</span><span class="p">):</span>
+        <span class="c1"># Compute first the scattering matrices at the desired frequency.</span>
+        <span class="c1"># Then interpolate the angles.</span>
+        <span class="c1"># A possible optimisation: perform the interpolation on frequency and angles</span>
+        <span class="c1"># in one step instead of two. This would required extending interpolate_matrix.</span>
+
+        <span class="c1"># perform frequency interpolation:</span>
+        <span class="n">matrices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">freq_interp_matrices</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">frequencies</span><span class="p">,</span> <span class="n">frequency</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">orig_matrices</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">interp_freq_kwargs</span>
+        <span class="p">)</span>
+
+        <span class="c1"># create angle interpolators:</span>
+        <span class="n">interpolators</span> <span class="o">=</span> <span class="n">interpolate_matrices</span><span class="p">(</span><span class="n">matrices</span><span class="p">)</span>
+
+        <span class="c1"># perform angle interpolation:</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="n">scat_key</span><span class="p">:</span> <span class="n">interpolator</span><span class="p">(</span><span class="n">inc_theta</span><span class="p">,</span> <span class="n">out_theta</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">scat_key</span><span class="p">,</span> <span class="n">interpolator</span> <span class="ow">in</span> <span class="n">interpolators</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="p">}</span>
+
+<div class="viewcode-block" id="ScatFromData.freq_interp_matrices">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.scat/arim.scat.ScatFromData.html#arim.scat.ScatFromData.freq_interp_matrices">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">freq_interp_matrices</span><span class="p">(</span>
+        <span class="n">frequencies</span><span class="p">,</span> <span class="n">new_freq</span><span class="p">,</span> <span class="n">multi_freq_matrices</span><span class="p">,</span> <span class="o">**</span><span class="n">interp_freq_kwargs</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the single-frequency scattering matrices from multi-frequency scattering</span>
+<span class="sd">        matrices by interpolating at the desired frequency.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        frequencies : ndarray</span>
+<span class="sd">            1d</span>
+<span class="sd">        new_freq : float</span>
+<span class="sd">        multi_freq_scat_matrices : dict[str]</span>
+<span class="sd">            Keys: frequencies (1d array), LL, LT, TL, TT</span>
+<span class="sd">        interp1d_kwargs : kwargs</span>
+<span class="sd">            Arguments for ``scipy.interpolate.interp1d``</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        single_freq_scat_matrices</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="n">interpolation_is_needed</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">frequencies</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">interpolation_is_needed</span><span class="p">:</span>
+            <span class="c1"># only one frequency, return the only scattering matrices</span>
+            <span class="k">if</span> <span class="n">new_freq</span> <span class="o">!=</span> <span class="n">frequencies</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                    <span class="s2">&quot;No available scattering data at f=</span><span class="si">{}</span><span class="s2">, use f=</span><span class="si">{}</span><span class="s2"> instead&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">new_freq</span><span class="p">,</span> <span class="n">frequencies</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="p">),</span>
+                    <span class="n">exceptions</span><span class="o">.</span><span class="n">ArimWarning</span><span class="p">,</span>
+                <span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">SCAT_KEYS</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">matrix</span> <span class="o">=</span> <span class="n">multi_freq_matrices</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">interpolation_is_needed</span><span class="p">:</span>
+                    <span class="n">out</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">interpolate</span><span class="o">.</span><span class="n">interp1d</span><span class="p">(</span>
+                        <span class="n">frequencies</span><span class="p">,</span> <span class="n">matrix</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="o">**</span><span class="n">interp_freq_kwargs</span>
+                    <span class="p">)(</span><span class="n">new_freq</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">out</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">matrix</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">out</span></div>
+</div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2016–2025, arim contributors.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.4.7.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

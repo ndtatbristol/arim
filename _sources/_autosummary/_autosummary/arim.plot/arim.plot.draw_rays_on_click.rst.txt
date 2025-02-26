@@ -1,0 +1,6 @@
+arim.plot.draw_rays_on_click
+============================
+
+.. currentmodule:: arim.plot
+
+.. autofunction:: draw_rays_on_click

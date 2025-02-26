@@ -1,0 +1,566 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Total focusing method &#8212; arim 0.10.0.a0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../_static/documentation_options.js?v=51601fd6"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'user/im/tfm';</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Utilities" href="../utils/index.html" />
+    <link rel="prev" title="Imaging" href="index.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">arim 0.10.0.a0 documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../installation/index.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../installation/index.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../core/index.html">Core objects</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../core/probe.html">Probe</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../core/examobj.html">Examination object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../core/frame.html">Frame</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../core/path.html">Paths and views</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../core/ray_tracing.html">Ray tracing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../core/metadata.html">Metadata</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../model/index.html">Modelling</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../model/coordinate_system.html">Coordinate system</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../model/transmission_reflection.html">Transmission-reflection coefficients</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../model/beamspread.html">Beamspread</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../model/scattering.html">Scattering</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Imaging</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Total focusing method</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../utils/index.html">Utilities</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../utils/signal.html">Signal processing</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../io/index.html">Files and I/O</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../io/native.html">arim file format</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../io/brain.html">BRAIN</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../glossary.html">Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bibliography.html">Bibliography</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">User Guide</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Imaging</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Total focusing method</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="total-focusing-method">
+<span id="tfm"></span><h1>Total focusing method<a class="headerlink" href="#total-focusing-method" title="Link to this heading">#</a></h1>
+<p>Original paper on TFM: <a class="reference internal" href="../bibliography.html#holmes2005" id="id1"><span>[Holmes2005]</span></a></p>
+<p>Related modules:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../_autosummary/arim.im.tfm.html#module-arim.im.tfm" title="arim.im.tfm"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arim.im.tfm</span></code></a>: high-level functions for TFM</p></li>
+<li><p><a class="reference internal" href="../../_autosummary/arim.im.das.html#module-arim.im.das" title="arim.im.das"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arim.im.das</span></code></a>: actual computation of delay-and-sum</p></li>
+</ul>
+<section id="definition">
+<h2>Definition<a class="headerlink" href="#definition" title="Link to this heading">#</a></h2>
+<p>The most generic definition available in arim is:</p>
+<div class="math notranslate nohighlight">
+\[I(r) = \sum_{i,j \in S}
+  A_{ij}(r)
+  g_{ij}(
+    \tau_{i}(r) + \tau'_{j}(r)
+    )\]</div>
+<p><span class="math notranslate nohighlight">\(g_{ij}(t)\)</span> is the timetrace of the transmitter <cite>i</cite> and the receiver <cite>j</cite>, obtained from
+<a class="reference internal" href="../../_autosummary/_autosummary/arim.core/arim.core.Frame.html#arim.core.Frame.timetraces" title="arim.core.Frame.timetraces"><code class="xref py py-attr docutils literal notranslate"><span class="pre">arim.core.Frame.timetraces</span></code></a>. The set <cite>S</cite> of the transmitters and receivers is obtained from
+<a class="reference internal" href="../../_autosummary/_autosummary/arim.core/arim.core.Frame.html#arim.core.Frame.tx" title="arim.core.Frame.tx"><code class="xref py py-attr docutils literal notranslate"><span class="pre">arim.core.Frame.tx</span></code></a> and <a class="reference internal" href="../../_autosummary/_autosummary/arim.core/arim.core.Frame.html#arim.core.Frame.rx" title="arim.core.Frame.rx"><code class="xref py py-attr docutils literal notranslate"><span class="pre">arim.core.Frame.rx</span></code></a>. Its size is denoted <cite>numtimetraces</cite>.
+TFM is always applied on all timetraces in the frame; to apply TFM on a subset of the timetraces, create a new Frame
+with only the selected timetraces and pass it to TFM.</p>
+<p><span class="math notranslate nohighlight">\(\tau_{i}(r)\)</span> is the time of flight for the transmission path between the element <cite>i</cite> and the grid point <cite>r</cite>.
+These times are stored in <code class="docutils literal notranslate"><span class="pre">lookup_times_tx</span></code>, a 2d array of shape <cite>(numgridpoints, numelements)</cite>. Similarly, the
+times of fight for the reception path are stored in <code class="docutils literal notranslate"><span class="pre">lookup_times_rx</span></code>.</p>
+<p>The weights <span class="math notranslate nohighlight">\(A_{ij}(r)\)</span> are stored in a <cite>(numgridpoints, numtimetraces)</cite> array named <code class="docutils literal notranslate"><span class="pre">amplitudes</span></code>. Because this
+array may be too big for the memory, chunking it may be necessary (example: <a class="reference internal" href="../../_autosummary/_autosummary/arim.model/arim.model.ModelAmplitudes.html#arim.model.ModelAmplitudes" title="arim.model.ModelAmplitudes"><code class="xref py py-class docutils literal notranslate"><span class="pre">arim.model.ModelAmplitudes</span></code></a>).</p>
+<p>If the following decomposition is possible</p>
+<div class="math notranslate nohighlight">
+\[A_{ij}(r) = B_{i}(r) B'_{j}(r)\]</div>
+<p>then <code class="docutils literal notranslate"><span class="pre">amplitudes</span></code> can be a <code class="xref py py-class docutils literal notranslate"><span class="pre">arim.model.TxRxAmplitudes</span></code> object where <code class="docutils literal notranslate"><span class="pre">amplitudes_tx</span></code> and <code class="docutils literal notranslate"><span class="pre">amplitudes_rx</span></code>,
+which contain respectively <span class="math notranslate nohighlight">\(B_{i}(r)\)</span> and  <span class="math notranslate nohighlight">\(B'_{j}(r)\)</span>, are arrays of shape <cite>(numelements, numtimetraces)</cite>.</p>
+<p>Finally if for all <cite>i</cite>, <cite>j</cite> and <cite>r</cite></p>
+<div class="math notranslate nohighlight">
+\[A_{ij}(r) = 1,\]</div>
+<p><code class="docutils literal notranslate"><span class="pre">amplitudes</span></code> may be set to <code class="docutils literal notranslate"><span class="pre">None</span></code>. Internally a faster implementation of delay-and-sum will be used.</p>
+</section>
+<section id="perfoming-tfm">
+<h2>Perfoming TFM<a class="headerlink" href="#perfoming-tfm" title="Link to this heading">#</a></h2>
+<p>See <a class="reference internal" href="../../_autosummary/arim.im.tfm.html#module-arim.im.tfm" title="arim.im.tfm"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arim.im.tfm</span></code></a> and <a class="reference internal" href="../../_autosummary/arim.im.das.html#module-arim.im.das" title="arim.im.das"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arim.im.das</span></code></a></p>
+</section>
+<section id="tfm-with-hmc-frame">
+<h2>TFM with HMC frame<a class="headerlink" href="#tfm-with-hmc-frame" title="Link to this heading">#</a></h2>
+<p>In linear imaging, it is assumed that <span class="math notranslate nohighlight">\(g_{ij}(t) = g_{ji}(t)\)</span>, which leads to acquire only half the full matrix
+response (half matrix capture, HMC).</p>
+<p>Under this assumption, if for all <cite>i</cite> and <cite>r</cite>,  <span class="math notranslate nohighlight">\(B_i(r) = B'_i(r)\)</span> and <span class="math notranslate nohighlight">\(\tau_i(r) = \tau'_i(r)\)</span>, then</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}I(r)
+  &amp;= \sum_{i,j = 1}^{n} B_{i}(r) B'_{j}(r) g_{ij}(\tau_{i}(r) + \tau'_{j}(r))) \\
+  &amp;= \sum_{i,j = 1}^{n} B_{i}(r) B_{j}(r) g_{ij}(\tau_{i}(r) + \tau_{j}(r))) \\
+  &amp;= \sum_{i = 1}^{n} B_{i}(r)^2 g_{ii}(2 \tau_{i}(r))
+  + 2 \sum_{i,j = 1\\i &lt; j}^{n} B_{i}(r) B_{j}(r) g_{ij}(\tau_{i}(r) + \tau_{j}(r)) \\
+  &amp;= \sum_{i,j = 1\\i \leq j}^{n} B_{i}(r) B_{j}(r) g'_{ij}(\tau_{i}(r) + \tau_{j}(r))\end{split}\]</div>
+<p>where</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}g'_{ij}(t) =
+\begin{cases}
+g_{ij},  &amp; \text{if $i=j$} \\
+2 g_{ij},  &amp; \text{if $i \neq j$}
+\end{cases}\end{split}\]</div>
+<p>This reduces the number of summands and therefore the computation time. This last equation is used in
+<a class="reference internal" href="../../_autosummary/_autosummary/arim.im.tfm/arim.im.tfm.contact_tfm.html#arim.im.tfm.contact_tfm" title="arim.im.tfm.contact_tfm"><code class="xref py py-func docutils literal notranslate"><span class="pre">contact_tfm()</span></code></a>. Internally, the weighted timetraces <span class="math notranslate nohighlight">\(g'_{ij}\)</span> are obtained with
+<a class="reference internal" href="../../_autosummary/_autosummary/arim.im.tfm/arim.im.tfm.FocalLaw.html#arim.im.tfm.FocalLaw.weigh_timetraces" title="arim.im.tfm.FocalLaw.weigh_timetraces"><code class="xref py py-meth docutils literal notranslate"><span class="pre">FocalLaw.weigh_timetraces()</span></code></a>.</p>
+<p>This technique is not used <a class="reference internal" href="../../_autosummary/_autosummary/arim.im.tfm/arim.im.tfm.tfm_for_view.html#arim.im.tfm.tfm_for_view" title="arim.im.tfm.tfm_for_view"><code class="xref py py-func docutils literal notranslate"><span class="pre">tfm_for_view()</span></code></a> because the times of flight in transmission and reception are not
+the same in general.</p>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="index.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Imaging</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../utils/index.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Utilities</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#definition">Definition</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#perfoming-tfm">Perfoming TFM</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tfm-with-hmc-frame">TFM with HMC frame</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../_sources/user/im/tfm.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2016–2025, arim contributors.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.4.7.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

@@ -1,0 +1,6 @@
+arim.plot.plot_tfm
+==================
+
+.. currentmodule:: arim.plot
+
+.. autofunction:: plot_tfm

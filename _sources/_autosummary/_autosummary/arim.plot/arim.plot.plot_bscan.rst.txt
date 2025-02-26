@@ -1,0 +1,6 @@
+arim.plot.plot_bscan
+====================
+
+.. currentmodule:: arim.plot
+
+.. autofunction:: plot_bscan

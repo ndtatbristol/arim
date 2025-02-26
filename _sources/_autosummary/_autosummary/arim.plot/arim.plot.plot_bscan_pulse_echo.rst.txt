@@ -1,0 +1,6 @@
+arim.plot.plot_bscan_pulse_echo
+===============================
+
+.. currentmodule:: arim.plot
+
+.. autofunction:: plot_bscan_pulse_echo

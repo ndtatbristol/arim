@@ -1,0 +1,2044 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>arim.ray &#8212; arim 0.10.0.a0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../_static/documentation_options.js?v=51601fd6"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/arim/ray';</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">arim 0.10.0.a0 documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../installation/index.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../installation/index.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../user/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">arim.ray</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for arim.ray</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Ray tracing module</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">contextlib</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">gc</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">concurrent.futures</span><span class="w"> </span><span class="kn">import</span> <span class="n">ThreadPoolExecutor</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numba</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">geometry</span> <span class="k">as</span> <span class="n">g</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span> <span class="k">as</span> <span class="n">s</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArimWarning</span><span class="p">,</span> <span class="n">InvalidDimension</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.helpers</span><span class="w"> </span><span class="kn">import</span> <span class="n">Cache</span><span class="p">,</span> <span class="n">NoCache</span><span class="p">,</span> <span class="n">chunk_array</span>
+
+<span class="n">use_parallel</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ARIM_USE_PARALLEL&quot;</span><span class="p">,</span> <span class="ow">not</span> <span class="n">numba</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">IS_32BITS</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="find_minimum_times">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.ray/arim.ray.find_minimum_times.html#arim.ray.find_minimum_times">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">find_minimum_times</span><span class="p">(</span>
+    <span class="n">time_1</span><span class="p">,</span> <span class="n">time_2</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype_indices</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">block_size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">numthreads</span><span class="o">=</span><span class="kc">None</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    For i=1:n and j=1:p,</span>
+
+<span class="sd">        out_min_times(i, j)   := min_{k=1:m}    time_1[i, k] + time_2[k, j]</span>
+<span class="sd">        out_min_indices(i, j) := argmin_{k=1:m} time_1[i, k] + time_2[k, j]</span>
+
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    time_1</span>
+<span class="sd">        Shape: (n, m)</span>
+<span class="sd">    time_2</span>
+<span class="sd">        Shape: (m, p)</span>
+<span class="sd">    dtype</span>
+<span class="sd">    dtype_indices</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out_min_times</span>
+<span class="sd">        Shape: (n, p)</span>
+<span class="sd">    out_min_indices</span>
+<span class="sd">        Shape: (n, p)</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Memory usage:</span>
+<span class="sd">    - duplicate &#39;time_1&#39; if it not in C-order.</span>
+<span class="sd">    - duplicate &#39;time_2&#39; if it not in Fortran-order.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="n">time_1</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span>
+    <span class="k">assert</span> <span class="n">time_2</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">n</span><span class="p">,</span> <span class="n">m</span> <span class="o">=</span> <span class="n">time_1</span><span class="o">.</span><span class="n">shape</span>
+        <span class="n">m_</span><span class="p">,</span> <span class="n">p</span> <span class="o">=</span> <span class="n">time_2</span><span class="o">.</span><span class="n">shape</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">InvalidDimension</span><span class="p">(</span><span class="s2">&quot;time_1 and time_2 must be 2d.&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">m</span> <span class="o">!=</span> <span class="n">m_</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Array shapes must be (n, m) and (m, p).&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">result_type</span><span class="p">(</span><span class="n">time_1</span><span class="p">,</span> <span class="n">time_2</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">dtype_indices</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">dtype_indices</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">INT</span>
+
+    <span class="k">if</span> <span class="n">block_size</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">block_size</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">BLOCK_SIZE_FIND_MIN_TIMES</span>
+    <span class="k">if</span> <span class="n">numthreads</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">numthreads</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">NUMTHREADS</span>
+
+    <span class="n">out_min_times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="n">p</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
+    <span class="n">out_best_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="n">p</span><span class="p">),</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype_indices</span><span class="p">)</span>
+
+    <span class="c1"># time_1 will be scanned row per row, time_2 column per column.</span>
+    <span class="c1"># Force to use the most efficient order (~20 times speed-up between the best and worst case).</span>
+    <span class="n">time_1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">time_1</span><span class="p">)</span>
+    <span class="n">time_2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asfortranarray</span><span class="p">(</span><span class="n">time_2</span><span class="p">)</span>
+
+    <span class="c1"># Chunk time_1 and time_2 such as each chunk contains roughly &#39;block_size&#39;</span>
+    <span class="c1"># floats. Chunks for &#39;time_1&#39; are lines (only complete lines), chunks</span>
+    <span class="c1"># for &#39;time_2&#39; are columns (only complete columns).</span>
+    <span class="n">block_size_adj</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">block_size</span> <span class="o">/</span> <span class="n">m</span><span class="p">)</span>
+
+    <span class="n">futures</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">with</span> <span class="n">ThreadPoolExecutor</span><span class="p">(</span><span class="n">max_workers</span><span class="o">=</span><span class="n">numthreads</span><span class="p">)</span> <span class="k">as</span> <span class="n">executor</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">chunk1</span> <span class="ow">in</span> <span class="n">chunk_array</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">),</span> <span class="n">block_size_adj</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">chunk2</span> <span class="ow">in</span> <span class="n">chunk_array</span><span class="p">((</span><span class="n">m</span><span class="p">,</span> <span class="n">p</span><span class="p">),</span> <span class="n">block_size_adj</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+                <span class="n">chunk_res</span> <span class="o">=</span> <span class="p">(</span><span class="n">chunk1</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">chunk2</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+                <span class="n">futures</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="n">executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span>
+                        <span class="n">_find_minimum_times</span><span class="p">,</span>
+                        <span class="n">time_1</span><span class="p">[</span><span class="n">chunk1</span><span class="p">],</span>
+                        <span class="n">time_2</span><span class="p">[</span><span class="n">chunk2</span><span class="p">],</span>
+                        <span class="n">out_min_times</span><span class="p">[</span><span class="n">chunk_res</span><span class="p">],</span>
+                        <span class="n">out_best_indices</span><span class="p">[</span><span class="n">chunk_res</span><span class="p">],</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+    <span class="c1"># Raise exceptions that happened, if any:</span>
+    <span class="k">for</span> <span class="n">future</span> <span class="ow">in</span> <span class="n">futures</span><span class="p">:</span>
+        <span class="n">future</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">out_min_times</span><span class="p">,</span> <span class="n">out_best_indices</span></div>
+
+
+
+<span class="nd">@numba</span><span class="o">.</span><span class="n">jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">nogil</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_find_minimum_times</span><span class="p">(</span><span class="n">time_1</span><span class="p">,</span> <span class="n">time_2</span><span class="p">,</span> <span class="n">out_min_times</span><span class="p">,</span> <span class="n">out_best_indices</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    time_1</span>
+<span class="sd">    time_2</span>
+<span class="sd">    out_min_time</span>
+<span class="sd">    out_best_indices</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">n</span><span class="p">,</span> <span class="n">m</span> <span class="o">=</span> <span class="n">time_1</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">m</span><span class="p">,</span> <span class="n">p</span> <span class="o">=</span> <span class="n">time_2</span><span class="o">.</span><span class="n">shape</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">m</span><span class="p">):</span>
+                <span class="n">new_time</span> <span class="o">=</span> <span class="n">time_1</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">k</span><span class="p">]</span> <span class="o">+</span> <span class="n">time_2</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">new_time</span> <span class="o">&lt;</span> <span class="n">out_min_times</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]:</span>
+                    <span class="n">out_min_times</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_time</span>
+                    <span class="n">out_best_indices</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">k</span>
+
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="ray_tracing_for_paths">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.ray/arim.ray.ray_tracing_for_paths.html#arim.ray.ray_tracing_for_paths">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">ray_tracing_for_paths</span><span class="p">(</span>
+    <span class="n">paths_list</span><span class="p">,</span> <span class="n">walls</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">turn_off_invalid_rays</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">convert_to_fortran_order</span><span class="o">=</span><span class="kc">False</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Perform the ray tracing for different paths. Save the result in ``Path.rays``.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    paths_list : List[Path]</span>
+<span class="sd">    convert_to_fortran_order</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">paths_list</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">paths_list</span><span class="p">)</span>
+    <span class="n">fermat_paths_tuple</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">FermatPath</span><span class="o">.</span><span class="n">from_path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">paths_list</span><span class="p">)</span>
+
+    <span class="n">fermat_solver</span> <span class="o">=</span> <span class="n">FermatSolver</span><span class="p">(</span><span class="n">fermat_paths_tuple</span><span class="p">)</span>
+    <span class="n">rays_dict</span> <span class="o">=</span> <span class="n">fermat_solver</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">path</span><span class="p">,</span> <span class="n">fermat_path</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">paths_list</span><span class="p">,</span> <span class="n">fermat_paths_tuple</span><span class="p">):</span>
+        <span class="n">rays</span> <span class="o">=</span> <span class="n">rays_dict</span><span class="p">[</span><span class="n">fermat_path</span><span class="p">]</span>
+        <span class="n">suspicious_rays</span> <span class="o">=</span> <span class="n">rays</span><span class="o">.</span><span class="n">gone_through_extreme_points</span><span class="p">()</span>
+        <span class="n">num_suspicious_rays</span> <span class="o">=</span> <span class="n">suspicious_rays</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">num_suspicious_rays</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">num_suspicious_rays</span><span class="si">}</span><span class="s2"> rays of path </span><span class="si">{</span><span class="n">path</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> go through &quot;</span>
+                <span class="s2">&quot;the interface limits. Extend limits.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">turn_off_invalid_rays</span><span class="p">:</span>
+            <span class="n">rays_dict</span><span class="p">[</span><span class="n">fermat_path</span><span class="p">]</span><span class="o">.</span><span class="n">_invalid_rays</span> <span class="o">=</span> <span class="n">rays</span><span class="o">.</span><span class="n">gone_through_interface</span><span class="p">(</span>
+                <span class="n">path</span><span class="o">.</span><span class="n">interfaces</span><span class="p">,</span> <span class="n">walls</span>
+            <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">convert_to_fortran_order</span><span class="p">:</span>
+        <span class="n">old_rays_dict</span> <span class="o">=</span> <span class="n">rays_dict</span>
+        <span class="n">rays_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">to_fortran_order</span><span class="p">()</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">old_rays_dict</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+
+    <span class="c1"># Save results in attribute path.rays:</span>
+    <span class="k">for</span> <span class="n">path</span><span class="p">,</span> <span class="n">fermat_path</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">paths_list</span><span class="p">,</span> <span class="n">fermat_paths_tuple</span><span class="p">):</span>
+        <span class="n">path</span><span class="o">.</span><span class="n">rays</span> <span class="o">=</span> <span class="n">rays_dict</span><span class="p">[</span><span class="n">fermat_path</span><span class="p">]</span></div>
+
+
+
+<div class="viewcode-block" id="ray_tracing">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.ray/arim.ray.ray_tracing.html#arim.ray.ray_tracing">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">ray_tracing</span><span class="p">(</span>
+    <span class="n">views_list</span><span class="p">,</span> <span class="n">walls</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">turn_off_invalid_rays</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">convert_to_fortran_order</span><span class="o">=</span><span class="kc">False</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Perform the ray tracing for different views. Save the result in ``Path.rays``.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    views : List[View]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Ray tracing:</span>
+    <span class="n">paths_set</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">tx_path</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">views_list</span><span class="p">)</span> <span class="o">|</span> <span class="nb">set</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">rx_path</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">views_list</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ray_tracing_for_paths</span><span class="p">(</span>
+        <span class="nb">list</span><span class="p">(</span><span class="n">paths_set</span><span class="p">),</span>
+        <span class="n">walls</span><span class="o">=</span><span class="n">walls</span><span class="p">,</span>
+        <span class="n">turn_off_invalid_rays</span><span class="o">=</span><span class="n">turn_off_invalid_rays</span><span class="p">,</span>
+        <span class="n">convert_to_fortran_order</span><span class="o">=</span><span class="n">convert_to_fortran_order</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+
+<span class="nd">@numba</span><span class="o">.</span><span class="n">jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">nogil</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">parallel</span><span class="o">=</span><span class="n">use_parallel</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_expand_rays</span><span class="p">(</span><span class="n">interior_indices</span><span class="p">,</span> <span class="n">indices_new_interface</span><span class="p">,</span> <span class="n">expanded_indices</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Expand the rays by one interface knowing the beginning of the rays and the</span>
+<span class="sd">    points the rays must go through at the last interface.</span>
+
+<span class="sd">    A0, A1, ..., A(d+1) are (d+2) interfaces.</span>
+
+<span class="sd">    n: number of points of interface A0</span>
+<span class="sd">    m: number of points of interface Ad</span>
+<span class="sd">    p: number of points of interface A(d+1)</span>
+
+<span class="sd">    Arrays layout must be contiguous.</span>
+
+<span class="sd">    Output: out_ray</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    interior_indices: *interior* indices of rays going from A(0) to A(d).</span>
+<span class="sd">        Shape: (d, n, m)</span>
+<span class="sd">    indices_new_interface: indices of the points of interface A(d) that the rays</span>
+<span class="sd">    starting from A(0) cross to go to A(d+1).</span>
+<span class="sd">        Shape: (n, p)</span>
+<span class="sd">    expanded_indices: OUTPUT</span>
+<span class="sd">        Shape (d+1, n, p)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">d</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">m</span> <span class="o">=</span> <span class="n">interior_indices</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">p</span> <span class="o">=</span> <span class="n">indices_new_interface</span><span class="o">.</span><span class="n">shape</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">numba</span><span class="o">.</span><span class="n">prange</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+            <span class="c1"># get the point on interface A(d) to which the ray goes</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="n">indices_new_interface</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
+
+            <span class="c1"># copy the head of ray</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+                <span class="n">expanded_indices</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">interior_indices</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">idx</span><span class="p">]</span>
+
+            <span class="c1"># add the last point</span>
+            <span class="n">expanded_indices</span><span class="p">[</span><span class="n">d</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">idx</span>
+
+
+<div class="viewcode-block" id="Rays">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.ray/arim.ray.Rays.html#arim.ray.Rays">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Rays</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Rays(times, interior_indices, path)</span>
+
+<span class="sd">    Store the rays between the first and last sets of points along</span>
+<span class="sd">    a specific path.</span>
+
+<span class="sd">    - n: number of points of the first set of points.</span>
+<span class="sd">    - m: number of points of the last set of points.</span>
+<span class="sd">    - d: number of interfaces along the path.</span>
+
+<span class="sd">    We name A(1), A(2), ..., A(d) the d interfaces along the path.</span>
+<span class="sd">    A ray passes  A(1), A(2), ..., A(d) in this order.</span>
+
+<span class="sd">    The ray (i, j) is defined as the ray starting in `A(1)[i]`` and</span>
+<span class="sd">    arriving in ``A(d)[j]``.</span>
+
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    times : ndarray of floats [n x m]</span>
+<span class="sd">        Shortest time between first and last set of points.</span>
+<span class="sd">        ``times[i, j]`` is the total travel time for the ray (i, j).</span>
+<span class="sd">    indices_interior : ndarray of floats [(d-2) x n x m]</span>
+<span class="sd">        Indices of points through which each ray goes, excluding the first and last interfaces.</span>
+<span class="sd">        ``indices[k-1, i, j]`` is the indice point of the ``k`` *interior* interface through which</span>
+<span class="sd">        the ray (i,j) goes.</span>
+
+<span class="sd">    fermat_path : FermatPath</span>
+<span class="sd">        Sets of points crossed by the rays.</span>
+
+<span class="sd">    order : None, &#39;C&#39; or &#39;F&#39;</span>
+<span class="sd">        Force the order if the indices</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    times</span>
+<span class="sd">    indices_interior</span>
+<span class="sd">    fermat_path</span>
+<span class="sd">    indices : ndarray of floats [d x n x m]</span>
+<span class="sd">        Indices of points through which each ray goes.</span>
+<span class="sd">        For k=0:p, a ray starting from ``A(1)[i]`` and ending in ``A(d)[i]``</span>
+<span class="sd">        goes through the k-th interface at the point indexed by ``indices[k, i, j]``.</span>
+<span class="sd">        By definition, ``indices[0, i, j] := i`` and ``indices[d-1, i, j] := j``</span>
+<span class="sd">        for all i and j.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># __slots__ = []</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">times</span><span class="p">,</span> <span class="n">interior_indices</span><span class="p">,</span> <span class="n">fermat_path</span><span class="p">,</span> <span class="n">invalid_rays</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="kc">None</span>
+    <span class="p">):</span>
+        <span class="k">assert</span> <span class="n">times</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span>
+        <span class="k">assert</span> <span class="n">interior_indices</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">3</span>
+        <span class="k">assert</span> <span class="p">(</span>
+            <span class="n">times</span><span class="o">.</span><span class="n">shape</span>
+            <span class="o">==</span> <span class="n">interior_indices</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+            <span class="o">==</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">fermat_path</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">len</span><span class="p">(</span><span class="n">fermat_path</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+        <span class="p">)</span>
+        <span class="k">assert</span> <span class="n">fermat_path</span><span class="o">.</span><span class="n">num_points_sets</span> <span class="o">==</span> <span class="n">interior_indices</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">2</span>
+
+        <span class="k">assert</span> <span class="n">interior_indices</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;i&quot;</span>
+        <span class="k">assert</span> <span class="n">times</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;f&quot;</span>
+
+        <span class="n">indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_indices</span><span class="p">(</span><span class="n">interior_indices</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_times</span> <span class="o">=</span> <span class="n">times</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_indices</span> <span class="o">=</span> <span class="n">indices</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fermat_path</span> <span class="o">=</span> <span class="n">fermat_path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_invalid_rays</span> <span class="o">=</span> <span class="n">invalid_rays</span>
+
+<div class="viewcode-block" id="Rays.make_rays_two_interfaces">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.ray/arim.ray.Rays.html#arim.ray.Rays.make_rays_two_interfaces">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">make_rays_two_interfaces</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">times</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">dtype_indices</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Alternative constructor for Rays objects when there is only two interfaces,</span>
+<span class="sd">        i.e. no interior interface.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">num_points_sets</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;This constructor works only for path with two interfaces. Use __init__ instead.&quot;</span>
+            <span class="p">)</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="n">interior_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype_indices</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="n">interior_indices</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fermat_path</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fermat_path</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">times</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_times</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">indices</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_indices</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">interior_indices</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+
+<div class="viewcode-block" id="Rays.make_indices">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.ray/arim.ray.Rays.html#arim.ray.Rays.make_indices">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">make_indices</span><span class="p">(</span><span class="n">interior_indices</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        interior_indices : ndarray</span>
+<span class="sd">            Shape (d, n, m)</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        indices : ndarray</span>
+<span class="sd">            Shape (n, m, d+2) such as:</span>
+<span class="sd">            - indices[0, i, j] := i for all i, j</span>
+<span class="sd">            - indices[-1, i, j] := j for all i, j</span>
+<span class="sd">            - indices[k, i, j] := interior_indices[i, j, k+1] for all i, j and for k=1:(d-1)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">dm2</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">m</span> <span class="o">=</span> <span class="n">interior_indices</span><span class="o">.</span><span class="n">shape</span>
+
+        <span class="k">if</span> <span class="n">order</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">interior_indices</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">c_contiguous</span><span class="p">:</span>
+                <span class="n">order</span> <span class="o">=</span> <span class="s2">&quot;C&quot;</span>
+            <span class="k">elif</span> <span class="n">interior_indices</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">fortran</span><span class="p">:</span>
+                <span class="n">order</span> <span class="o">=</span> <span class="s2">&quot;F&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">order</span> <span class="o">=</span> <span class="s2">&quot;C&quot;</span>
+
+        <span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">dm2</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">interior_indices</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
+
+        <span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n</span><span class="p">),</span> <span class="n">m</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">))</span>
+        <span class="n">indices</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">m</span><span class="p">),</span> <span class="n">n</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">))</span>
+        <span class="n">indices</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">interior_indices</span>
+        <span class="k">return</span> <span class="n">indices</span></div>
+
+
+<div class="viewcode-block" id="Rays.get_coordinates">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.ray/arim.ray.Rays.html#arim.ray.Rays.get_coordinates">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_interface</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Yields the coordinates of the rays of the n-th interface, as a tuple</span>
+<span class="sd">        of three 2d ndarrays.</span>
+
+<span class="sd">        Use numpy fancy indexing.</span>
+
+<span class="sd">        Example</span>
+<span class="sd">        -------</span>
+<span class="sd">        ::</span>
+
+<span class="sd">            for (d, (x, y, z)) in enumerate(rays.get_coordinates()):</span>
+<span class="sd">                # Coordinates at the d-th interface of the ray between ray A(1)[i] and</span>
+<span class="sd">                # ray_A(d)[j].</span>
+<span class="sd">                x[i, j]</span>
+<span class="sd">                y[i, j]</span>
+<span class="sd">                z[i, j]</span>
+
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">n_interface</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">n_interface</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fermat_path</span><span class="o">.</span><span class="n">num_points_sets</span><span class="p">):</span>
+                <span class="n">points</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fermat_path</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="n">n_interface</span><span class="p">]</span>
+                <span class="n">indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">[</span><span class="n">n_interface</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+                <span class="n">x</span> <span class="o">=</span> <span class="n">points</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="n">indices</span><span class="p">]</span>
+                <span class="n">y</span> <span class="o">=</span> <span class="n">points</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="n">indices</span><span class="p">]</span>
+                <span class="n">z</span> <span class="o">=</span> <span class="n">points</span><span class="o">.</span><span class="n">z</span><span class="p">[</span><span class="n">indices</span><span class="p">]</span>
+                <span class="k">yield</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">points</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fermat_path</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="n">n_interface</span><span class="p">]</span>
+            <span class="n">indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">[</span><span class="n">n_interface</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">points</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="n">indices</span><span class="p">]</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">points</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="n">indices</span><span class="p">]</span>
+            <span class="n">z</span> <span class="o">=</span> <span class="n">points</span><span class="o">.</span><span class="n">z</span><span class="p">[</span><span class="n">indices</span><span class="p">]</span>
+            <span class="k">yield</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Rays.get_coordinates_one">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.ray/arim.ray.Rays.html#arim.ray.Rays.get_coordinates_one">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_coordinates_one</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_index</span><span class="p">,</span> <span class="n">end_index</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the coordinates of one ray as ``Point``.</span>
+
+<span class="sd">        This function is slow: use ``get_coordinates`` or a variant for treating</span>
+<span class="sd">        a larger number of rays.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">[:,</span> <span class="n">start_index</span><span class="p">,</span> <span class="n">end_index</span><span class="p">]</span>
+        <span class="n">num_points_sets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fermat_path</span><span class="o">.</span><span class="n">num_points_sets</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">num_points_sets</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">FLOAT</span><span class="p">)</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">num_points_sets</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">FLOAT</span><span class="p">)</span>
+        <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">num_points_sets</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">FLOAT</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fermat_path</span><span class="o">.</span><span class="n">points</span><span class="p">,</span> <span class="n">indices</span><span class="p">)):</span>
+            <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">points</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+            <span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">points</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+            <span class="n">z</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">points</span><span class="o">.</span><span class="n">z</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">g</span><span class="o">.</span><span class="n">Points</span><span class="o">.</span><span class="n">from_xyz</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="s2">&quot;Ray&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Rays.gone_through_extreme_points">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.ray/arim.ray.Rays.html#arim.ray.Rays.gone_through_extreme_points">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">gone_through_extreme_points</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the rays which are going through at least one extreme point in the interfaces.</span>
+<span class="sd">        These rays can be non physical, it is then safer to be conservative and remove them all.</span>
+
+<span class="sd">        Extreme points are the first/last points (in indices) in the interfaces, except the first and</span>
+<span class="sd">        last interfaces (respectively the points1 and the grid).</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        out : ndarray of bool</span>
+<span class="sd">            ``rays[i, j]`` is True if the rays starting from the i-th point of the first interface</span>
+<span class="sd">            and going to the j-th point of the last interface is going through at least one extreme point</span>
+<span class="sd">            through the middle interfaces.</span>
+<span class="sd">            Order: same as attribute ``indices``.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">order</span> <span class="o">=</span> <span class="s2">&quot;F&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">f_contiguous</span> <span class="k">else</span> <span class="s2">&quot;C&quot;</span>
+
+        <span class="n">shape</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+
+        <span class="n">interior_indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interior_indices</span>
+        <span class="n">middle_points</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fermat_path</span><span class="o">.</span><span class="n">points</span><span class="p">)[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">d</span><span class="p">,</span> <span class="n">points</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">middle_points</span><span class="p">):</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">logical_or</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">interior_indices</span><span class="p">[</span><span class="n">d</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">)</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">logical_or</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">interior_indices</span><span class="p">[</span><span class="n">d</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">==</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">points</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">out</span></div>
+
+
+<div class="viewcode-block" id="Rays.gone_through_interface">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.ray/arim.ray.Rays.html#arim.ray.Rays.gone_through_interface">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">gone_through_interface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path_interfaces</span><span class="p">,</span> <span class="n">walls</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the rays which are going through at least one interface (i.e. in the line).</span>
+<span class="sd">        Considering a convex geometry, these are rays which are physically blocked by the interface.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        path_interfaces : list[Interface]</span>
+<span class="sd">            .</span>
+<span class="sd">        walls : list[OrientedPoints]</span>
+<span class="sd">            All of the walls in the geometry, passed in from ``examination_object.walls``.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        out : ndarray[bool]</span>
+<span class="sd">            ``rays[i, j]`` is `True` if the ray starting from the i-th point of the first interface</span>
+<span class="sd">            and going through the j-th point on the last interface is going through at least one</span>
+<span class="sd">            other interface in the middle.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">order</span> <span class="o">=</span> <span class="s2">&quot;F&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">f_contiguous</span> <span class="k">else</span> <span class="s2">&quot;C&quot;</span>
+
+        <span class="n">shape</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">walls</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">interface_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">interface</span><span class="o">.</span><span class="n">points</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">interface</span> <span class="ow">in</span> <span class="n">path_interfaces</span><span class="p">]</span>
+
+            <span class="n">loc_wrt_line</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="p">(</span>
+                <span class="p">(</span><span class="n">a2</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">a1</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">a1</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="o">-</span> <span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">a1</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="p">(</span><span class="n">a2</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">a1</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+            <span class="p">)</span>
+            <span class="c1"># Initialise but defined at end of first loop.</span>
+            <span class="n">last</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">for</span> <span class="n">d</span><span class="p">,</span> <span class="n">coords</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_coordinates</span><span class="p">()):</span>
+                <span class="n">coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">coords</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">d</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">wall</span> <span class="ow">in</span> <span class="n">walls</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                        <span class="k">if</span> <span class="p">(</span><span class="n">name</span> <span class="ow">in</span> <span class="n">interface_names</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span>
+                            <span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;frontwall&quot;</span> <span class="ow">and</span> <span class="s2">&quot;Probe&quot;</span> <span class="ow">in</span> <span class="n">interface_names</span>
+                        <span class="p">):</span>
+                            <span class="k">continue</span>
+                        <span class="n">wall</span> <span class="o">=</span> <span class="n">wall</span><span class="o">.</span><span class="n">points</span>
+                        <span class="c1"># Check if bounding boxes intersect.</span>
+                        <span class="n">is_overlap</span> <span class="o">=</span> <span class="p">(</span>
+                            <span class="p">(</span>
+                                <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">((</span><span class="n">last</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:],</span> <span class="n">coords</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+                                <span class="o">&lt;=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">wall</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])</span>
+                            <span class="p">)</span>
+                            <span class="o">&amp;</span> <span class="p">(</span>
+                                <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">((</span><span class="n">last</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:],</span> <span class="n">coords</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+                                <span class="o">&gt;=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">wall</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])</span>
+                            <span class="p">)</span>
+                            <span class="o">&amp;</span> <span class="p">(</span>
+                                <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">((</span><span class="n">last</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:],</span> <span class="n">coords</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+                                <span class="o">&lt;=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">wall</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])</span>
+                            <span class="p">)</span>
+                            <span class="o">&amp;</span> <span class="p">(</span>
+                                <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">((</span><span class="n">last</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:],</span> <span class="n">coords</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+                                <span class="o">&gt;=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">wall</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])</span>
+                            <span class="p">)</span>
+                            <span class="o">&amp;</span> <span class="p">(</span>
+                                <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">((</span><span class="n">last</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:],</span> <span class="n">coords</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+                                <span class="o">&lt;=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">wall</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">])</span>
+                            <span class="p">)</span>
+                            <span class="o">&amp;</span> <span class="p">(</span>
+                                <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">((</span><span class="n">last</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:],</span> <span class="n">coords</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+                                <span class="o">&gt;=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">wall</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">])</span>
+                            <span class="p">)</span>
+                        <span class="p">)</span>
+                        <span class="c1"># If any bboxes are overlapping, check the rest.</span>
+                        <span class="k">if</span> <span class="n">is_overlap</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+                            <span class="c1"># Prep to check if segments overlap</span>
+                            <span class="k">for</span> <span class="n">segment_start</span><span class="p">,</span> <span class="n">segment_end</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">wall</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">wall</span><span class="p">[</span><span class="mi">1</span><span class="p">:]):</span>
+                                <span class="n">whereis_last_wrt_wall</span> <span class="o">=</span> <span class="n">loc_wrt_line</span><span class="p">(</span>
+                                    <span class="n">segment_start</span><span class="p">,</span> <span class="n">segment_end</span><span class="p">,</span> <span class="n">last</span>
+                                <span class="p">)</span>
+                                <span class="n">whereis_coords_wrt_wall</span> <span class="o">=</span> <span class="n">loc_wrt_line</span><span class="p">(</span>
+                                    <span class="n">segment_start</span><span class="p">,</span> <span class="n">segment_end</span><span class="p">,</span> <span class="n">coords</span>
+                                <span class="p">)</span>
+                                <span class="n">whereis_wallmin_wrt_ray</span> <span class="o">=</span> <span class="n">loc_wrt_line</span><span class="p">(</span>
+                                    <span class="n">last</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">segment_start</span>
+                                <span class="p">)</span>
+                                <span class="n">whereis_wallmax_wrt_ray</span> <span class="o">=</span> <span class="n">loc_wrt_line</span><span class="p">(</span>
+                                    <span class="n">last</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">segment_end</span>
+                                <span class="p">)</span>
+
+                                <span class="n">ray_touches_or_crosses_wall</span> <span class="o">=</span> <span class="p">(</span>
+                                    <span class="p">(</span><span class="n">whereis_last_wrt_wall</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span>
+                                    <span class="o">^</span> <span class="p">(</span><span class="n">whereis_coords_wrt_wall</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span>
+                                <span class="p">)</span> <span class="o">|</span> <span class="p">(</span>
+                                    <span class="p">(</span>
+                                        <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">whereis_last_wrt_wall</span><span class="p">)</span>
+                                        <span class="o">&lt;</span> <span class="n">np</span><span class="o">.</span><span class="n">finfo</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">eps</span>
+                                    <span class="p">)</span>
+                                    <span class="o">|</span> <span class="p">(</span>
+                                        <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">whereis_coords_wrt_wall</span><span class="p">)</span>
+                                        <span class="o">&lt;</span> <span class="n">np</span><span class="o">.</span><span class="n">finfo</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">eps</span>
+                                    <span class="p">)</span>
+                                <span class="p">)</span>
+                                <span class="n">wall_touches_or_crosses_ray</span> <span class="o">=</span> <span class="p">(</span>
+                                    <span class="p">(</span><span class="n">whereis_wallmin_wrt_ray</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span>
+                                    <span class="o">^</span> <span class="p">(</span><span class="n">whereis_wallmax_wrt_ray</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span>
+                                <span class="p">)</span> <span class="o">|</span> <span class="p">(</span>
+                                    <span class="p">(</span>
+                                        <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">whereis_wallmin_wrt_ray</span><span class="p">)</span>
+                                        <span class="o">&lt;</span> <span class="n">np</span><span class="o">.</span><span class="n">finfo</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">eps</span>
+                                    <span class="p">)</span>
+                                    <span class="o">|</span> <span class="p">(</span>
+                                        <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">whereis_wallmax_wrt_ray</span><span class="p">)</span>
+                                        <span class="o">&lt;</span> <span class="n">np</span><span class="o">.</span><span class="n">finfo</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">eps</span>
+                                    <span class="p">)</span>
+                                <span class="p">)</span>
+
+                                <span class="n">is_intersection</span> <span class="o">=</span> <span class="p">(</span>
+                                    <span class="n">is_overlap</span>
+                                    <span class="o">&amp;</span> <span class="n">ray_touches_or_crosses_wall</span>
+                                    <span class="o">&amp;</span> <span class="n">wall_touches_or_crosses_ray</span>
+                                <span class="p">)</span>
+                                <span class="n">np</span><span class="o">.</span><span class="n">logical_or</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">is_intersection</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">)</span>
+                        <span class="c1"># If no overlaps at all, return early as the above is quite slow.</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">np</span><span class="o">.</span><span class="n">logical_or</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">is_overlap</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">)</span>
+
+                <span class="n">last</span> <span class="o">=</span> <span class="n">coords</span>
+        <span class="k">return</span> <span class="n">out</span></div>
+
+
+<div class="viewcode-block" id="Rays.to_fortran_order">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.ray/arim.ray.Rays.html#arim.ray.Rays.to_fortran_order">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_fortran_order</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a Ray object with the .</span>
+
+<span class="sd">        TFM objects except to have lookup times indexed by (grid_idx, probe_idx) whereas</span>
+<span class="sd">        the arrays in this object are indexed by (probe_idx, grid_idx). By converting</span>
+<span class="sd">        them to Fortran array, their transpose are C-contiguous and indexed as expected</span>
+<span class="sd">        by TFM objects.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Rays</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">asfortranarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">times</span><span class="p">),</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">asfortranarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">interior_indices</span><span class="p">),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fermat_path</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_invalid_rays</span><span class="p">,</span>
+            <span class="s2">&quot;F&quot;</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Rays.expand_rays">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.ray/arim.ray.Rays.html#arim.ray.Rays.expand_rays">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">expand_rays</span><span class="p">(</span><span class="n">interior_indices</span><span class="p">,</span> <span class="n">indices_new_interface</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Expand the rays by one interface knowing the beginning of the rays and the</span>
+<span class="sd">        points the rays must go through at the last interface.</span>
+
+<span class="sd">        A0, A1, ..., A(d+1) are (d+2) interfaces.</span>
+
+<span class="sd">        n: number of points of interface A0</span>
+<span class="sd">        m: number of points of interface Ad</span>
+<span class="sd">        p: number of points of interface A(d+1)</span>
+
+<span class="sd">        For more information on ``interior_indices``, see the documentation of ``Rays``.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        interior_indices: *interior* indices of rays going from A(0) to A(d).</span>
+<span class="sd">            Shape: (d, n, m)</span>
+<span class="sd">        indices_new_interface: indices of the points of interface A(d) that the rays</span>
+<span class="sd">        starting from A(0) cross to go to A(d+1).</span>
+<span class="sd">            Shape: (n, p)</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        expanded_indices</span>
+<span class="sd">            Shape (d+1, n, p)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">d</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">m</span> <span class="o">=</span> <span class="n">interior_indices</span><span class="o">.</span><span class="n">shape</span>
+        <span class="n">n_</span><span class="p">,</span> <span class="n">p</span> <span class="o">=</span> <span class="n">indices_new_interface</span><span class="o">.</span><span class="n">shape</span>
+        <span class="k">if</span> <span class="n">n</span> <span class="o">!=</span> <span class="n">n_</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Inconsistent shapes&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">d</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">new_shape</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">*</span><span class="n">indices_new_interface</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">indices_new_interface</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">new_shape</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">expanded_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">d</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">p</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">interior_indices</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+            <span class="n">_expand_rays</span><span class="p">(</span><span class="n">interior_indices</span><span class="p">,</span> <span class="n">indices_new_interface</span><span class="p">,</span> <span class="n">expanded_indices</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">expanded_indices</span></div>
+
+
+<div class="viewcode-block" id="Rays.reverse">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.ray/arim.ray.Rays.html#arim.ray.Rays.reverse">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;f&quot;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a new Rays object which corresponds to the reversed path.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        order : str</span>
+<span class="sd">            Order of the arrays &#39;times&#39; and &#39;indices&#39;. Default: &#39;f&#39;</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        reversed_rays : Rays</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">reversed_times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
+
+        <span class="c1"># Input x of shape (d, n, m)</span>
+        <span class="c1"># Output y of shape(d, m, n) such as ``x[k, i, j] == y[d - k, j, i]``</span>
+        <span class="n">reversed_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">interior_indices</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">reversed_indices</span> <span class="o">=</span> <span class="n">reversed_indices</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+        <span class="n">reversed_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">reversed_indices</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
+
+        <span class="n">reversed_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fermat_path</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="n">reversed_times</span><span class="p">,</span> <span class="n">reversed_indices</span><span class="p">,</span> <span class="n">reversed_path</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="FermatPath">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.ray/arim.ray.FermatPath.html#arim.ray.FermatPath">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">FermatPath</span><span class="p">(</span><span class="nb">tuple</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    FermatPath(points_and_speeds)</span>
+
+<span class="sd">    This object contain the interface points through which the pass during the propagation and the speeds</span>
+<span class="sd">    between the consecutive interfaces.</span>
+
+<span class="sd">    This object should be used only for the internal plumbing of FermatSolver. This object can be obtained from a</span>
+<span class="sd">    (smarter) :class:`Path` object via the class method :meth:`FermatPath.from_path`.</span>
+
+<span class="sd">    A FermatPath must starts and ends with Points objects. Speeds (stored as float) and Points must alternate.</span>
+
+<span class="sd">    Ex: FermatPath((points_1, speed_1_2, points_2, speed_2_3, points_3))</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">sequence</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sequence</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">sequence</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> expects a sequence of length odd and &gt;= 5)&quot;</span>
+            <span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">sequence</span><span class="p">[</span><span class="mi">1</span><span class="p">::</span><span class="mi">2</span><span class="p">])),</span> <span class="s2">&quot;nonfinite velocity&quot;</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">sequence</span><span class="p">)</span>
+
+<div class="viewcode-block" id="FermatPath.from_path">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.ray/arim.ray.FermatPath.html#arim.ray.FermatPath.from_path">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_path</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a FermatPath object from a (smarter) Path object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">path_pieces</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">interface</span><span class="p">,</span> <span class="n">material</span><span class="p">,</span> <span class="n">mode</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
+            <span class="n">path</span><span class="o">.</span><span class="n">interfaces</span><span class="p">,</span> <span class="n">path</span><span class="o">.</span><span class="n">materials</span><span class="p">,</span> <span class="n">path</span><span class="o">.</span><span class="n">modes</span>
+        <span class="p">):</span>
+            <span class="n">velocity</span> <span class="o">=</span> <span class="n">material</span><span class="o">.</span><span class="n">velocity</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span>
+            <span class="n">path_pieces</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">interface</span><span class="o">.</span><span class="n">points</span><span class="p">)</span>
+            <span class="n">path_pieces</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">velocity</span><span class="p">)</span>
+        <span class="n">path_pieces</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">points</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">path_pieces</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">(</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">])</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tail</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">tail</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Cannot join two subpaths with different extremities.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">((</span><span class="o">*</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">tail</span><span class="p">[</span><span class="mi">1</span><span class="p">:]))</span>
+
+<div class="viewcode-block" id="FermatPath.reverse">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.ray/arim.ray.FermatPath.html#arim.ray.FermatPath.reverse">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reverse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="nb">reversed</span><span class="p">(</span><span class="bp">self</span><span class="p">)))</span></div>
+
+
+<div class="viewcode-block" id="FermatPath.split_head">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.ray/arim.ray.FermatPath.html#arim.ray.FermatPath.split_head">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">split_head</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Split a Path in two at the first interface:</span>
+<span class="sd">        ``(points_1, speed_1_2, points_2)`` and ``(points_2, speed_2_3, ..., points_n)``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">5</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Not enough elements to split (min: 5)&quot;</span><span class="p">)</span>
+        <span class="n">head</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="bp">self</span><span class="p">[:</span><span class="mi">3</span><span class="p">])</span>
+        <span class="n">tail</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="mi">2</span><span class="p">:])</span>
+        <span class="k">return</span> <span class="n">head</span><span class="p">,</span> <span class="n">tail</span></div>
+
+
+<div class="viewcode-block" id="FermatPath.split_queue">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.ray/arim.ray.FermatPath.html#arim.ray.FermatPath.split_queue">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">split_queue</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Split a Path in two at the last interface:</span>
+<span class="sd">        ``(points_1, speed_1_2, ... points_n1)`` and ``(points_n1, speed, points_n)``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">5</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Not enough elements to split (min: 5)&quot;</span><span class="p">)</span>
+        <span class="n">head</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="bp">self</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">])</span>
+        <span class="n">tail</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">:])</span>
+        <span class="k">return</span> <span class="n">head</span><span class="p">,</span> <span class="n">tail</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">points</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns all the Points objects in Path as a tuple.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="mi">0</span><span class="p">::</span><span class="mi">2</span><span class="p">])</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">velocities</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="mi">1</span><span class="p">::</span><span class="mi">2</span><span class="p">])</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">num_points_sets</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">len_largest_interface</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Excluse first and last dataset</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">all_points</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">)</span>
+        <span class="n">interfaces</span> <span class="o">=</span> <span class="n">all_points</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">interfaces</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">max</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">interfaces</span><span class="p">])</span></div>
+
+
+
+<div class="viewcode-block" id="FermatSolver">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.ray/arim.ray.FermatSolver.html#arim.ray.FermatSolver">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">FermatSolver</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Solver: take as input the interfaces, give as output the ray paths.</span>
+
+<span class="sd">    General usage: instantiate object, then call method ``solve`` (or ``solve_no_clean``</span>
+<span class="sd">    to keep intermediary results). Results are stored in attributes ``res``.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    paths : set of FermatPath</span>
+<span class="sd">        Paths which will be solved. Solving several paths at a time allows an efficient caching.</span>
+<span class="sd">    dtype : numpy.dtype</span>
+<span class="sd">        Datatype for times and distances. Optional, default: settings.FLOAT</span>
+<span class="sd">    dtype_indices : numpy.dtype</span>
+<span class="sd">        Datatype for indices. Optional, default: use the smallest unsigned</span>
+<span class="sd">        integers that fits.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    res : dictionary</span>
+<span class="sd">        Rays stored as ``Rays`` objects, indexed by the ``paths``.</span>
+<span class="sd">    paths</span>
+<span class="sd">        Cf. above.</span>
+<span class="sd">    dtype</span>
+<span class="sd">        Cf. above.</span>
+<span class="sd">    dtype_indices</span>
+<span class="sd">        Cf. above.</span>
+<span class="sd">    cached_distance : dict</span>
+<span class="sd">        Keys: tuple of Points (points1, points2). Values: euclidean</span>
+<span class="sd">        distance between all points of &#39;points1&#39; and all points of &#39;points2&#39;.</span>
+<span class="sd">    cached_result : dict</span>
+<span class="sd">        Keys: Path. Values: _FermatSolverResult</span>
+
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fermat_paths_set</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype_indices</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">dtype</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">FLOAT</span>
+
+        <span class="k">if</span> <span class="n">dtype_indices</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">dtype_indices</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">INT</span>
+
+        <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">fermat_paths_set</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="nb">hash</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">TypeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Path must be hashable.&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span> <span class="o">=</span> <span class="n">dtype</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dtype_indices</span> <span class="o">=</span> <span class="n">dtype_indices</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clear_cache</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">res</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">paths</span> <span class="o">=</span> <span class="n">fermat_paths_set</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_minimization</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_euc_distance</span> <span class="o">=</span> <span class="mi">0</span>
+
+<div class="viewcode-block" id="FermatSolver.from_views">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.ray/arim.ray.FermatSolver.html#arim.ray.FermatSolver.from_views">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_views</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">views_list</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype_indices</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a FermatSolver from a list of views (alternative constructor).</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        views : list of Views</span>
+<span class="sd">        dtype : numpy.dtype or None</span>
+<span class="sd">        dtype_indices : numpy.dtype or None</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">paths</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span>
+            <span class="n">path</span>
+            <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">views_list</span>
+            <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">tx_path</span><span class="o">.</span><span class="n">to_fermat_path</span><span class="p">(),</span> <span class="n">v</span><span class="o">.</span><span class="n">rx_path</span><span class="o">.</span><span class="n">to_fermat_path</span><span class="p">())</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">paths</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dtype_indices</span><span class="o">=</span><span class="n">dtype_indices</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FermatSolver.solve">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.ray/arim.ray.FermatSolver.html#arim.ray.FermatSolver.solve">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute the rays for all paths and store them in ``self.res``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">solve_no_clean</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clear_cache</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">res</span></div>
+
+
+<div class="viewcode-block" id="FermatSolver.solve_no_clean">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.ray/arim.ray.FermatSolver.html#arim.ray.FermatSolver.solve_no_clean">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">solve_no_clean</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute the rays for all paths and store them in ``self.res``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">tic</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">paths</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">res</span><span class="p">[</span><span class="n">path</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_solve</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="n">toc</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Ray tracing: solved all in </span><span class="si">{</span><span class="n">toc</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">tic</span><span class="si">:</span><span class="s2">.3g</span><span class="si">}</span><span class="s2">s&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">res</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_solve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the rays starting from the first interface and last interface of ``path``.</span>
+
+<span class="sd">        This function is recursive. Intermediate results are stored</span>
+<span class="sd">        in self.cached_result and self.cached_distance.</span>
+
+<span class="sd">        Warning: it is not safe to call this with a Path not passed to __init__</span>
+<span class="sd">        because of possible overflows.</span>
+
+
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        res : Rays</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">path</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cached_result</span><span class="p">:</span>
+            <span class="c1"># Cache hits, hourray</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cached_result</span><span class="p">[</span><span class="n">path</span><span class="p">]</span>
+
+        <span class="c1"># Special case if we have only two (consecutive) boundaries:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">consecutive_times</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+        <span class="c1"># General case: compute by calling _solve() recursively:</span>
+        <span class="n">head</span><span class="p">,</span> <span class="n">tail</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">split_queue</span><span class="p">()</span>
+
+        <span class="n">res_head</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_solve</span><span class="p">(</span><span class="n">head</span><span class="p">)</span>
+        <span class="n">res_tail</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_solve</span><span class="p">(</span><span class="n">tail</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">res_head</span><span class="p">,</span> <span class="n">Rays</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">res_tail</span><span class="p">,</span> <span class="n">Rays</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_minimization</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Ray tracing: solve for subpaths </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">head</span><span class="p">)</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">tail</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">times</span><span class="p">,</span> <span class="n">indices_at_interface</span> <span class="o">=</span> <span class="n">find_minimum_times</span><span class="p">(</span>
+            <span class="n">res_head</span><span class="o">.</span><span class="n">times</span><span class="p">,</span>
+            <span class="n">res_tail</span><span class="o">.</span><span class="n">times</span><span class="p">,</span>
+            <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
+            <span class="n">dtype_indices</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype_indices</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">assert</span> <span class="n">res_tail</span><span class="o">.</span><span class="n">fermat_path</span><span class="o">.</span><span class="n">num_points_sets</span> <span class="o">==</span> <span class="mi">2</span>
+        <span class="n">indices</span> <span class="o">=</span> <span class="n">Rays</span><span class="o">.</span><span class="n">expand_rays</span><span class="p">(</span><span class="n">res_head</span><span class="o">.</span><span class="n">interior_indices</span><span class="p">,</span> <span class="n">indices_at_interface</span><span class="p">)</span>
+
+        <span class="k">del</span> <span class="n">indices_at_interface</span>  <span class="c1"># no more useful</span>
+
+        <span class="n">res</span> <span class="o">=</span> <span class="n">Rays</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cached_result</span><span class="p">[</span><span class="n">path</span><span class="p">]</span> <span class="o">=</span> <span class="n">res</span>
+        <span class="k">return</span> <span class="n">res</span>
+
+<div class="viewcode-block" id="FermatSolver.clear_cache">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.ray/arim.ray.FermatSolver.html#arim.ray.FermatSolver.clear_cache">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">clear_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cached_distance</span> <span class="o">=</span> <span class="n">Cache</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cached_result</span> <span class="o">=</span> <span class="n">Cache</span><span class="p">()</span>
+        <span class="n">gc</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>  <span class="c1"># force the garbage collector to delete unreferenced objects</span></div>
+
+
+<div class="viewcode-block" id="FermatSolver.consecutive_times">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.ray/arim.ray.FermatSolver.html#arim.ray.FermatSolver.consecutive_times">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">consecutive_times</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Computes the rays between two consecutive sets of points.</span>
+<span class="sd">        This is straight forward: each ray is a straight line; ray lengths are</span>
+<span class="sd">        obtained by taking the Euclidean distances between points.</span>
+
+<span class="sd">        Cache the distance array in the two directions: points1 to points2,</span>
+<span class="sd">        points 2 to points1.</span>
+
+<span class="sd">        Returns a ``Rays`` object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">points1</span><span class="p">,</span> <span class="n">speed</span><span class="p">,</span> <span class="n">points2</span> <span class="o">=</span> <span class="n">path</span>
+
+        <span class="n">key</span> <span class="o">=</span> <span class="p">(</span><span class="n">points1</span><span class="p">,</span> <span class="n">points2</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">distance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cached_distance</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">num_euc_distance</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">distance</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">distance_pairwise</span><span class="p">(</span><span class="n">points1</span><span class="p">,</span> <span class="n">points2</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+            <span class="n">rkey</span> <span class="o">=</span> <span class="p">(</span><span class="n">points1</span><span class="p">,</span> <span class="n">points2</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cached_distance</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">distance</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="o">!=</span> <span class="n">rkey</span><span class="p">:</span>  <span class="c1"># if points1 and points2 are the same!</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cached_distance</span><span class="p">[</span><span class="n">rkey</span><span class="p">]</span> <span class="o">=</span> <span class="n">distance</span><span class="o">.</span><span class="n">T</span>
+        <span class="k">return</span> <span class="n">Rays</span><span class="o">.</span><span class="n">make_rays_two_interfaces</span><span class="p">(</span><span class="n">distance</span> <span class="o">/</span> <span class="n">speed</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype_indices</span><span class="p">)</span></div>
+</div>
+
+
+
+<span class="nd">@numba</span><span class="o">.</span><span class="n">vectorize</span><span class="p">(</span>
+    <span class="p">[</span><span class="s2">&quot;float64(float64, float64)&quot;</span><span class="p">,</span> <span class="s2">&quot;float32(float32, float32)&quot;</span><span class="p">],</span>
+    <span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">target</span><span class="o">=</span><span class="s2">&quot;parallel&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_signed_leg_angle</span><span class="p">(</span><span class="n">polar</span><span class="p">,</span> <span class="n">azimuth</span><span class="p">):</span>
+    <span class="n">pi2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">2</span>
+    <span class="k">if</span> <span class="o">-</span><span class="n">pi2</span> <span class="o">&lt;</span> <span class="n">azimuth</span> <span class="o">&lt;=</span> <span class="n">polar</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">polar</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="o">-</span><span class="n">polar</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_to_readonly</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+        <span class="n">x</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">writeable</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">return</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">g</span><span class="o">.</span><span class="n">Points</span><span class="p">):</span>
+        <span class="n">x</span><span class="o">.</span><span class="n">coords</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">writeable</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">return</span>
+    <span class="k">elif</span> <span class="n">x</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">xlist</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;unhandled type: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">xlist</span><span class="p">:</span>
+                <span class="n">_to_readonly</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_cache_ray_geometry</span><span class="p">(</span><span class="n">user_func</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Cache decorator companion for RayGeometry.</span>
+
+<span class="sd">    Numpy arrays are set to read-only to avoid mistakes.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    user_func</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">wrapper</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interface_idx</span><span class="p">,</span> <span class="n">is_final</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        self : RayGeometry</span>
+<span class="sd">        interface_idx : int</span>
+<span class="sd">        is_final : bool</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">actual_interface_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_interface_indices</span><span class="p">[</span><span class="n">interface_idx</span><span class="p">]</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">user_func</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">actual_interface_idx</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Cache hit</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">is_final</span><span class="p">:</span>
+                <span class="c1"># Promote to final result if necessary</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_final_keys</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">res</span>
+
+        <span class="c1"># Cache miss: compute and save result</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">user_func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interface_idx</span><span class="o">=</span><span class="n">interface_idx</span><span class="p">)</span>
+
+        <span class="c1"># Save in cache:</span>
+        <span class="n">_to_readonly</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">res</span>
+        <span class="k">if</span> <span class="n">is_final</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_final_keys</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">res</span>
+
+    <span class="k">return</span> <span class="n">wrapper</span>
+
+
+<div class="viewcode-block" id="RayGeometry">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.ray/arim.ray.RayGeometry.html#arim.ray.RayGeometry">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">RayGeometry</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    RayGeometry computes the leg sizes and various angles in rays.</span>
+
+<span class="sd">    RayGeometry uses an internal cache during the computation which reduces the</span>
+<span class="sd">    computational time. The cache has two levels: intermediate results and final results.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interfaces</span><span class="p">,</span> <span class="n">rays</span><span class="p">,</span> <span class="n">use_cache</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        interfaces : Sized of Interface</span>
+<span class="sd">        rays : Rays</span>
+<span class="sd">        use_cache : bool</span>
+<span class="sd">            Default: True</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">numinterfaces</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">interfaces</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span> <span class="o">=</span> <span class="n">interfaces</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rays</span> <span class="o">=</span> <span class="n">rays</span>
+
+        <span class="k">assert</span> <span class="n">rays</span><span class="o">.</span><span class="n">fermat_path</span><span class="o">.</span><span class="n">points</span> <span class="o">==</span> <span class="nb">tuple</span><span class="p">(</span>
+            <span class="n">i</span><span class="o">.</span><span class="n">points</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">interfaces</span>
+        <span class="p">),</span> <span class="s2">&quot;Inconsistent rays and interfaces&quot;</span>
+
+        <span class="c1"># self.legs = [] * path.numlegs</span>
+        <span class="c1"># self.incoming_legs = [None] + [] * path.numlegs</span>
+        <span class="c1"># self.outgoing_legs = [] * (path.numlegs - 1) + [None]</span>
+
+        <span class="c1"># Used for caching via _cache_ray_geometry wrapper</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_use_cache</span> <span class="o">=</span> <span class="n">use_cache</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span> <span class="o">=</span> <span class="n">Cache</span><span class="p">()</span> <span class="k">if</span> <span class="n">use_cache</span> <span class="k">else</span> <span class="n">NoCache</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_final_keys</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_interface_indices</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">numinterfaces</span><span class="p">))</span>
+
+<div class="viewcode-block" id="RayGeometry.from_path">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.ray/arim.ray.RayGeometry.html#arim.ray.RayGeometry.from_path">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_path</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">use_cache</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        path : Path</span>
+<span class="sd">        use_cache : bool</span>
+<span class="sd">            Optional</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">rays</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Rays must be computed first.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">interfaces</span><span class="p">,</span> <span class="n">path</span><span class="o">.</span><span class="n">rays</span><span class="p">,</span> <span class="n">use_cache</span><span class="o">=</span><span class="n">use_cache</span><span class="p">)</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">numinterfaces</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">numlegs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+
+<div class="viewcode-block" id="RayGeometry.precompute">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.ray/arim.ray.RayGeometry.html#arim.ray.RayGeometry.precompute">[docs]</a>
+    <span class="nd">@contextlib</span><span class="o">.</span><span class="n">contextmanager</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">precompute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Context manager for cleaning intermediate results after execution.</span>
+
+<span class="sd">        Example</span>
+<span class="sd">        -------</span>
+
+<span class="sd">        &gt;&gt;&gt; ray_geometry = RayGeometry.from_path(path)</span>
+<span class="sd">        &gt;&gt;&gt; with ray_geometry.precompute():</span>
+<span class="sd">        ...     ray_geometry.inc_angle(1)</span>
+<span class="sd">        ...     ray_geometry.signed_inc_angle(1)</span>
+<span class="sd">        ... # At this stage, the two results are stored in cache and the intermadiate</span>
+<span class="sd">        ... # results are discarded.</span>
+<span class="sd">        &gt;&gt;&gt; ray_geometry.inc_angle(1)  # fetch from cache</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_use_cache</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="s2">&quot;Caching is not enabled therefore precompute() will not work.&quot;</span><span class="p">,</span>
+                <span class="n">ArimWarning</span><span class="p">,</span>
+                <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">yield</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clear_intermediate_results</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="RayGeometry.leg_points">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.ray/arim.ray.RayGeometry.html#arim.ray.RayGeometry.leg_points">[docs]</a>
+    <span class="nd">@_cache_ray_geometry</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">leg_points</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interface_idx</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the coordinates (x, y, z) in the GCS of the points crossed by the rays at</span>
+<span class="sd">        a given interface.</span>
+
+<span class="sd">        ``points[i, j]`` contains the (x, y, z) coordinates of the points through which</span>
+<span class="sd">        the ray (i, j) goes at the interface of index ``interface_idx``.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        interface_idx : int</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        points : Points</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">interfaces</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span>
+        <span class="n">points</span> <span class="o">=</span> <span class="n">interfaces</span><span class="p">[</span><span class="n">interface_idx</span><span class="p">]</span><span class="o">.</span><span class="n">points</span>
+        <span class="n">legs_points</span> <span class="o">=</span> <span class="n">points</span><span class="o">.</span><span class="n">coords</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rays</span><span class="o">.</span><span class="n">indices</span><span class="p">[</span><span class="n">interface_idx</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">g</span><span class="o">.</span><span class="n">aspoints</span><span class="p">(</span><span class="n">legs_points</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="RayGeometry.orientations_of_legs_points">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.ray/arim.ray.RayGeometry.html#arim.ray.RayGeometry.orientations_of_legs_points">[docs]</a>
+    <span class="nd">@_cache_ray_geometry</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">orientations_of_legs_points</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interface_idx</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        ``orientations[i, j]`` is the basis (3x3 orthogonal matrix) attached to the point</span>
+<span class="sd">        through which the ray (i, j) goes at the interface of index ``interface_idx``.</span>
+
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        interface_idx</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        orientations : Points</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">orientations_all_points</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="n">interface_idx</span><span class="p">]</span><span class="o">.</span><span class="n">orientations</span>
+        <span class="n">rays_indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rays</span><span class="o">.</span><span class="n">indices</span><span class="p">[</span><span class="n">interface_idx</span><span class="p">]</span>
+        <span class="n">orientations</span> <span class="o">=</span> <span class="n">orientations_all_points</span><span class="o">.</span><span class="n">coords</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="n">rays_indices</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">g</span><span class="o">.</span><span class="n">aspoints</span><span class="p">(</span><span class="n">orientations</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="RayGeometry.clear_intermediate_results">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.ray/arim.ray.RayGeometry.html#arim.ray.RayGeometry.clear_intermediate_results">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">clear_intermediate_results</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Clear cache containing intermediate (non-final) results.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">keys_to_flush</span> <span class="o">=</span> <span class="p">[</span><span class="n">key</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span> <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_final_keys</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys_to_flush</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="RayGeometry.clear_all_results">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.ray/arim.ray.RayGeometry.html#arim.ray.RayGeometry.clear_all_results">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">clear_all_results</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Clear the whole cache (intermediate and final results).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="o">.</span><span class="vm">__class__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_final_keys</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="RayGeometry.inc_leg_size">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.ray/arim.ray.RayGeometry.html#arim.ray.RayGeometry.inc_leg_size">[docs]</a>
+    <span class="nd">@_cache_ray_geometry</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">inc_leg_size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interface_idx</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute the size of the incoming leg.</span>
+
+<span class="sd">        Gives the same result as</span>
+<span class="sd">        :meth:`RayGeometry.inc_leg_radius` but does not rely on the spherical</span>
+<span class="sd">        coordinates, therefore this method is faster when spherical coordinates are not</span>
+<span class="sd">        required elsewhere.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        interface_idx</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">interface_idx</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="n">legs_starts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">leg_points</span><span class="p">(</span><span class="n">interface_idx</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">is_final</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">coords</span>
+        <span class="n">legs_ends</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">leg_points</span><span class="p">(</span><span class="n">interface_idx</span><span class="p">,</span> <span class="n">is_final</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">coords</span>
+
+        <span class="n">legs</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">Points</span><span class="p">(</span><span class="n">legs_starts</span> <span class="o">-</span> <span class="n">legs_ends</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">legs</span><span class="o">.</span><span class="n">norm2</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="RayGeometry.inc_leg_cartesian">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.ray/arim.ray.RayGeometry.html#arim.ray.RayGeometry.inc_leg_cartesian">[docs]</a>
+    <span class="nd">@_cache_ray_geometry</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">inc_leg_cartesian</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interface_idx</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the coordinates of the source points of the legs that arrive at the</span>
+<span class="sd">        interface of index ``interface_idx``.</span>
+
+<span class="sd">        The coordinates of each leg are given in the Cartesian coordinate system attached</span>
+<span class="sd">        to the its end point (i.e. point on interface interface_idx).</span>
+
+<span class="sd">        No incoming legs towards the first interface.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        interface_idx : int</span>
+
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        points : Points or None</span>
+<span class="sd">            None for the first interface.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">interface_idx</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="n">legs_starts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">leg_points</span><span class="p">(</span><span class="n">interface_idx</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">is_final</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">coords</span>
+        <span class="n">legs_ends</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">leg_points</span><span class="p">(</span><span class="n">interface_idx</span><span class="p">,</span> <span class="n">is_final</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">coords</span>
+
+        <span class="n">orientations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">orientations_of_legs_points</span><span class="p">(</span>
+            <span class="n">interface_idx</span><span class="p">,</span> <span class="n">is_final</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">coords</span>
+
+        <span class="n">legs_local</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">from_gcs</span><span class="p">(</span><span class="n">legs_starts</span><span class="p">,</span> <span class="n">orientations</span><span class="p">,</span> <span class="n">legs_ends</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">g</span><span class="o">.</span><span class="n">aspoints</span><span class="p">(</span><span class="n">legs_local</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="RayGeometry.inc_leg_radius">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.ray/arim.ray.RayGeometry.html#arim.ray.RayGeometry.inc_leg_radius">[docs]</a>
+    <span class="nd">@_cache_ray_geometry</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">inc_leg_radius</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interface_idx</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the radius (length) of the leg incoming to interface interface_idx.</span>
+
+<span class="sd">        Use spherical coordinate system attached to the end point of the leg.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        interface_idx : int</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        ndarray</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cartesian</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inc_leg_cartesian</span><span class="p">(</span><span class="n">interface_idx</span><span class="p">,</span> <span class="n">is_final</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">cartesian</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">g</span><span class="o">.</span><span class="n">spherical_coordinates_r</span><span class="p">(</span><span class="n">cartesian</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">cartesian</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">cartesian</span><span class="o">.</span><span class="n">z</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="RayGeometry.inc_leg_polar">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.ray/arim.ray.RayGeometry.html#arim.ray.RayGeometry.inc_leg_polar">[docs]</a>
+    <span class="nd">@_cache_ray_geometry</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">inc_leg_polar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interface_idx</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the polar angle in [0, pi] of the leg incoming to interface interface_idx.</span>
+
+<span class="sd">        Use spherical coordinate system attached to the end point of the leg.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        interface_idx : int</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        ndarray</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cartesian</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inc_leg_cartesian</span><span class="p">(</span><span class="n">interface_idx</span><span class="p">,</span> <span class="n">is_final</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">cartesian</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="n">radius</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inc_leg_radius</span><span class="p">(</span><span class="n">interface_idx</span><span class="p">,</span> <span class="n">is_final</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">g</span><span class="o">.</span><span class="n">spherical_coordinates_theta</span><span class="p">(</span><span class="n">cartesian</span><span class="o">.</span><span class="n">z</span><span class="p">,</span> <span class="n">radius</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="RayGeometry.inc_leg_azimuth">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.ray/arim.ray.RayGeometry.html#arim.ray.RayGeometry.inc_leg_azimuth">[docs]</a>
+    <span class="nd">@_cache_ray_geometry</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">inc_leg_azimuth</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interface_idx</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the corrected polar angle in [0, pi] of the leg incoming to interface</span>
+<span class="sd">        interface_idx. Corresponds to the polar angle if the normals of the interface</span>
+<span class="sd">        are on the same side as the incoming legs, pi/2 minus polar angle otherwise.</span>
+
+<span class="sd">        Use spherical coordinate system attached to the end point of the leg.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        interface_idx : int</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        ndarray</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cartesian</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inc_leg_cartesian</span><span class="p">(</span><span class="n">interface_idx</span><span class="p">,</span> <span class="n">is_final</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">cartesian</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">g</span><span class="o">.</span><span class="n">spherical_coordinates_phi</span><span class="p">(</span><span class="n">cartesian</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">cartesian</span><span class="o">.</span><span class="n">y</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="RayGeometry.inc_angle">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.ray/arim.ray.RayGeometry.html#arim.ray.RayGeometry.inc_angle">[docs]</a>
+    <span class="nd">@_cache_ray_geometry</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">inc_angle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interface_idx</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">inc_leg_polar</span><span class="p">(</span><span class="n">interface_idx</span><span class="p">,</span> <span class="n">is_final</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="RayGeometry.signed_inc_angle">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.ray/arim.ray.RayGeometry.html#arim.ray.RayGeometry.signed_inc_angle">[docs]</a>
+    <span class="nd">@_cache_ray_geometry</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">signed_inc_angle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interface_idx</span><span class="p">):</span>
+        <span class="n">azimuth</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inc_leg_azimuth</span><span class="p">(</span><span class="n">interface_idx</span><span class="p">,</span> <span class="n">is_final</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">azimuth</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="n">polar</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inc_leg_polar</span><span class="p">(</span><span class="n">interface_idx</span><span class="p">,</span> <span class="n">is_final</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_signed_leg_angle</span><span class="p">(</span><span class="n">polar</span><span class="p">,</span> <span class="n">azimuth</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="RayGeometry.conventional_inc_angle">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.ray/arim.ray.RayGeometry.html#arim.ray.RayGeometry.conventional_inc_angle">[docs]</a>
+    <span class="nd">@_cache_ray_geometry</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">conventional_inc_angle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interface_idx</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">interface_idx</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="n">are_normals_on_inc_rays_side</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span>
+            <span class="n">interface_idx</span>
+        <span class="p">]</span><span class="o">.</span><span class="n">are_normals_on_inc_rays_side</span>
+        <span class="k">if</span> <span class="n">are_normals_on_inc_rays_side</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;Attribute are_normals_on_inc_rays_side must be set for the&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;interface </span><span class="si">{</span><span class="n">interface_idx</span><span class="si">}</span><span class="s2">.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">are_normals_on_inc_rays_side</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">inc_leg_polar</span><span class="p">(</span><span class="n">interface_idx</span><span class="p">,</span> <span class="n">is_final</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># out = pi - theta</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inc_leg_polar</span><span class="p">(</span><span class="n">interface_idx</span><span class="p">,</span> <span class="n">is_final</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="n">out</span><span class="p">[</span><span class="o">...</span><span class="p">]</span> <span class="o">*=</span> <span class="o">-</span><span class="mi">1</span>
+            <span class="n">out</span><span class="p">[</span><span class="o">...</span><span class="p">]</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span>
+            <span class="k">return</span> <span class="n">out</span></div>
+
+
+<div class="viewcode-block" id="RayGeometry.out_leg_cartesian">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.ray/arim.ray.RayGeometry.html#arim.ray.RayGeometry.out_leg_cartesian">[docs]</a>
+    <span class="nd">@_cache_ray_geometry</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">out_leg_cartesian</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interface_idx</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the coordinates of the destination points of the legs that start from the</span>
+<span class="sd">        interface of index ``interface_idx``.</span>
+
+<span class="sd">        The coordinates of each leg are given in the Cartesian coordinate system attached</span>
+<span class="sd">        to the its start point (i.e. point on interface interface_idx).</span>
+
+<span class="sd">        No outgoing legs from the last interface.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        interface_idx : int</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        points : Points or None</span>
+<span class="sd">            None for the last interface.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">actual_interface_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_interface_indices</span><span class="p">[</span><span class="n">interface_idx</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">actual_interface_idx</span> <span class="o">==</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">numinterfaces</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="c1"># No outgoing legs from the last interface</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="n">legs_starts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">leg_points</span><span class="p">(</span><span class="n">interface_idx</span><span class="p">,</span> <span class="n">is_final</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">coords</span>
+        <span class="n">legs_ends</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">leg_points</span><span class="p">(</span><span class="n">interface_idx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">is_final</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">coords</span>
+
+        <span class="n">orientations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">orientations_of_legs_points</span><span class="p">(</span>
+            <span class="n">interface_idx</span><span class="p">,</span> <span class="n">is_final</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">coords</span>
+        <span class="c1"># Convert legs in the local coordinate systems.</span>
+        <span class="n">legs_local</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">from_gcs</span><span class="p">(</span><span class="n">legs_ends</span><span class="p">,</span> <span class="n">orientations</span><span class="p">,</span> <span class="n">legs_starts</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">g</span><span class="o">.</span><span class="n">aspoints</span><span class="p">(</span><span class="n">legs_local</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="RayGeometry.out_leg_radius">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.ray/arim.ray.RayGeometry.html#arim.ray.RayGeometry.out_leg_radius">[docs]</a>
+    <span class="nd">@_cache_ray_geometry</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">out_leg_radius</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interface_idx</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the radius (length) of the leg outgoing from interface interface_idx.</span>
+
+<span class="sd">        Use spherical coordinate system attached to the end point of the leg.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        interface_idx : int</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        ndarray</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cartesian</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">out_leg_cartesian</span><span class="p">(</span><span class="n">interface_idx</span><span class="p">,</span> <span class="n">is_final</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">cartesian</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">g</span><span class="o">.</span><span class="n">spherical_coordinates_r</span><span class="p">(</span><span class="n">cartesian</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">cartesian</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">cartesian</span><span class="o">.</span><span class="n">z</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="RayGeometry.out_leg_polar">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.ray/arim.ray.RayGeometry.html#arim.ray.RayGeometry.out_leg_polar">[docs]</a>
+    <span class="nd">@_cache_ray_geometry</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">out_leg_polar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interface_idx</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the polar angle in [0, pi] of the leg outgoing from interface interface_idx.</span>
+
+<span class="sd">        Use spherical coordinate system attached to the end point of the leg.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        interface_idx : int</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        ndarray</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cartesian</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">out_leg_cartesian</span><span class="p">(</span><span class="n">interface_idx</span><span class="p">,</span> <span class="n">is_final</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">cartesian</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="n">radius</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">out_leg_radius</span><span class="p">(</span><span class="n">interface_idx</span><span class="p">,</span> <span class="n">is_final</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">g</span><span class="o">.</span><span class="n">spherical_coordinates_theta</span><span class="p">(</span><span class="n">cartesian</span><span class="o">.</span><span class="n">z</span><span class="p">,</span> <span class="n">radius</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="RayGeometry.out_leg_azimuth">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.ray/arim.ray.RayGeometry.html#arim.ray.RayGeometry.out_leg_azimuth">[docs]</a>
+    <span class="nd">@_cache_ray_geometry</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">out_leg_azimuth</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interface_idx</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the corrected polar angle in [0, pi] of the leg outgoing from interface</span>
+<span class="sd">        interface_idx. Corresponds to the polar angle if the normals of the interface</span>
+<span class="sd">        are on the same side as the outgoing legs, pi/2 minus polar angle otherwise.</span>
+
+<span class="sd">        Use spherical coordinate system attached to the end point of the leg.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        interface_idx : int</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        ndarray</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cartesian</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">out_leg_cartesian</span><span class="p">(</span><span class="n">interface_idx</span><span class="p">,</span> <span class="n">is_final</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">cartesian</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">g</span><span class="o">.</span><span class="n">spherical_coordinates_phi</span><span class="p">(</span><span class="n">cartesian</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">cartesian</span><span class="o">.</span><span class="n">y</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="RayGeometry.out_angle">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.ray/arim.ray.RayGeometry.html#arim.ray.RayGeometry.out_angle">[docs]</a>
+    <span class="nd">@_cache_ray_geometry</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">out_angle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interface_idx</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">out_leg_polar</span><span class="p">(</span><span class="n">interface_idx</span><span class="p">,</span> <span class="n">is_final</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="RayGeometry.signed_out_angle">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.ray/arim.ray.RayGeometry.html#arim.ray.RayGeometry.signed_out_angle">[docs]</a>
+    <span class="nd">@_cache_ray_geometry</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">signed_out_angle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interface_idx</span><span class="p">):</span>
+        <span class="n">azimuth</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">out_leg_azimuth</span><span class="p">(</span><span class="n">interface_idx</span><span class="p">,</span> <span class="n">is_final</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">azimuth</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="n">polar</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">out_leg_polar</span><span class="p">(</span><span class="n">interface_idx</span><span class="p">,</span> <span class="n">is_final</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_signed_leg_angle</span><span class="p">(</span><span class="n">polar</span><span class="p">,</span> <span class="n">azimuth</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="RayGeometry.conventional_out_angle">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.ray/arim.ray.RayGeometry.html#arim.ray.RayGeometry.conventional_out_angle">[docs]</a>
+    <span class="nd">@_cache_ray_geometry</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">conventional_out_angle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interface_idx</span><span class="p">):</span>
+        <span class="n">actual_interface_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_interface_indices</span><span class="p">[</span><span class="n">interface_idx</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">actual_interface_idx</span> <span class="o">==</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">numinterfaces</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="n">are_normals_on_out_rays_side</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span>
+            <span class="n">interface_idx</span>
+        <span class="p">]</span><span class="o">.</span><span class="n">are_normals_on_out_rays_side</span>
+        <span class="k">if</span> <span class="n">are_normals_on_out_rays_side</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;Attribute are_normals_on_out_rays_side must be set for the&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;interface </span><span class="si">{</span><span class="n">interface_idx</span><span class="si">}</span><span class="s2">.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">are_normals_on_out_rays_side</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">out_leg_polar</span><span class="p">(</span><span class="n">interface_idx</span><span class="p">,</span> <span class="n">is_final</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># out = pi - theta</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">out_leg_polar</span><span class="p">(</span><span class="n">interface_idx</span><span class="p">,</span> <span class="n">is_final</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="n">out</span><span class="p">[</span><span class="o">...</span><span class="p">]</span> <span class="o">*=</span> <span class="o">-</span><span class="mi">1</span>
+            <span class="n">out</span><span class="p">[</span><span class="o">...</span><span class="p">]</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span>
+            <span class="k">return</span> <span class="n">out</span></div>
+</div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2016–2025, arim contributors.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.4.7.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

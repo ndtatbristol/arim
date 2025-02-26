@@ -1,0 +1,6 @@
+arim.plot.plot_psd
+==================
+
+.. currentmodule:: arim.plot
+
+.. autofunction:: plot_psd

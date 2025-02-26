@@ -1,0 +1,6 @@
+arim.plot.plot_directivity_finite_width_2d
+==========================================
+
+.. currentmodule:: arim.plot
+
+.. autofunction:: plot_directivity_finite_width_2d
