@@ -10,6 +10,7 @@ import pytest
 from numpy import array
 
 import arim
+import arim.geometry as g
 import arim.model
 import arim.models.block_in_immersion
 import arim.ray
@@ -92,18 +93,18 @@ def make_context(couplant_att=None, block_l_att=None, block_t_att=None):
     expected_ray_indices = {
         "L": [[[200, 288]]],
         "T": [[[200, 391]]],
-        "LL": [[[200, 273]], [[91, 780]]],
-        "LT": [[[200, 278]], [[91, 918]]],
-        "TL": [[[200, 291]], [[91, 424]]],
-        "TT": [[[200, 353]], [[91, 789]]],
+        "L Backwall L": [[[200, 273]], [[91, 780]]],
+        "L Backwall T": [[[200, 278]], [[91, 918]]],
+        "T Backwall L": [[[200, 291]], [[91, 424]]],
+        "T Backwall T": [[[200, 353]], [[91, 789]]],
     }
     expected_ray_times = {
         "L": array([[9.92131466e-06, 1.51169800e-05]]),
         "T": array([[1.31465342e-05, 2.32862381e-05]]),
-        "LL": array([[1.30858724e-05, 1.67760353e-05]]),
-        "LT": array([[1.46984829e-05, 1.87550216e-05]]),
-        "TL": array([[1.79237015e-05, 2.30552458e-05]]),
-        "TT": array([[1.95363121e-05, 2.67521168e-05]]),
+        "L Backwall L": array([[1.30858724e-05, 1.67760353e-05]]),
+        "L Backwall T": array([[1.46984829e-05, 1.87550216e-05]]),
+        "T Backwall L": array([[1.79237015e-05, 2.30552458e-05]]),
+        "T Backwall T": array([[1.95363121e-05, 2.67521168e-05]]),
     }
     for pathname, path in paths.items():
         rays = arim.ray.Rays(
@@ -195,7 +196,14 @@ def test_context():
     assert interfaces is not None
     assert ray_geometry_dict is not None
 
-    assert paths.keys() == {"L", "LL", "LT", "TL", "TT", "T"}
+    assert paths.keys() == {
+        "L",
+        "L Backwall L",
+        "L Backwall T",
+        "T Backwall L",
+        "T Backwall T",
+        "T",
+    }
     for path in paths.values():
         assert path.rays is not None
 
@@ -261,7 +269,7 @@ def test_ray_tracing():
                 ]
             ]
         ),
-        "LL": array(
+        "L Backwall L": array(
             [
                 [
                     [5.00500501e-06, 0.00000000e00, 0.00000000e00],
@@ -269,7 +277,7 @@ def test_ray_tracing():
                 ]
             ]
         ),
-        "LT": array(
+        "L Backwall T": array(
             [
                 [
                     [5.00500501e-06, 0.00000000e00, 0.00000000e00],
@@ -277,7 +285,7 @@ def test_ray_tracing():
                 ]
             ]
         ),
-        "TL": array(
+        "T Backwall L": array(
             [
                 [
                     [5.00500501e-06, 0.00000000e00, 0.00000000e00],
@@ -285,7 +293,7 @@ def test_ray_tracing():
                 ]
             ]
         ),
-        "TT": array(
+        "T Backwall T": array(
             [
                 [
                     [5.00500501e-06, 0.00000000e00, 0.00000000e00],
@@ -307,7 +315,7 @@ def test_ray_tracing():
     expected_backwall_points = {
         "L": None,
         "T": None,
-        "LL": array(
+        "L Backwall L": array(
             [
                 [
                     [1.00100100e-05, 0.00000000e00, 3.00000000e-02],
@@ -315,7 +323,7 @@ def test_ray_tracing():
                 ]
             ]
         ),
-        "LT": array(
+        "L Backwall T": array(
             [
                 [
                     [1.00100100e-05, 0.00000000e00, 3.00000000e-02],
@@ -323,7 +331,7 @@ def test_ray_tracing():
                 ]
             ]
         ),
-        "TL": array(
+        "T Backwall L": array(
             [
                 [
                     [1.00100100e-05, 0.00000000e00, 3.00000000e-02],
@@ -331,7 +339,7 @@ def test_ray_tracing():
                 ]
             ]
         ),
-        "TT": array(
+        "T Backwall T": array(
             [
                 [
                     [1.00100100e-05, 0.00000000e00, 3.00000000e-02],
@@ -461,6 +469,189 @@ def test_ray_tracing():
                 np.testing.assert_allclose(out_angles_1, out_angles_2.T)
 
 
+probe_params = [
+    (0.0, 5.0),
+    (5.0, -5.0),
+    (10.0, 15.0),
+    (0.0, 180.0),
+]
+
+
+@pytest.mark.parametrize("probe_angle, global_angle", probe_params)
+def test_rotational_invariance(probe_angle, global_angle):
+    context = make_context()
+    probe_args = dict(numx=5, pitch_x=0.6e-3, numy=1, pitch_y=None, frequency=2.5e6)
+    standoff = -10e-3
+    frontwall_args = dict(xmin=-5e-3, xmax=5e-3, z=0.0, numpoints=1000)
+    scatterer_args = dict(x=1e-3, y=0.0, z=2.5e-3, kind="sdh", radius=0.25e-3)
+
+    probe_rotation_matrix = g.rotation_matrix_y(np.deg2rad(probe_angle))
+    global_rotation_matrix = g.rotation_matrix_y(np.deg2rad(global_angle))
+
+    # Frontwall coordinate system (fcs)
+    probe_fcs = arim.Probe.make_matrix_probe(**probe_args)
+    probe_fcs.rotate(probe_rotation_matrix).translate([0.0, 0.0, standoff])
+
+    frontwall_fcs = g.points_1d_wall_z(**frontwall_args)
+    scatterer_fcs = g.default_oriented_points(
+        g.Points(
+            [
+                [
+                    scatterer_args["x"],
+                    scatterer_args["y"],
+                    scatterer_args["z"],
+                ]
+            ]
+        )
+    )
+
+    examination_object_fcs = arim.BlockInImmersion(
+        context["block"], context["couplant"], {"Frontwall": frontwall_fcs}
+    )
+    views_fcs = arim.models.block_in_immersion.make_views(
+        examination_object_fcs,
+        probe_fcs.to_oriented_points(),
+        scatterer_fcs,
+        tfm_unique_only=True,
+    )
+    arim.ray.ray_tracing(
+        views_fcs.values(),
+        convert_to_fortran_order=True,
+    )
+
+    # Probe coordinate system (pcs)
+    probe_pcs = arim.Probe.make_matrix_probe(**probe_args)
+    probe_pcs.rotate(probe_rotation_matrix).translate([0.0, 0.0, standoff]).rotate(
+        global_rotation_matrix
+    )
+
+    frontwall_pcs_pts = frontwall_fcs.points.rotate(global_rotation_matrix)
+    frontwall_pcs = g.points_1d_wall(
+        frontwall_pcs_pts.coords[0, :],
+        frontwall_pcs_pts.coords[-1, :],
+        frontwall_args["numpoints"],
+    )
+    scatterer_pcs = g.default_oriented_points(
+        g.Points(
+            [
+                [
+                    scatterer_args["x"],
+                    scatterer_args["y"],
+                    scatterer_args["z"],
+                ]
+            ]
+        ).rotate(global_rotation_matrix)
+    )
+
+    examination_object_pcs = arim.BlockInImmersion(
+        context["block"], context["couplant"], {"Frontwall": frontwall_pcs}
+    )
+    views_pcs = arim.models.block_in_immersion.make_views(
+        examination_object_pcs,
+        probe_pcs.to_oriented_points(),
+        scatterer_pcs,
+        tfm_unique_only=True,
+    )
+    arim.ray.ray_tracing(
+        views_pcs.values(),
+        convert_to_fortran_order=True,
+    )
+
+    all_fcs_paths = {
+        path.longname: path
+        for path in {view.tx_path for view in views_fcs.values()}
+        | {view.rx_path for view in views_fcs.values()}
+    }
+    all_pcs_paths = {
+        path.longname: path
+        for path in {view.tx_path for view in views_pcs.values()}
+        | {view.rx_path for view in views_pcs.values()}
+    }
+    (
+        tx_weights_fcs,
+        rx_weights_fcs,
+        tx_debug_fcs,
+        rx_debug_fcs,
+        scat_angles_fcs,
+    ) = arim.models.block_in_immersion.ray_weights_for_views(
+        views_fcs, probe_args["frequency"], probe_element_width=0.35e-3, save_debug=True
+    )
+    (
+        tx_weights_pcs,
+        rx_weights_pcs,
+        tx_debug_pcs,
+        rx_debug_pcs,
+        scat_angles_pcs,
+    ) = arim.models.block_in_immersion.ray_weights_for_views(
+        views_pcs, probe_args["frequency"], probe_element_width=0.35e-3, save_debug=True
+    )
+
+    for pathname in all_fcs_paths.keys():
+        # Test angles
+        path_fcs = all_fcs_paths[pathname]
+        ray_fcs = arim.ray.RayGeometry.from_path(path_fcs)
+        path_pcs = all_pcs_paths[pathname]
+        ray_pcs = arim.ray.RayGeometry.from_path(path_pcs)
+
+        # Not worried about angles incident on scatterer, as these are handled in ray weights.
+        np.testing.assert_allclose(
+            ray_fcs.conventional_inc_angle(1), ray_pcs.conventional_inc_angle(1)
+        )
+        np.testing.assert_allclose(
+            ray_fcs.conventional_out_angle(0), ray_pcs.conventional_out_angle(0)
+        )
+        np.testing.assert_allclose(
+            ray_fcs.conventional_out_angle(1), ray_pcs.conventional_out_angle(1)
+        )
+        np.testing.assert_allclose(
+            ray_fcs.signed_inc_angle(1), ray_pcs.signed_inc_angle(1)
+        )
+        np.testing.assert_allclose(
+            ray_fcs.signed_out_angle(0), ray_pcs.signed_out_angle(0)
+        )
+        np.testing.assert_allclose(
+            ray_fcs.signed_out_angle(1), ray_pcs.signed_out_angle(1)
+        )
+
+        # Test model ray weights
+        np.testing.assert_allclose(tx_weights_fcs[path_fcs], tx_weights_pcs[path_pcs])
+        np.testing.assert_allclose(rx_weights_fcs[path_fcs], rx_weights_pcs[path_pcs])
+        np.testing.assert_allclose(
+            tx_debug_fcs[path_fcs]["directivity"], tx_debug_pcs[path_pcs]["directivity"]
+        )
+        np.testing.assert_allclose(
+            rx_debug_fcs[path_fcs]["directivity"], rx_debug_pcs[path_pcs]["directivity"]
+        )
+        np.testing.assert_allclose(
+            tx_debug_fcs[path_fcs]["transrefl"], tx_debug_pcs[path_pcs]["transrefl"]
+        )
+        np.testing.assert_allclose(
+            rx_debug_fcs[path_fcs]["transrefl"], rx_debug_pcs[path_pcs]["transrefl"]
+        )
+        np.testing.assert_allclose(
+            tx_debug_fcs[path_fcs]["beamspread"], tx_debug_pcs[path_pcs]["beamspread"]
+        )
+        np.testing.assert_allclose(
+            rx_debug_fcs[path_fcs]["beamspread"], rx_debug_pcs[path_pcs]["beamspread"]
+        )
+        np.testing.assert_allclose(
+            tx_debug_fcs[path_fcs]["attenuation"], tx_debug_pcs[path_pcs]["attenuation"]
+        )
+        np.testing.assert_allclose(
+            rx_debug_fcs[path_fcs]["attenuation"], rx_debug_pcs[path_pcs]["attenuation"]
+        )
+        np.testing.assert_allclose(
+            tx_debug_fcs[path_fcs]["invalid"], tx_debug_pcs[path_pcs]["invalid"]
+        )
+        np.testing.assert_allclose(
+            rx_debug_fcs[path_fcs]["invalid"], rx_debug_pcs[path_pcs]["invalid"]
+        )
+        np.testing.assert_allclose(
+            np.mod(scat_angles_pcs[path_pcs] - scat_angles_fcs[path_fcs], 2 * np.pi),
+            np.mod(np.deg2rad(global_angle), 2 * np.pi),
+        )
+
+
 def test_caching():
     context = make_context()
     ray_geometry_dict = context["ray_geometry_dict"]
@@ -529,10 +720,10 @@ def test_beamspread_2d_direct():
     expected_beamspread = {
         "L": array([[3.2375215, 0.84817938]]),
         "T": array([[4.37280604, 1.38511721]]),
-        "LL": array([[2.35172691, 1.24586279]]),
-        "LT": array([[2.50582172, 1.1942895]]),
-        "TL": array([[2.93422015, 0.7995886]]),
-        "TT": array([[3.25137185, 1.90838339]]),
+        "L Backwall L": array([[2.35172691, 1.24586279]]),
+        "L Backwall T": array([[2.50582172, 1.1942895]]),
+        "T Backwall L": array([[2.93422015, 0.7995886]]),
+        "T Backwall T": array([[3.25137185, 1.90838339]]),
     }
     beamspread = dict()
     for pathname, ray_geometry in ray_geometry_dict.items():
@@ -565,7 +756,9 @@ def test_beamspread_2d_direct():
     beamspread_LL = 1.0 / np.sqrt(
         first_leg + second_leg / beta + third_leg / (gamma * beta)
     )
-    np.testing.assert_allclose(beamspread["LL"][0][0], beamspread_LL, rtol=1e-5)
+    np.testing.assert_allclose(
+        beamspread["L Backwall L"][0][0], beamspread_LL, rtol=1e-5
+    )
 
     # Path LT - scat 0:
     first_leg = 10e-3
@@ -579,7 +772,9 @@ def test_beamspread_2d_direct():
     beamspread_LT = 1.0 / np.sqrt(
         first_leg + second_leg / beta + third_leg / (gamma * beta)
     )
-    np.testing.assert_allclose(beamspread["LT"][0][0], beamspread_LT, rtol=1e-5)
+    np.testing.assert_allclose(
+        beamspread["L Backwall T"][0][0], beamspread_LT, rtol=1e-5
+    )
 
 
 def test_beamspread_2d_reverse():
@@ -602,10 +797,10 @@ def test_beamspread_2d_reverse():
     expected_beamspread = {
         "L": array([[6.69023357, 4.37716144]]),
         "T": array([[6.35918872, 4.44926218]]),
-        "LL": array([[4.85976767, 3.96478629]]),
-        "LT": array([[3.64411785, 1.84991477]]),
-        "TL": array([[6.06346095, 5.31340498]]),
-        "TT": array([[4.72833395, 3.96638874]]),
+        "L Backwall L": array([[4.85976767, 3.96478629]]),
+        "L Backwall T": array([[3.64411785, 1.84991477]]),
+        "T Backwall L": array([[6.06346095, 5.31340498]]),
+        "T Backwall T": array([[4.72833395, 3.96638874]]),
     }
     beamspread = dict()
     for pathname, ray_geometry in ray_geometry_dict.items():
@@ -648,7 +843,9 @@ def test_beamspread_2d_reverse():
     beamspread_LL = 1.0 / np.sqrt(
         first_leg + second_leg / beta + third_leg / (gamma * beta)
     )
-    np.testing.assert_allclose(beamspread["LL"][0][0], beamspread_LL, rtol=1e-5)
+    np.testing.assert_allclose(
+        beamspread["L Backwall L"][0][0], beamspread_LL, rtol=1e-5
+    )
 
     # Path LT - scat 0:
     first_leg = 10e-3
@@ -662,7 +859,9 @@ def test_beamspread_2d_reverse():
     beamspread_LT = 1.0 / np.sqrt(
         first_leg + second_leg / beta + third_leg / (gamma * beta)
     )
-    np.testing.assert_allclose(beamspread["LT"][0][0], beamspread_LT, rtol=1e-5)
+    np.testing.assert_allclose(
+        beamspread["L Backwall T"][0][0], beamspread_LT, rtol=1e-5
+    )
 
 
 def test_transmission_reflection_direct():
@@ -680,10 +879,10 @@ def test_transmission_reflection_direct():
     expected_transrefl = {
         "L": array([[1.84037966 + 0.0j, 2.24977557 + 0.0j]]),
         "T": array([[-1.92953093e-03 + 0.0j, -2.06170606e00 + 0.76785004j]]),
-        "LL": array([[-1.54661755 + 0.0j, -0.73952250 + 0.0j]]),
-        "LT": array([[2.77193223e-04 + 0.0j, 9.17687259e-01 + 0.0j]]),
-        "TL": array([[1.18487466e-06 - 0.0j, 1.29264072e00 - 0.0j]]),
-        "TT": array([[0.00192953 - 0.0j, -1.39294465 + 0.09773593j]]),
+        "L Backwall L": array([[-1.54661755 + 0.0j, -0.73952250 + 0.0j]]),
+        "L Backwall T": array([[2.77193223e-04 + 0.0j, 9.17687259e-01 + 0.0j]]),
+        "T Backwall L": array([[1.18487466e-06 - 0.0j, 1.29264072e00 - 0.0j]]),
+        "T Backwall T": array([[0.00192953 - 0.0j, -1.39294465 + 0.09773593j]]),
     }
     transrefl = dict()
     for pathname, path in paths.items():
@@ -711,10 +910,16 @@ def test_transmission_reflection_direct():
     refl_TL, refl_TT, _ = arim.model.solid_t_fluid(*params)
     np.testing.assert_allclose(transrefl["L"][0][0], transrefl_L)
     np.testing.assert_allclose(transrefl["T"][0][0], transrefl_T, **tol)
-    np.testing.assert_allclose(transrefl["LL"][0][0], transrefl_L * refl_LL)
-    np.testing.assert_allclose(transrefl["LT"][0][0], transrefl_L * refl_LT, **tol)
-    np.testing.assert_allclose(transrefl["TL"][0][0], transrefl_T * refl_LL, **tol)
-    np.testing.assert_allclose(transrefl["TT"][0][0], transrefl_T * refl_LT, **tol)
+    np.testing.assert_allclose(transrefl["L Backwall L"][0][0], transrefl_L * refl_LL)
+    np.testing.assert_allclose(
+        transrefl["L Backwall T"][0][0], transrefl_L * refl_LT, **tol
+    )
+    np.testing.assert_allclose(
+        transrefl["T Backwall L"][0][0], transrefl_T * refl_LL, **tol
+    )
+    np.testing.assert_allclose(
+        transrefl["T Backwall T"][0][0], transrefl_T * refl_LT, **tol
+    )
 
 
 def test_transmission_reflection_reverse_hardcode():
@@ -740,10 +945,10 @@ def test_transmission_reflection_reverse_hardcode():
     expected_rev_transrefl = {
         "L": array([[0.15962002 + 0.0j, 0.07813451 + 0.0j]]),
         "T": array([[0.00033791 + 0.0j, 0.16346328 - 0.06087933j]]),
-        "LL": array([[-0.13414141 + 0.0j, -0.04164956 + 0.0j]]),
-        "LT": array([[-4.85439698e-05 + 0.0j, -1.50885505e-01 + 0.0j]]),
-        "TL": array([[1.02766857e-07 + 0.0j, 3.48642287e-02 + 0.0j]]),
-        "TT": array([[-0.00033791 + 0.0j, 0.17068649 - 0.01197621j]]),
+        "L Backwall L": array([[-0.13414141 + 0.0j, -0.04164956 + 0.0j]]),
+        "L Backwall T": array([[-4.85439698e-05 + 0.0j, -1.50885505e-01 + 0.0j]]),
+        "T Backwall L": array([[1.02766857e-07 + 0.0j, 3.48642287e-02 + 0.0j]]),
+        "T Backwall T": array([[-0.00033791 + 0.0j, 0.17068649 - 0.01197621j]]),
     }
     rev_transrefl = dict()
     for pathname, path in paths.items():
@@ -776,10 +981,18 @@ def test_transmission_reflection_reverse_hardcode():
     refl_TL, refl_TT, trans_T = arim.model.solid_t_fluid(*params)
     np.testing.assert_allclose(rev_transrefl["L"][0][0], trans_L, **tol)
     np.testing.assert_allclose(rev_transrefl["T"][0][0], trans_T, **tol)
-    np.testing.assert_allclose(rev_transrefl["LL"][0][0], trans_L * refl_LL, **tol)
-    np.testing.assert_allclose(rev_transrefl["LT"][0][0], trans_L * refl_TL, **tol)
-    np.testing.assert_allclose(rev_transrefl["TL"][0][0], trans_T * refl_LT, **tol)
-    np.testing.assert_allclose(rev_transrefl["TT"][0][0], trans_T * refl_TT, **tol)
+    np.testing.assert_allclose(
+        rev_transrefl["L Backwall L"][0][0], trans_L * refl_LL, **tol
+    )
+    np.testing.assert_allclose(
+        rev_transrefl["L Backwall T"][0][0], trans_L * refl_TL, **tol
+    )
+    np.testing.assert_allclose(
+        rev_transrefl["T Backwall L"][0][0], trans_T * refl_LT, **tol
+    )
+    np.testing.assert_allclose(
+        rev_transrefl["T Backwall T"][0][0], trans_T * refl_TT, **tol
+    )
 
     # ====================================================================================
     # Check that the direct transmission-reflection coefficients for the reversed path are
@@ -830,7 +1043,7 @@ def test_transmission_reflection_reverse_stokes():
     magic_coefficient = -1.0
 
     # ====================================================================================
-    pathname = "LT"
+    pathname = "L Backwall T"
 
     # Frontwall in direct sense: fluid inc, solid L out
     alpha_fluid = np.asarray(
@@ -861,7 +1074,7 @@ def test_transmission_reflection_reverse_stokes():
     )
 
     # ====================================================================================
-    pathname = "TL"
+    pathname = "T Backwall L"
 
     # Frontwall in direct sense: fluid inc, solid T out
     alpha_fluid = np.asarray(
@@ -890,7 +1103,7 @@ def test_transmission_reflection_reverse_stokes():
     np.testing.assert_allclose(transrefl_stokes, transrefl_rev, err_msg=pathname)
 
     # ====================================================================================
-    pathname = "TT"
+    pathname = "T Backwall T"
 
     # Frontwall in direct sense: fluid inc, solid T out
     alpha_fluid = np.asarray(

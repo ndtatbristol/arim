@@ -117,7 +117,8 @@ Building the documentation
 --------------------------
 
 arim uses Github Actions to automatically build the documentation when new pushes are made, or when a new pull request
-is accepted. Before this happens, please test that it works by building a version locally:
+is merged. This is done in the workflow ``.github/workflows/arim_docs.yml``. Before this happens, please test that it
+compiles by building a version locally:
 
 .. tab-set::
 
@@ -137,7 +138,35 @@ is accepted. Before this happens, please test that it works by building a versio
             mamba activate arim-env
             make html
 
-The output will be found in ``docs/build/html``.
+The output will be found in ``docs/_build/html``.
+
+To compile documentation using Github in a forked repository, add a secret in your Github repository. Under the repository
+settings, go to ``Security -> Secrets and variables -> Actions``, and under ``Repository secrets`` click ``New repository secret``.
+Set ``COMPILE_DOCUMENTATION`` to ``true``.
+
+If working in a different branch to ``master``, edit the branches specified in ``.github/workflows/arim_docs.yml`` to
+reflect this:
+
+.. code-block:: yaml
+
+    on:
+      push:
+        branches:
+          - <branch-name>
+
+.. code-block:: yaml
+
+    jobs:
+      cleanup:
+        if: (github.ref == 'refs/heads/<branch-name>' || ...
+
+.. code-block:: yaml
+
+    ...
+      build:
+        if: (github.ref == 'refs/heads/<branch-name>' || ...
+
+Note that these must be reverted back to ``master`` before a pull request will be accepted.
 
 
 Version control
