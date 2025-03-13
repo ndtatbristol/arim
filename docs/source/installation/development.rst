@@ -216,14 +216,14 @@ Pull requests
 
 You can propose changes to arim using `pull requests <https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/proposing-changes-to-your-work-with-pull-requests>`_.
 By submitting a pull request, you accept that the proposed changes are licensed under the MIT license. The proposed
-changes must also comply with arim's `code quality guidelines <quality_guidelines>`_.
+changes must also comply with arim's :ref:`code quality guidelines<quality_guidelines>`.
 
 
 Releases
 ========
 
 Releases should be made when new features are added. To create a release,
-1. Ensure all `unit tests <unit_testing>`_ pass.
+1. Ensure all :ref:`unit tests<unit_testing>` pass.
 2. Change arim's version number in ``src/arim/__init__.py``, following the `PEP 440 <https://www.python.org/dev/peps/pep-0440/>`_
 convention. Commit with an instructive description.
 3. Assign a `tag <https://git-scm.com/book/en/v2/Git-Basics-Tagging>`_ to the release commit. For example, if the version
