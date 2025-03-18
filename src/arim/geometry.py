@@ -886,8 +886,11 @@ class MaskedGrid(Grid):
         Third coordinate of all points. Shape: ``(numx, numy, numz)``
     dx, dy, dz: float or None
         Exact distance between points. None if only one point along the axis
-    numx, numy, numz, numpoints
-        Number of pixels in x, y, and z axes, as well as total number of points.
+    numx, numy, numz
+        Number of pixels in x, y, and z axes
+    numpoints
+        Number of unmasked points. For total number of points (masked and unmasked), use
+        `MaskedGrid.size`.
     mask: ndarray[bool]
         Boolean array corresponding to inclusion of corresponding pixel in final
         image. Note that ``__init__()`` assumes that all points are valid. Either
