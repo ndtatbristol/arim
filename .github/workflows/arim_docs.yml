@@ -3,7 +3,7 @@ name: Deploy Sphinx documentation to Pages
 on:
   push:
     branches:
-      - master
+      - grid-and-other-updates
   pull_request:
     types:
       - closed
