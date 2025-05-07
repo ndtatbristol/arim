@@ -10,7 +10,7 @@ on:
 
 jobs:
   cleanup:
-    if: (github.ref == 'refs/heads/grid-and-other-updates' || (github.event_name == 'pull_request' && github.event.pull_request.merged == true)) && secrets.COMPILE_DOCUMENTATION == 'true'
+    if: (github.ref == 'refs/heads/grid-and-other-updates' || (github.event_name == 'pull_request' && github.event.pull_request.merged == true)) && vars.COMPILE_DOCUMENTATION == 'true'
     runs-on: ubuntu-latest
     permissions:
       deployments: write
@@ -24,7 +24,7 @@ jobs:
           onlyRemoveDeployments: true
           
   build:
-    if: (github.ref == 'refs/heads/grid-and-other-updates' || (github.event_name == 'pull_request' && github.event.pull_request.merged == true)) && secrets.COMPILE_DOCUMENTATION == 'true'
+    if: (github.ref == 'refs/heads/grid-and-other-updates' || (github.event_name == 'pull_request' && github.event.pull_request.merged == true)) && vars.COMPILE_DOCUMENTATION == 'true'
     runs-on: ubuntu-latest
     needs: cleanup
     permissions:
