@@ -1,7 +1,7 @@
 from collections import OrderedDict
+from itertools import product
 
 from .. import core as c
-from .. import ut
 
 
 def make_views_from_paths(paths_dict, tfm_unique_only=False):
@@ -25,15 +25,13 @@ def make_views_from_paths(paths_dict, tfm_unique_only=False):
     views: OrderedDict[Views]
 
     """
-    viewnames = ut.make_viewnames(paths_dict.keys(), tfm_unique_only=tfm_unique_only)
     views = OrderedDict()
-    for view_name_tuple in viewnames:
-        tx_name, rx_name = view_name_tuple
-        view_name = f"{tx_name}-{rx_name}"
-
-        tx_path = paths_dict[tx_name]
-        # to get the receive path: return the string of the corresponding transmit path
-        rx_path = paths_dict[rx_name[::-1]]
-
+    for tx_path, rx_path in product(paths_dict.values(), paths_dict.values()):
+        view_name = f"{tx_path.longname} - {rx_path.reverse_longname}"
+        if tfm_unique_only and (
+            f"{rx_path.longname} - {tx_path.reverse_longname}" in views.keys()
+        ):
+            continue
         views[view_name] = c.View(tx_path, rx_path, view_name)
+
     return views

@@ -1129,11 +1129,11 @@ class Path:
         Materials where the rays goes through. The i-th leg of the ray is in the i-th material.
         The i-th material is between the i-th and the (i+1)-th interfaces.
 
-        Lenght: numinterfaces - 1
+        Length: numinterfaces - 1
     modes : tuple of Mode
         Mode for each leg.
 
-        Lenght: numinterfaces - 1
+        Length: numinterfaces - 1
     rays : Rays
         Results of ray tracing.
     name : str or None
@@ -1152,6 +1152,8 @@ class Path:
         self.interfaces = interfaces
         self.materials = materials
         self.modes = tuple(helpers.parse_enum_constant(mode, Mode) for mode in modes)
+        if name is None:
+            name = self.longname
         self.name = name
         self.rays = None
 
@@ -1160,15 +1162,38 @@ class Path:
         return len(self.interfaces)
 
     @property
+    def is_immersion(self):
+        return self.materials[0].state_of_matter == StateMatter.liquid
+
+    @property
     def longname(self):
-        longname = self.modes[0].key()
-        for interface, mode in zip(self.interfaces[1:-1], self.modes[1:]):
+        """
+        By convention, if in immersion then ignore the first path which is always longitudinal.
+        """
+        first_idx = 1 if self.is_immersion else 0
+        longname = self.modes[first_idx].key()
+        for interface, mode in zip(
+            self.interfaces[first_idx + 1 : -1], self.modes[first_idx + 1 :]
+        ):
             longname += " {} {}".format(interface.points.name, mode.key())
         return longname
 
     @property
     def reverse_longname(self):
         pieces = self.longname.split(" ")
+        return " ".join(pieces[::-1])
+
+    @property
+    def shortname(self):
+        first_idx = 1 if self.is_immersion else 0
+        shortname = self.modes[first_idx].key()
+        for mode in self.modes[first_idx + 1 :]:
+            shortname += " {}".format(mode.key())
+        return shortname
+
+    @property
+    def reverse_shortname(self):
+        pieces = self.shortname.split(" ")
         return " ".join(pieces[::-1])
 
     @property
@@ -1393,7 +1418,6 @@ class BlockInContact(ExaminationObject):
     ----------
     block_material : Material
     walls : OrderedDict[str, OrientedPoints]
-    wall_idxs_for_imaging : list[int]
     under_material : Material
     metadata : dict
 
@@ -1577,3 +1601,42 @@ class View(namedtuple("View", ["tx_path", "rx_path", "name"])):
 
         """
         return f"{self.tx_path.longname} - {self.rx_path.reverse_longname}"
+
+    @property
+    def reverse_longname(self):
+        """
+        Return a string containing the tx-path longname and the rx-path reverse
+        longname.
+
+        Returns
+        -------
+        str
+
+        """
+        return f"{self.rx_path.longname} - {self.tx_path.reverse_longname}"
+
+    @property
+    def shortname(self):
+        """
+        Return a string containing the tx-path longname and the rx-path reverse
+        longname.
+
+        Returns
+        -------
+        str
+
+        """
+        return f"{self.tx_path.shortname} - {self.rx_path.reverse_shortname}"
+
+    @property
+    def reverse_shortname(self):
+        """
+        Return a string containing the tx-path longname and the rx-path reverse
+        longname.
+
+        Returns
+        -------
+        str
+
+        """
+        return f"{self.rx_path.shortname} - {self.tx_path.reverse_shortname}"

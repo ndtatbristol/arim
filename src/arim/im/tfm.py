@@ -163,12 +163,17 @@ def angle_limit_for_view(
     basis of the backwall should have `z_hat = [0, 0, -1]`, and the basis of
     the probe should have `z_hat = [0, 0, 1]`.
 
+    Valid windows are `hanning` (i.e. ensure a smooth transition) and `rectangular` (i.e. a sharp transition).
+
     Parameters
     ----------
     view : View
     limit : float
-    elev : float, optional
-    azim : float, optional
+    tx_elev : float, optional
+    tx_azim : float, optional
+    rx_elev : float, optional
+    rx_azim : float, optional
+    window : str, optional
 
     Returns
     -------
@@ -456,7 +461,20 @@ def contact_tfm(
     focal_law = FocalLaw(lookup_times, lookup_times, amplitudes, timetrace_weights)
 
     res = das.delay_and_sum(frame, focal_law, **kwargs_delay_and_sum)
-    res = res.reshape(grid.shape)
+    if type(grid) in (g.Grid, g.Points):
+        res = res.reshape(grid.shape)
+    elif type(grid) is g.MaskedGrid:
+        res_all = np.zeros(
+            [
+                grid.size,
+            ],
+            dtype=res.dtype,
+        )
+        res_all[~grid.mask.ravel()] = res
+        res = res_all.reshape(grid.shape)
+    else:
+        raise NotImplementedError("Invalid grid type.")
+
     return TfmResult(res, grid)
 
 
@@ -497,18 +515,20 @@ def tfm_for_view(frame, grid, view, amplitudes=None, mask=None, **kwargs_delay_a
     focal_law = FocalLaw(lookup_times_tx, lookup_times_rx, amplitudes)
 
     res = das.delay_and_sum(frame, focal_law, **kwargs_delay_and_sum)
-    if np.prod(grid.shape) == res.size:
+    if type(grid) in (g.Grid, g.Points):
         res = res.reshape(grid.shape)
-    else:
-        # N.B. `mask` could be a new attribute of `grid`. Only used in this function so leave it for now.
+    elif type(grid) is g.MaskedGrid:
         res_all = np.zeros(
             [
                 grid.size,
             ],
             dtype=res.dtype,
         )
-        res_all[mask.ravel()] = res
+        res_all[~grid.mask.ravel()] = res
         res = res_all.reshape(grid.shape)
+    else:
+        raise NotImplementedError("Invalid grid type.")
+
     return TfmResult(res, grid)
 
 

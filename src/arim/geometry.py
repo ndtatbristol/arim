@@ -614,7 +614,8 @@ class CoordinateSystem:
 
     @property
     def basis_matrix(self):
-        # i_hat, j_hat and k_hat stored in columns
+        # i_hat, j_hat and k_hat stored in columns.
+        # Note that `from_gcs()` and `to_gcs()` require i_hat, j_hat, k_hat in rows. Transpose externally.
         return np.stack((self.i_hat, self.j_hat, self.k_hat), axis=1)
 
     def copy(self):
@@ -859,6 +860,111 @@ class Grid(Points):
 
         """
         return default_oriented_points(self.to_1d_points())
+
+
+class MaskedGrid(Grid):
+    """
+    Regularly spaced 3d grid, which may be masked to switch off certain pixels
+    in ray-tracing and TFM computation.
+
+    The conventions of numpy masked arrays are followed here, i.e. ``False`` if
+    a point is valid and ``True`` if it is invalid.
+
+    Attributes
+    ----------
+    xvect: ndarray
+        Unique points along first axis
+    yvect: ndarray
+        Unique points along second axis
+    zvect: ndarray
+        Unique points along third axis
+    x: ndarray
+        First coordinate of all points. Shape: ``(numx, numy, numz)``
+    y: ndarray
+        Second coordinate of all points. Shape: ``(numx, numy, numz)``
+    z: ndarray
+        Third coordinate of all points. Shape: ``(numx, numy, numz)``
+    dx, dy, dz: float or None
+        Exact distance between points. None if only one point along the axis
+    numx, numy, numz
+        Number of pixels in x, y, and z axes
+    numpoints
+        Number of unmasked points. For total number of points (masked and unmasked), use
+        `MaskedGrid.size`.
+    mask: ndarray[bool]
+        Boolean array corresponding to inclusion of corresponding pixel in final
+        image. Note that ``__init__()`` assumes that all points are valid. Either
+        use a class method, or edit the ``mask`` attribute directly (not recommended).
+
+    Parameters
+    ----------
+    xmin : float
+    xmax : float
+    xmin : float
+    ymax : float
+    zmin : float
+    zmax  : float
+    pixel_size: float
+        *Approximative* distance between points to use. Either one or three floats.
+
+    """
+
+    __slots__ = ("coords", "name", "xvect", "yvect", "zvect", "mask")
+
+    def __init__(self, xmin, xmax, ymin, ymax, zmin, zmax, pixel_size):
+        super().__init__(xmin, xmax, ymin, ymax, zmin, zmax, pixel_size)
+        self.mask = np.full((self.numx, self.numy, self.numz), False)
+
+    @classmethod
+    def mask_grid_where(cls, grid, condition):
+        """
+        Mask an existing Grid where a condition is met.
+
+        Parameters
+        ----------
+        grid : Grid
+        condition : ndarray[bool]
+            Shape ``(numx, numy, numz)``
+
+        Returns
+        -------
+        MaskedGrid.
+
+        """
+        result = cls(
+            grid.xmin,
+            grid.xmax,
+            grid.ymin,
+            grid.ymax,
+            grid.zmin,
+            grid.zmax,
+            (grid.dx, grid.dy, grid.dz),
+        )
+
+        if result.shape != condition.shape:
+            raise ValueError(
+                "Shape of ``grid`` is not compatible with ``condition`` shape."
+            )
+        if condition.dtype.kind != "b":
+            raise ValueError("``condition`` is not boolean.")
+
+        result.mask = condition
+        return result
+
+    def to_1d_points(self):
+        """
+        Returns a new 1d Points object (shape: (numpoints, ))
+
+        Returns
+        -------
+        Points
+
+        """
+        return Points(self.reshape(self.size)[~self.mask.ravel()], self.name)
+
+    @property
+    def numpoints(self):
+        return (~self.mask).sum()
 
 
 def spherical_coordinates_r(x, y, z, out=None):
@@ -1570,7 +1676,9 @@ def points_1d_wall(start, end, numpoints, name=None, dtype=None):
         [0.0, 1.0, 0.0],
     ).basis_matrix
 
-    orientations_arr = np.broadcast_to(basis, (*points.shape, 3, 3))
+    # Note transposed: `CoordinateSystem.basis_matrix` stores basis in columns;
+    # `from_gcs()` requires basis stored in rows.
+    orientations_arr = np.broadcast_to(basis.transpose(), (*points.shape, 3, 3))
     orientations = Points(orientations_arr)
 
     return OrientedPoints(points, orientations)
@@ -1616,13 +1724,7 @@ def points_1d_wall_z(
     orientations = default_orientations(points)
     # Rotate by pi radians in x-z plane if block is below.
     if not is_block_above:
-        orientations = orientations.rotate(
-            [
-                [np.cos(np.pi), 0.0, np.sin(np.pi)],
-                [0.0, 1.0, 0.0],
-                [-np.sin(np.pi), 0.0, np.cos(np.pi)],
-            ]
-        )
+        orientations = orientations.rotate(rotation_matrix_y(np.pi))
 
     return OrientedPoints(points, orientations)
 
@@ -1684,10 +1786,10 @@ def combine_oriented_points(oriented_points, name=None):
         [wall.orientations.coords for wall in oriented_points],
         axis=0,
     )
-    _, idxs = np.unique(coords, return_index=True, axis=0)
+    _, indices = np.unique(coords, return_index=True, axis=0)
 
-    points = Points([coords[i] for i in np.sort(idxs)], name=name)
-    orientations = Points([bases[i] for i in np.sort(idxs)])
+    points = Points([coords[i] for i in np.sort(indices)], name=name)
+    orientations = Points([bases[i] for i in np.sort(indices)])
 
     return OrientedPoints(points, orientations)
 

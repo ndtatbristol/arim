@@ -23,6 +23,7 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 
 import arim
+import arim.geometry as g
 import arim.im
 import arim.io
 import arim.models.block_in_contact as bic
@@ -63,6 +64,7 @@ aplt.plot_interfaces(
 
 # %% Ray tracing
 grid = arim.io.grid_from_conf(conf)
+grid = g.MaskedGrid.mask_grid_where(grid, (grid.z > 26e-3) & (grid.x < 28.5e-3))
 grid_p = grid.to_oriented_points()
 
 views = bic.make_views(

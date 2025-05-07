@@ -1,7 +1,6 @@
 import numpy as np
 import pytest
 
-import arim
 from arim import ut
 
 
@@ -214,82 +213,8 @@ def test_make_timevect():
         assert x.dtype == dtype
 
 
-def test_filter_unique_views():
-    unique_views = arim.ut.filter_unique_views(
-        [("AB", "CD"), ("DC", "BA"), ("X", "YZ"), ("ZY", "X")]
-    )
-    assert unique_views == [("AB", "CD"), ("X", "YZ")]
-
-
-def test_make_viewnames():
-    L = "L"
-    T = "T"
-    LL = "LL"
-
-    viewnames = arim.ut.make_viewnames(["L", "T"], tfm_unique_only=False)
-    assert viewnames == [(L, L), (L, T), (T, L), (T, T)]
-
-    viewnames = arim.ut.make_viewnames(["L", "T"], tfm_unique_only=True)
-    assert viewnames == [(L, L), (L, T), (T, T)]
-
-    viewnames = arim.ut.make_viewnames(["L", "T"], tfm_unique_only=True)
-    assert viewnames == [(L, L), (L, T), (T, T)]
-
-    # legacy IMAGING_MODES
-    legacy_imaging_views = [
-        "L-L",
-        "L-T",
-        "T-T",
-        "LL-L",
-        "LL-T",
-        "LT-L",
-        "LT-T",
-        "TL-L",
-        "TL-T",
-        "TT-L",
-        "TT-T",
-        "LL-LL",
-        "LL-LT",
-        "LL-TL",
-        "LL-TT",
-        "LT-LT",
-        "LT-TL",
-        "LT-TT",
-        "TL-LT",
-        "TL-TT",
-        "TT-TT",
-    ]
-    legacy_imaging_views = [tuple(view.split("-")) for view in legacy_imaging_views]
-
-    viewnames = arim.ut.make_viewnames(
-        ["L", "T", "LL", "LT", "TL", "TT"], tfm_unique_only=True
-    )
-    assert viewnames == legacy_imaging_views
-
-    viewnames = arim.ut.make_viewnames(
-        arim.ut.DIRECT_PATHS + arim.ut.SKIP_PATHS, tfm_unique_only=True
-    )
-    assert viewnames == legacy_imaging_views
-
-    viewnames = arim.ut.make_viewnames(
-        arim.ut.DIRECT_PATHS + arim.ut.SKIP_PATHS + arim.ut.DOUBLE_SKIP_PATHS,
-        tfm_unique_only=True,
-    )
-    assert viewnames[:21] == legacy_imaging_views
-    assert len(viewnames) == 105
-
-    viewnames = arim.ut.make_viewnames(
-        arim.ut.DIRECT_PATHS + arim.ut.SKIP_PATHS + arim.ut.DOUBLE_SKIP_PATHS,
-        tfm_unique_only=False,
-    )
-    assert len(viewnames) == 14 * 14
-
-    viewnames = arim.ut.make_viewnames(["L", "T", "LL"], tfm_unique_only=True)
-    assert viewnames == [(L, L), (L, T), (T, T), (LL, L), (LL, T), (LL, LL)]
-
-
 def test_reciprocal_viewname():
-    assert ut.reciprocal_viewname("L-LT") == "TL-L"
+    assert ut.reciprocal_viewname("L - L Backwall T") == "T Backwall L - L"
 
 
 def test_rayleigh_wave():

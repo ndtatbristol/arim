@@ -159,7 +159,7 @@ def test_path_in_immersion():
         block.longitudinal_vel,
         grid_points,
     )
-    assert paths["TL"].to_fermat_path() == (
+    assert paths["T Backwall L"].to_fermat_path() == (
         probe_points,
         couplant.longitudinal_vel,
         frontwall_points,
@@ -178,9 +178,9 @@ def test_path_in_immersion():
     )
     assert len(views) == 21
 
-    view = views["LT-LT"]
-    assert view.tx_path is paths["LT"]
-    assert view.rx_path is paths["TL"]
+    view = views["L Backwall T - L Backwall T"]
+    assert view.tx_path is paths["L Backwall T"]
+    assert view.rx_path is paths["T Backwall L"]
 
     # ------------------------------------------------------------------------------------
     # 14 paths, 105 views
@@ -195,7 +195,7 @@ def test_path_in_immersion():
         block.longitudinal_vel,
         grid_points,
     )
-    assert paths["TL"].to_fermat_path() == (
+    assert paths["T Backwall L"].to_fermat_path() == (
         probe_points,
         couplant.longitudinal_vel,
         frontwall_points,
@@ -204,7 +204,7 @@ def test_path_in_immersion():
         block.longitudinal_vel,
         grid_points,
     )
-    assert paths["TTL"].to_fermat_path() == (
+    assert paths["T Backwall T Frontwall L"].to_fermat_path() == (
         probe_points,
         couplant.longitudinal_vel,
         frontwall_points,
@@ -225,9 +225,9 @@ def test_path_in_immersion():
     )
     assert len(views) == 105
 
-    view = views["LT-LT"]
-    assert view.tx_path is paths["LT"]
-    assert view.rx_path is paths["TL"]
+    view = views["L Backwall T - L Backwall T"]
+    assert view.tx_path is paths["L Backwall T"]
+    assert view.rx_path is paths["T Backwall L"]
 
 
 def test_make_views():
@@ -325,8 +325,8 @@ def test_model(scat_specs, show_plots):
         lti_coefficients[viewname] = amp_obj[0]
 
     # Test reciprocity
-    for i, viewname in enumerate(views):
-        viewname_r = arim.ut.reciprocal_viewname(viewname)
+    for i, (viewname, view) in enumerate(views.items()):
+        viewname_r = view.reverse_longname
         lhs = lti_coefficients[viewname][: probe.numelements]  # (tx=k, rx=0) for all k
         rhs = lti_coefficients[viewname_r][
             probe.numelements :
