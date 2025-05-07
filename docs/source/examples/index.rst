@@ -4,4 +4,4 @@
 Examples
 ========
 
-See  https://github.com/nbud/arim/tree/master/examples
+See  https://github.com/ndtatbristol/arim/tree/master/examples
