@@ -1515,7 +1515,7 @@
         <span class="n">virtual_distance</span> <span class="o">+=</span> <span class="n">r</span> <span class="o">/</span> <span class="n">gamma</span>
     <span class="c1"># Note: beyond the critical angle, virtual ditance is often -ve, leading to nan</span>
     <span class="c1"># values in resulting sensitivity. Use this to set to zero instead of nan.</span>
-    <span class="c1"># virtual_distance[virtual_distance &lt; 0] = np.inf</span>
+    <span class="n">virtual_distance</span><span class="p">[</span><span class="n">virtual_distance</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
 
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">reciprocal</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">virtual_distance</span><span class="p">))</span></div>
 
@@ -1581,6 +1581,9 @@
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">k</span><span class="p">):</span>
             <span class="n">gamma</span> <span class="o">*=</span> <span class="n">gamma_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
         <span class="n">virtual_distance</span> <span class="o">+=</span> <span class="n">r</span> <span class="o">/</span> <span class="n">gamma</span>
+
+    <span class="c1"># See `beamspread_2d_for_path()` about the need for this.</span>
+    <span class="n">virtual_distance</span><span class="p">[</span><span class="n">virtual_distance</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
 
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">reciprocal</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">virtual_distance</span><span class="p">))</span></div>
 

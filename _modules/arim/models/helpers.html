@@ -327,9 +327,9 @@
                   
   <h1>Source code for arim.models.helpers</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">OrderedDict</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">itertools</span><span class="w"> </span><span class="kn">import</span> <span class="n">product</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">..</span><span class="w"> </span><span class="kn">import</span> <span class="n">core</span> <span class="k">as</span> <span class="n">c</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">..</span><span class="w"> </span><span class="kn">import</span> <span class="n">ut</span>
 
 
 <div class="viewcode-block" id="make_views_from_paths">
@@ -355,17 +355,15 @@
 <span class="sd">    views: OrderedDict[Views]</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">viewnames</span> <span class="o">=</span> <span class="n">ut</span><span class="o">.</span><span class="n">make_viewnames</span><span class="p">(</span><span class="n">paths_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="n">tfm_unique_only</span><span class="o">=</span><span class="n">tfm_unique_only</span><span class="p">)</span>
     <span class="n">views</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
-    <span class="k">for</span> <span class="n">view_name_tuple</span> <span class="ow">in</span> <span class="n">viewnames</span><span class="p">:</span>
-        <span class="n">tx_name</span><span class="p">,</span> <span class="n">rx_name</span> <span class="o">=</span> <span class="n">view_name_tuple</span>
-        <span class="n">view_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">tx_name</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">rx_name</span><span class="si">}</span><span class="s2">&quot;</span>
-
-        <span class="n">tx_path</span> <span class="o">=</span> <span class="n">paths_dict</span><span class="p">[</span><span class="n">tx_name</span><span class="p">]</span>
-        <span class="c1"># to get the receive path: return the string of the corresponding transmit path</span>
-        <span class="n">rx_path</span> <span class="o">=</span> <span class="n">paths_dict</span><span class="p">[</span><span class="n">rx_name</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
-
+    <span class="k">for</span> <span class="n">tx_path</span><span class="p">,</span> <span class="n">rx_path</span> <span class="ow">in</span> <span class="n">product</span><span class="p">(</span><span class="n">paths_dict</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="n">paths_dict</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
+        <span class="n">view_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">tx_path</span><span class="o">.</span><span class="n">longname</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">rx_path</span><span class="o">.</span><span class="n">reverse_longname</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">if</span> <span class="n">tfm_unique_only</span> <span class="ow">and</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">rx_path</span><span class="o">.</span><span class="n">longname</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">tx_path</span><span class="o">.</span><span class="n">reverse_longname</span><span class="si">}</span><span class="s2">&quot;</span> <span class="ow">in</span> <span class="n">views</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+        <span class="p">):</span>
+            <span class="k">continue</span>
         <span class="n">views</span><span class="p">[</span><span class="n">view_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">View</span><span class="p">(</span><span class="n">tx_path</span><span class="p">,</span> <span class="n">rx_path</span><span class="p">,</span> <span class="n">view_name</span><span class="p">)</span>
+
     <span class="k">return</span> <span class="n">views</span></div>
 
 </pre></div>

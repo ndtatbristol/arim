@@ -12,6 +12,8 @@
    
    Grid
    
+   MaskedGrid
+   
    OrientedPoints
    
    Points

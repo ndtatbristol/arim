@@ -1010,7 +1010,8 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">basis_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1"># i_hat, j_hat and k_hat stored in columns</span>
+        <span class="c1"># i_hat, j_hat and k_hat stored in columns.</span>
+        <span class="c1"># Note that `from_gcs()` and `to_gcs()` require i_hat, j_hat, k_hat in rows. Transpose externally.</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">i_hat</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">j_hat</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">k_hat</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
 <div class="viewcode-block" id="CoordinateSystem.copy">
@@ -1270,6 +1271,120 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">default_oriented_points</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">to_1d_points</span><span class="p">())</span></div>
 </div>
+
+
+
+<div class="viewcode-block" id="MaskedGrid">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.geometry/arim.geometry.MaskedGrid.html#arim.geometry.MaskedGrid">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">MaskedGrid</span><span class="p">(</span><span class="n">Grid</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Regularly spaced 3d grid, which may be masked to switch off certain pixels</span>
+<span class="sd">    in ray-tracing and TFM computation.</span>
+
+<span class="sd">    The conventions of numpy masked arrays are followed here, i.e. ``False`` if</span>
+<span class="sd">    a point is valid and ``True`` if it is invalid.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    xvect: ndarray</span>
+<span class="sd">        Unique points along first axis</span>
+<span class="sd">    yvect: ndarray</span>
+<span class="sd">        Unique points along second axis</span>
+<span class="sd">    zvect: ndarray</span>
+<span class="sd">        Unique points along third axis</span>
+<span class="sd">    x: ndarray</span>
+<span class="sd">        First coordinate of all points. Shape: ``(numx, numy, numz)``</span>
+<span class="sd">    y: ndarray</span>
+<span class="sd">        Second coordinate of all points. Shape: ``(numx, numy, numz)``</span>
+<span class="sd">    z: ndarray</span>
+<span class="sd">        Third coordinate of all points. Shape: ``(numx, numy, numz)``</span>
+<span class="sd">    dx, dy, dz: float or None</span>
+<span class="sd">        Exact distance between points. None if only one point along the axis</span>
+<span class="sd">    numx, numy, numz</span>
+<span class="sd">        Number of pixels in x, y, and z axes</span>
+<span class="sd">    numpoints</span>
+<span class="sd">        Number of unmasked points. For total number of points (masked and unmasked), use</span>
+<span class="sd">        `MaskedGrid.size`.</span>
+<span class="sd">    mask: ndarray[bool]</span>
+<span class="sd">        Boolean array corresponding to inclusion of corresponding pixel in final</span>
+<span class="sd">        image. Note that ``__init__()`` assumes that all points are valid. Either</span>
+<span class="sd">        use a class method, or edit the ``mask`` attribute directly (not recommended).</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    xmin : float</span>
+<span class="sd">    xmax : float</span>
+<span class="sd">    xmin : float</span>
+<span class="sd">    ymax : float</span>
+<span class="sd">    zmin : float</span>
+<span class="sd">    zmax  : float</span>
+<span class="sd">    pixel_size: float</span>
+<span class="sd">        *Approximative* distance between points to use. Either one or three floats.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;coords&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;xvect&quot;</span><span class="p">,</span> <span class="s2">&quot;yvect&quot;</span><span class="p">,</span> <span class="s2">&quot;zvect&quot;</span><span class="p">,</span> <span class="s2">&quot;mask&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">,</span> <span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span><span class="p">,</span> <span class="n">zmin</span><span class="p">,</span> <span class="n">zmax</span><span class="p">,</span> <span class="n">pixel_size</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">,</span> <span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span><span class="p">,</span> <span class="n">zmin</span><span class="p">,</span> <span class="n">zmax</span><span class="p">,</span> <span class="n">pixel_size</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">numx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">numy</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">numz</span><span class="p">),</span> <span class="kc">False</span><span class="p">)</span>
+
+<div class="viewcode-block" id="MaskedGrid.mask_grid_where">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.geometry/arim.geometry.MaskedGrid.html#arim.geometry.MaskedGrid.mask_grid_where">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">mask_grid_where</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">condition</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Mask an existing Grid where a condition is met.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        grid : Grid</span>
+<span class="sd">        condition : ndarray[bool]</span>
+<span class="sd">            Shape ``(numx, numy, numz)``</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        MaskedGrid.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span>
+            <span class="n">grid</span><span class="o">.</span><span class="n">xmin</span><span class="p">,</span>
+            <span class="n">grid</span><span class="o">.</span><span class="n">xmax</span><span class="p">,</span>
+            <span class="n">grid</span><span class="o">.</span><span class="n">ymin</span><span class="p">,</span>
+            <span class="n">grid</span><span class="o">.</span><span class="n">ymax</span><span class="p">,</span>
+            <span class="n">grid</span><span class="o">.</span><span class="n">zmin</span><span class="p">,</span>
+            <span class="n">grid</span><span class="o">.</span><span class="n">zmax</span><span class="p">,</span>
+            <span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">dx</span><span class="p">,</span> <span class="n">grid</span><span class="o">.</span><span class="n">dy</span><span class="p">,</span> <span class="n">grid</span><span class="o">.</span><span class="n">dz</span><span class="p">),</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">condition</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;Shape of ``grid`` is not compatible with ``condition`` shape.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">condition</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="o">!=</span> <span class="s2">&quot;b&quot;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;``condition`` is not boolean.&quot;</span><span class="p">)</span>
+
+        <span class="n">result</span><span class="o">.</span><span class="n">mask</span> <span class="o">=</span> <span class="n">condition</span>
+        <span class="k">return</span> <span class="n">result</span></div>
+
+
+<div class="viewcode-block" id="MaskedGrid.to_1d_points">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.geometry/arim.geometry.MaskedGrid.html#arim.geometry.MaskedGrid.to_1d_points">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_1d_points</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a new 1d Points object (shape: (numpoints, ))</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Points</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">Points</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">)[</span><span class="o">~</span><span class="bp">self</span><span class="o">.</span><span class="n">mask</span><span class="o">.</span><span class="n">ravel</span><span class="p">()],</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">numpoints</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span><span class="o">~</span><span class="bp">self</span><span class="o">.</span><span class="n">mask</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span></div>
 
 
 
@@ -2050,7 +2165,9 @@
         <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
     <span class="p">)</span><span class="o">.</span><span class="n">basis_matrix</span>
 
-    <span class="n">orientations_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">basis</span><span class="p">,</span> <span class="p">(</span><span class="o">*</span><span class="n">points</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+    <span class="c1"># Note transposed: `CoordinateSystem.basis_matrix` stores basis in columns;</span>
+    <span class="c1"># `from_gcs()` requires basis stored in rows.</span>
+    <span class="n">orientations_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">basis</span><span class="o">.</span><span class="n">transpose</span><span class="p">(),</span> <span class="p">(</span><span class="o">*</span><span class="n">points</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
     <span class="n">orientations</span> <span class="o">=</span> <span class="n">Points</span><span class="p">(</span><span class="n">orientations_arr</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">OrientedPoints</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">orientations</span><span class="p">)</span></div>
@@ -2099,13 +2216,7 @@
     <span class="n">orientations</span> <span class="o">=</span> <span class="n">default_orientations</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>
     <span class="c1"># Rotate by pi radians in x-z plane if block is below.</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">is_block_above</span><span class="p">:</span>
-        <span class="n">orientations</span> <span class="o">=</span> <span class="n">orientations</span><span class="o">.</span><span class="n">rotate</span><span class="p">(</span>
-            <span class="p">[</span>
-                <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">),</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)],</span>
-                <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
-                <span class="p">[</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">),</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)],</span>
-            <span class="p">]</span>
-        <span class="p">)</span>
+        <span class="n">orientations</span> <span class="o">=</span> <span class="n">orientations</span><span class="o">.</span><span class="n">rotate</span><span class="p">(</span><span class="n">rotation_matrix_y</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">))</span>
 
     <span class="k">return</span> <span class="n">OrientedPoints</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">orientations</span><span class="p">)</span></div>
 
@@ -2173,10 +2284,10 @@
         <span class="p">[</span><span class="n">wall</span><span class="o">.</span><span class="n">orientations</span><span class="o">.</span><span class="n">coords</span> <span class="k">for</span> <span class="n">wall</span> <span class="ow">in</span> <span class="n">oriented_points</span><span class="p">],</span>
         <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">_</span><span class="p">,</span> <span class="n">idxs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">coords</span><span class="p">,</span> <span class="n">return_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">coords</span><span class="p">,</span> <span class="n">return_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
-    <span class="n">points</span> <span class="o">=</span> <span class="n">Points</span><span class="p">([</span><span class="n">coords</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">idxs</span><span class="p">)],</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
-    <span class="n">orientations</span> <span class="o">=</span> <span class="n">Points</span><span class="p">([</span><span class="n">bases</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">idxs</span><span class="p">)])</span>
+    <span class="n">points</span> <span class="o">=</span> <span class="n">Points</span><span class="p">([</span><span class="n">coords</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">indices</span><span class="p">)],</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+    <span class="n">orientations</span> <span class="o">=</span> <span class="n">Points</span><span class="p">([</span><span class="n">bases</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">indices</span><span class="p">)])</span>
 
     <span class="k">return</span> <span class="n">OrientedPoints</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">orientations</span><span class="p">)</span></div>
 

@@ -1,6 +1,0 @@
-arim.ut.filter_unique_views
-===========================
-
-.. currentmodule:: arim.ut
-
-.. autofunction:: filter_unique_views

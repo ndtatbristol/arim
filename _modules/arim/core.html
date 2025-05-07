@@ -1549,11 +1549,11 @@
 <span class="sd">        Materials where the rays goes through. The i-th leg of the ray is in the i-th material.</span>
 <span class="sd">        The i-th material is between the i-th and the (i+1)-th interfaces.</span>
 
-<span class="sd">        Lenght: numinterfaces - 1</span>
+<span class="sd">        Length: numinterfaces - 1</span>
 <span class="sd">    modes : tuple of Mode</span>
 <span class="sd">        Mode for each leg.</span>
 
-<span class="sd">        Lenght: numinterfaces - 1</span>
+<span class="sd">        Length: numinterfaces - 1</span>
 <span class="sd">    rays : Rays</span>
 <span class="sd">        Results of ray tracing.</span>
 <span class="sd">    name : str or None</span>
@@ -1572,6 +1572,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span> <span class="o">=</span> <span class="n">interfaces</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">materials</span> <span class="o">=</span> <span class="n">materials</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">modes</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">helpers</span><span class="o">.</span><span class="n">parse_enum_constant</span><span class="p">(</span><span class="n">mode</span><span class="p">,</span> <span class="n">Mode</span><span class="p">)</span> <span class="k">for</span> <span class="n">mode</span> <span class="ow">in</span> <span class="n">modes</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">longname</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">rays</span> <span class="o">=</span> <span class="kc">None</span>
 
@@ -1580,15 +1582,38 @@
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="p">)</span>
 
     <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_immersion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">materials</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">state_of_matter</span> <span class="o">==</span> <span class="n">StateMatter</span><span class="o">.</span><span class="n">liquid</span>
+
+    <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">longname</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">longname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">modes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">key</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">interface</span><span class="p">,</span> <span class="n">mode</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">modes</span><span class="p">[</span><span class="mi">1</span><span class="p">:]):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        By convention, if in immersion then ignore the first path which is always longitudinal.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">first_idx</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_immersion</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="n">longname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">modes</span><span class="p">[</span><span class="n">first_idx</span><span class="p">]</span><span class="o">.</span><span class="n">key</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">interface</span><span class="p">,</span> <span class="n">mode</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="n">first_idx</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">modes</span><span class="p">[</span><span class="n">first_idx</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:]</span>
+        <span class="p">):</span>
             <span class="n">longname</span> <span class="o">+=</span> <span class="s2">&quot; </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">interface</span><span class="o">.</span><span class="n">points</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">mode</span><span class="o">.</span><span class="n">key</span><span class="p">())</span>
         <span class="k">return</span> <span class="n">longname</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">reverse_longname</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">pieces</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">longname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">pieces</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">shortname</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">first_idx</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_immersion</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="n">shortname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">modes</span><span class="p">[</span><span class="n">first_idx</span><span class="p">]</span><span class="o">.</span><span class="n">key</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">mode</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">modes</span><span class="p">[</span><span class="n">first_idx</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:]:</span>
+            <span class="n">shortname</span> <span class="o">+=</span> <span class="s2">&quot; </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mode</span><span class="o">.</span><span class="n">key</span><span class="p">())</span>
+        <span class="k">return</span> <span class="n">shortname</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reverse_shortname</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">pieces</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shortname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">pieces</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
 
     <span class="nd">@property</span>
@@ -1837,7 +1862,6 @@
 <span class="sd">    ----------</span>
 <span class="sd">    block_material : Material</span>
 <span class="sd">    walls : OrderedDict[str, OrientedPoints]</span>
-<span class="sd">    wall_idxs_for_imaging : list[int]</span>
 <span class="sd">    under_material : Material</span>
 <span class="sd">    metadata : dict</span>
 
@@ -2038,7 +2062,46 @@
 <span class="sd">        str</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tx_path</span><span class="o">.</span><span class="n">longname</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">rx_path</span><span class="o">.</span><span class="n">reverse_longname</span><span class="si">}</span><span class="s2">&quot;</span></div>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tx_path</span><span class="o">.</span><span class="n">longname</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">rx_path</span><span class="o">.</span><span class="n">reverse_longname</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reverse_longname</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a string containing the tx-path longname and the rx-path reverse</span>
+<span class="sd">        longname.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        str</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">rx_path</span><span class="o">.</span><span class="n">longname</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tx_path</span><span class="o">.</span><span class="n">reverse_longname</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">shortname</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a string containing the tx-path longname and the rx-path reverse</span>
+<span class="sd">        longname.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        str</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tx_path</span><span class="o">.</span><span class="n">shortname</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">rx_path</span><span class="o">.</span><span class="n">reverse_shortname</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reverse_shortname</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a string containing the tx-path longname and the rx-path reverse</span>
+<span class="sd">        longname.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        str</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">rx_path</span><span class="o">.</span><span class="n">shortname</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tx_path</span><span class="o">.</span><span class="n">reverse_shortname</span><span class="si">}</span><span class="s2">&quot;</span></div>
 
 </pre></div>
 

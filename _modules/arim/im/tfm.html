@@ -502,12 +502,17 @@
 <span class="sd">    basis of the backwall should have `z_hat = [0, 0, -1]`, and the basis of</span>
 <span class="sd">    the probe should have `z_hat = [0, 0, 1]`.</span>
 
+<span class="sd">    Valid windows are `hanning` (i.e. ensure a smooth transition) and `rectangular` (i.e. a sharp transition).</span>
+
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    view : View</span>
 <span class="sd">    limit : float</span>
-<span class="sd">    elev : float, optional</span>
-<span class="sd">    azim : float, optional</span>
+<span class="sd">    tx_elev : float, optional</span>
+<span class="sd">    tx_azim : float, optional</span>
+<span class="sd">    rx_elev : float, optional</span>
+<span class="sd">    rx_azim : float, optional</span>
+<span class="sd">    window : str, optional</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -819,7 +824,20 @@
     <span class="n">focal_law</span> <span class="o">=</span> <span class="n">FocalLaw</span><span class="p">(</span><span class="n">lookup_times</span><span class="p">,</span> <span class="n">lookup_times</span><span class="p">,</span> <span class="n">amplitudes</span><span class="p">,</span> <span class="n">timetrace_weights</span><span class="p">)</span>
 
     <span class="n">res</span> <span class="o">=</span> <span class="n">das</span><span class="o">.</span><span class="n">delay_and_sum</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">focal_law</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs_delay_and_sum</span><span class="p">)</span>
-    <span class="n">res</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">grid</span><span class="p">)</span> <span class="ow">in</span> <span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">Grid</span><span class="p">,</span> <span class="n">g</span><span class="o">.</span><span class="n">Points</span><span class="p">):</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">grid</span><span class="p">)</span> <span class="ow">is</span> <span class="n">g</span><span class="o">.</span><span class="n">MaskedGrid</span><span class="p">:</span>
+        <span class="n">res_all</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="n">grid</span><span class="o">.</span><span class="n">size</span><span class="p">,</span>
+            <span class="p">],</span>
+            <span class="n">dtype</span><span class="o">=</span><span class="n">res</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">res_all</span><span class="p">[</span><span class="o">~</span><span class="n">grid</span><span class="o">.</span><span class="n">mask</span><span class="o">.</span><span class="n">ravel</span><span class="p">()]</span> <span class="o">=</span> <span class="n">res</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">res_all</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Invalid grid type.&quot;</span><span class="p">)</span>
+
     <span class="k">return</span> <span class="n">TfmResult</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">grid</span><span class="p">)</span></div>
 
 
@@ -863,18 +881,20 @@
     <span class="n">focal_law</span> <span class="o">=</span> <span class="n">FocalLaw</span><span class="p">(</span><span class="n">lookup_times_tx</span><span class="p">,</span> <span class="n">lookup_times_rx</span><span class="p">,</span> <span class="n">amplitudes</span><span class="p">)</span>
 
     <span class="n">res</span> <span class="o">=</span> <span class="n">das</span><span class="o">.</span><span class="n">delay_and_sum</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">focal_law</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs_delay_and_sum</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="n">res</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">grid</span><span class="p">)</span> <span class="ow">in</span> <span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">Grid</span><span class="p">,</span> <span class="n">g</span><span class="o">.</span><span class="n">Points</span><span class="p">):</span>
         <span class="n">res</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="c1"># N.B. `mask` could be a new attribute of `grid`. Only used in this function so leave it for now.</span>
+    <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">grid</span><span class="p">)</span> <span class="ow">is</span> <span class="n">g</span><span class="o">.</span><span class="n">MaskedGrid</span><span class="p">:</span>
         <span class="n">res_all</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
             <span class="p">[</span>
                 <span class="n">grid</span><span class="o">.</span><span class="n">size</span><span class="p">,</span>
             <span class="p">],</span>
             <span class="n">dtype</span><span class="o">=</span><span class="n">res</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="n">res_all</span><span class="p">[</span><span class="n">mask</span><span class="o">.</span><span class="n">ravel</span><span class="p">()]</span> <span class="o">=</span> <span class="n">res</span>
+        <span class="n">res_all</span><span class="p">[</span><span class="o">~</span><span class="n">grid</span><span class="o">.</span><span class="n">mask</span><span class="o">.</span><span class="n">ravel</span><span class="p">()]</span> <span class="o">=</span> <span class="n">res</span>
         <span class="n">res</span> <span class="o">=</span> <span class="n">res_all</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Invalid grid type.&quot;</span><span class="p">)</span>
+
     <span class="k">return</span> <span class="n">TfmResult</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">grid</span><span class="p">)</span></div>
 
 

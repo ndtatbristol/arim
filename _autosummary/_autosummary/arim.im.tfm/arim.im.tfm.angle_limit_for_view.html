@@ -304,6 +304,7 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../arim.geometry.html">arim.geometry</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../arim.geometry/arim.geometry.CoordinateSystem.html">arim.geometry.CoordinateSystem</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../arim.geometry/arim.geometry.Grid.html">arim.geometry.Grid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.geometry/arim.geometry.MaskedGrid.html">arim.geometry.MaskedGrid</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../arim.geometry/arim.geometry.OrientedPoints.html">arim.geometry.OrientedPoints</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../arim.geometry/arim.geometry.Points.html">arim.geometry.Points</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../arim.geometry/arim.geometry.SphericalCoordinates.html">arim.geometry.SphericalCoordinates</a></li>
@@ -498,13 +499,11 @@
 <li class="toctree-l2"><a class="reference internal" href="../arim.ut/arim.ut.default_scanline_weights.html">arim.ut.default_scanline_weights</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../arim.ut/arim.ut.default_timetrace_weights.html">arim.ut.default_timetrace_weights</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../arim.ut/arim.ut.default_viewname_order.html">arim.ut.default_viewname_order</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../arim.ut/arim.ut.filter_unique_views.html">arim.ut.filter_unique_views</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../arim.ut/arim.ut.fmc.html">arim.ut.fmc</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../arim.ut/arim.ut.hmc.html">arim.ut.hmc</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../arim.ut/arim.ut.infer_capture_method.html">arim.ut.infer_capture_method</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../arim.ut/arim.ut.instantaneous_phase_shift.html">arim.ut.instantaneous_phase_shift</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../arim.ut/arim.ut.make_timevect.html">arim.ut.make_timevect</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../arim.ut/arim.ut.make_viewnames.html">arim.ut.make_viewnames</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../arim.ut/arim.ut.rayleigh_vel.html">arim.ut.rayleigh_vel</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../arim.ut/arim.ut.reciprocal_viewname.html">arim.ut.reciprocal_viewname</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../arim.ut/arim.ut.wrap_phase.html">arim.ut.wrap_phase</a></li>
@@ -641,13 +640,17 @@ interface. For view LL-T with transmit path reflecting from the backwall,
 <cite>tx_elev = 0.0</cite> points in the opposite direction to <cite>rx_elev</cite> because the
 basis of the backwall should have <cite>z_hat = [0, 0, -1]</cite>, and the basis of
 the probe should have <cite>z_hat = [0, 0, 1]</cite>.</p>
+<p>Valid windows are <cite>hanning</cite> (i.e. ensure a smooth transition) and <cite>rectangular</cite> (i.e. a sharp transition).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>view</strong> (<a class="reference internal" href="../arim.core/arim.core.View.html#arim.core.View" title="arim.core.View"><em>View</em></a>)</p></li>
 <li><p><strong>limit</strong> (<em>float</em>)</p></li>
-<li><p><strong>elev</strong> (<em>float</em><em>, </em><em>optional</em>)</p></li>
-<li><p><strong>azim</strong> (<em>float</em><em>, </em><em>optional</em>)</p></li>
+<li><p><strong>tx_elev</strong> (<em>float</em><em>, </em><em>optional</em>)</p></li>
+<li><p><strong>tx_azim</strong> (<em>float</em><em>, </em><em>optional</em>)</p></li>
+<li><p><strong>rx_elev</strong> (<em>float</em><em>, </em><em>optional</em>)</p></li>
+<li><p><strong>rx_azim</strong> (<em>float</em><em>, </em><em>optional</em>)</p></li>
+<li><p><strong>window</strong> (<em>str</em><em>, </em><em>optional</em>)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>

@@ -431,7 +431,8 @@ linter. To format and lint from your environment, use</p>
 <section id="building-the-documentation">
 <h3>Building the documentation<a class="headerlink" href="#building-the-documentation" title="Link to this heading">#</a></h3>
 <p>arim uses Github Actions to automatically build the documentation when new pushes are made, or when a new pull request
-is accepted. Before this happens, please test that it works by building a version locally:</p>
+is merged. This is done in the workflow <code class="docutils literal notranslate"><span class="pre">.github/workflows/arim_docs.yml</span></code>. Before this happens, please test that it
+compiles by building a version locally:</p>
 <div class="sd-tab-set docutils">
 <input checked="checked" id="sd-tab-item-2" name="sd-tab-set-1" type="radio">
 <label class="sd-tab-label" for="sd-tab-item-2">
@@ -452,7 +453,29 @@ make<span class="w"> </span>html
 </div>
 </div>
 </div>
-<p>The output will be found in <code class="docutils literal notranslate"><span class="pre">docs/build/html</span></code>.</p>
+<p>The output will be found in <code class="docutils literal notranslate"><span class="pre">docs/_build/html</span></code>.</p>
+<p>To compile documentation using Github in a forked repository, add a secret in your Github repository. Under the repository
+settings, go to <code class="docutils literal notranslate"><span class="pre">Security</span> <span class="pre">-&gt;</span> <span class="pre">Secrets</span> <span class="pre">and</span> <span class="pre">variables</span> <span class="pre">-&gt;</span> <span class="pre">Actions</span></code>, and under <code class="docutils literal notranslate"><span class="pre">Repository</span> <span class="pre">secrets</span></code> click <code class="docutils literal notranslate"><span class="pre">New</span> <span class="pre">repository</span> <span class="pre">secret</span></code>.
+Set <code class="docutils literal notranslate"><span class="pre">COMPILE_DOCUMENTATION</span></code> to <code class="docutils literal notranslate"><span class="pre">true</span></code>.</p>
+<p>If working in a different branch to <code class="docutils literal notranslate"><span class="pre">master</span></code>, edit the branches specified in <code class="docutils literal notranslate"><span class="pre">.github/workflows/arim_docs.yml</span></code> to
+reflect this:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">on</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">push</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">branches</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;branch-name&gt;</span>
+</pre></div>
+</div>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jobs</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">cleanup</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">(github.ref == &#39;refs/heads/&lt;branch-name&gt;&#39; || ...</span>
+</pre></div>
+</div>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nn">...</span>
+<span class="w">  </span><span class="nt">build</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">(github.ref == &#39;refs/heads/&lt;branch-name&gt;&#39; || ...</span>
+</pre></div>
+</div>
+<p>Note that these must be reverted back to <code class="docutils literal notranslate"><span class="pre">master</span></code> before a pull request will be accepted.</p>
 </section>
 </section>
 <section id="version-control">
@@ -494,12 +517,12 @@ pytest
 <h2>Pull requests<a class="headerlink" href="#pull-requests" title="Link to this heading">#</a></h2>
 <p>You can propose changes to arim using <a class="reference external" href="https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/proposing-changes-to-your-work-with-pull-requests">pull requests</a>.
 By submitting a pull request, you accept that the proposed changes are licensed under the MIT license. The proposed
-changes must also comply with arim’s <a class="reference external" href="quality_guidelines">code quality guidelines</a>.</p>
+changes must also comply with arim’s <a class="reference internal" href="#quality-guidelines"><span class="std std-ref">code quality guidelines</span></a>.</p>
 </section>
 <section id="releases">
 <h2>Releases<a class="headerlink" href="#releases" title="Link to this heading">#</a></h2>
 <p>Releases should be made when new features are added. To create a release,
-1. Ensure all <a class="reference external" href="unit_testing">unit tests</a> pass.
+1. Ensure all <a class="reference internal" href="#unit-testing"><span class="std std-ref">unit tests</span></a> pass.
 2. Change arim’s version number in <code class="docutils literal notranslate"><span class="pre">src/arim/__init__.py</span></code>, following the <a class="reference external" href="https://www.python.org/dev/peps/pep-0440/">PEP 440</a>
 convention. Commit with an instructive description.
 3. Assign a <a class="reference external" href="https://git-scm.com/book/en/v2/Git-Basics-Tagging">tag</a> to the release commit. For example, if the version

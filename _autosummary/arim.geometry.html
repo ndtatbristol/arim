@@ -304,6 +304,7 @@
 <li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">arim.geometry</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="_autosummary/arim.geometry/arim.geometry.CoordinateSystem.html">arim.geometry.CoordinateSystem</a></li>
 <li class="toctree-l2"><a class="reference internal" href="_autosummary/arim.geometry/arim.geometry.Grid.html">arim.geometry.Grid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_autosummary/arim.geometry/arim.geometry.MaskedGrid.html">arim.geometry.MaskedGrid</a></li>
 <li class="toctree-l2"><a class="reference internal" href="_autosummary/arim.geometry/arim.geometry.OrientedPoints.html">arim.geometry.OrientedPoints</a></li>
 <li class="toctree-l2"><a class="reference internal" href="_autosummary/arim.geometry/arim.geometry.Points.html">arim.geometry.Points</a></li>
 <li class="toctree-l2"><a class="reference internal" href="_autosummary/arim.geometry/arim.geometry.SphericalCoordinates.html">arim.geometry.SphericalCoordinates</a></li>
@@ -498,13 +499,11 @@
 <li class="toctree-l2"><a class="reference internal" href="_autosummary/arim.ut/arim.ut.default_scanline_weights.html">arim.ut.default_scanline_weights</a></li>
 <li class="toctree-l2"><a class="reference internal" href="_autosummary/arim.ut/arim.ut.default_timetrace_weights.html">arim.ut.default_timetrace_weights</a></li>
 <li class="toctree-l2"><a class="reference internal" href="_autosummary/arim.ut/arim.ut.default_viewname_order.html">arim.ut.default_viewname_order</a></li>
-<li class="toctree-l2"><a class="reference internal" href="_autosummary/arim.ut/arim.ut.filter_unique_views.html">arim.ut.filter_unique_views</a></li>
 <li class="toctree-l2"><a class="reference internal" href="_autosummary/arim.ut/arim.ut.fmc.html">arim.ut.fmc</a></li>
 <li class="toctree-l2"><a class="reference internal" href="_autosummary/arim.ut/arim.ut.hmc.html">arim.ut.hmc</a></li>
 <li class="toctree-l2"><a class="reference internal" href="_autosummary/arim.ut/arim.ut.infer_capture_method.html">arim.ut.infer_capture_method</a></li>
 <li class="toctree-l2"><a class="reference internal" href="_autosummary/arim.ut/arim.ut.instantaneous_phase_shift.html">arim.ut.instantaneous_phase_shift</a></li>
 <li class="toctree-l2"><a class="reference internal" href="_autosummary/arim.ut/arim.ut.make_timevect.html">arim.ut.make_timevect</a></li>
-<li class="toctree-l2"><a class="reference internal" href="_autosummary/arim.ut/arim.ut.make_viewnames.html">arim.ut.make_viewnames</a></li>
 <li class="toctree-l2"><a class="reference internal" href="_autosummary/arim.ut/arim.ut.rayleigh_vel.html">arim.ut.rayleigh_vel</a></li>
 <li class="toctree-l2"><a class="reference internal" href="_autosummary/arim.ut/arim.ut.reciprocal_viewname.html">arim.ut.reciprocal_viewname</a></li>
 <li class="toctree-l2"><a class="reference internal" href="_autosummary/arim.ut/arim.ut.wrap_phase.html">arim.ut.wrap_phase</a></li>
@@ -692,100 +691,103 @@ they are transposed i.e. <code class="docutils literal notranslate"><span class=
 <tr class="row-even"><td><p><a class="reference internal" href="_autosummary/arim.geometry/arim.geometry.Grid.html#arim.geometry.Grid" title="arim.geometry.Grid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Grid</span></code></a>(xmin, xmax, ymin, ymax, zmin, zmax, ...)</p></td>
 <td><p>Regularly spaced 3d grid</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="_autosummary/arim.geometry/arim.geometry.OrientedPoints.html#arim.geometry.OrientedPoints" title="arim.geometry.OrientedPoints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">OrientedPoints</span></code></a>(points, orientations)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="_autosummary/arim.geometry/arim.geometry.MaskedGrid.html#arim.geometry.MaskedGrid" title="arim.geometry.MaskedGrid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MaskedGrid</span></code></a>(xmin, xmax, ymin, ymax, zmin, ...)</p></td>
+<td><p>Regularly spaced 3d grid, which may be masked to switch off certain pixels in ray-tracing and TFM computation.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="_autosummary/arim.geometry/arim.geometry.OrientedPoints.html#arim.geometry.OrientedPoints" title="arim.geometry.OrientedPoints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">OrientedPoints</span></code></a>(points, orientations)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="_autosummary/arim.geometry/arim.geometry.Points.html#arim.geometry.Points" title="arim.geometry.Points"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Points</span></code></a>(coords[, name])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="_autosummary/arim.geometry/arim.geometry.Points.html#arim.geometry.Points" title="arim.geometry.Points"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Points</span></code></a>(coords[, name])</p></td>
 <td><p>Set of points in a 3D space.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="_autosummary/arim.geometry/arim.geometry.SphericalCoordinates.html#arim.geometry.SphericalCoordinates" title="arim.geometry.SphericalCoordinates"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SphericalCoordinates</span></code></a>(r, theta, phi)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="_autosummary/arim.geometry/arim.geometry.SphericalCoordinates.html#arim.geometry.SphericalCoordinates" title="arim.geometry.SphericalCoordinates"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SphericalCoordinates</span></code></a>(r, theta, phi)</p></td>
 <td><p>Spherical coordinates as usually defined in physics</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="_autosummary/arim.geometry/arim.geometry.are_points_aligned.html#arim.geometry.are_points_aligned" title="arim.geometry.are_points_aligned"><code class="xref py py-obj docutils literal notranslate"><span class="pre">are_points_aligned</span></code></a>(points[, rtol, atol])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="_autosummary/arim.geometry/arim.geometry.are_points_aligned.html#arim.geometry.are_points_aligned" title="arim.geometry.are_points_aligned"><code class="xref py py-obj docutils literal notranslate"><span class="pre">are_points_aligned</span></code></a>(points[, rtol, atol])</p></td>
 <td><p>Are the points aligned? Returns a boolean.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="_autosummary/arim.geometry/arim.geometry.are_points_close.html#arim.geometry.are_points_close" title="arim.geometry.are_points_close"><code class="xref py py-obj docutils literal notranslate"><span class="pre">are_points_close</span></code></a>(points1, points2[, atol, rtol])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="_autosummary/arim.geometry/arim.geometry.are_points_close.html#arim.geometry.are_points_close" title="arim.geometry.are_points_close"><code class="xref py py-obj docutils literal notranslate"><span class="pre">are_points_close</span></code></a>(points1, points2[, atol, rtol])</p></td>
 <td><p>Return True if and only if the two sets of points have the same shape and coordinates close to the given precision.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="_autosummary/arim.geometry/arim.geometry.aspoints.html#arim.geometry.aspoints" title="arim.geometry.aspoints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">aspoints</span></code></a>(array_like)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="_autosummary/arim.geometry/arim.geometry.aspoints.html#arim.geometry.aspoints" title="arim.geometry.aspoints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">aspoints</span></code></a>(array_like)</p></td>
 <td><p>Returns a Point object: the input itself if it is a point, or wrap the object as a Point otherwise.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="_autosummary/arim.geometry/arim.geometry.combine_oriented_points.html#arim.geometry.combine_oriented_points" title="arim.geometry.combine_oriented_points"><code class="xref py py-obj docutils literal notranslate"><span class="pre">combine_oriented_points</span></code></a>(oriented_points[, name])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="_autosummary/arim.geometry/arim.geometry.combine_oriented_points.html#arim.geometry.combine_oriented_points" title="arim.geometry.combine_oriented_points"><code class="xref py py-obj docutils literal notranslate"><span class="pre">combine_oriented_points</span></code></a>(oriented_points[, name])</p></td>
 <td><p>Combines multiple walls (oriented points) into one as a simple concatenation.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="_autosummary/arim.geometry/arim.geometry.default_orientations.html#arim.geometry.default_orientations" title="arim.geometry.default_orientations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">default_orientations</span></code></a>(points)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="_autosummary/arim.geometry/arim.geometry.default_orientations.html#arim.geometry.default_orientations" title="arim.geometry.default_orientations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">default_orientations</span></code></a>(points)</p></td>
 <td><p>Returns the default orientations for unoriented points.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="_autosummary/arim.geometry/arim.geometry.default_oriented_points.html#arim.geometry.default_oriented_points" title="arim.geometry.default_oriented_points"><code class="xref py py-obj docutils literal notranslate"><span class="pre">default_oriented_points</span></code></a>(points)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="_autosummary/arim.geometry/arim.geometry.default_oriented_points.html#arim.geometry.default_oriented_points" title="arim.geometry.default_oriented_points"><code class="xref py py-obj docutils literal notranslate"><span class="pre">default_oriented_points</span></code></a>(points)</p></td>
 <td><p>Returns OrientedPoints from Points assuming the default orientations.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="_autosummary/arim.geometry/arim.geometry.direct_isometry_2d.html#arim.geometry.direct_isometry_2d" title="arim.geometry.direct_isometry_2d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">direct_isometry_2d</span></code></a>(A, B, Ap, Bp)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="_autosummary/arim.geometry/arim.geometry.direct_isometry_2d.html#arim.geometry.direct_isometry_2d" title="arim.geometry.direct_isometry_2d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">direct_isometry_2d</span></code></a>(A, B, Ap, Bp)</p></td>
 <td><p>Returns a direct isometry that transform A to A' and B to B'.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="_autosummary/arim.geometry/arim.geometry.direct_isometry_3d.html#arim.geometry.direct_isometry_3d" title="arim.geometry.direct_isometry_3d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">direct_isometry_3d</span></code></a>(A, i_hat, j_hat, B, ...)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="_autosummary/arim.geometry/arim.geometry.direct_isometry_3d.html#arim.geometry.direct_isometry_3d" title="arim.geometry.direct_isometry_3d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">direct_isometry_3d</span></code></a>(A, i_hat, j_hat, B, ...)</p></td>
 <td><p>Returns the isometry that send the direct orthogonal base (A, i_hat, j_hat, i_hat^j_hat) to (B, u_hat, v_hat, u_hat^v_hat)</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="_autosummary/arim.geometry/arim.geometry.distance_pairwise.html#arim.geometry.distance_pairwise" title="arim.geometry.distance_pairwise"><code class="xref py py-obj docutils literal notranslate"><span class="pre">distance_pairwise</span></code></a>(points1, points2[, out, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="_autosummary/arim.geometry/arim.geometry.distance_pairwise.html#arim.geometry.distance_pairwise" title="arim.geometry.distance_pairwise"><code class="xref py py-obj docutils literal notranslate"><span class="pre">distance_pairwise</span></code></a>(points1, points2[, out, ...])</p></td>
 <td><p>Compute the Euclidean distances of flight between two sets of points.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="_autosummary/arim.geometry/arim.geometry.from_gcs.html#arim.geometry.from_gcs" title="arim.geometry.from_gcs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_gcs</span></code></a>(points_gcs, bases, origins)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="_autosummary/arim.geometry/arim.geometry.from_gcs.html#arim.geometry.from_gcs" title="arim.geometry.from_gcs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_gcs</span></code></a>(points_gcs, bases, origins)</p></td>
 <td><p>Convert the coordinates of points expressed in the global coordinate system to coordinates expressed in the basis/bases given as parameter.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="_autosummary/arim.geometry/arim.geometry.is_orthonormal.html#arim.geometry.is_orthonormal" title="arim.geometry.is_orthonormal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_orthonormal</span></code></a>(basis)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="_autosummary/arim.geometry/arim.geometry.is_orthonormal.html#arim.geometry.is_orthonormal" title="arim.geometry.is_orthonormal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_orthonormal</span></code></a>(basis)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="_autosummary/arim.geometry/arim.geometry.is_orthonormal_direct.html#arim.geometry.is_orthonormal_direct" title="arim.geometry.is_orthonormal_direct"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_orthonormal_direct</span></code></a>(basis)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="_autosummary/arim.geometry/arim.geometry.is_orthonormal_direct.html#arim.geometry.is_orthonormal_direct" title="arim.geometry.is_orthonormal_direct"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_orthonormal_direct</span></code></a>(basis)</p></td>
 <td><p>Returns True if the basis is orthonormal and direct: :param basis:</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="_autosummary/arim.geometry/arim.geometry.make_contiguous_geometry.html#arim.geometry.make_contiguous_geometry" title="arim.geometry.make_contiguous_geometry"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_contiguous_geometry</span></code></a>(coords, numpoints)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="_autosummary/arim.geometry/arim.geometry.make_contiguous_geometry.html#arim.geometry.make_contiguous_geometry" title="arim.geometry.make_contiguous_geometry"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_contiguous_geometry</span></code></a>(coords, numpoints)</p></td>
 <td><p>Returns a list of OrientedPoints with length m which are uniquely named.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="_autosummary/arim.geometry/arim.geometry.norm2.html#arim.geometry.norm2" title="arim.geometry.norm2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">norm2</span></code></a>(x, y, z[, out])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="_autosummary/arim.geometry/arim.geometry.norm2.html#arim.geometry.norm2" title="arim.geometry.norm2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">norm2</span></code></a>(x, y, z[, out])</p></td>
 <td><p>Euclidean norm of a ndarray</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="_autosummary/arim.geometry/arim.geometry.norm2_2d.html#arim.geometry.norm2_2d" title="arim.geometry.norm2_2d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">norm2_2d</span></code></a>(x, y[, out])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="_autosummary/arim.geometry/arim.geometry.norm2_2d.html#arim.geometry.norm2_2d" title="arim.geometry.norm2_2d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">norm2_2d</span></code></a>(x, y[, out])</p></td>
 <td><p>Euclidean norm of a ndarray</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="_autosummary/arim.geometry/arim.geometry.points_1d_wall.html#arim.geometry.points_1d_wall" title="arim.geometry.points_1d_wall"><code class="xref py py-obj docutils literal notranslate"><span class="pre">points_1d_wall</span></code></a>(start, end, numpoints[, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="_autosummary/arim.geometry/arim.geometry.points_1d_wall.html#arim.geometry.points_1d_wall" title="arim.geometry.points_1d_wall"><code class="xref py py-obj docutils literal notranslate"><span class="pre">points_1d_wall</span></code></a>(start, end, numpoints[, ...])</p></td>
 <td><p>Returns a set of regularly spaced points between <cite>start</cite> and <cite>end</cite>.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="_autosummary/arim.geometry/arim.geometry.points_1d_wall_z.html#arim.geometry.points_1d_wall_z" title="arim.geometry.points_1d_wall_z"><code class="xref py py-obj docutils literal notranslate"><span class="pre">points_1d_wall_z</span></code></a>(xmin, xmax, z, numpoints[, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="_autosummary/arim.geometry/arim.geometry.points_1d_wall_z.html#arim.geometry.points_1d_wall_z" title="arim.geometry.points_1d_wall_z"><code class="xref py py-obj docutils literal notranslate"><span class="pre">points_1d_wall_z</span></code></a>(xmin, xmax, z, numpoints[, ...])</p></td>
 <td><p>Returns a set of regularly spaced points between (xmin, y, z) and (xmax, y, z).</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="_autosummary/arim.geometry/arim.geometry.points_from_probe.html#arim.geometry.points_from_probe" title="arim.geometry.points_from_probe"><code class="xref py py-obj docutils literal notranslate"><span class="pre">points_from_probe</span></code></a>(probe[, name])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="_autosummary/arim.geometry/arim.geometry.points_from_probe.html#arim.geometry.points_from_probe" title="arim.geometry.points_from_probe"><code class="xref py py-obj docutils literal notranslate"><span class="pre">points_from_probe</span></code></a>(probe[, name])</p></td>
 <td><p>Probe object to OrientedPoints (points and orientations).</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="_autosummary/arim.geometry/arim.geometry.points_in_rectbox.html#arim.geometry.points_in_rectbox" title="arim.geometry.points_in_rectbox"><code class="xref py py-obj docutils literal notranslate"><span class="pre">points_in_rectbox</span></code></a>(x, y, z[, xmin, xmax, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="_autosummary/arim.geometry/arim.geometry.points_in_rectbox.html#arim.geometry.points_in_rectbox" title="arim.geometry.points_in_rectbox"><code class="xref py py-obj docutils literal notranslate"><span class="pre">points_in_rectbox</span></code></a>(x, y, z[, xmin, xmax, ...])</p></td>
 <td><p>Returns points in the rectangular box.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="_autosummary/arim.geometry/arim.geometry.rotate.html#arim.geometry.rotate" title="arim.geometry.rotate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rotate</span></code></a>(coords, rotation_matrix[, centre])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="_autosummary/arim.geometry/arim.geometry.rotate.html#arim.geometry.rotate" title="arim.geometry.rotate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rotate</span></code></a>(coords, rotation_matrix[, centre])</p></td>
 <td><p>Rotate these points given a rotation matrix and the centre.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="_autosummary/arim.geometry/arim.geometry.rotation_matrix_x.html#arim.geometry.rotation_matrix_x" title="arim.geometry.rotation_matrix_x"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rotation_matrix_x</span></code></a>(theta)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="_autosummary/arim.geometry/arim.geometry.rotation_matrix_x.html#arim.geometry.rotation_matrix_x" title="arim.geometry.rotation_matrix_x"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rotation_matrix_x</span></code></a>(theta)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="_autosummary/arim.geometry/arim.geometry.rotation_matrix_y.html#arim.geometry.rotation_matrix_y" title="arim.geometry.rotation_matrix_y"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rotation_matrix_y</span></code></a>(theta)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="_autosummary/arim.geometry/arim.geometry.rotation_matrix_y.html#arim.geometry.rotation_matrix_y" title="arim.geometry.rotation_matrix_y"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rotation_matrix_y</span></code></a>(theta)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="_autosummary/arim.geometry/arim.geometry.rotation_matrix_ypr.html#arim.geometry.rotation_matrix_ypr" title="arim.geometry.rotation_matrix_ypr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rotation_matrix_ypr</span></code></a>(yaw, pitch, roll)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="_autosummary/arim.geometry/arim.geometry.rotation_matrix_ypr.html#arim.geometry.rotation_matrix_ypr" title="arim.geometry.rotation_matrix_ypr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rotation_matrix_ypr</span></code></a>(yaw, pitch, roll)</p></td>
 <td><p>Returns the rotation matrix (as a ndarray) from the yaw, pitch and roll in radians.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="_autosummary/arim.geometry/arim.geometry.rotation_matrix_z.html#arim.geometry.rotation_matrix_z" title="arim.geometry.rotation_matrix_z"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rotation_matrix_z</span></code></a>(theta)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="_autosummary/arim.geometry/arim.geometry.rotation_matrix_z.html#arim.geometry.rotation_matrix_z" title="arim.geometry.rotation_matrix_z"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rotation_matrix_z</span></code></a>(theta)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="_autosummary/arim.geometry/arim.geometry.spherical_coordinates.html#arim.geometry.spherical_coordinates" title="arim.geometry.spherical_coordinates"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spherical_coordinates</span></code></a>(x, y, z[, r])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="_autosummary/arim.geometry/arim.geometry.spherical_coordinates.html#arim.geometry.spherical_coordinates" title="arim.geometry.spherical_coordinates"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spherical_coordinates</span></code></a>(x, y, z[, r])</p></td>
 <td><p>Compute the spherical coordinates (r, θ, φ) of points.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="_autosummary/arim.geometry/arim.geometry.spherical_coordinates_phi.html#arim.geometry.spherical_coordinates_phi" title="arim.geometry.spherical_coordinates_phi"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spherical_coordinates_phi</span></code></a>(x, y[, out])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="_autosummary/arim.geometry/arim.geometry.spherical_coordinates_phi.html#arim.geometry.spherical_coordinates_phi" title="arim.geometry.spherical_coordinates_phi"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spherical_coordinates_phi</span></code></a>(x, y[, out])</p></td>
 <td><p>azimuthal angle</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="_autosummary/arim.geometry/arim.geometry.spherical_coordinates_r.html#arim.geometry.spherical_coordinates_r" title="arim.geometry.spherical_coordinates_r"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spherical_coordinates_r</span></code></a>(x, y, z[, out])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="_autosummary/arim.geometry/arim.geometry.spherical_coordinates_r.html#arim.geometry.spherical_coordinates_r" title="arim.geometry.spherical_coordinates_r"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spherical_coordinates_r</span></code></a>(x, y, z[, out])</p></td>
 <td><p>radial distance</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="_autosummary/arim.geometry/arim.geometry.spherical_coordinates_theta.html#arim.geometry.spherical_coordinates_theta" title="arim.geometry.spherical_coordinates_theta"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spherical_coordinates_theta</span></code></a>(z, r[, out])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="_autosummary/arim.geometry/arim.geometry.spherical_coordinates_theta.html#arim.geometry.spherical_coordinates_theta" title="arim.geometry.spherical_coordinates_theta"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spherical_coordinates_theta</span></code></a>(z, r[, out])</p></td>
 <td><p>polar angle</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="_autosummary/arim.geometry/arim.geometry.to_gcs.html#arim.geometry.to_gcs" title="arim.geometry.to_gcs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_gcs</span></code></a>(coords_cs, bases, origins)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="_autosummary/arim.geometry/arim.geometry.to_gcs.html#arim.geometry.to_gcs" title="arim.geometry.to_gcs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_gcs</span></code></a>(coords_cs, bases, origins)</p></td>
 <td><p>Convert the coordinates of points expressed in the basis/bases given as parameter to coordinates expressed in the global coordinate system.</p></td>
 </tr>
 </tbody>

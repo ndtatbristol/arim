@@ -560,6 +560,11 @@
                 <span class="p">)</span>
             <span class="p">)</span>
 
+        <span class="k">if</span> <span class="s2">&quot;angle_rad&quot;</span> <span class="ow">in</span> <span class="n">probe_location</span><span class="p">:</span>
+            <span class="n">probe</span><span class="o">.</span><span class="n">rotate</span><span class="p">(</span>
+                <span class="n">geometry</span><span class="o">.</span><span class="n">rotation_matrix_y</span><span class="p">(</span><span class="n">conf</span><span class="p">[</span><span class="s2">&quot;probe_location&quot;</span><span class="p">][</span><span class="s2">&quot;angle_rad&quot;</span><span class="p">])</span>
+            <span class="p">)</span>
+
         <span class="k">if</span> <span class="s2">&quot;standoff&quot;</span> <span class="ow">in</span> <span class="n">probe_location</span><span class="p">:</span>
             <span class="n">probe</span><span class="o">.</span><span class="n">translate</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">conf</span><span class="p">[</span><span class="s2">&quot;probe_location&quot;</span><span class="p">][</span><span class="s2">&quot;standoff&quot;</span><span class="p">]])</span>
 

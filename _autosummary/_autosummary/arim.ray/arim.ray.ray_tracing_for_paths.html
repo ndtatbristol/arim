@@ -304,6 +304,7 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../arim.geometry.html">arim.geometry</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../arim.geometry/arim.geometry.CoordinateSystem.html">arim.geometry.CoordinateSystem</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../arim.geometry/arim.geometry.Grid.html">arim.geometry.Grid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.geometry/arim.geometry.MaskedGrid.html">arim.geometry.MaskedGrid</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../arim.geometry/arim.geometry.OrientedPoints.html">arim.geometry.OrientedPoints</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../arim.geometry/arim.geometry.Points.html">arim.geometry.Points</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../arim.geometry/arim.geometry.SphericalCoordinates.html">arim.geometry.SphericalCoordinates</a></li>
@@ -498,13 +499,11 @@
 <li class="toctree-l2"><a class="reference internal" href="../arim.ut/arim.ut.default_scanline_weights.html">arim.ut.default_scanline_weights</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../arim.ut/arim.ut.default_timetrace_weights.html">arim.ut.default_timetrace_weights</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../arim.ut/arim.ut.default_viewname_order.html">arim.ut.default_viewname_order</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../arim.ut/arim.ut.filter_unique_views.html">arim.ut.filter_unique_views</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../arim.ut/arim.ut.fmc.html">arim.ut.fmc</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../arim.ut/arim.ut.hmc.html">arim.ut.hmc</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../arim.ut/arim.ut.infer_capture_method.html">arim.ut.infer_capture_method</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../arim.ut/arim.ut.instantaneous_phase_shift.html">arim.ut.instantaneous_phase_shift</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../arim.ut/arim.ut.make_timevect.html">arim.ut.make_timevect</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../arim.ut/arim.ut.make_viewnames.html">arim.ut.make_viewnames</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../arim.ut/arim.ut.rayleigh_vel.html">arim.ut.rayleigh_vel</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../arim.ut/arim.ut.reciprocal_viewname.html">arim.ut.reciprocal_viewname</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../arim.ut/arim.ut.wrap_phase.html">arim.ut.wrap_phase</a></li>
@@ -632,7 +631,7 @@
 <h1>arim.ray.ray_tracing_for_paths<a class="headerlink" href="#arim-ray-ray-tracing-for-paths" title="Link to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="arim.ray.ray_tracing_for_paths">
-<span class="sig-prename descclassname"><span class="pre">arim.ray.</span></span><span class="sig-name descname"><span class="pre">ray_tracing_for_paths</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paths_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">walls</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">turn_off_invalid_rays</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">convert_to_fortran_order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arim/ray.html#ray_tracing_for_paths"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arim.ray.ray_tracing_for_paths" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arim.ray.</span></span><span class="sig-name descname"><span class="pre">ray_tracing_for_paths</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paths_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">walls</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">turn_off_invalid_rays</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">convert_to_fortran_order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arim/ray.html#ray_tracing_for_paths"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arim.ray.ray_tracing_for_paths" title="Link to this definition">#</a></dt>
 <dd><p>Perform the ray tracing for different paths. Save the result in <code class="docutils literal notranslate"><span class="pre">Path.rays</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>

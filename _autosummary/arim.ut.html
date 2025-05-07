@@ -304,6 +304,7 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="arim.geometry.html">arim.geometry</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="_autosummary/arim.geometry/arim.geometry.CoordinateSystem.html">arim.geometry.CoordinateSystem</a></li>
 <li class="toctree-l2"><a class="reference internal" href="_autosummary/arim.geometry/arim.geometry.Grid.html">arim.geometry.Grid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_autosummary/arim.geometry/arim.geometry.MaskedGrid.html">arim.geometry.MaskedGrid</a></li>
 <li class="toctree-l2"><a class="reference internal" href="_autosummary/arim.geometry/arim.geometry.OrientedPoints.html">arim.geometry.OrientedPoints</a></li>
 <li class="toctree-l2"><a class="reference internal" href="_autosummary/arim.geometry/arim.geometry.Points.html">arim.geometry.Points</a></li>
 <li class="toctree-l2"><a class="reference internal" href="_autosummary/arim.geometry/arim.geometry.SphericalCoordinates.html">arim.geometry.SphericalCoordinates</a></li>
@@ -498,13 +499,11 @@
 <li class="toctree-l2"><a class="reference internal" href="_autosummary/arim.ut/arim.ut.default_scanline_weights.html">arim.ut.default_scanline_weights</a></li>
 <li class="toctree-l2"><a class="reference internal" href="_autosummary/arim.ut/arim.ut.default_timetrace_weights.html">arim.ut.default_timetrace_weights</a></li>
 <li class="toctree-l2"><a class="reference internal" href="_autosummary/arim.ut/arim.ut.default_viewname_order.html">arim.ut.default_viewname_order</a></li>
-<li class="toctree-l2"><a class="reference internal" href="_autosummary/arim.ut/arim.ut.filter_unique_views.html">arim.ut.filter_unique_views</a></li>
 <li class="toctree-l2"><a class="reference internal" href="_autosummary/arim.ut/arim.ut.fmc.html">arim.ut.fmc</a></li>
 <li class="toctree-l2"><a class="reference internal" href="_autosummary/arim.ut/arim.ut.hmc.html">arim.ut.hmc</a></li>
 <li class="toctree-l2"><a class="reference internal" href="_autosummary/arim.ut/arim.ut.infer_capture_method.html">arim.ut.infer_capture_method</a></li>
 <li class="toctree-l2"><a class="reference internal" href="_autosummary/arim.ut/arim.ut.instantaneous_phase_shift.html">arim.ut.instantaneous_phase_shift</a></li>
 <li class="toctree-l2"><a class="reference internal" href="_autosummary/arim.ut/arim.ut.make_timevect.html">arim.ut.make_timevect</a></li>
-<li class="toctree-l2"><a class="reference internal" href="_autosummary/arim.ut/arim.ut.make_viewnames.html">arim.ut.make_viewnames</a></li>
 <li class="toctree-l2"><a class="reference internal" href="_autosummary/arim.ut/arim.ut.rayleigh_vel.html">arim.ut.rayleigh_vel</a></li>
 <li class="toctree-l2"><a class="reference internal" href="_autosummary/arim.ut/arim.ut.reciprocal_viewname.html">arim.ut.reciprocal_viewname</a></li>
 <li class="toctree-l2"><a class="reference internal" href="_autosummary/arim.ut/arim.ut.wrap_phase.html">arim.ut.wrap_phase</a></li>
@@ -642,26 +641,20 @@
 <tr class="row-even"><td><p><a class="reference internal" href="_autosummary/arim.ut/arim.ut.default_viewname_order.html#arim.ut.default_viewname_order" title="arim.ut.default_viewname_order"><code class="xref py py-obj docutils literal notranslate"><span class="pre">default_viewname_order</span></code></a>(tx_rx_tuple)</p></td>
 <td><p>The views are sorted in ascending order with the following criteria (in this order):</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="_autosummary/arim.ut/arim.ut.filter_unique_views.html#arim.ut.filter_unique_views" title="arim.ut.filter_unique_views"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filter_unique_views</span></code></a>(viewnames)</p></td>
-<td><p>Returns the view names that that give different results in linear imaging.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="_autosummary/arim.ut/arim.ut.fmc.html#arim.ut.fmc" title="arim.ut.fmc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fmc</span></code></a>(numelements)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="_autosummary/arim.ut/arim.ut.fmc.html#arim.ut.fmc" title="arim.ut.fmc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fmc</span></code></a>(numelements)</p></td>
 <td><p>Return all pairs of elements for a FMC.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="_autosummary/arim.ut/arim.ut.hmc.html#arim.ut.hmc" title="arim.ut.hmc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hmc</span></code></a>(numelements)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="_autosummary/arim.ut/arim.ut.hmc.html#arim.ut.hmc" title="arim.ut.hmc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hmc</span></code></a>(numelements)</p></td>
 <td><p>Return all pairs of elements for a HMC.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="_autosummary/arim.ut/arim.ut.infer_capture_method.html#arim.ut.infer_capture_method" title="arim.ut.infer_capture_method"><code class="xref py py-obj docutils literal notranslate"><span class="pre">infer_capture_method</span></code></a>(tx, rx)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="_autosummary/arim.ut/arim.ut.infer_capture_method.html#arim.ut.infer_capture_method" title="arim.ut.infer_capture_method"><code class="xref py py-obj docutils literal notranslate"><span class="pre">infer_capture_method</span></code></a>(tx, rx)</p></td>
 <td><p>Infers the capture method from the indices of transmitters and receivers.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="_autosummary/arim.ut/arim.ut.instantaneous_phase_shift.html#arim.ut.instantaneous_phase_shift" title="arim.ut.instantaneous_phase_shift"><code class="xref py py-obj docutils literal notranslate"><span class="pre">instantaneous_phase_shift</span></code></a>(analytic_sig, ...)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="_autosummary/arim.ut/arim.ut.instantaneous_phase_shift.html#arim.ut.instantaneous_phase_shift" title="arim.ut.instantaneous_phase_shift"><code class="xref py py-obj docutils literal notranslate"><span class="pre">instantaneous_phase_shift</span></code></a>(analytic_sig, ...)</p></td>
 <td><p>For a signal $x(ray) = A * exp(i (2 pi f_0 ray + phi(ray)))$, returns phi(ray) in [-pi, pi[.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="_autosummary/arim.ut/arim.ut.make_timevect.html#arim.ut.make_timevect" title="arim.ut.make_timevect"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_timevect</span></code></a>(num, step[, start, dtype])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="_autosummary/arim.ut/arim.ut.make_timevect.html#arim.ut.make_timevect" title="arim.ut.make_timevect"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_timevect</span></code></a>(num, step[, start, dtype])</p></td>
 <td><p>Return a linearly spaced time vector.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="_autosummary/arim.ut/arim.ut.make_viewnames.html#arim.ut.make_viewnames" title="arim.ut.make_viewnames"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_viewnames</span></code></a>(pathnames[, tfm_unique_only, ...])</p></td>
-<td><p>Make all view names from the paths given as arguments.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="_autosummary/arim.ut/arim.ut.rayleigh_vel.html#arim.ut.rayleigh_vel" title="arim.ut.rayleigh_vel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rayleigh_vel</span></code></a>(longitudinal_vel, transverse_vel)</p></td>
 <td><p>Approximate Rayleigh velocitiy.</p></td>

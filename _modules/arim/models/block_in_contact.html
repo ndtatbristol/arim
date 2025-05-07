@@ -867,38 +867,31 @@
     <span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Not enough walls to reflect from.&quot;</span><span class="p">)</span>
 
-    <span class="n">mode_names</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;L&quot;</span><span class="p">,</span> <span class="s2">&quot;T&quot;</span><span class="p">)</span>
     <span class="n">modes</span> <span class="o">=</span> <span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">Mode</span><span class="o">.</span><span class="n">longitudinal</span><span class="p">,</span> <span class="n">c</span><span class="o">.</span><span class="n">Mode</span><span class="o">.</span><span class="n">transverse</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">no_reflections</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_number_of_reflection</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
         <span class="c1"># For this number of reflections, make all the combinations of paths.</span>
-        <span class="n">path_idxs_up_to_refl</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">product</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="n">repeat</span><span class="o">=</span><span class="n">no_reflections</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
-        <span class="k">for</span> <span class="n">path_idxs</span> <span class="ow">in</span> <span class="n">path_idxs_up_to_refl</span><span class="p">:</span>
+        <span class="n">path_indices_up_to_refl</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">product</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="n">repeat</span><span class="o">=</span><span class="n">no_reflections</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">path_indices</span> <span class="ow">in</span> <span class="n">path_indices_up_to_refl</span><span class="p">:</span>
             <span class="c1"># For each path with this number of reflections.</span>
-            <span class="n">path_name</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
             <span class="n">path_modes</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="n">path_interfaces</span> <span class="o">=</span> <span class="p">[</span><span class="n">probe</span><span class="p">]</span>
             <span class="n">path_materials</span> <span class="o">=</span> <span class="p">[]</span>
 
-            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">mode</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">path_idxs</span><span class="p">):</span>
-                <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                    <span class="n">path_name</span> <span class="o">+=</span> <span class="n">mode_names</span><span class="p">[</span><span class="n">mode</span><span class="p">]</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="c1"># Have to settle on a naming convention.</span>
-                    <span class="c1"># Published work to date (~2023) joins wave modes and assumes a constant wall (typically back wall).</span>
-                    <span class="c1"># New `Path` method `longname` splices wall names into the mode names to indicate which wall was skipped from. Preserve simple naming convention for path dict keys.</span>
-                    <span class="c1"># If multiple paths with the same modes but different wall skips are needed, they will need to be stored in different dicts. Edit this string if this is inconvenient.</span>
-                    <span class="n">path_name</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mode_names</span><span class="p">[</span><span class="n">mode</span><span class="p">])</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">mode</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">path_indices</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="c1"># Settled on naming convention which includes wall name with</span>
+                    <span class="c1"># spaces in between (MC 20/12/24)</span>
                     <span class="n">path_interfaces</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">wall_dict</span><span class="p">[</span><span class="n">wall_names</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]])</span>
                 <span class="n">path_modes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">modes</span><span class="p">[</span><span class="n">mode</span><span class="p">])</span>
                 <span class="n">path_materials</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">block_material</span><span class="p">)</span>
             <span class="n">path_interfaces</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">grid</span><span class="p">)</span>
 
-            <span class="n">paths</span><span class="p">[</span><span class="n">path_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span>
                 <span class="n">interfaces</span><span class="o">=</span><span class="n">path_interfaces</span><span class="p">,</span>
                 <span class="n">materials</span><span class="o">=</span><span class="n">path_materials</span><span class="p">,</span>
                 <span class="n">modes</span><span class="o">=</span><span class="n">path_modes</span><span class="p">,</span>
-                <span class="n">name</span><span class="o">=</span><span class="n">path_name</span><span class="p">,</span>
             <span class="p">)</span>
+            <span class="n">paths</span><span class="p">[</span><span class="n">path</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">path</span>
     <span class="k">return</span> <span class="n">paths</span></div>
 
 

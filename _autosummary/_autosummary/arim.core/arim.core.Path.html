@@ -304,6 +304,7 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../arim.geometry.html">arim.geometry</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../arim.geometry/arim.geometry.CoordinateSystem.html">arim.geometry.CoordinateSystem</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../arim.geometry/arim.geometry.Grid.html">arim.geometry.Grid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../arim.geometry/arim.geometry.MaskedGrid.html">arim.geometry.MaskedGrid</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../arim.geometry/arim.geometry.OrientedPoints.html">arim.geometry.OrientedPoints</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../arim.geometry/arim.geometry.Points.html">arim.geometry.Points</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../arim.geometry/arim.geometry.SphericalCoordinates.html">arim.geometry.SphericalCoordinates</a></li>
@@ -498,13 +499,11 @@
 <li class="toctree-l2"><a class="reference internal" href="../arim.ut/arim.ut.default_scanline_weights.html">arim.ut.default_scanline_weights</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../arim.ut/arim.ut.default_timetrace_weights.html">arim.ut.default_timetrace_weights</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../arim.ut/arim.ut.default_viewname_order.html">arim.ut.default_viewname_order</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../arim.ut/arim.ut.filter_unique_views.html">arim.ut.filter_unique_views</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../arim.ut/arim.ut.fmc.html">arim.ut.fmc</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../arim.ut/arim.ut.hmc.html">arim.ut.hmc</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../arim.ut/arim.ut.infer_capture_method.html">arim.ut.infer_capture_method</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../arim.ut/arim.ut.instantaneous_phase_shift.html">arim.ut.instantaneous_phase_shift</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../arim.ut/arim.ut.make_timevect.html">arim.ut.make_timevect</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../arim.ut/arim.ut.make_viewnames.html">arim.ut.make_viewnames</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../arim.ut/arim.ut.rayleigh_vel.html">arim.ut.rayleigh_vel</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../arim.ut/arim.ut.reciprocal_viewname.html">arim.ut.reciprocal_viewname</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../arim.ut/arim.ut.wrap_phase.html">arim.ut.wrap_phase</a></li>
@@ -670,7 +669,7 @@ a Path is the input of the ray tracing.</p>
 <span class="sig-name descname"><span class="pre">materials</span></span><a class="headerlink" href="#arim.core.Path.materials" title="Link to this definition">#</a></dt>
 <dd><p>Materials where the rays goes through. The i-th leg of the ray is in the i-th material.
 The i-th material is between the i-th and the (i+1)-th interfaces.</p>
-<p>Lenght: numinterfaces - 1</p>
+<p>Length: numinterfaces - 1</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>tuple of <a class="reference internal" href="arim.core.Material.html#arim.core.Material" title="arim.core.Material">Material</a></p>
@@ -682,7 +681,7 @@ The i-th material is between the i-th and the (i+1)-th interfaces.</p>
 <dt class="sig sig-object py" id="arim.core.Path.modes">
 <span class="sig-name descname"><span class="pre">modes</span></span><a class="headerlink" href="#arim.core.Path.modes" title="Link to this definition">#</a></dt>
 <dd><p>Mode for each leg.</p>
-<p>Lenght: numinterfaces - 1</p>
+<p>Length: numinterfaces - 1</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>tuple of <a class="reference internal" href="arim.core.Mode.html#arim.core.Mode" title="arim.core.Mode">Mode</a></p>
@@ -725,9 +724,15 @@ The i-th material is between the i-th and the (i+1)-th interfaces.</p>
 </dd></dl>
 
 <dl class="py property">
+<dt class="sig sig-object py" id="arim.core.Path.is_immersion">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_immersion</span></span><a class="headerlink" href="#arim.core.Path.is_immersion" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
 <dt class="sig sig-object py" id="arim.core.Path.longname">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">longname</span></span><a class="headerlink" href="#arim.core.Path.longname" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>By convention, if in immersion then ignore the first path which is always longitudinal.</p>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="arim.core.Path.numinterfaces">
@@ -742,6 +747,16 @@ The i-th material is between the i-th and the (i+1)-th interfaces.</p>
 <dl class="py property">
 <dt class="sig sig-object py" id="arim.core.Path.reverse_longname">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">reverse_longname</span></span><a class="headerlink" href="#arim.core.Path.reverse_longname" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="arim.core.Path.reverse_shortname">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">reverse_shortname</span></span><a class="headerlink" href="#arim.core.Path.reverse_shortname" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="arim.core.Path.shortname">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">shortname</span></span><a class="headerlink" href="#arim.core.Path.shortname" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
@@ -808,10 +823,13 @@ The i-th material is between the i-th and the (i+1)-th interfaces.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#arim.core.Path.name"><code class="docutils literal notranslate"><span class="pre">Path.name</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#arim.core.Path.reverse"><code class="docutils literal notranslate"><span class="pre">Path.reverse()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#arim.core.Path.to_fermat_path"><code class="docutils literal notranslate"><span class="pre">Path.to_fermat_path()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#arim.core.Path.is_immersion"><code class="docutils literal notranslate"><span class="pre">Path.is_immersion</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#arim.core.Path.longname"><code class="docutils literal notranslate"><span class="pre">Path.longname</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#arim.core.Path.numinterfaces"><code class="docutils literal notranslate"><span class="pre">Path.numinterfaces</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#arim.core.Path.numlegs"><code class="docutils literal notranslate"><span class="pre">Path.numlegs</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#arim.core.Path.reverse_longname"><code class="docutils literal notranslate"><span class="pre">Path.reverse_longname</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#arim.core.Path.reverse_shortname"><code class="docutils literal notranslate"><span class="pre">Path.reverse_shortname</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#arim.core.Path.shortname"><code class="docutils literal notranslate"><span class="pre">Path.shortname</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#arim.core.Path.velocities"><code class="docutils literal notranslate"><span class="pre">Path.velocities</span></code></a></li>
 </ul>
 </li>
