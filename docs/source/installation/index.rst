@@ -11,7 +11,7 @@ Installation
     development
 
 This section describes how to install arim for an end-user. For developer installation,
-see the `developer install guide <development>`_ or
+see the :ref:`developer install guide <dev_install>` or
 `Contributing.md <https://github.com/ndtatbristol/arim/blob/master/CONTRIBUTING.md>`_ in arim's git repository.
 
 .. _reqs_user_install:
