@@ -38,7 +38,7 @@ import os
 import numba
 import numpy as np
 
-from . import geomed, huber
+from . import geomed, huber, tfm
 from ..model import ModelAmplitudes
 
 logger = logging.getLogger(__name__)
@@ -55,11 +55,14 @@ def _check_shapes(frame, focal_law):
     numpoints, numtx = focal_law.lookup_times_tx.shape
     _, numrx = focal_law.lookup_times_rx.shape
 
-    if focal_law.amplitudes is not None:
+    if isinstance(focal_law.amplitudes, tfm.TxRxAmplitudes):
         assert focal_law.amplitudes.amplitudes_tx.shape == (numpoints, numtx)
         assert focal_law.amplitudes.amplitudes_rx.shape == (numpoints, numrx)
         assert focal_law.amplitudes.amplitudes_tx.flags.c_contiguous
         assert focal_law.amplitudes.amplitudes_rx.flags.c_contiguous
+    elif isinstance(focal_law.amplitudes, ModelAmplitudes):
+        assert focal_law.amplitudes.shape == (numpoints, numtimetraces)
+        assert focal_law.amplitudes[:].flags.c_contiguous
 
     assert frame.tx.shape == (numtimetraces,)
     assert frame.rx.shape == (numtimetraces,)
@@ -118,10 +121,27 @@ def delay_and_sum_numba(
         result = np.full((numpoints,), 0, dtype=dtype_data)
     assert result.shape == (numpoints,)
 
+    # MC (15/05/25) Would prefer to use `match` here but would mean forcing Python >= 3.10
     if interpolation.lower() == "nearest":
-        delay_and_sum_function = _delay_and_sum_amplitudes_nearest
+        if isinstance(focal_law.amplitudes, tfm.TxRxAmplitudes):
+            amplitudes = (
+                focal_law.amplitudes.amplitudes_tx,
+                focal_law.amplitudes.amplitudes_rx,
+            )
+            delay_and_sum_function = _delay_and_sum_amplitudes_nearest
+        elif isinstance(focal_law.amplitudes, ModelAmplitudes):
+            amplitudes = (focal_law.amplitudes[:],)
+            delay_and_sum_function = _general_delay_and_sum_nearest
     elif interpolation.lower() == "linear":
-        delay_and_sum_function = _delay_and_sum_amplitudes_linear
+        if isinstance(focal_law.amplitudes, tfm.TxRxAmplitudes):
+            amplitudes = (
+                focal_law.amplitudes.amplitudes_tx,
+                focal_law.amplitudes.amplitudes_rx,
+            )
+            delay_and_sum_function = _delay_and_sum_amplitudes_linear
+        elif isinstance(focal_law.amplitudes, ModelAmplitudes):
+            amplitudes = (focal_law.amplitudes[:],)
+            delay_and_sum_function = _general_delay_and_sum_linear
     else:
         raise ValueError("invalid 'interpolation' argument")
 
@@ -133,8 +153,7 @@ def delay_and_sum_numba(
         frame.rx,
         focal_law.lookup_times_tx,
         focal_law.lookup_times_rx,
-        focal_law.amplitudes.amplitudes_tx,
-        focal_law.amplitudes.amplitudes_rx,
+        *amplitudes,
         frame.time.step,
         frame.time.start,
         fillvalue,
@@ -855,7 +874,7 @@ def delay_and_sum_naive(
     numtimetraces = frame.numtimetraces
     numpoints, _ = focal_law.lookup_times_tx.shape
 
-    from . import tfm
+    # from . import tfm
 
     assert isinstance(focal_law.amplitudes, tfm.TxRxAmplitudes)
 
@@ -936,11 +955,9 @@ def delay_and_sum(frame, focal_law, *args, **kwargs):
     :func:`delay_and_sum_numba_noamp`
 
     """
-    from . import tfm
+    # from . import tfm
 
-    if isinstance(focal_law.amplitudes, tfm.TxRxAmplitudes) or isinstance(
-        focal_law.amplitudes, ModelAmplitudes
-    ):
+    if isinstance(focal_law.amplitudes, (tfm.TxRxAmplitudes, ModelAmplitudes)):
         return delay_and_sum_numba(frame, focal_law, *args, **kwargs)
     elif focal_law.amplitudes is None:
         return delay_and_sum_numba_noamp(frame, focal_law, *args, **kwargs)
