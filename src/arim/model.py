@@ -1472,6 +1472,10 @@ class ModelAmplitudes(abc.ABC):
         # wrapper in general case, inherit and write a faster implementation if possible
         return sensitivity_model_assisted_tfm(self, timetrace_weights, **kwargs)
 
+    def to_tfm_amplitudes(self, grid_slice=slice(None)):
+        """Prepare model amplitudes for use as amplitudes in TFM function."""
+        return self[grid_slice].conj() / (self[grid_slice].conj()) * self[grid_slice]
+
 
 class _ModelAmplitudesWithScatFunction(ModelAmplitudes):
     def __init__(

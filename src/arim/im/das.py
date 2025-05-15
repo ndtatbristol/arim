@@ -39,7 +39,6 @@ import numba
 import numpy as np
 
 from . import geomed, huber, tfm
-from ..model import ModelAmplitudes
 
 logger = logging.getLogger(__name__)
 
@@ -60,9 +59,9 @@ def _check_shapes(frame, focal_law):
         assert focal_law.amplitudes.amplitudes_rx.shape == (numpoints, numrx)
         assert focal_law.amplitudes.amplitudes_tx.flags.c_contiguous
         assert focal_law.amplitudes.amplitudes_rx.flags.c_contiguous
-    elif isinstance(focal_law.amplitudes, ModelAmplitudes):
+    elif isinstance(focal_law.amplitudes, np.ndarray):
         assert focal_law.amplitudes.shape == (numpoints, numtimetraces)
-        assert focal_law.amplitudes[:].flags.c_contiguous
+        assert focal_law.amplitudes.flags.c_contiguous
 
     assert frame.tx.shape == (numtimetraces,)
     assert frame.rx.shape == (numtimetraces,)
@@ -121,7 +120,7 @@ def delay_and_sum_numba(
         result = np.full((numpoints,), 0, dtype=dtype_data)
     assert result.shape == (numpoints,)
 
-    # MC (15/05/25) Would prefer to use `match` here but would mean forcing Python >= 3.10
+    # TODO: MC (15/05/25) Would prefer to use `match` here but would mean forcing Python >= 3.10
     if interpolation.lower() == "nearest":
         if isinstance(focal_law.amplitudes, tfm.TxRxAmplitudes):
             amplitudes = (
@@ -129,8 +128,8 @@ def delay_and_sum_numba(
                 focal_law.amplitudes.amplitudes_rx,
             )
             delay_and_sum_function = _delay_and_sum_amplitudes_nearest
-        elif isinstance(focal_law.amplitudes, ModelAmplitudes):
-            amplitudes = (focal_law.amplitudes[:],)
+        elif isinstance(focal_law.amplitudes, np.ndarray):
+            amplitudes = (focal_law.amplitudes,)
             delay_and_sum_function = _general_delay_and_sum_nearest
     elif interpolation.lower() == "linear":
         if isinstance(focal_law.amplitudes, tfm.TxRxAmplitudes):
@@ -139,8 +138,8 @@ def delay_and_sum_numba(
                 focal_law.amplitudes.amplitudes_rx,
             )
             delay_and_sum_function = _delay_and_sum_amplitudes_linear
-        elif isinstance(focal_law.amplitudes, ModelAmplitudes):
-            amplitudes = (focal_law.amplitudes[:],)
+        elif isinstance(focal_law.amplitudes, np.ndarray):
+            amplitudes = (focal_law.amplitudes,)
             delay_and_sum_function = _general_delay_and_sum_linear
     else:
         raise ValueError("invalid 'interpolation' argument")
@@ -251,71 +250,6 @@ def _delay_and_sum_amplitudes_nearest(
                     amplitudes_tx[point, tx[scan]]
                     * amplitudes_rx[point, rx[scan]]
                     * weighted_timetraces[scan, lookup_index]
-                )
-        result[point] = res_tmp / numtimetraces
-
-
-@numba.jit(nopython=True, nogil=True, parallel=use_parallel, fastmath=True)
-def _delay_and_sum_amplitudes_linear(
-    weighted_timetraces,
-    tx,
-    rx,
-    lookup_times_tx,
-    lookup_times_rx,
-    amplitudes_tx,
-    amplitudes_rx,
-    dt,
-    t0,
-    fillvalue,
-    result,
-):
-    """
-    Numba implementation of the delay and sum algorithm, using linear
-    interpolation for time point.
-
-    Parameters
-    ----------
-    weighted_timetraces : ndarray [numtimetraces x numsamples]
-    lookup_times_tx : ndarray [numpoints x numtx]
-        Times of flight (floats) between the transmitters and the grid points.
-    lookup_times_rx : ndarray [numpoints x numrx]
-        Times of flight (floats) between the grid points and the receivers.
-    amplitudes_tx : ndarray [numpoints x numtx]
-    amplitudes_rx : ndarray [numpoints x numrx]
-    result : ndarray [numpoints]
-        Result.
-    tx, rx : ndarray [numtimetraces]
-        Mapping between the timetraces and the transmitter/receiver.
-        Values: integers in [0, numtx[ and [0, numrx] respectively
-
-    Returns
-    -------
-    None
-    """
-    numtimetraces, numsamples = weighted_timetraces.shape
-    numpoints, _ = lookup_times_tx.shape
-
-    for point in numba.prange(numpoints):
-        res_tmp = 0.0
-        for scan in range(numtimetraces):
-            lookup_time = (
-                lookup_times_tx[point, tx[scan]] + lookup_times_rx[point, rx[scan]]
-            )
-            loc1 = (lookup_time - t0) / dt
-            lookup_index = int(loc1)
-            frac1 = loc1 - lookup_index
-            lookup_index1 = lookup_index + 1
-
-            if lookup_index < 0 or lookup_index1 >= numsamples:
-                res_tmp += fillvalue
-            else:
-                lscanVal = weighted_timetraces[scan, lookup_index]
-                lscanVal1 = weighted_timetraces[scan, lookup_index1]
-                lscanUseVal = lscanVal + frac1 * (lscanVal1 - lscanVal)
-                res_tmp += (
-                    amplitudes_tx[point, tx[scan]]
-                    * amplitudes_rx[point, rx[scan]]
-                    * lscanUseVal
                 )
         result[point] = res_tmp / numtimetraces
 
@@ -957,7 +891,7 @@ def delay_and_sum(frame, focal_law, *args, **kwargs):
     """
     # from . import tfm
 
-    if isinstance(focal_law.amplitudes, (tfm.TxRxAmplitudes, ModelAmplitudes)):
+    if isinstance(focal_law.amplitudes, (tfm.TxRxAmplitudes, np.ndarray)):
         return delay_and_sum_numba(frame, focal_law, *args, **kwargs)
     elif focal_law.amplitudes is None:
         return delay_and_sum_numba_noamp(frame, focal_law, *args, **kwargs)
