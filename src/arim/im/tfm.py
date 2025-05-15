@@ -267,7 +267,7 @@ class FocalLaw:
             else:
                 # arrays of shape (numgridpoints, numtimetraces)
                 assert amplitudes.ndim == 2
-                assert amplitudes.shape[1] == lookup_times_tx.shape[1]
+                assert amplitudes.shape[0] == lookup_times_tx.shape[0]
                 if numtimetraces is not None:
                     assert amplitudes.shape[1] == numtimetraces
                 else:

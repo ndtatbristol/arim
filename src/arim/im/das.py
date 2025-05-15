@@ -39,6 +39,7 @@ import numba
 import numpy as np
 
 from . import geomed, huber
+from ..model import ModelAmplitudes
 
 logger = logging.getLogger(__name__)
 
@@ -937,7 +938,9 @@ def delay_and_sum(frame, focal_law, *args, **kwargs):
     """
     from . import tfm
 
-    if isinstance(focal_law.amplitudes, tfm.TxRxAmplitudes):
+    if isinstance(focal_law.amplitudes, tfm.TxRxAmplitudes) or isinstance(
+        focal_law.amplitudes, ModelAmplitudes
+    ):
         return delay_and_sum_numba(frame, focal_law, *args, **kwargs)
     elif focal_law.amplitudes is None:
         return delay_and_sum_numba_noamp(frame, focal_law, *args, **kwargs)

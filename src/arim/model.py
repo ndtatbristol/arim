@@ -1460,6 +1460,10 @@ class ModelAmplitudes(abc.ABC):
     def shape(self):
         return (self.numpoints, self.numtimetraces)
 
+    @property
+    def ndim(self):
+        return len(self.shape)
+
     def sensitivity_uniform_tfm(self, timetrace_weights, **kwargs):
         # wrapper in general case, inherit and write a faster implementation if possible
         return sensitivity_uniform_tfm(self, timetrace_weights, **kwargs)
