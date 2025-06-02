@@ -911,18 +911,23 @@ class MaskedGrid(Grid):
 
     __slots__ = ("coords", "name", "xvect", "yvect", "zvect", "mask")
 
-    def __init__(self, xmin, xmax, ymin, ymax, zmin, zmax, pixel_size):
+    def __init__(self, xmin, xmax, ymin, ymax, zmin, zmax, pixel_size, mask=None):
         super().__init__(xmin, xmax, ymin, ymax, zmin, zmax, pixel_size)
-        self.mask = np.full((self.numx, self.numy, self.numz), False)
+        if mask is None:
+            self.mask = np.full((self.numx, self.numy, self.numz), False)
+        else:
+            mask = np.asarray(mask, dtype=bool)
+            self.mask = mask
 
     @classmethod
     def mask_grid_where(cls, grid, condition):
         """
-        Mask an existing Grid where a condition is met.
+        Mask an existing Grid where a condition is met. If a MaskedGrid is provided,
+        mask its union with `condition`.
 
         Parameters
         ----------
-        grid : Grid
+        grid : Grid, MaskedGrid
         condition : ndarray[bool]
             Shape ``(numx, numy, numz)``
 
@@ -948,7 +953,12 @@ class MaskedGrid(Grid):
         if condition.dtype.kind != "b":
             raise ValueError("``condition`` is not boolean.")
 
-        result.mask = condition
+        if type(grid) is MaskedGrid:
+            mask = grid.mask
+        else:
+            mask = np.full(condition.shape, False)
+
+        result.mask = condition | mask
         return result
 
     def to_1d_points(self):

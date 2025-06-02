@@ -1474,7 +1474,7 @@ class ModelAmplitudes(abc.ABC):
 
     def to_tfm_amplitudes(self, grid_slice=slice(None)):
         """Prepare model amplitudes for use as amplitudes in TFM function."""
-        return self[grid_slice].conj() / (self[grid_slice].conj()) * self[grid_slice]
+        return self[grid_slice].conj() / (self[grid_slice].conj() * self[grid_slice])
 
 
 class _ModelAmplitudesWithScatFunction(ModelAmplitudes):
