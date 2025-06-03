@@ -409,10 +409,9 @@ def rayleigh_vel(longitudinal_vel, transverse_vel):
     -------
     rayleigh_vel : float
 
-    Notes
+    References
     -----
-    [Freund98] Freund, L. B.. 1998. `Dynamic Fracture Mechanics`.
-    Cambridge University Press. p. 83. ISBN 978-0521629225.
+    [Freund98]_
 
 
     """

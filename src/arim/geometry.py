@@ -360,7 +360,7 @@ class Points:
 
         See Also
         --------
-        points_in_rectbox
+        :func:`points_in_rectbox`
 
         """
         return points_in_rectbox(
@@ -491,7 +491,7 @@ class CoordinateSystem:
 
         See Also
         --------
-        convert_to_gcs
+        :func:`convert_to_gcs`
         """
         points = points_gcs.translate(-self.origin)
         # TODO: improve convert_from_gcs
@@ -553,7 +553,7 @@ class CoordinateSystem:
 
         See Also
         --------
-        convert_from_gcs
+        :func:`convert_from_gcs`
         """
         points_cs = points_cs.coords
 

@@ -154,20 +154,7 @@ def sdh_2d_scat(
 
     References
     ----------
-    [Lopez-Sanchez] Lopez-Sanchez, Ana L., Hak-Joon Kim, Lester W. Schmerr, and Alexander
-    Sedov. 2005. ‘Measurement Models and Scattering Models for Predicting the Ultrasonic
-    Pulse-Echo Response From Side-Drilled Holes’. Journal of Nondestructive Evaluation 24
-    3): 83–96. doi:10.1007/s10921-005-7658-4.
-
-    [Brind] Brind, R. J., J. D. Achenbach, and J. E. Gubernatis. 1984. ‘High-Frequency
-    Scattering of Elastic Waves from Cylindrical Cavities’. Wave Motion 6 (1):
-    41–60. doi:10.1016/0165-2125(84)90022-2.
-
-    [Zhang] Zhang, Jie, B.W. Drinkwater, and P.D. Wilcox. 2008. ‘Defect Characterization
-    Using an Ultrasonic Array to Measure the Scattering Coefficient Matrix’. IEEE
-    Transactions on Ultrasonics, Ferroelectrics, and Frequency Control 55 (10): 2254–65.
-    doi:10.1109/TUFFC.924.
-
+    [Brind]_, [Lopez-Sanchez]_, [Zhang]_
 
     """
     theta = out_theta - inc_theta
@@ -363,11 +350,7 @@ def crack_2d_scat(
 
     References
     ----------
-    [Glushkov] Glushkov, Evgeny, Natalia Glushkova, Alexander Ekhlakov, and
-    Elena Shapar. 2006. ‘An Analytically Based Computer Model for Surface
-    Measurements in Ultrasonic Crack Detection’. Wave Motion 43 (6): 458–73.
-    doi:10.1016/j.wavemoti.2006.03.002.
-
+    [Glushkov]_
     Unpublished work from Alexander Velichko
 
     """
@@ -552,8 +535,7 @@ def crack_tip_2d(
 
     Notes
     -----
-    [Ogilvy83] Ogilvy, J. A., and J. A. G. Temple. 1983. ‘Diffraction of Elastic Waves by Cracks: Application to
-    Time-of-Flight Inspection’. Ultrasonics 21 (6):259–69. https://doi.org/10.1016/0041-624X(83)90058-6.
+    [Ogilvy83]_
 
     """
     res = dict()

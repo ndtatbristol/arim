@@ -224,9 +224,7 @@ def directivity_2d_rectangular_in_fluid(theta, element_width, wavelength):
 
     References
     ----------
-
-    Wooh, Shi-Chang, and Yijun Shi. 1999. ‘Three-Dimensional Beam Directivity of Phase-Steered Ultrasound’.
-        The Journal of the Acoustical Society of America 105 (6): 3275–82. doi:10.1121/1.424655.
+    [Wooh]_
 
     See Also
     --------
@@ -297,9 +295,9 @@ def directivity_2d_rectangular_on_solid_l(
 
     Notes
     -----
-    Equations MP (93) and DW (2), (3), (6)
+    Equations Miller (93) and Drinkwater (2), (3), (6)
 
-    The sinc results of the integration of MP (90) with far field
+    The sinc results of the integration of Miller (90) with far field
     approximation.
 
     Normalisation coefficients are ignored, but the values are consistent with
@@ -307,15 +305,7 @@ def directivity_2d_rectangular_on_solid_l(
 
     References
     ----------
-    Miller, G. F., and H. Pursey. 1954. ‘The Field and Radiation Impedance of
-    Mechanical Radiators on the Free Surface of a Semi-Infinite Isotropic
-    Solid’. Proceedings of the Royal Society of London A: Mathematical,
-    Physical and Engineering Sciences 223 (1155): 521–41.
-    https://doi.org/10.1098/rspa.1954.0134.
-
-    Drinkwater, Bruce W., and Paul D. Wilcox. 2006. ‘Ultrasonic Arrays for
-    Non-Destructive Evaluation: A Review’. NDT & E International 39 (7):
-    525–41. https://doi.org/10.1016/j.ndteint.2006.03.006.
+    [Drinkwater]_, [Miller]_
 
     See Also
     --------
@@ -357,7 +347,11 @@ def directivity_2d_rectangular_on_solid_t(
 
     Notes
     -----
-    Equations MP (94) and DW (2), (4), (6)
+    Equations Miller (94) and Drinkwater (2), (4), (6)
+
+    References
+    ----------
+    [Drinkwater]_, [Miller]_
 
     See Also
     --------
@@ -691,6 +685,10 @@ def transmission_at_interface(
     amps : ndarray
         ``amps[i, j]`` is the transmission coefficient for the ray (i, j) at the given interface.
 
+    References
+    ----------
+    [KK]_
+
     """
     if force_complex:
         angles_inc = np.asarray(angles_inc, dtype=complex)
@@ -828,6 +826,10 @@ def reflection_at_interface(
     amps : ndarray
         ``amps[i, j]`` is the reflection coefficient for the ray (i, j) at the given interface.
 
+    References
+    ----------
+    [KK]_
+
     """
     if force_complex:
         angles_inc = np.asarray(angles_inc, dtype=complex)
@@ -945,6 +947,11 @@ def transmission_reflection_for_path(
     ------
     amps : ndarray or None
         Amplitudes of transmission-reflection coefficients. None if not defined for all interface.
+
+    References
+    ----------
+    [KK]_
+
     """
     # Requires the incoming angles for all interfaces except the probe and the scatterers
     # (first and last).
@@ -1009,6 +1016,10 @@ def reverse_transmission_reflection_for_path(
     -------
     rev_transrefl : ndarray
         Shape: (path.interfaces[0].numpoints, path.interfaces[-1].numpoints)
+
+    References
+    ----------
+    [KK]_
 
     """
     transrefl = None
@@ -1104,7 +1115,7 @@ def beamspread_2d_for_path(ray_geometry):
 
     References
     ----------
-    Schmerr, Fundamentals of ultrasonic phased arrays (Springer), §2.5
+    [SchmerrArrays]_, §2.5
 
     """
     velocities = ray_geometry.rays.fermat_path.velocities
@@ -1472,8 +1483,11 @@ class ModelAmplitudes(abc.ABC):
         # wrapper in general case, inherit and write a faster implementation if possible
         return sensitivity_model_assisted_tfm(self, timetrace_weights, **kwargs)
 
-    def to_tfm_amplitudes(self, grid_slice=slice(None)):
-        """Prepare model amplitudes for use as amplitudes in TFM function."""
+    def to_matched_filter_amplitudes(self, grid_slice=slice(None)):
+        """
+        Prepare model amplitudes for use as a matched filter weighting in TFM function
+        as amplitudes [Turin]_.
+        """
         return self[grid_slice].conj() / (self[grid_slice].conj() * self[grid_slice])
 
 
