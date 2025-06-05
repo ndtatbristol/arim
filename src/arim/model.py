@@ -162,6 +162,7 @@ def make_toneburst2(
     See Also
     --------
     :func:`make_toneburst`
+
     """
 
     signal = make_toneburst(
@@ -258,6 +259,7 @@ def directivity_2d_rectangular_in_fluid_for_path(
     -------
     directivity : ndarray
         Signed directivity for each angle.
+
     """
     return directivity_2d_rectangular_in_fluid(
         ray_geometry.conventional_out_angle(0), element_width, wavelength
@@ -381,6 +383,7 @@ def snell_angles(incidents_angles, c_incident, c_refracted):
     If the incident angle is real, the refracted angle is "not a number".
     If the incident angle is complex, the refracted angle is complex (imagery part not null).
     The reason is that either the real or the complex arcsine function is used.
+
     """
     return np.arcsin(c_refracted / c_incident * sin(incidents_angles))
 
@@ -464,9 +467,7 @@ def fluid_solid(
 def _fluid_solid_n(
     alpha_fluid, alpha_l, alpha_t, rho_fluid, rho_solid, c_fluid, c_l, c_t
 ):
-    """
-    Coefficient N defined by Krautkrämer in equation (A8).
-    """
+    """Coefficient N defined by Krautkrämer in equation (A8)."""
     ct_cl2 = (c_t * c_t) / (c_l * c_l)
     cos_2_alpha_t = cos(2 * alpha_t)
     N = (
@@ -1305,6 +1306,7 @@ class RayWeights(
         See function rx_ray_weights
     scattering_angles_dict : dict[arim.Path, ndarray]
         Each value has a shape of (numelements, numgridpoints)
+
     """
 
     @property
@@ -1359,8 +1361,10 @@ def model_amplitudes_factory(tx, rx, view, ray_weights, scattering, scat_angle=0
     >>> model_amplitudes = model_amplitudes_factory(tx, rx, view, ray_weights, scattering)
     >>> model_amplitudes[0]
     # returns the 'numtimetraces' amplitudes at the grid point 0
+
     >>> model_amplitudes[:10] # returns the amplitudes for the first 10 grid points
     array([ 0.27764253,  0.78863332,  0.83998295,  0.96811351,  0.57929045, 0.00935137,  0.8905348 ,  0.46976061,  0.08101099,  0.57615469])
+
     >>> model_amplitudes[...] # returns the amplitudes for all points. Warning: you may
     ... # run out of memory!
     array([...])
@@ -1438,28 +1442,35 @@ class ModelAmplitudes(abc.ABC):
     >>> model_amplitudes = model_amplitudes_factory(tx, rx, view, ray_weights, scattering_dict)
 
     This object is not an array:
+
     >>> type(model_amplitudes)
     __main__.ModelAmplitudes
 
     But when indexed, it returns an array:
+
     >>> type(model_amplitudes[0])
     numpy.ndarray
 
     Get the P_ij for the first grid point (returns an array of size (numtimetraces,)):
+
     >>> model_amplitudes[0]
 
     Get the P_ij for the first ten grid points (returns an array of size
     (10, numtimetraces,)):
+
     >>> model_amplitudes[:10]
 
     Get all P_ij (may run out of memory):
+
     >>> model_amplitudes[...]
 
     To get the first Get all P_ij (may run out of memory):
+
     >>> model_amplitudes[...]
 
     Indexing the second dimension will fail. For example to model amplitude of
     the fourth point and the eigth timetrace, use:
+
     >>> model_amplitudes[3][7]  # valid usage
     >>> model_amplitudes[3, 7]  # invalid usage, raise an IndexError
     """
@@ -1626,6 +1637,7 @@ def sensitivity_uniform_tfm(model_amplitudes, timetrace_weights, block_size=4000
     -------
     predicted_intensities
         Shape: (numpoints, )
+
     """
     numpoints, numtimetraces = model_amplitudes.shape
     assert timetrace_weights.ndim == 1
@@ -1664,6 +1676,7 @@ def sensitivity_model_assisted_tfm(
     -------
     predicted_intensities
         Shape: (numpoints, ).
+
     """
     numpoints, numtimetraces = model_amplitudes.shape
     assert timetrace_weights.ndim == 1

@@ -46,7 +46,7 @@ SCAT_KEYS = frozenset(("LL", "LT", "TL", "TT"))
 
 
 def make_angles(numpoints):
-    """Return angles for scattering matrices. Linearly spaced vector in [-pi, pi[."""
+    """Return angles for scattering matrices. Linearly spaced vector in `[-pi, pi]`."""
     return np.linspace(-np.pi, np.pi, numpoints, endpoint=False)
 
 
@@ -69,7 +69,7 @@ def interpolate_matrix(scattering_matrix):
 
     Returns
     -------
-    func
+    Callable
 
     """
     assert scattering_matrix.ndim == 2
@@ -92,6 +92,7 @@ def interpolate_matrices(scattering_matrices):
     Returns
     -------
     dict[str, function]
+
     """
     return {key: interpolate_matrix(mat) for key, mat in scattering_matrices.items()}
 
@@ -130,7 +131,6 @@ def sdh_2d_scat(
     The number of factor in the sum is::
 
         maxn = max(min_terms, ceil(term_factor * alpha), ceil(term_factor * beta))
-
 
     Parameters
     ----------
@@ -770,7 +770,10 @@ def _partial_one_scat_key(scat_func, scat_key, *args, **kwargs):
     """
     Returns a dict of functions.
 
-        >>> assert scat_func(x, y, z, to_compute=['LT'])['LT'] == _partial_one_scat_key(scat_func, 'LT', z)(x, y)
+    Example
+    -------
+
+    >>> assert scat_func(x, y, z, to_compute=['LT'])['LT'] == _partial_one_scat_key(scat_func, 'LT', z)(x, y)
 
     """
     # Remark: do not try to replace this by a lambda function, a proper closure is needed
@@ -804,6 +807,7 @@ def scat_factory(kind, material, *args, **kwargs):
 
     Examples
     --------
+
     >>> material = arim.Material(6300., 3120., 2700., 'solid', metadata={'long_name': 'Aluminium'})
 
     Creating the scattering object:
@@ -859,6 +863,7 @@ class Scattering2d(abc.ABC):
 
     Examples
     --------
+
     >>> material = arim.Material(6300., 3120., 2700., 'solid', metadata={'long_name': 'Aluminium'})
     >>> scat_obj = scat_factory('sdh', material, radius=0.5e-3)
 
@@ -874,7 +879,6 @@ class Scattering2d(abc.ABC):
     array of shape (3, ).
 
     >>> result2 = scat_obj(inc_theta, out_theta, frequency, to_compute=['LL'])
-
 
     ``result2`` is a dict which contains the key 'LL'. Use this feature to reduce the amount
     of computation. Depending on how the function is written, other keys may be returned.
@@ -992,7 +996,6 @@ class Scattering2d(abc.ABC):
         numangles : int
         to_compute : set[str]
 
-
         Returns
         -------
         dict[str, ndarray]
@@ -1034,6 +1037,7 @@ class Scattering2dFromFunc(Scattering2d):
       ie any argument but ``inc_theta``, ``out_theta``, ``frequency`` and ``to_compute``.
 
     This class is abstract.
+
     """
 
     _scat_kwargs = None  # placeholder
@@ -1060,6 +1064,7 @@ class SdhScat(Scattering2dFromFunc):
     Scattering for side-drilled hole
 
     This class provides the :class:`Scattering2d` interface for :func:`sdh_2d_scat`.
+
     """
 
     _scat_func = staticmethod(sdh_2d_scat)
@@ -1192,6 +1197,7 @@ class CrackTipScat(Scattering2dFromFunc):
     Crack tip diffraction
 
     Wrapper for :func:`crack_tip_2d`
+
     """
 
     _scat_func = staticmethod(crack_tip_2d)
@@ -1241,7 +1247,6 @@ class ScatFromData(Scattering2d):
     interp_freq_kwargs : dict
         Passed to ``scipy.interpolate.interp1d``.
         Default: ``bounds_error=False, fill_value='extrapolate'``
-
 
     """
 
@@ -1308,8 +1313,8 @@ class ScatFromData(Scattering2d):
 
         Parameters
         ----------
-        frequencies
-        scat_matrix_dict
+        frequencies : ndarray
+        scat_matrix_dict : dict[str, ndarray]
 
         Returns
         -------
@@ -1357,7 +1362,7 @@ class ScatFromData(Scattering2d):
         frequencies : ndarray
             1d
         new_freq : float
-        multi_freq_scat_matrices : dict[str]
+        multi_freq_scat_matrices : dict[str, ndarray]
             Keys: frequencies (1d array), LL, LT, TL, TT
         interp1d_kwargs : kwargs
             Arguments for ``scipy.interpolate.interp1d``

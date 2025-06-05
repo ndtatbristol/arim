@@ -329,6 +329,7 @@ class FocalLaw:
         Returns
         -------
         weighted_timetraces : ndarray
+
         """
         assert timetraces.ndim == 2
         if self.timetrace_weights is None:
@@ -409,6 +410,7 @@ class TfmResult:
         Returns
         -------
         intensity : float
+
         """
         if area is None:
             area = slice(None)

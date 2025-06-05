@@ -230,6 +230,7 @@ def _delay_and_sum_amplitudes_nearest(
     Returns
     -------
     None
+
     """
     numtimetraces, numsamples = weighted_timetraces.shape
     numpoints, _ = lookup_times_tx.shape
@@ -290,6 +291,7 @@ def _delay_and_sum_amplitudes_linear(
     Returns
     -------
     None
+
     """
     numtimetraces, numsamples = weighted_timetraces.shape
     numpoints, _ = lookup_times_tx.shape
@@ -564,6 +566,7 @@ def _delay_and_sum_noamp_lanczos(
     Delay and sum with Lanczos interpolation with factor 'a' of the timetraces.
 
     https://en.wikipedia.org/wiki/Lanczos_resampling
+
     """
     numtimetraces, numsamples = weighted_timetraces.shape
     numpoints, _ = lookup_times_tx.shape
@@ -708,6 +711,7 @@ def _general_delay_and_sum_nearest(
     Returns
     -------
     None
+
     """
     numtimetraces, numsamples = weighted_timetraces.shape
     numpoints, _ = lookup_times_tx.shape
@@ -770,6 +774,7 @@ def _general_delay_and_sum_linear(
     Returns
     -------
     None
+
     """
     numtimetraces, numsamples = weighted_timetraces.shape
     numpoints, _ = lookup_times_tx.shape
@@ -804,6 +809,7 @@ def delay_and_sum_naive(
     Pure-Python implementation of delay and sum.
 
     This is a very slow implementation, use for test only.
+
     """
     numtimetraces = frame.numtimetraces
     numpoints, _ = focal_law.lookup_times_tx.shape
@@ -881,7 +887,6 @@ def delay_and_sum(frame, focal_law, *args, **kwargs):
     Returns
     -------
     result : ndarray (numpoints, )
-
 
     See Also
     --------

@@ -282,6 +282,7 @@ class Points:
         Returns
         -------
         translated_points : Points
+
         """
         new_coords = self.coords + direction
         translated_points = self.__class__(new_coords, self.name)
@@ -407,7 +408,6 @@ class CoordinateSystem:
     coordinate system to be consistent with MFMC terminology (global and probe coordinate systems)
     and to avoid confusion with the word "frame" as a set of timetrace.
 
-
     Attributes
     ----------
     origin
@@ -417,6 +417,7 @@ class CoordinateSystem:
     basis_matrix : ndarray
         i_hat, j_hat and k_hat stored in columns ('matrice de passage' de la base locale vers GCS).
         TODO: different convention as stated in header of the file
+
     """
 
     __slots__ = ["_origin", "_i_hat", "_j_hat"]
@@ -492,6 +493,7 @@ class CoordinateSystem:
         See Also
         --------
         :func:`convert_to_gcs`
+
         """
         points = points_gcs.translate(-self.origin)
         # TODO: improve convert_from_gcs
@@ -524,6 +526,7 @@ class CoordinateSystem:
         Notes
         -----
         This function is used to express a set of points relatively to a set of probe elements.
+
         """
         # The rotation of the points is likely to be the longest operation. Do it only once.
         points_cs = self.convert_from_gcs(points_gcs)
@@ -554,6 +557,7 @@ class CoordinateSystem:
         See Also
         --------
         :func:`convert_from_gcs`
+
         """
         points_cs = points_cs.coords
 
@@ -573,6 +577,7 @@ class CoordinateSystem:
         -------
         cs
             New coordinate system.
+
         """
         old_origin = Points(self.origin)
         new_origin = old_origin.translate(vector)[()]
@@ -591,6 +596,7 @@ class CoordinateSystem:
         -------
         cs
             New coordinate system.
+
         """
         old_basis = np.stack(
             (self.origin, self.origin + self.i_hat, self.origin + self.j_hat), axis=0
@@ -1073,6 +1079,7 @@ def rotate(coords, rotation_matrix, centre=None):
     -------
     rotated_points : ndarray
         Shape: (\*shape_points, 3
+
     """
     assert rotation_matrix.shape[-2:] == (3, 3)
 
@@ -1111,6 +1118,7 @@ def to_gcs(coords_cs, bases, origins):
     -------
     coords_gcs : ndarray
         Shape: (\*shape_points, 3)
+
     """
     # OM' = Origin + OM_x * i_hat + OM_y * j_hat + OM_z * k_hat
     return np.einsum("...ij,...i->...j", bases, coords_cs) + origins
@@ -1139,6 +1147,7 @@ def from_gcs(points_gcs, bases, origins):
     -------
     coords_gcs : ndarray
         Shape: (\*shape_points, 3)
+
     """
     return np.einsum("...ji,...i->...j", bases, points_gcs - origins)
 
@@ -1171,6 +1180,7 @@ def are_points_close(points1, points2, atol=1e-8, rtol=0.0):
     Returns
     -------
     bool
+
     """
     return len(points1.shape) == len(points2.shape) and np.allclose(
         points1.coords, points2.coords, rtol=rtol, atol=atol
@@ -1230,6 +1240,8 @@ def norm2(x, y, z, out=None):
 
     Returns
     -------
+    out : ndarray
+        If `out` was provided, a reference to it is returned.
 
     """
     if out is None:
@@ -1254,6 +1266,8 @@ def norm2_2d(x, y, out=None):
 
     Returns
     -------
+    out : ndarray
+        If `out` was provided, a reference to it is returned.
 
     """
     if out is None:
@@ -1412,6 +1426,7 @@ def distance_pairwise(
     -------
     distance : ndarray [num1 x num2]
         Euclidean distances between the points of the two input sets.
+
     """
     # Check dimensions and shapes
     try:
@@ -1486,6 +1501,7 @@ def is_orthonormal_direct(basis):
 
     Returns
     -------
+    bool
 
     """
     return is_orthonormal(basis) and np.allclose(
@@ -1545,8 +1561,9 @@ def points_in_rectbox(
     Examples
     --------
 
+    Return points such as ``10 <= x`` and ``y <= 20`` and ``30 <= z <= zmax``.
+
     >>> points_in_rectbox(x, y, z, xmin=10, ymax=20, zmin=30, zmax=39)
-    Returns points such as ``10 <= x`` and ``y <= 20`` and ``30 <= z <= zmax``.
 
     """
     if not (x.shape == y.shape == z.shape):
@@ -1814,7 +1831,7 @@ def default_oriented_points(points):
 
     Returns
     -------
-    oriented_points : OrientedPOints
+    oriented_points : OrientedPoints
 
     """
     return OrientedPoints(points, default_orientations(points))

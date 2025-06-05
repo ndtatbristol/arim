@@ -35,19 +35,19 @@ Features currently include:
         :link: user_install
         :link-type: ref
 
-        Install arim
+        Instructions for installation
 		
     .. grid-item-card:: User Guide
         :link: user_guide
         :link-type: ref
 
-        In-depth information on key concepts in arim
+        In-depth overview & bibliography for key concepts
 
     .. grid-item-card:: API reference
         :link: api
         :link-type: ref
 
-        The reference guide for the arim API.
+        Reference guide for the arim API
 		
     .. grid-item-card:: Development
         :link: dev_install

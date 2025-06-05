@@ -35,18 +35,18 @@ def find_minimum_times(
 
     Parameters
     ----------
-    time_1
+    time_1 : ndarray
         Shape: (n, m)
-    time_2
+    time_2 : ndarray
         Shape: (m, p)
     dtype
     dtype_indices
 
     Returns
     -------
-    out_min_times
+    out_min_times : ndarray
         Shape: (n, p)
-    out_min_indices
+    out_min_indices : ndarray
         Shape: (n, p)
 
     Notes
@@ -117,10 +117,10 @@ def _find_minimum_times(time_1, time_2, out_min_times, out_best_indices):
     """
     Parameters
     ----------
-    time_1
-    time_2
-    out_min_time
-    out_best_indices
+    time_1 : ndarray
+    time_2 : ndarray
+    out_min_time : ndarray
+    out_best_indices : ndarray
 
     Returns
     -------
@@ -148,7 +148,7 @@ def ray_tracing_for_paths(
 
     Parameters
     ----------
-    paths_list : List[Path]
+    paths_list : list[Path]
     convert_to_fortran_order
 
     Returns
@@ -193,7 +193,7 @@ def ray_tracing(
 
     Parameters
     ----------
-    views : List[View]
+    views : list[View]
 
     Returns
     -------
@@ -228,12 +228,12 @@ def _expand_rays(interior_indices, indices_new_interface, expanded_indices):
 
     Parameters
     ----------
-    interior_indices: *interior* indices of rays going from A(0) to A(d).
-        Shape: (d, n, m)
-    indices_new_interface: indices of the points of interface A(d) that the rays
-    starting from A(0) cross to go to A(d+1).
-        Shape: (n, p)
-    expanded_indices: OUTPUT
+    interior_indices : ndarray
+        *interior* indices of rays going from A(0) to A(d). Shape: (d, n, m)
+    indices_new_interface : ndarray
+        indices of the points of interface A(d) that the rays starting from A(0) cross
+        to go to A(d+1). Shape: (n, p)
+    expanded_indices : ndarray
         Shape (d+1, n, p)
 
     """
@@ -273,11 +273,12 @@ class Rays:
 
     Parameters
     ----------
-    times : ndarray of floats [n x m]
-        Shortest time between first and last set of points.
+    times : ndarray[float]
+        Shortest time between first and last set of points, shape (n, m)
         ``times[i, j]`` is the total travel time for the ray (i, j).
-    indices_interior : ndarray of floats [(d-2) x n x m]
+    indices_interior : ndarray[float]
         Indices of points through which each ray goes, excluding the first and last interfaces.
+        Shape [(d-2) x n x m].
         ``indices[k-1, i, j]`` is the indice point of the ``k`` *interior* interface through which
         the ray (i,j) goes.
 
@@ -399,14 +400,13 @@ class Rays:
 
         Example
         -------
-        ::
 
-            for (d, (x, y, z)) in enumerate(rays.get_coordinates()):
-                # Coordinates at the d-th interface of the ray between ray A(1)[i] and
-                # ray_A(d)[j].
-                x[i, j]
-                y[i, j]
-                z[i, j]
+        >>> for (d, (x, y, z)) in enumerate(rays.get_coordinates()):
+        ...     # Coordinates at the d-th interface of the ray between ray A(1)[i] and
+        ...     # ray_A(d)[j].
+        ...     x[i, j]
+        ...     y[i, j]
+        ...     z[i, j]
 
 
         """
@@ -430,8 +430,9 @@ class Rays:
         """
         Return the coordinates of one ray as ``Point``.
 
-        This function is slow: use ``get_coordinates`` or a variant for treating
+        This function is slow: use :meth:`Rays.get_coordinates` or a variant for treating
         a larger number of rays.
+
         """
         indices = self.indices[:, start_index, end_index]
         num_points_sets = self.fermat_path.num_points_sets
@@ -481,7 +482,6 @@ class Rays:
         Parameters
         ----------
         path_interfaces : list[Interface]
-            .
         walls : list[OrientedPoints]
             All of the walls in the geometry, passed in from ``examination_object.walls``.
 
@@ -637,16 +637,17 @@ class Rays:
 
         Parameters
         ----------
-        interior_indices: *interior* indices of rays going from A(0) to A(d).
-            Shape: (d, n, m)
-        indices_new_interface: indices of the points of interface A(d) that the rays
-        starting from A(0) cross to go to A(d+1).
-            Shape: (n, p)
+        interior_indices : ndarray
+            *interior* indices of rays going from A(0) to A(d). Shape: (d, n, m)
+        indices_new_interface : ndarray
+            indices of the points of interface A(d) that the rays starting from A(0)
+            cross to go to A(d+1). Shape: (n, p)
 
         Returns
         -------
-        expanded_indices
+        expanded_indices : ndarray
             Shape (d+1, n, p)
+
         """
         d, n, m = interior_indices.shape
         n_, p = indices_new_interface.shape
@@ -698,7 +699,10 @@ class FermatPath(tuple):
 
     A FermatPath must starts and ends with Points objects. Speeds (stored as float) and Points must alternate.
 
-    Ex: FermatPath((points_1, speed_1_2, points_2, speed_2_3, points_3))
+    Example
+    -------
+
+    >>> FermatPath((points_1, speed_1_2, points_2, speed_2_3, points_3))
 
     """
 
@@ -822,7 +826,6 @@ class FermatSolver:
     cached_result : dict
         Keys: Path. Values: _FermatSolverResult
 
-
     """
 
     def __init__(self, fermat_paths_set, dtype=None, dtype_indices=None):
@@ -860,6 +863,7 @@ class FermatSolver:
 
         Returns
         -------
+        FermatSolver
 
         """
         paths = set(
@@ -898,8 +902,6 @@ class FermatSolver:
 
         Warning: it is not safe to call this with a Path not passed to __init__
         because of possible overflows.
-
-
 
         Returns
         -------
@@ -946,14 +948,22 @@ class FermatSolver:
         gc.collect()  # force the garbage collector to delete unreferenced objects
 
     def consecutive_times(self, path):
-        """Computes the rays between two consecutive sets of points.
+        """
+        Computes the rays between two consecutive sets of points.
         This is straight forward: each ray is a straight line; ray lengths are
         obtained by taking the Euclidean distances between points.
 
         Cache the distance array in the two directions: points1 to points2,
         points 2 to points1.
 
-        Returns a ``Rays`` object.
+        Parameters
+        ----------
+        path : Path
+
+        Returns
+        -------
+        Rays
+
         """
         points1, speed, points2 = path
 
@@ -1099,6 +1109,7 @@ class RayGeometry:
     @classmethod
     def from_path(cls, path, use_cache=True):
         """
+        Make a RayGeometry object from a Path object.
 
         Parameters
         ----------
@@ -1108,6 +1119,7 @@ class RayGeometry:
 
         Returns
         -------
+        RayGeometry
 
         """
         if path.rays is None:
@@ -1127,7 +1139,7 @@ class RayGeometry:
         """
         Context manager for cleaning intermediate results after execution.
 
-        Example
+        Examples
         -------
 
         >>> ray_geometry = RayGeometry.from_path(path)
@@ -1137,6 +1149,7 @@ class RayGeometry:
         ... # At this stage, the two results are stored in cache and the intermadiate
         ... # results are discarded.
         >>> ray_geometry.inc_angle(1)  # fetch from cache
+
         """
         if not self._use_cache:
             warnings.warn(
@@ -1247,7 +1260,6 @@ class RayGeometry:
         Parameters
         ----------
         interface_idx : int
-
 
         Returns
         -------

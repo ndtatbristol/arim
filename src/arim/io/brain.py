@@ -51,6 +51,7 @@ def load_expdata(file):
     Raises
     ------
     InvalidExpData, OSError (HDF5 fail)
+
     """
     try:
         (exp_data, array, filename) = _load_from_scipy(file)
@@ -84,8 +85,15 @@ def load_expdata(file):
 
 def _load_probe(array):
     """
-    :param array: dict-like object corresponding to Matlab struct exp_data.array.
-    :return: Probe
+    Parameters
+    ----------
+    array : dict
+        dict-like object corresponding to Matlab struct exp_data.array.
+
+    Returns
+    -------
+    Probe
+
     """
     frequency = array["centre_freq"][0, 0]
 
@@ -168,10 +176,25 @@ def _load_frame(exp_data, probe):
 
 def _load_from_scipy(file):
     """
+    Parameters
+    ----------
+    file : str or obj
+        Path-like string to a file to be loaded, or a file object.
 
-    :param file:
-    :return:
-    :raises: NotHandledByScipy
+    Returns
+    -------
+        exp_data : dict
+            Dict-like object containing experimental details (tx, rx, time_data, etc.)
+        array : dict
+            Dict-like object containing array details (locations, frequency, etc.)
+        filename : str
+            If `file` is a file object, return the filename.
+
+    Raises
+    ------
+    NotHandledByScipy
+        If file cannot be loaded by scipy (i.e. '-v7.3' tag used in MATLAB.)
+
     """
     import scipy.io as sio
 

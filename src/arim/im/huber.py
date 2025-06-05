@@ -51,6 +51,7 @@ def huber_m_estimate(data, tau, xtol=1e-9, maxiter=600):
     -----
     Maronna 2004, chapter "Location and scale": algorithm: (2.75) p 39
     with weights for Huber function: w_tau(x) = min(1, k/abs(x)))  (2.32)
+
     """
     k = 0  # iteration counter
     l1_update = 2 * xtol  # init only

@@ -68,6 +68,7 @@ class ComposedFilter(Filter):
     Composed filter.
 
     When called, this filter applies each of its subfilters on the data.
+
     """
 
     def __init__(self, outer_filters, inner_filters):
@@ -90,7 +91,6 @@ class ComposedFilter(Filter):
 
     def __call__(self, arr, **kwargs):
         """
-
         Parameters
         ----------
         arr
@@ -131,8 +131,8 @@ class ButterworthBandpass(Filter):
     cutoff_min, cutoff_max : float
         Cutoff frequencies in Hz.
     time : arim.Time
-        Time object. This filter can be used only on data sampled consistently with the attribute
-    ``time``.
+        Time object. This filter can be used only on data sampled consistently with the
+        attribute ``time``.
 
     """
 
