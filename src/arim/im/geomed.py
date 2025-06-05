@@ -51,6 +51,7 @@ def _gradf_and_inv_hessf(data, z):
         ``invhess[0, 1]``
     a22 : float
         ``invhess[1, 1]``
+
     """
     x = z[0]
     y = z[1]

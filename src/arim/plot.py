@@ -92,7 +92,8 @@ def plot_bscan(
     savefig=None,
     filename="bscan",
 ):
-    """Plot Bscan (timetraces vs time)
+    """
+    Plot Bscan (timetraces vs time)
 
     Parameters
     ----------
@@ -100,7 +101,7 @@ def plot_bscan(
     timetraces_idx : slice or tuple or ndarray
         timetraces to use. Any valid numpy array is accepted.
     use_dB : bool, optional
-    ax : matplotlib axis, optional
+    ax : matplotlib.axes.Axes, optional
         Where to draw. Default: create a new figure and axis.
     title : str, optional
         Title of the image (default: "Bscan")
@@ -117,8 +118,8 @@ def plot_bscan(
 
     Returns
     -------
-    ax : matplotlib axis
-    im : matplotlib image
+    ax : matplotlib.axes.Axes
+    im : matplotlib.image.AxesImage
 
     Examples
     --------
@@ -198,18 +199,19 @@ def plot_bscan_pulse_echo(
 
     Parameters
     ----------
-    frame
-    use_dB
-    ax
-    title
-    clim
-    interpolation
-    draw_cbar
-    cmap
+    frame : Frame
+    use_dB : bool
+    ax : matplotlib.axes.Axes, optional
+    title : str
+    clim : tuple, optional
+    interpolation : str, optional
+    draw_cbar : bool
+    cmap : str, optional
 
     Returns
     -------
-    axis, image
+    axis : matplotlib.axes.Axes
+    image : matplotlib.image.AxesImage
 
     See Also
     --------
@@ -283,7 +285,7 @@ def plot_psd(
     Returns
     -------
     ax : matplotlib.axes.Axes
-    lines : dict
+    lines : dict[str, matplotlib.lines.Line2D]
 
     """
     if ax is None:
@@ -394,18 +396,16 @@ def plot_oxz(
 
     Returns
     -------
-    axis
-    image
+    matplotlib.axes.Axes
+    matplotlib.image.AxesImage
 
     Examples
     --------
-    ::
 
-        grid = arim.geometry.Grid(-5e-3, 5e-3, 0, 0, 0, 15e-3, .1e-3)
-        k = 2 * np.pi / 10e-3
-        data = (np.cos(grid.x * 2 * k) * np.sin(grid.z * k))
-        ax, im = aplt.plot_oxz(data, grid)
-
+    >>> grid = arim.geometry.Grid(-5e-3, 5e-3, 0, 0, 0, 15e-3, .1e-3)
+    >>> k = 2 * np.pi / 10e-3
+    >>> data = (np.cos(grid.x * 2 * k) * np.sin(grid.z * k))
+    >>> ax, im = aplt.plot_oxz(data, grid)
 
     """
     if figsize is None:
@@ -507,35 +507,40 @@ def plot_oxz_many(
 
     Parameters
     ----------
-    data_list : List[ndarray]
+    data_list : list[ndarray]
         Data are plotted from top left to bottom right, row per row.
     grid : Grid
     nrows : int
     ncols : int
-    title_list : List[str] or None
+    title_list : list[str] or None
     suptitle : str or None
-    draw_colorbar : boolean
+    draw_colorbar : bool
         Default: True
-    figsize : List[Float] or None
+    figsize : list[float] or None
         Default: ``conf['plot_oxz_many.figsize']``
-    savefig: boolean
+    savefig: bool, optional
         Default: ``conf['savefig']``
-    clim :
-        Color limit. Common for all plots.
-    filename
+    clim : tuple, optional
+        Color limits. Common for all plots.
+    filename : str, optional
+        Name used for saving the image.
     y_title : float
         Adjust y location of the titles.
     y_suptitle : float
         Adjust y location of the titles.
     axes_pad : float
         Pad between images in inches
-
     plot_oxz_kwargs
+        Keyword arguments passed to :func:`plot_oxz`
 
     Returns
     -------
     axes_grid : axes_grid1.ImageGrid
     im_list
+
+    See Also
+    --------
+    :func:`plot_oxz`
 
     """
     if savefig is None:
@@ -612,8 +617,8 @@ def plot_tfm(tfm, y=0.0, func_res=None, interpolation="bilinear", **plot_oxz_kwa
 
     Returns
     -------
-    ax
-    image
+    matplotlib.axes.Axes
+    matplotlib.image.AxesImage
 
     See Also
     --------
@@ -638,13 +643,14 @@ def plot_directivity_finite_width_2d(element_width, wavelength, ax=None, **kwarg
 
     Parameters
     ----------
-    element_width
-    wavelength
+    element_width : float
+    wavelength : float
     ax : matplotlib.axes._subplots.AxesSubplot
     kwargs
 
     Returns
     -------
+    matplotlib.axes.Axes
 
     """
     if ax is None:
@@ -909,11 +915,11 @@ def common_dynamic_db_scale(data_list, area=None, db_range=40.0, ref_db=None):
     Examples
     --------
 
-        >>> area = grid.points_in_rectbox(xmin=10, xmax=20)
-        >>> common_db_scale_iter = common_dynamic_db_scale(data_list, area)
-        >>> for data in data_list:
-        ...     ref_db, clim = next(common_db_scale_iter)
-        ...     plot_oxz(data, grid, scale='db', ref_db=ref_db, clim=clim)
+    >>> area = grid.points_in_rectbox(xmin=10, xmax=20)
+    >>> common_db_scale_iter = common_dynamic_db_scale(data_list, area)
+    >>> for data in data_list:
+    ...     ref_db, clim = next(common_db_scale_iter)
+    ...     plot_oxz(data, grid, scale='db', ref_db=ref_db, clim=clim)
 
     """
     data_max_list = []

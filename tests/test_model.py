@@ -1417,6 +1417,11 @@ def test_sensitivity_tfm():
             expected /= numtimetraces
             assert np.isclose(sensitivity[k], expected)
 
+        # Sensitivity for matched filter amplitudes
+        sensitivity = amps.to_matched_filter_amplitudes()
+        assert sensitivity.shape == amps.shape
+        assert np.allclose(sensitivity, amps[:].conj() / (amps[:].conj() * amps[:]))
+
 
 def test_directivity_2d_rectangular_in_fluid():
     theta = 0.0
@@ -1893,3 +1898,7 @@ def test_make_toneburst2():
     )
     n = len(toneburst)
     np.testing.assert_allclose(toneburst2[:n], toneburst)
+
+
+if __name__ == "__main__":
+    test_sensitivity_tfm()

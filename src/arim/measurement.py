@@ -59,6 +59,7 @@ def find_probe_loc_from_frontwall(frame, couplant, tmin=None, tmax=None):
     --------
     - :func:`detect_surface_from_extrema`
     - :func:`move_probe_over_flat_surface`
+
     """
     frame.probe.reset_position()
 

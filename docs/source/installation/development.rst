@@ -140,8 +140,8 @@ compiles by building a version locally:
 
 The output will be found in ``docs/_build/html``.
 
-To compile documentation using Github in a forked repository, add a secret in your Github repository. Under the repository
-settings, go to ``Security -> Secrets and variables -> Actions``, and under ``Repository secrets`` click ``New repository secret``.
+To compile documentation using Github in a forked repository, add a variable to your Github repository. Under the repository
+settings, go to ``Security -> Secrets and variables -> Actions``. In the ``Variables`` tab, under ``Repository secrets`` click ``New repository variable``.
 Set ``COMPILE_DOCUMENTATION`` to ``true``.
 
 If working in a different branch to ``master``, edit the branches specified in ``.github/workflows/arim_docs.yml`` to

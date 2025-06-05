@@ -20,7 +20,6 @@ def load_scat(filename, format="auto"):
     -------
     arim.scat.ScatFromData
 
-
     """
     formats = ["matlab"]
 

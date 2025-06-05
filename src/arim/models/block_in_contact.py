@@ -104,6 +104,7 @@ def tx_ray_weights(
         Shape (numelements, numgridpoints)
     weights_dict : dict[str, ndarray]
         Components of the ray weights: beamspread, directivity, transmission-reflection, attenuation
+
     """
     d = _init_ray_weights(path, frequency, probe_element_width, use_directivity)
 
@@ -194,6 +195,7 @@ def rx_ray_weights(
         Shape (numelements, numgridpoints)
     weights_dict : dict[str, ndarray]
         Components of the ray weights: beamspread, directivity, transmission-reflection, attenuation
+
     """
     d = _init_ray_weights(path, frequency, probe_element_width, use_directivity)
 
@@ -450,8 +452,9 @@ def make_interfaces(
 
     Returns
     -------
-    interface_dict : dict[Interface]
+    interface_dict : dict[str, Interface]
         Keys: probe, grid, wall_name_1 (optional), ...
+
     """
     interface_dict = OrderedDict()
 
@@ -653,6 +656,7 @@ def ray_weights_for_views(
     Returns
     -------
     RayWeights
+
     """
     tx_ray_weights_dict = {}
     rx_ray_weights_dict = {}
@@ -875,7 +879,8 @@ def wall_unshifted_transfer_functions(
     turn_off_invalid_rays=False,
     walls=None,
 ):
-    """Compute unshifted transfer functions for walls echoes.
+    """
+    Compute unshifted transfer functions for walls echoes.
 
     Output spectra uses the *math* Fourier convention (not the acoustics one).
 
@@ -906,6 +911,7 @@ def wall_unshifted_transfer_functions(
         Shape: (numtimetraces, numfreq). Complex. Contribution for one wall path.
     delays : ndarray
         Shape: (numtimetraces). Float. Contribution for wall path.
+
     """
     freq_array = np.atleast_1d(freq_array)
     numfreq = len(freq_array)
@@ -1001,6 +1007,7 @@ def singlefreq_scat_transfer_functions(
     -----
     Legacy function, superseeded by :func:`scat_unshifted_transfer_functions`
     and :func:`arim.signal.timeshift_spectra`.
+
     """
     unshifted_tfs = scat_unshifted_transfer_functions(
         views,
@@ -1150,6 +1157,7 @@ def multifreq_scat_transfer_functions(
     -----
     Legacy function, superseeded by :func:`scat_unshifted_transfer_functions`
     and :func:`arim.signal.timeshift_spectra`.
+
     """
     unshifted_tfs = scat_unshifted_transfer_functions(
         views,
@@ -1223,6 +1231,7 @@ def multifreq_wall_transfer_functions(
     -----
     Legacy function, superseeded by :func:`wall_unshifted_transfer_functions`
     and :func:`arim.signal.timeshift_spectra`.
+
     """
     unshifted_tfs = wall_unshifted_transfer_functions(
         wall_paths,

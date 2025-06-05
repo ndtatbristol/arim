@@ -22,10 +22,13 @@ def fmc(numelements):
 
     Returns
     -------
-    tx : ndarray [numelements^2]
+    tx : ndarray
         Transmitter for each timetrace: 0, 0, ..., 1, 1, ...
+        Shape (numelements^2, )
     rx : ndarray
         Receiver for each timetrace: 1, 2, ..., 1, 2, ...
+        Shape (numelements^2, )
+
     """
     numelements = int(numelements)
     elements = np.arange(numelements)
@@ -45,10 +48,13 @@ def hmc(numelements):
 
     Returns
     -------
-    tx : ndarray [numelements^2]
+    tx : ndarray
         Transmitter for each timetrace: 0, 0, 0, ..., 1, 1, 1, ...
+        Shape (numelements^2)
     rx : ndarray
         Receiver for each timetrace: 0, 1, 2, ..., 1, 2, ...
+        Shape (numelements^2)
+
     """
     numelements = int(numelements)
     elements = np.arange(numelements)
@@ -83,6 +89,7 @@ def infer_capture_method(tx, rx):
     Returns
     -------
     capture_method : string
+
     """
     numelements = max(np.max(tx), np.max(rx)) + 1
     assert len(tx) == len(rx)
@@ -186,7 +193,7 @@ def decibel(arr, reference=None, neginf_value=-1000.0, return_reference=False):
 
     Returns
     -------
-    arr_db
+    arr_db : ndarray
         Array in decibel.
     arr_max: float
         Return ``max(abs(arr))``. This value is returned only if return_max is true.
@@ -222,9 +229,10 @@ def decibel(arr, reference=None, neginf_value=-1000.0, return_reference=False):
 
 
 def wrap_phase(phases):
-    """Return a phase in [-pi, pi[
+    """Return a phase in [-pi, pi)
 
     http://stackoverflow.com/questions/15927755/opposite-of-numpy-unwrap
+
     """
     phases = np.asarray(phases)
     return (phases + np.pi) % (2 * np.pi) - np.pi
@@ -232,7 +240,7 @@ def wrap_phase(phases):
 
 def instantaneous_phase_shift(analytic_sig, time_vect, carrier_frequency):
     """
-    For a signal $x(ray) = A * exp(i (2 pi f_0 ray + phi(ray)))$, returns phi(ray) in [-pi, pi[.
+    For a signal $x(ray) = A * exp(i (2 pi f_0 ray + phi(ray)))$, returns phi(ray) in [-pi, pi).
 
     Parameters
     ----------
@@ -385,11 +393,12 @@ def default_viewname_order(tx_rx_tuple):
 
     Parameters
     ----------
-    tx_rx_tuple
+    tx_rx_tuple : tuple
+        Tuple containing two ndarrays.
 
     Returns
     -------
-    order_tuple
+    order_tuple : tuple
 
     """
     tx, rx = tx_rx_tuple
@@ -409,11 +418,9 @@ def rayleigh_vel(longitudinal_vel, transverse_vel):
     -------
     rayleigh_vel : float
 
-    Notes
+    References
     -----
-    [Freund98] Freund, L. B.. 1998. `Dynamic Fracture Mechanics`.
-    Cambridge University Press. p. 83. ISBN 978-0521629225.
-
+    [Freund98]_
 
     """
     poisson = (longitudinal_vel**2 - 2 * transverse_vel**2) / (

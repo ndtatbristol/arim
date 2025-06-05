@@ -67,15 +67,15 @@ def timeit(name="Computation", logger=None, log_level=logging.INFO):
 
     Examples
     --------
-    ::
 
-        >>> with arim.helpers.timeit('Simple addition'):
-        ...     1 + 1
+    >>> with arim.helpers.timeit('Simple addition'):
+    ...     1 + 1
         Simple addition performed in 570.20 ns
 
-    Using a logger::
-        >>> with arim.helpers.timeit('Simple addition', logger=logger):
-        >>>     1 + 1
+    Using a logger:
+
+    >>> with arim.helpers.timeit('Simple addition', logger=logger):
+    ...     1 + 1
 
     """
     default_timer = time.perf_counter
@@ -180,6 +180,7 @@ def get_git_version(short=True):
     """
     Returns the current git revision as a string. Returns an empty string
     if git is not available or if the library is not not in a repository.
+
     """
     curdir = os.getcwd()
     filedir, _ = os.path.split(__file__)
@@ -236,16 +237,8 @@ def get_shape_safely(array, array_name, expected_shape=None):
 
 
 def chunk_array(array_shape, block_size, axis=0):
-    """Yield selectors to split a array into multiple chunk.
-
-        >>> x = np.arange(10)
-        >>> for sel in chunk_array(x.shape, 3):
-        ...     print(x[sel])
-        [0 1 2]
-        [3 4 5]
-        [6 7 8]
-        [9]
-
+    """
+    Yield selectors to split a array into multiple chunk.
 
     Parameters
     ----------
@@ -255,6 +248,17 @@ def chunk_array(array_shape, block_size, axis=0):
         Number of items in each block (except the latest which might have less).
     axis : int, optional
         Split axis. Default: 0
+
+    Examples
+    --------
+
+    >>> x = np.arange(10)
+    >>> for sel in chunk_array(x.shape, 3):
+    ...     print(x[sel])
+    [0 1 2]
+    [3 4 5]
+    [6 7 8]
+    [9]
 
     """
     ndim = len(array_shape)
@@ -276,8 +280,11 @@ def chunk_array(array_shape, block_size, axis=0):
 
 
 def smallest_uint_that_fits(max_value):
-    """Return the smallest unsigned integer datatype (dtype) such as all numbers
-    between 0 and 'max_value' can be stored without overflow."""
+    """
+    Return the smallest unsigned integer datatype (dtype) such as all numbers
+    between 0 and 'max_value' can be stored without overflow.
+
+    """
     dtypes = [np.uint8, np.uint16, np.uint32, np.uint64]
     for dtype in dtypes:
         allowed_max_value = np.iinfo(dtype).max

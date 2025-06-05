@@ -78,4 +78,4 @@ __all__ = [
 #  https://www.python.org/dev/peps/pep-0440/
 #  https://semver.org/
 # Must be bumped at each release
-__version__ = "0.10.0.a1"
+__version__ = "0.10.0.rc1"

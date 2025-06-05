@@ -78,6 +78,7 @@ def load_conf_from_str(stream):
     Returns
     -------
     arim.config.Config
+
     """
     return config.Config(yaml.safe_load(stream))
 
@@ -93,6 +94,7 @@ def load_conf_file(filename):
     Returns
     -------
     arim.config.Config
+
     """
     with open(filename) as f:
         return load_conf_from_str(f)
@@ -117,6 +119,7 @@ def load_conf(dirname, filepath_keys={"filename", "datafile"}):
     Notes
     -----
     Load {dirname}/conf.yaml and all yaml files in {dirname}/conf.d/.
+
     """
     root_dir = pathlib.Path(dirname).resolve(strict=True)
 
@@ -171,7 +174,7 @@ def _resolve_filenames(d, root_dir, target_keys):
 
     Returns
     -------
-    d
+    d : dict
         Updated dictionary
 
     """
@@ -272,11 +275,12 @@ def material_attenuation_from_conf(mat_att_conf):
 
     Returns
     -------
-    func
+    Callable
 
     See Also
     --------
     :func:`arim.core.material_attenuation_factory`
+
     """
     if isinstance(mat_att_conf, float):
         return core.material_attenuation_factory("constant", mat_att_conf)
@@ -304,6 +308,7 @@ def material_from_conf(conf):
     Returns
     -------
     arim.core.Material
+
     """
     material_kwargs = copy.deepcopy(conf)
     material_kwargs["longitudinal_att"] = _material_from_conf(
@@ -431,7 +436,6 @@ def frame_from_conf(
     Load a Frame.
 
     Current limitation: read only from Brain (relies on :func:`arim.io.brain.load_expdata`).
-
 
     Parameters
     ----------

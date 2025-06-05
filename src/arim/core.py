@@ -58,12 +58,15 @@ def material_attenuation_factory(kind, *args, **kwargs):
     Examples
     --------
     Constant material attenuation:
+
     >>> mat_att_func = material_attenuation_factory("constant", 15.)
 
     Polynomial material attenuation ``(1 + 2*(frequency/1e6) + 3*(frequency/1e6)**2)``
+
     >>> mat_att_func = material_attenuation_factory("polynomial", (1, 2, 3))
 
     To use:
+
     >>> frequency = 5e6
     >>> mat_att_func(frequency)
 
@@ -95,12 +98,12 @@ class Frame:
 
     Parameters
     ----------
-    timetraces
-    tx
-    rx
-    probe
-    examination_object
-    metadata
+    timetraces : ndarray
+    tx : ndarray
+    rx : ndarray
+    probe : Probe
+    examination_object : ExaminationObject
+    metadata : dict
 
     Attributes
     ----------
@@ -200,11 +203,11 @@ class Frame:
 
         Parameters
         ----------
-        filt: Filter
+        filt : Filter
 
         Returns
         -------
-        frame: Frame
+        frame : Frame
             New Frame object where the timetraces are filtered. All objects are passed
             by reference.
 
@@ -313,6 +316,7 @@ class Frame:
         Returns
         -------
         bool
+
         """
         orig_pairs = {(tx, rx) for tx, rx in zip(self.tx, self.rx)}
         reciprocal_pairs = {(rx, tx) for tx, rx in zip(self.tx, self.rx)}
@@ -340,6 +344,7 @@ class Frame:
         The new Frame shares the time, probe, examination object and metadata as the original
         one, and may or may not share the same timetraces, tx and rx depending on the kind of
         indexing.
+
         """
         timetraces = self.timetraces[timetraces_idx]
         tx = self.tx[timetraces_idx]
@@ -476,7 +481,6 @@ class Probe:
         Probe coordinate system.
     metadata : dict
 
-
     """
 
     __slots__ = [
@@ -578,14 +582,26 @@ class Probe:
         Populate the following keys in internal dictionary `metadata` if they not exist: numx, pitch_x, numy,
         pitch_y, probe_type ('single', 'linear' or 'matrix').
 
+        Parameters
+        ----------
 
-        :param numx: number of elements along x axis
-        :param pitch_x: difference between two consecutive elements along x axis (either positive or negative)
-        :param numy: number of elements along y axis
-        :param pitch_y: difference between two consecutive elements along y axis (either positive or negative)
-        :param args: positional arguments passed to Probe.__init__
-        :param kwargs: keywords arguments passed to Probe.__init__
-        :return: Probe
+        numx : int
+            Number of elements along x axis
+        pitch_x : float
+            Difference between two consecutive elements along x axis (either positive or negative)
+        numy : int
+            Number of elements along y axis
+        pitch_y : float
+            Difference between two consecutive elements along y axis (either positive or negative)
+        args
+            Positional arguments passed to `Probe.__init__`
+        kwargs
+            Keyword arguments passed to `Probe.__init__`
+
+        Returns
+        -------
+        Probe
+
         """
         numx = int(numx)
         numy = int(numy)
@@ -977,6 +993,7 @@ class Interface:
     are_normals_on_out_rays_side : bool or None
         Are the normals of the interface pointing towards the outgoing rays? True or False.
         If not relevant (no outgoing rays): None.
+
     """
 
     def __init__(
@@ -1109,7 +1126,6 @@ class Path:
 
         numlegs = nummodes = numinterfaces - 1
 
-
     Parameters
     ----------
     interfaces : tuple of Interface
@@ -1138,6 +1154,7 @@ class Path:
         Results of ray tracing.
     name : str or None
         Name (optional)
+
     """
 
     def __init__(self, interfaces, materials, modes, name=None):
@@ -1257,8 +1274,10 @@ class Material:
 
     Examples
     --------
-        >>> alu = Material(6300., 3120., 2700., 'solid', metadata={'long_name': 'Aluminium'})
-        >>> water = Material(1480., None, 1000., 'liquid', metadata={'long_name': 'Water'})
+
+    >>> alu = Material(6300., 3120., 2700., 'solid', metadata={'long_name': 'Aluminium'})
+    >>> water = Material(1480., None, 1000., 'liquid', metadata={'long_name': 'Water'})
+
     """
 
     def __init__(
@@ -1319,6 +1338,7 @@ class Material:
 
         Examples
         --------
+
         >>> material.velocity('L')
         # this return material.longitudinal_vel
 
@@ -1345,6 +1365,7 @@ class Material:
 
         Examples
         --------
+
         >>> material.attenuation('L')
 
         """
@@ -1444,7 +1465,8 @@ class BlockInContact(ExaminationObject):
 
 
 class Time:
-    """Linearly spaced time vector.
+    """
+    Linearly spaced time vector.
 
     Parameters
     ----------
@@ -1515,7 +1537,8 @@ class Time:
 
     @classmethod
     def from_vect(cls, timevect, rtol=1e-2):
-        """Construct a time object from a linearly spaced time vector.
+        """
+        Construct a time object from a linearly spaced time vector.
         Check that the vector is linearly spaced (tolerance: all steps must be within
         ± 1e-3 times the average step).
 

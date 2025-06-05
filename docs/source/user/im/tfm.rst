@@ -6,7 +6,7 @@ Total focusing method
 
 .. py:currentmodule:: arim.im.tfm
 
-Original paper on TFM: [Holmes2005]_
+Original paper on TFM: [Holmes]_
 
 Related modules:
 
