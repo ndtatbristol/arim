@@ -430,7 +430,6 @@ def fluid_solid(
     ----------
     [KK]_
 
-
     """
     alpha_fluid = np.asarray(alpha_fluid)
 
@@ -522,7 +521,6 @@ def solid_l_fluid(
     References
     ----------
     [KK]_
-
 
     """
     if alpha_fluid is None:
@@ -1234,8 +1232,6 @@ def material_attenuation_for_path(path, ray_geometry, frequency):
 
     If no attenuation is provided, ignore silently.
 
-    Reference: Schmerr chapter 9
-
     Parameters
     ----------
     path : Path
@@ -1245,6 +1241,11 @@ def material_attenuation_for_path(path, ray_geometry, frequency):
     -------
     attenuation : ndarray
         Shape: (numelements, numgridpoints)
+
+    References
+    ----------
+    [Schmerr]_ chapter 9
+
     """
     log_att = np.zeros(
         (path.interfaces[0].points.numpoints, path.interfaces[-1].points.numpoints)

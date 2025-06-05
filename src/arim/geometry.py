@@ -1019,7 +1019,7 @@ def spherical_coordinates(x, y, z, r=None):
 
     See Also
     --------
-    Points.spherical_coordinates : corresponding function with the ``Points`` interface.
+    :meth:`Points.spherical_coordinates` : corresponding function with the ``Points`` interface.
 
     """
     if r is None:
