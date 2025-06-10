@@ -111,7 +111,7 @@ To create a release:
 
 1. Ensure all unit tests pass (see 'Testing' section)
 2. Change arim's version number ``arim/__init__.py``, following [PEP 440](https://www.python.org/dev/peps/pep-0440/) convention, then commit with an instructive description such as "Release version 1.0"
-3. Assign a [tag](https://git-scm.com/book/en/v2/Git-Basics-Tagging) to the release commit. The tag name should be "v1.0" if the version number is 0.1.
+3. Assign a [tag](https://git-scm.com/book/en/v2/Git-Basics-Tagging) to the release commit. The tag name should be "v0.1" if the version number is 0.1.
 4. Build the documentation, save the HTML files in a zip file named "documentation.zip"
 5. Create a wheel package with 
 
