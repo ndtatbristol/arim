@@ -46,7 +46,7 @@ SCAT_KEYS = frozenset(("LL", "LT", "TL", "TT"))
 
 
 def make_angles(numpoints):
-    """Return angles for scattering matrices. Linearly spaced vector in [-pi, pi[."""
+    """Return angles for scattering matrices. Linearly spaced vector in `[-pi, pi]`."""
     return np.linspace(-np.pi, np.pi, numpoints, endpoint=False)
 
 
@@ -69,7 +69,7 @@ def interpolate_matrix(scattering_matrix):
 
     Returns
     -------
-    func
+    Callable
 
     """
     assert scattering_matrix.ndim == 2
@@ -92,6 +92,7 @@ def interpolate_matrices(scattering_matrices):
     Returns
     -------
     dict[str, function]
+
     """
     return {key: interpolate_matrix(mat) for key, mat in scattering_matrices.items()}
 
@@ -131,7 +132,6 @@ def sdh_2d_scat(
 
         maxn = max(min_terms, ceil(term_factor * alpha), ceil(term_factor * beta))
 
-
     Parameters
     ----------
     inc_theta : ndarray
@@ -154,20 +154,7 @@ def sdh_2d_scat(
 
     References
     ----------
-    [Lopez-Sanchez] Lopez-Sanchez, Ana L., Hak-Joon Kim, Lester W. Schmerr, and Alexander
-    Sedov. 2005. ‘Measurement Models and Scattering Models for Predicting the Ultrasonic
-    Pulse-Echo Response From Side-Drilled Holes’. Journal of Nondestructive Evaluation 24
-    3): 83–96. doi:10.1007/s10921-005-7658-4.
-
-    [Brind] Brind, R. J., J. D. Achenbach, and J. E. Gubernatis. 1984. ‘High-Frequency
-    Scattering of Elastic Waves from Cylindrical Cavities’. Wave Motion 6 (1):
-    41–60. doi:10.1016/0165-2125(84)90022-2.
-
-    [Zhang] Zhang, Jie, B.W. Drinkwater, and P.D. Wilcox. 2008. ‘Defect Characterization
-    Using an Ultrasonic Array to Measure the Scattering Coefficient Matrix’. IEEE
-    Transactions on Ultrasonics, Ferroelectrics, and Frequency Control 55 (10): 2254–65.
-    doi:10.1109/TUFFC.924.
-
+    [Brind]_, [Lopez-Sanchez]_, [Zhang]_
 
     """
     theta = out_theta - inc_theta
@@ -363,11 +350,7 @@ def crack_2d_scat(
 
     References
     ----------
-    [Glushkov] Glushkov, Evgeny, Natalia Glushkova, Alexander Ekhlakov, and
-    Elena Shapar. 2006. ‘An Analytically Based Computer Model for Surface
-    Measurements in Ultrasonic Crack Detection’. Wave Motion 43 (6): 458–73.
-    doi:10.1016/j.wavemoti.2006.03.002.
-
+    [Glushkov]_
     Unpublished work from Alexander Velichko
 
     """
@@ -552,8 +535,7 @@ def crack_tip_2d(
 
     Notes
     -----
-    [Ogilvy83] Ogilvy, J. A., and J. A. G. Temple. 1983. ‘Diffraction of Elastic Waves by Cracks: Application to
-    Time-of-Flight Inspection’. Ultrasonics 21 (6):259–69. https://doi.org/10.1016/0041-624X(83)90058-6.
+    [Ogilvy83]_
 
     """
     res = dict()
@@ -788,7 +770,10 @@ def _partial_one_scat_key(scat_func, scat_key, *args, **kwargs):
     """
     Returns a dict of functions.
 
-        >>> assert scat_func(x, y, z, to_compute=['LT'])['LT'] == _partial_one_scat_key(scat_func, 'LT', z)(x, y)
+    Example
+    -------
+
+    >>> assert scat_func(x, y, z, to_compute=['LT'])['LT'] == _partial_one_scat_key(scat_func, 'LT', z)(x, y)
 
     """
     # Remark: do not try to replace this by a lambda function, a proper closure is needed
@@ -822,6 +807,7 @@ def scat_factory(kind, material, *args, **kwargs):
 
     Examples
     --------
+
     >>> material = arim.Material(6300., 3120., 2700., 'solid', metadata={'long_name': 'Aluminium'})
 
     Creating the scattering object:
@@ -877,6 +863,7 @@ class Scattering2d(abc.ABC):
 
     Examples
     --------
+
     >>> material = arim.Material(6300., 3120., 2700., 'solid', metadata={'long_name': 'Aluminium'})
     >>> scat_obj = scat_factory('sdh', material, radius=0.5e-3)
 
@@ -892,7 +879,6 @@ class Scattering2d(abc.ABC):
     array of shape (3, ).
 
     >>> result2 = scat_obj(inc_theta, out_theta, frequency, to_compute=['LL'])
-
 
     ``result2`` is a dict which contains the key 'LL'. Use this feature to reduce the amount
     of computation. Depending on how the function is written, other keys may be returned.
@@ -1010,7 +996,6 @@ class Scattering2d(abc.ABC):
         numangles : int
         to_compute : set[str]
 
-
         Returns
         -------
         dict[str, ndarray]
@@ -1052,6 +1037,7 @@ class Scattering2dFromFunc(Scattering2d):
       ie any argument but ``inc_theta``, ``out_theta``, ``frequency`` and ``to_compute``.
 
     This class is abstract.
+
     """
 
     _scat_kwargs = None  # placeholder
@@ -1078,6 +1064,7 @@ class SdhScat(Scattering2dFromFunc):
     Scattering for side-drilled hole
 
     This class provides the :class:`Scattering2d` interface for :func:`sdh_2d_scat`.
+
     """
 
     _scat_func = staticmethod(sdh_2d_scat)
@@ -1210,6 +1197,7 @@ class CrackTipScat(Scattering2dFromFunc):
     Crack tip diffraction
 
     Wrapper for :func:`crack_tip_2d`
+
     """
 
     _scat_func = staticmethod(crack_tip_2d)
@@ -1259,7 +1247,6 @@ class ScatFromData(Scattering2d):
     interp_freq_kwargs : dict
         Passed to ``scipy.interpolate.interp1d``.
         Default: ``bounds_error=False, fill_value='extrapolate'``
-
 
     """
 
@@ -1326,8 +1313,8 @@ class ScatFromData(Scattering2d):
 
         Parameters
         ----------
-        frequencies
-        scat_matrix_dict
+        frequencies : ndarray
+        scat_matrix_dict : dict[str, ndarray]
 
         Returns
         -------
@@ -1375,7 +1362,7 @@ class ScatFromData(Scattering2d):
         frequencies : ndarray
             1d
         new_freq : float
-        multi_freq_scat_matrices : dict[str]
+        multi_freq_scat_matrices : dict[str, ndarray]
             Keys: frequencies (1d array), LL, LT, TL, TT
         interp1d_kwargs : kwargs
             Arguments for ``scipy.interpolate.interp1d``

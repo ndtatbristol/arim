@@ -13,7 +13,7 @@ keywords = []
 authors = [
   { name = "Nicolas Budyn", email = "contact@budyn.dev" },
   { name = "Rhodri Bevan", email = "" },
-  { name = "Matt Chandler", email = "m.chandler@bristol.ac.uk"},
+  { name = "Matt Chandler", email = "matt@mgchandler.com"},
 ]
 classifiers = [
   "Development Status :: 4 - Beta",
@@ -46,7 +46,7 @@ docs = [
 ]
 
 [project.urls]
-Documentation = "https://github.com/ndtatbristol/arim#readme"
+Documentation = "https://ndtatbristol.github.io/arim"
 Issues = "https://github.com/ndtatbristol/arim/issues"
 Source = "https://github.com/ndtatbristol/arim"
 
