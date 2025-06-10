@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>arim.ut &#8212; arim 0.10.0.a1 documentation</title>
+    <title>arim.ut &#8212; arim 0.10.0.rc1 documentation</title>
   
   
   
@@ -38,7 +38,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=f5189bcf"></script>
+    <script src="../../_static/documentation_options.js?v=5a92b29a"></script>
     <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
@@ -109,7 +109,7 @@
   
   
   
-    <p class="title logo__title">arim 0.10.0.a1 documentation</p>
+    <p class="title logo__title">arim 0.10.0.rc1 documentation</p>
   
 </a></div>
     
@@ -352,10 +352,13 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    tx : ndarray [numelements^2]</span>
+<span class="sd">    tx : ndarray</span>
 <span class="sd">        Transmitter for each timetrace: 0, 0, ..., 1, 1, ...</span>
+<span class="sd">        Shape (numelements^2, )</span>
 <span class="sd">    rx : ndarray</span>
 <span class="sd">        Receiver for each timetrace: 1, 2, ..., 1, 2, ...</span>
+<span class="sd">        Shape (numelements^2, )</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">numelements</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">numelements</span><span class="p">)</span>
     <span class="n">elements</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">numelements</span><span class="p">)</span>
@@ -378,10 +381,13 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    tx : ndarray [numelements^2]</span>
+<span class="sd">    tx : ndarray</span>
 <span class="sd">        Transmitter for each timetrace: 0, 0, 0, ..., 1, 1, 1, ...</span>
+<span class="sd">        Shape (numelements^2)</span>
 <span class="sd">    rx : ndarray</span>
 <span class="sd">        Receiver for each timetrace: 0, 1, 2, ..., 1, 2, ...</span>
+<span class="sd">        Shape (numelements^2)</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">numelements</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">numelements</span><span class="p">)</span>
     <span class="n">elements</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">numelements</span><span class="p">)</span>
@@ -419,6 +425,7 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    capture_method : string</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">numelements</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">tx</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">rx</span><span class="p">))</span> <span class="o">+</span> <span class="mi">1</span>
     <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">tx</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">rx</span><span class="p">)</span>
@@ -531,7 +538,7 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    arr_db</span>
+<span class="sd">    arr_db : ndarray</span>
 <span class="sd">        Array in decibel.</span>
 <span class="sd">    arr_max: float</span>
 <span class="sd">        Return ``max(abs(arr))``. This value is returned only if return_max is true.</span>
@@ -570,9 +577,10 @@
 <div class="viewcode-block" id="wrap_phase">
 <a class="viewcode-back" href="../../_autosummary/_autosummary/arim.ut/arim.ut.wrap_phase.html#arim.ut.wrap_phase">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">wrap_phase</span><span class="p">(</span><span class="n">phases</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a phase in [-pi, pi[</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a phase in [-pi, pi)</span>
 
 <span class="sd">    http://stackoverflow.com/questions/15927755/opposite-of-numpy-unwrap</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">phases</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">phases</span><span class="p">)</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">phases</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span> <span class="o">%</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span></div>
@@ -583,7 +591,7 @@
 <a class="viewcode-back" href="../../_autosummary/_autosummary/arim.ut/arim.ut.instantaneous_phase_shift.html#arim.ut.instantaneous_phase_shift">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">instantaneous_phase_shift</span><span class="p">(</span><span class="n">analytic_sig</span><span class="p">,</span> <span class="n">time_vect</span><span class="p">,</span> <span class="n">carrier_frequency</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    For a signal $x(ray) = A * exp(i (2 pi f_0 ray + phi(ray)))$, returns phi(ray) in [-pi, pi[.</span>
+<span class="sd">    For a signal $x(ray) = A * exp(i (2 pi f_0 ray + phi(ray)))$, returns phi(ray) in [-pi, pi).</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -745,11 +753,12 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    tx_rx_tuple</span>
+<span class="sd">    tx_rx_tuple : tuple</span>
+<span class="sd">        Tuple containing two ndarrays.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    order_tuple</span>
+<span class="sd">    order_tuple : tuple</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">tx</span><span class="p">,</span> <span class="n">rx</span> <span class="o">=</span> <span class="n">tx_rx_tuple</span>
@@ -772,11 +781,9 @@
 <span class="sd">    -------</span>
 <span class="sd">    rayleigh_vel : float</span>
 
-<span class="sd">    Notes</span>
+<span class="sd">    References</span>
 <span class="sd">    -----</span>
-<span class="sd">    [Freund98] Freund, L. B.. 1998. `Dynamic Fracture Mechanics`.</span>
-<span class="sd">    Cambridge University Press. p. 83. ISBN 978-0521629225.</span>
-
+<span class="sd">    [Freund98]_</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">poisson</span> <span class="o">=</span> <span class="p">(</span><span class="n">longitudinal_vel</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">transverse_vel</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span>

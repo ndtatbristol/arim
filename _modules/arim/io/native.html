@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>arim.io.native &#8212; arim 0.10.0.a1 documentation</title>
+    <title>arim.io.native &#8212; arim 0.10.0.rc1 documentation</title>
   
   
   
@@ -38,7 +38,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=f5189bcf"></script>
+    <script src="../../../_static/documentation_options.js?v=5a92b29a"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
@@ -109,7 +109,7 @@
   
   
   
-    <p class="title logo__title">arim 0.10.0.a1 documentation</p>
+    <p class="title logo__title">arim 0.10.0.rc1 documentation</p>
   
 </a></div>
     
@@ -408,6 +408,7 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    arim.config.Config</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">config</span><span class="o">.</span><span class="n">Config</span><span class="p">(</span><span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">stream</span><span class="p">))</span></div>
 
@@ -426,6 +427,7 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    arim.config.Config</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">load_conf_from_str</span><span class="p">(</span><span class="n">f</span><span class="p">)</span></div>
@@ -453,6 +455,7 @@
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
 <span class="sd">    Load {dirname}/conf.yaml and all yaml files in {dirname}/conf.d/.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">root_dir</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">dirname</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">(</span><span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
@@ -508,7 +511,7 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    d</span>
+<span class="sd">    d : dict</span>
 <span class="sd">        Updated dictionary</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -617,11 +620,12 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    func</span>
+<span class="sd">    Callable</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
 <span class="sd">    :func:`arim.core.material_attenuation_factory`</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mat_att_conf</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">core</span><span class="o">.</span><span class="n">material_attenuation_factory</span><span class="p">(</span><span class="s2">&quot;constant&quot;</span><span class="p">,</span> <span class="n">mat_att_conf</span><span class="p">)</span>
@@ -652,6 +656,7 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    arim.core.Material</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">material_kwargs</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">conf</span><span class="p">)</span>
     <span class="n">material_kwargs</span><span class="p">[</span><span class="s2">&quot;longitudinal_att&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_material_from_conf</span><span class="p">(</span>
@@ -791,7 +796,6 @@
 <span class="sd">    Load a Frame.</span>
 
 <span class="sd">    Current limitation: read only from Brain (relies on :func:`arim.io.brain.load_expdata`).</span>
-
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>

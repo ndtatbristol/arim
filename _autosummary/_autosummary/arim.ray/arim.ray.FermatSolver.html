@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>arim.ray.FermatSolver &#8212; arim 0.10.0.a1 documentation</title>
+    <title>arim.ray.FermatSolver &#8212; arim 0.10.0.rc1 documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=f5189bcf"></script>
+    <script src="../../../_static/documentation_options.js?v=5a92b29a"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
@@ -112,7 +112,7 @@
   
   
   
-    <p class="title logo__title">arim 0.10.0.a1 documentation</p>
+    <p class="title logo__title">arim 0.10.0.rc1 documentation</p>
   
 </a></div>
     
@@ -711,7 +711,14 @@ This is straight forward: each ray is a straight line; ray lengths are
 obtained by taking the Euclidean distances between points.</p>
 <p>Cache the distance array in the two directions: points1 to points2,
 points 2 to points1.</p>
-<p>Returns a <code class="docutils literal notranslate"><span class="pre">Rays</span></code> object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>path</strong> (<a class="reference internal" href="../arim.core/arim.core.Path.html#arim.core.Path" title="arim.core.Path"><em>Path</em></a>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="arim.ray.Rays.html#arim.ray.Rays" title="arim.ray.Rays">Rays</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -725,6 +732,9 @@ points 2 to points1.</p>
 <li><p><strong>dtype</strong> (<em>numpy.dtype</em><em> or </em><em>None</em>)</p></li>
 <li><p><strong>dtype_indices</strong> (<em>numpy.dtype</em><em> or </em><em>None</em>)</p></li>
 </ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#arim.ray.FermatSolver" title="arim.ray.FermatSolver">FermatSolver</a></p>
 </dd>
 </dl>
 </dd></dl>

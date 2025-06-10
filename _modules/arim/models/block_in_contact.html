@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>arim.models.block_in_contact &#8212; arim 0.10.0.a1 documentation</title>
+    <title>arim.models.block_in_contact &#8212; arim 0.10.0.rc1 documentation</title>
   
   
   
@@ -38,7 +38,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=f5189bcf"></script>
+    <script src="../../../_static/documentation_options.js?v=5a92b29a"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
@@ -109,7 +109,7 @@
   
   
   
-    <p class="title logo__title">arim 0.10.0.a1 documentation</p>
+    <p class="title logo__title">arim 0.10.0.rc1 documentation</p>
   
 </a></div>
     
@@ -434,6 +434,7 @@
 <span class="sd">        Shape (numelements, numgridpoints)</span>
 <span class="sd">    weights_dict : dict[str, ndarray]</span>
 <span class="sd">        Components of the ray weights: beamspread, directivity, transmission-reflection, attenuation</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">d</span> <span class="o">=</span> <span class="n">_init_ray_weights</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">frequency</span><span class="p">,</span> <span class="n">probe_element_width</span><span class="p">,</span> <span class="n">use_directivity</span><span class="p">)</span>
 
@@ -527,6 +528,7 @@
 <span class="sd">        Shape (numelements, numgridpoints)</span>
 <span class="sd">    weights_dict : dict[str, ndarray]</span>
 <span class="sd">        Components of the ray weights: beamspread, directivity, transmission-reflection, attenuation</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">d</span> <span class="o">=</span> <span class="n">_init_ray_weights</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">frequency</span><span class="p">,</span> <span class="n">probe_element_width</span><span class="p">,</span> <span class="n">use_directivity</span><span class="p">)</span>
 
@@ -792,8 +794,9 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    interface_dict : dict[Interface]</span>
+<span class="sd">    interface_dict : dict[str, Interface]</span>
 <span class="sd">        Keys: probe, grid, wall_name_1 (optional), ...</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">interface_dict</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
 
@@ -1004,6 +1007,7 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    RayWeights</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">tx_ray_weights_dict</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">rx_ray_weights_dict</span> <span class="o">=</span> <span class="p">{}</span>
@@ -1232,7 +1236,8 @@
     <span class="n">turn_off_invalid_rays</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">walls</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute unshifted transfer functions for walls echoes.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute unshifted transfer functions for walls echoes.</span>
 
 <span class="sd">    Output spectra uses the *math* Fourier convention (not the acoustics one).</span>
 
@@ -1263,6 +1268,7 @@
 <span class="sd">        Shape: (numtimetraces, numfreq). Complex. Contribution for one wall path.</span>
 <span class="sd">    delays : ndarray</span>
 <span class="sd">        Shape: (numtimetraces). Float. Contribution for wall path.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">freq_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">freq_array</span><span class="p">)</span>
     <span class="n">numfreq</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">freq_array</span><span class="p">)</span>
@@ -1361,6 +1367,7 @@
 <span class="sd">    -----</span>
 <span class="sd">    Legacy function, superseeded by :func:`scat_unshifted_transfer_functions`</span>
 <span class="sd">    and :func:`arim.signal.timeshift_spectra`.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">unshifted_tfs</span> <span class="o">=</span> <span class="n">scat_unshifted_transfer_functions</span><span class="p">(</span>
         <span class="n">views</span><span class="p">,</span>
@@ -1516,6 +1523,7 @@
 <span class="sd">    -----</span>
 <span class="sd">    Legacy function, superseeded by :func:`scat_unshifted_transfer_functions`</span>
 <span class="sd">    and :func:`arim.signal.timeshift_spectra`.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">unshifted_tfs</span> <span class="o">=</span> <span class="n">scat_unshifted_transfer_functions</span><span class="p">(</span>
         <span class="n">views</span><span class="p">,</span>
@@ -1592,6 +1600,7 @@
 <span class="sd">    -----</span>
 <span class="sd">    Legacy function, superseeded by :func:`wall_unshifted_transfer_functions`</span>
 <span class="sd">    and :func:`arim.signal.timeshift_spectra`.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">unshifted_tfs</span> <span class="o">=</span> <span class="n">wall_unshifted_transfer_functions</span><span class="p">(</span>
         <span class="n">wall_paths</span><span class="p">,</span>

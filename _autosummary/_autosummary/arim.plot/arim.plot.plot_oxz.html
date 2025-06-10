@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>arim.plot.plot_oxz &#8212; arim 0.10.0.a1 documentation</title>
+    <title>arim.plot.plot_oxz &#8212; arim 0.10.0.rc1 documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=f5189bcf"></script>
+    <script src="../../../_static/documentation_options.js?v=5a92b29a"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
@@ -112,7 +112,7 @@
   
   
   
-    <p class="title logo__title">arim 0.10.0.a1 documentation</p>
+    <p class="title logo__title">arim 0.10.0.rc1 documentation</p>
   
 </a></div>
     
@@ -655,17 +655,17 @@ or 1D matrix <code class="docutils literal notranslate"><span class="pre">(grid.
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><ul class="simple">
-<li><p><em>axis</em></p></li>
-<li><p><em>image</em></p></li>
+<li><p><em>matplotlib.axes.Axes</em></p></li>
+<li><p><em>matplotlib.image.AxesImage</em></p></li>
 </ul>
 </p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">grid</span> <span class="o">=</span> <span class="n">arim</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">Grid</span><span class="p">(</span><span class="o">-</span><span class="mf">5e-3</span><span class="p">,</span> <span class="mf">5e-3</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">15e-3</span><span class="p">,</span> <span class="mf">.1e-3</span><span class="p">)</span>
-<span class="n">k</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mf">10e-3</span>
-<span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">x</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">k</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">z</span> <span class="o">*</span> <span class="n">k</span><span class="p">))</span>
-<span class="n">ax</span><span class="p">,</span> <span class="n">im</span> <span class="o">=</span> <span class="n">aplt</span><span class="o">.</span><span class="n">plot_oxz</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">grid</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">grid</span> <span class="o">=</span> <span class="n">arim</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">Grid</span><span class="p">(</span><span class="o">-</span><span class="mf">5e-3</span><span class="p">,</span> <span class="mf">5e-3</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">15e-3</span><span class="p">,</span> <span class="mf">.1e-3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">k</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mf">10e-3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">x</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">k</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">z</span> <span class="o">*</span> <span class="n">k</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ax</span><span class="p">,</span> <span class="n">im</span> <span class="o">=</span> <span class="n">aplt</span><span class="o">.</span><span class="n">plot_oxz</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">grid</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>

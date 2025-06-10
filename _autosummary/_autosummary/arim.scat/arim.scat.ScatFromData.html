@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>arim.scat.ScatFromData &#8212; arim 0.10.0.a1 documentation</title>
+    <title>arim.scat.ScatFromData &#8212; arim 0.10.0.rc1 documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=f5189bcf"></script>
+    <script src="../../../_static/documentation_options.js?v=5a92b29a"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
@@ -112,7 +112,7 @@
   
   
   
-    <p class="title logo__title">arim 0.10.0.a1 documentation</p>
+    <p class="title logo__title">arim 0.10.0.rc1 documentation</p>
   
 </a></div>
     
@@ -708,7 +708,7 @@ matrices by interpolating at the desired frequency.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>frequencies</strong> (<em>ndarray</em>) – 1d</p></li>
 <li><p><strong>new_freq</strong> (<em>float</em>)</p></li>
-<li><p><strong>multi_freq_scat_matrices</strong> (<em>dict</em><em>[</em><em>str</em><em>]</em>) – Keys: frequencies (1d array), LL, LT, TL, TT</p></li>
+<li><p><strong>multi_freq_scat_matrices</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>ndarray</em><em>]</em>) – Keys: frequencies (1d array), LL, LT, TL, TT</p></li>
 <li><p><strong>interp1d_kwargs</strong> (<em>kwargs</em>) – Arguments for <code class="docutils literal notranslate"><span class="pre">scipy.interpolate.interp1d</span></code></p></li>
 </ul>
 </dd>
@@ -726,8 +726,8 @@ matrices by interpolating at the desired frequency.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>frequencies</strong></p></li>
-<li><p><strong>scat_matrix_dict</strong></p></li>
+<li><p><strong>frequencies</strong> (<em>ndarray</em>)</p></li>
+<li><p><strong>scat_matrix_dict</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>ndarray</em><em>]</em>)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>

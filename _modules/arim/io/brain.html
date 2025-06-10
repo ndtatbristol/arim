@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>arim.io.brain &#8212; arim 0.10.0.a1 documentation</title>
+    <title>arim.io.brain &#8212; arim 0.10.0.rc1 documentation</title>
   
   
   
@@ -38,7 +38,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=f5189bcf"></script>
+    <script src="../../../_static/documentation_options.js?v=5a92b29a"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
@@ -109,7 +109,7 @@
   
   
   
-    <p class="title logo__title">arim 0.10.0.a1 documentation</p>
+    <p class="title logo__title">arim 0.10.0.rc1 documentation</p>
   
 </a></div>
     
@@ -381,6 +381,7 @@
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>
 <span class="sd">    InvalidExpData, OSError (HDF5 fail)</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="p">(</span><span class="n">exp_data</span><span class="p">,</span> <span class="n">array</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span> <span class="o">=</span> <span class="n">_load_from_scipy</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
@@ -415,8 +416,15 @@
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_load_probe</span><span class="p">(</span><span class="n">array</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    :param array: dict-like object corresponding to Matlab struct exp_data.array.</span>
-<span class="sd">    :return: Probe</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    array : dict</span>
+<span class="sd">        dict-like object corresponding to Matlab struct exp_data.array.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Probe</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">frequency</span> <span class="o">=</span> <span class="n">array</span><span class="p">[</span><span class="s2">&quot;centre_freq&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
 
@@ -499,10 +507,25 @@
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_load_from_scipy</span><span class="p">(</span><span class="n">file</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    file : str or obj</span>
+<span class="sd">        Path-like string to a file to be loaded, or a file object.</span>
 
-<span class="sd">    :param file:</span>
-<span class="sd">    :return:</span>
-<span class="sd">    :raises: NotHandledByScipy</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">        exp_data : dict</span>
+<span class="sd">            Dict-like object containing experimental details (tx, rx, time_data, etc.)</span>
+<span class="sd">        array : dict</span>
+<span class="sd">            Dict-like object containing array details (locations, frequency, etc.)</span>
+<span class="sd">        filename : str</span>
+<span class="sd">            If `file` is a file object, return the filename.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    NotHandledByScipy</span>
+<span class="sd">        If file cannot be loaded by scipy (i.e. &#39;-v7.3&#39; tag used in MATLAB.)</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">import</span><span class="w"> </span><span class="nn">scipy.io</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sio</span>
 

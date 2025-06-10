@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>arim.ray.FermatPath &#8212; arim 0.10.0.a1 documentation</title>
+    <title>arim.ray.FermatPath &#8212; arim 0.10.0.rc1 documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=f5189bcf"></script>
+    <script src="../../../_static/documentation_options.js?v=5a92b29a"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
@@ -112,7 +112,7 @@
   
   
   
-    <p class="title logo__title">arim 0.10.0.a1 documentation</p>
+    <p class="title logo__title">arim 0.10.0.rc1 documentation</p>
   
 </a></div>
     
@@ -638,7 +638,10 @@ between the consecutive interfaces.</p>
 <p>This object should be used only for the internal plumbing of FermatSolver. This object can be obtained from a
 (smarter) <code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code> object via the class method <a class="reference internal" href="#arim.ray.FermatPath.from_path" title="arim.ray.FermatPath.from_path"><code class="xref py py-meth docutils literal notranslate"><span class="pre">FermatPath.from_path()</span></code></a>.</p>
 <p>A FermatPath must starts and ends with Points objects. Speeds (stored as float) and Points must alternate.</p>
-<p>Ex: FermatPath((points_1, speed_1_2, points_2, speed_2_3, points_3))</p>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">FermatPath</span><span class="p">((</span><span class="n">points_1</span><span class="p">,</span> <span class="n">speed_1_2</span><span class="p">,</span> <span class="n">points_2</span><span class="p">,</span> <span class="n">speed_2_3</span><span class="p">,</span> <span class="n">points_3</span><span class="p">))</span>
+</pre></div>
+</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="arim.ray.FermatPath.from_path">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arim/ray.html#FermatPath.from_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arim.ray.FermatPath.from_path" title="Link to this definition">#</a></dt>

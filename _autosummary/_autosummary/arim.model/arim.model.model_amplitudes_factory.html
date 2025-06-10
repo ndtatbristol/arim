@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>arim.model.model_amplitudes_factory &#8212; arim 0.10.0.a1 documentation</title>
+    <title>arim.model.model_amplitudes_factory &#8212; arim 0.10.0.rc1 documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=f5189bcf"></script>
+    <script src="../../../_static/documentation_options.js?v=5a92b29a"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
@@ -112,7 +112,7 @@
   
   
   
-    <p class="title logo__title">arim 0.10.0.a1 documentation</p>
+    <p class="title logo__title">arim 0.10.0.rc1 documentation</p>
   
 </a></div>
     
@@ -667,9 +667,13 @@ Yield until all grid points are processed.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">model_amplitudes</span> <span class="o">=</span> <span class="n">model_amplitudes_factory</span><span class="p">(</span><span class="n">tx</span><span class="p">,</span> <span class="n">rx</span><span class="p">,</span> <span class="n">view</span><span class="p">,</span> <span class="n">ray_weights</span><span class="p">,</span> <span class="n">scattering</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">model_amplitudes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 <span class="go"># returns the &#39;numtimetraces&#39; amplitudes at the grid point 0</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">model_amplitudes</span><span class="p">[:</span><span class="mi">10</span><span class="p">]</span> <span class="c1"># returns the amplitudes for the first 10 grid points</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">model_amplitudes</span><span class="p">[:</span><span class="mi">10</span><span class="p">]</span> <span class="c1"># returns the amplitudes for the first 10 grid points</span>
 <span class="go">array([ 0.27764253,  0.78863332,  0.83998295,  0.96811351,  0.57929045, 0.00935137,  0.8905348 ,  0.46976061,  0.08101099,  0.57615469])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">model_amplitudes</span><span class="p">[</span><span class="o">...</span><span class="p">]</span> <span class="c1"># returns the amplitudes for all points. Warning: you may</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">model_amplitudes</span><span class="p">[</span><span class="o">...</span><span class="p">]</span> <span class="c1"># returns the amplitudes for all points. Warning: you may</span>
 <span class="gp">... </span><span class="c1"># run out of memory!</span>
 <span class="go">array([...])</span>
 </pre></div>

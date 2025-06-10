@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>arim.ray.RayGeometry &#8212; arim 0.10.0.a1 documentation</title>
+    <title>arim.ray.RayGeometry &#8212; arim 0.10.0.rc1 documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=f5189bcf"></script>
+    <script src="../../../_static/documentation_options.js?v=5a92b29a"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
@@ -112,7 +112,7 @@
   
   
   
-    <p class="title logo__title">arim 0.10.0.a1 documentation</p>
+    <p class="title logo__title">arim 0.10.0.rc1 documentation</p>
   
 </a></div>
     
@@ -679,12 +679,16 @@ computational time. The cache has two levels: intermediate results and final res
 <dl class="py method">
 <dt class="sig sig-object py" id="arim.ray.RayGeometry.from_path">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_cache</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arim/ray.html#RayGeometry.from_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arim.ray.RayGeometry.from_path" title="Link to this definition">#</a></dt>
-<dd><dl class="field-list simple">
+<dd><p>Make a RayGeometry object from a Path object.</p>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>path</strong> (<a class="reference internal" href="../arim.core/arim.core.Path.html#arim.core.Path" title="arim.core.Path"><em>Path</em></a>)</p></li>
 <li><p><strong>use_cache</strong> (<em>bool</em>) – Optional</p></li>
 </ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#arim.ray.RayGeometry" title="arim.ray.RayGeometry">RayGeometry</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -875,7 +879,7 @@ computational time. The cache has two levels: intermediate results and final res
 <dt class="sig sig-object py" id="arim.ray.RayGeometry.precompute">
 <span class="sig-name descname"><span class="pre">precompute</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arim/ray.html#RayGeometry.precompute"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arim.ray.RayGeometry.precompute" title="Link to this definition">#</a></dt>
 <dd><p>Context manager for cleaning intermediate results after execution.</p>
-<p class="rubric">Example</p>
+<p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ray_geometry</span> <span class="o">=</span> <span class="n">RayGeometry</span><span class="o">.</span><span class="n">from_path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">ray_geometry</span><span class="o">.</span><span class="n">precompute</span><span class="p">():</span>
 <span class="gp">... </span>    <span class="n">ray_geometry</span><span class="o">.</span><span class="n">inc_angle</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>

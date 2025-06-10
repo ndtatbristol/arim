@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>arim.plot.plot_bscan &#8212; arim 0.10.0.a1 documentation</title>
+    <title>arim.plot.plot_bscan &#8212; arim 0.10.0.rc1 documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=f5189bcf"></script>
+    <script src="../../../_static/documentation_options.js?v=5a92b29a"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
@@ -112,7 +112,7 @@
   
   
   
-    <p class="title logo__title">arim 0.10.0.a1 documentation</p>
+    <p class="title logo__title">arim 0.10.0.rc1 documentation</p>
   
 </a></div>
     
@@ -639,7 +639,7 @@
 <li><p><strong>frame</strong> (<a class="reference internal" href="../arim.core/arim.core.Frame.html#arim.core.Frame" title="arim.core.Frame"><em>Frame</em></a>)</p></li>
 <li><p><strong>timetraces_idx</strong> (<em>slice</em><em> or </em><em>tuple</em><em> or </em><em>ndarray</em>) – timetraces to use. Any valid numpy array is accepted.</p></li>
 <li><p><strong>use_dB</strong> (<em>bool</em><em>, </em><em>optional</em>)</p></li>
-<li><p><strong>ax</strong> (<em>matplotlib axis</em><em>, </em><em>optional</em>) – Where to draw. Default: create a new figure and axis.</p></li>
+<li><p><strong>ax</strong> (<em>matplotlib.axes.Axes</em><em>, </em><em>optional</em>) – Where to draw. Default: create a new figure and axis.</p></li>
 <li><p><strong>title</strong> (<em>str</em><em>, </em><em>optional</em>) – Title of the image (default: “Bscan”)</p></li>
 <li><p><strong>clim</strong> (<em>tuple</em><em>, </em><em>optional</em>) – Color limits of the image.</p></li>
 <li><p><strong>interpolation</strong> (<em>str</em><em>, </em><em>optional</em>) – Image interpolation type (default: “none”)</p></li>
@@ -651,8 +651,8 @@
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><ul class="simple">
-<li><p><strong>ax</strong> (<em>matplotlib axis</em>)</p></li>
-<li><p><strong>im</strong> (<em>matplotlib image</em>)</p></li>
+<li><p><strong>ax</strong> (<em>matplotlib.axes.Axes</em>)</p></li>
+<li><p><strong>im</strong> (<em>matplotlib.image.AxesImage</em>)</p></li>
 </ul>
 </p>
 </dd>

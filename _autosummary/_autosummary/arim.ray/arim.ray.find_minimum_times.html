@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>arim.ray.find_minimum_times &#8212; arim 0.10.0.a1 documentation</title>
+    <title>arim.ray.find_minimum_times &#8212; arim 0.10.0.rc1 documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=f5189bcf"></script>
+    <script src="../../../_static/documentation_options.js?v=5a92b29a"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
@@ -112,7 +112,7 @@
   
   
   
-    <p class="title logo__title">arim 0.10.0.a1 documentation</p>
+    <p class="title logo__title">arim 0.10.0.rc1 documentation</p>
   
 </a></div>
     
@@ -640,16 +640,16 @@ out_min_indices(i, j) := argmin_{k=1:m} time_1[i, k] + time_2[k, j]</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>time_1</strong> – Shape: (n, m)</p></li>
-<li><p><strong>time_2</strong> – Shape: (m, p)</p></li>
+<li><p><strong>time_1</strong> (<em>ndarray</em>) – Shape: (n, m)</p></li>
+<li><p><strong>time_2</strong> (<em>ndarray</em>) – Shape: (m, p)</p></li>
 <li><p><strong>dtype</strong></p></li>
 <li><p><strong>dtype_indices</strong></p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><ul class="simple">
-<li><p><em>out_min_times</em> – Shape: (n, p)</p></li>
-<li><p><em>out_min_indices</em> – Shape: (n, p)</p></li>
+<li><p><strong>out_min_times</strong> (<em>ndarray</em>) – Shape: (n, p)</p></li>
+<li><p><strong>out_min_indices</strong> (<em>ndarray</em>) – Shape: (n, p)</p></li>
 </ul>
 </p>
 </dd>

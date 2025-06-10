@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>arim.core.material_attenuation_factory &#8212; arim 0.10.0.a1 documentation</title>
+    <title>arim.core.material_attenuation_factory &#8212; arim 0.10.0.rc1 documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=f5189bcf"></script>
+    <script src="../../../_static/documentation_options.js?v=5a92b29a"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
@@ -112,7 +112,7 @@
   
   
   
-    <p class="title logo__title">arim 0.10.0.a1 documentation</p>
+    <p class="title logo__title">arim 0.10.0.rc1 documentation</p>
   
 </a></div>
     
@@ -652,13 +652,19 @@ in Nepers per meter (Np/m).</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<p>Constant material attenuation:
-&gt;&gt;&gt; mat_att_func = material_attenuation_factory(“constant”, 15.)</p>
-<p>Polynomial material attenuation <code class="docutils literal notranslate"><span class="pre">(1</span> <span class="pre">+</span> <span class="pre">2*(frequency/1e6)</span> <span class="pre">+</span> <span class="pre">3*(frequency/1e6)**2)</span></code>
-&gt;&gt;&gt; mat_att_func = material_attenuation_factory(“polynomial”, (1, 2, 3))</p>
-<p>To use:
-&gt;&gt;&gt; frequency = 5e6
-&gt;&gt;&gt; mat_att_func(frequency)</p>
+<p>Constant material attenuation:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mat_att_func</span> <span class="o">=</span> <span class="n">material_attenuation_factory</span><span class="p">(</span><span class="s2">&quot;constant&quot;</span><span class="p">,</span> <span class="mf">15.</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Polynomial material attenuation <code class="docutils literal notranslate"><span class="pre">(1</span> <span class="pre">+</span> <span class="pre">2*(frequency/1e6)</span> <span class="pre">+</span> <span class="pre">3*(frequency/1e6)**2)</span></code></p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mat_att_func</span> <span class="o">=</span> <span class="n">material_attenuation_factory</span><span class="p">(</span><span class="s2">&quot;polynomial&quot;</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>To use:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">frequency</span> <span class="o">=</span> <span class="mf">5e6</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mat_att_func</span><span class="p">(</span><span class="n">frequency</span><span class="p">)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </section>

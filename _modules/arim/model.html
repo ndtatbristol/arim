@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>arim.model &#8212; arim 0.10.0.a1 documentation</title>
+    <title>arim.model &#8212; arim 0.10.0.rc1 documentation</title>
   
   
   
@@ -38,7 +38,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=f5189bcf"></script>
+    <script src="../../_static/documentation_options.js?v=5a92b29a"></script>
     <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
@@ -109,7 +109,7 @@
   
   
   
-    <p class="title logo__title">arim 0.10.0.a1 documentation</p>
+    <p class="title logo__title">arim 0.10.0.rc1 documentation</p>
   
 </a></div>
     
@@ -495,6 +495,7 @@
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
 <span class="sd">    :func:`make_toneburst`</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">signal</span> <span class="o">=</span> <span class="n">make_toneburst</span><span class="p">(</span>
@@ -560,9 +561,7 @@
 
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
-
-<span class="sd">    Wooh, Shi-Chang, and Yijun Shi. 1999. ‘Three-Dimensional Beam Directivity of Phase-Steered Ultrasound’.</span>
-<span class="sd">        The Journal of the Acoustical Society of America 105 (6): 3275–82. doi:10.1121/1.424655.</span>
+<span class="sd">    [Wooh]_</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -599,6 +598,7 @@
 <span class="sd">    -------</span>
 <span class="sd">    directivity : ndarray</span>
 <span class="sd">        Signed directivity for each angle.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">directivity_2d_rectangular_in_fluid</span><span class="p">(</span>
         <span class="n">ray_geometry</span><span class="o">.</span><span class="n">conventional_out_angle</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">element_width</span><span class="p">,</span> <span class="n">wavelength</span>
@@ -639,9 +639,9 @@
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    Equations MP (93) and DW (2), (3), (6)</span>
+<span class="sd">    Equations Miller (93) and Drinkwater (2), (3), (6)</span>
 
-<span class="sd">    The sinc results of the integration of MP (90) with far field</span>
+<span class="sd">    The sinc results of the integration of Miller (90) with far field</span>
 <span class="sd">    approximation.</span>
 
 <span class="sd">    Normalisation coefficients are ignored, but the values are consistent with</span>
@@ -649,15 +649,7 @@
 
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
-<span class="sd">    Miller, G. F., and H. Pursey. 1954. ‘The Field and Radiation Impedance of</span>
-<span class="sd">    Mechanical Radiators on the Free Surface of a Semi-Infinite Isotropic</span>
-<span class="sd">    Solid’. Proceedings of the Royal Society of London A: Mathematical,</span>
-<span class="sd">    Physical and Engineering Sciences 223 (1155): 521–41.</span>
-<span class="sd">    https://doi.org/10.1098/rspa.1954.0134.</span>
-
-<span class="sd">    Drinkwater, Bruce W., and Paul D. Wilcox. 2006. ‘Ultrasonic Arrays for</span>
-<span class="sd">    Non-Destructive Evaluation: A Review’. NDT &amp; E International 39 (7):</span>
-<span class="sd">    525–41. https://doi.org/10.1016/j.ndteint.2006.03.006.</span>
+<span class="sd">    [Drinkwater]_, [Miller]_</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -702,7 +694,11 @@
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    Equations MP (94) and DW (2), (4), (6)</span>
+<span class="sd">    Equations Miller (94) and Drinkwater (2), (4), (6)</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [Drinkwater]_, [Miller]_</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -735,6 +731,7 @@
 <span class="sd">    If the incident angle is real, the refracted angle is &quot;not a number&quot;.</span>
 <span class="sd">    If the incident angle is complex, the refracted angle is complex (imagery part not null).</span>
 <span class="sd">    The reason is that either the real or the complex arcsine function is used.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">arcsin</span><span class="p">(</span><span class="n">c_refracted</span> <span class="o">/</span> <span class="n">c_incident</span> <span class="o">*</span> <span class="n">sin</span><span class="p">(</span><span class="n">incidents_angles</span><span class="p">))</span></div>
 
@@ -787,7 +784,6 @@
 <span class="sd">    ----------</span>
 <span class="sd">    [KK]_</span>
 
-
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">alpha_fluid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">alpha_fluid</span><span class="p">)</span>
 
@@ -823,9 +819,7 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">_fluid_solid_n</span><span class="p">(</span>
     <span class="n">alpha_fluid</span><span class="p">,</span> <span class="n">alpha_l</span><span class="p">,</span> <span class="n">alpha_t</span><span class="p">,</span> <span class="n">rho_fluid</span><span class="p">,</span> <span class="n">rho_solid</span><span class="p">,</span> <span class="n">c_fluid</span><span class="p">,</span> <span class="n">c_l</span><span class="p">,</span> <span class="n">c_t</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Coefficient N defined by Krautkrämer in equation (A8).</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Coefficient N defined by Krautkrämer in equation (A8).&quot;&quot;&quot;</span>
     <span class="n">ct_cl2</span> <span class="o">=</span> <span class="p">(</span><span class="n">c_t</span> <span class="o">*</span> <span class="n">c_t</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">c_l</span> <span class="o">*</span> <span class="n">c_l</span><span class="p">)</span>
     <span class="n">cos_2_alpha_t</span> <span class="o">=</span> <span class="n">cos</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">alpha_t</span><span class="p">)</span>
     <span class="n">N</span> <span class="o">=</span> <span class="p">(</span>
@@ -882,7 +876,6 @@
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
 <span class="sd">    [KK]_</span>
-
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">alpha_fluid</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -1051,6 +1044,10 @@
 <span class="sd">    amps : ndarray</span>
 <span class="sd">        ``amps[i, j]`` is the transmission coefficient for the ray (i, j) at the given interface.</span>
 
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [KK]_</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">force_complex</span><span class="p">:</span>
         <span class="n">angles_inc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">angles_inc</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">complex</span><span class="p">)</span>
@@ -1191,6 +1188,10 @@
 <span class="sd">    amps : ndarray</span>
 <span class="sd">        ``amps[i, j]`` is the reflection coefficient for the ray (i, j) at the given interface.</span>
 
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [KK]_</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">force_complex</span><span class="p">:</span>
         <span class="n">angles_inc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">angles_inc</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">complex</span><span class="p">)</span>
@@ -1311,6 +1312,11 @@
 <span class="sd">    ------</span>
 <span class="sd">    amps : ndarray or None</span>
 <span class="sd">        Amplitudes of transmission-reflection coefficients. None if not defined for all interface.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [KK]_</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Requires the incoming angles for all interfaces except the probe and the scatterers</span>
     <span class="c1"># (first and last).</span>
@@ -1378,6 +1384,10 @@
 <span class="sd">    -------</span>
 <span class="sd">    rev_transrefl : ndarray</span>
 <span class="sd">        Shape: (path.interfaces[0].numpoints, path.interfaces[-1].numpoints)</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [KK]_</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">transrefl</span> <span class="o">=</span> <span class="kc">None</span>
@@ -1476,7 +1486,7 @@
 
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
-<span class="sd">    Schmerr, Fundamentals of ultrasonic phased arrays (Springer), §2.5</span>
+<span class="sd">    [SchmerrArrays]_, §2.5</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">velocities</span> <span class="o">=</span> <span class="n">ray_geometry</span><span class="o">.</span><span class="n">rays</span><span class="o">.</span><span class="n">fermat_path</span><span class="o">.</span><span class="n">velocities</span>
@@ -1601,8 +1611,6 @@
 
 <span class="sd">    If no attenuation is provided, ignore silently.</span>
 
-<span class="sd">    Reference: Schmerr chapter 9</span>
-
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    path : Path</span>
@@ -1612,6 +1620,11 @@
 <span class="sd">    -------</span>
 <span class="sd">    attenuation : ndarray</span>
 <span class="sd">        Shape: (numelements, numgridpoints)</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [Schmerr]_ chapter 9</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">log_att</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
         <span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">points</span><span class="o">.</span><span class="n">numpoints</span><span class="p">,</span> <span class="n">path</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">points</span><span class="o">.</span><span class="n">numpoints</span><span class="p">)</span>
@@ -1674,6 +1687,7 @@
 <span class="sd">        See function rx_ray_weights</span>
 <span class="sd">    scattering_angles_dict : dict[arim.Path, ndarray]</span>
 <span class="sd">        Each value has a shape of (numelements, numgridpoints)</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="nd">@property</span>
@@ -1731,8 +1745,10 @@
 <span class="sd">    &gt;&gt;&gt; model_amplitudes = model_amplitudes_factory(tx, rx, view, ray_weights, scattering)</span>
 <span class="sd">    &gt;&gt;&gt; model_amplitudes[0]</span>
 <span class="sd">    # returns the &#39;numtimetraces&#39; amplitudes at the grid point 0</span>
+
 <span class="sd">    &gt;&gt;&gt; model_amplitudes[:10] # returns the amplitudes for the first 10 grid points</span>
 <span class="sd">    array([ 0.27764253,  0.78863332,  0.83998295,  0.96811351,  0.57929045, 0.00935137,  0.8905348 ,  0.46976061,  0.08101099,  0.57615469])</span>
+
 <span class="sd">    &gt;&gt;&gt; model_amplitudes[...] # returns the amplitudes for all points. Warning: you may</span>
 <span class="sd">    ... # run out of memory!</span>
 <span class="sd">    array([...])</span>
@@ -1813,28 +1829,35 @@
 <span class="sd">    &gt;&gt;&gt; model_amplitudes = model_amplitudes_factory(tx, rx, view, ray_weights, scattering_dict)</span>
 
 <span class="sd">    This object is not an array:</span>
+
 <span class="sd">    &gt;&gt;&gt; type(model_amplitudes)</span>
 <span class="sd">    __main__.ModelAmplitudes</span>
 
 <span class="sd">    But when indexed, it returns an array:</span>
+
 <span class="sd">    &gt;&gt;&gt; type(model_amplitudes[0])</span>
 <span class="sd">    numpy.ndarray</span>
 
 <span class="sd">    Get the P_ij for the first grid point (returns an array of size (numtimetraces,)):</span>
+
 <span class="sd">    &gt;&gt;&gt; model_amplitudes[0]</span>
 
 <span class="sd">    Get the P_ij for the first ten grid points (returns an array of size</span>
 <span class="sd">    (10, numtimetraces,)):</span>
+
 <span class="sd">    &gt;&gt;&gt; model_amplitudes[:10]</span>
 
 <span class="sd">    Get all P_ij (may run out of memory):</span>
+
 <span class="sd">    &gt;&gt;&gt; model_amplitudes[...]</span>
 
 <span class="sd">    To get the first Get all P_ij (may run out of memory):</span>
+
 <span class="sd">    &gt;&gt;&gt; model_amplitudes[...]</span>
 
 <span class="sd">    Indexing the second dimension will fail. For example to model amplitude of</span>
 <span class="sd">    the fourth point and the eigth timetrace, use:</span>
+
 <span class="sd">    &gt;&gt;&gt; model_amplitudes[3][7]  # valid usage</span>
 <span class="sd">    &gt;&gt;&gt; model_amplitudes[3, 7]  # invalid usage, raise an IndexError</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1846,6 +1869,10 @@
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">shape</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">numpoints</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">numtimetraces</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">ndim</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
 
 <div class="viewcode-block" id="ModelAmplitudes.sensitivity_uniform_tfm">
 <a class="viewcode-back" href="../../_autosummary/_autosummary/arim.model/arim.model.ModelAmplitudes.html#arim.model.ModelAmplitudes.sensitivity_uniform_tfm">[docs]</a>
@@ -1859,6 +1886,16 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">sensitivity_model_assisted_tfm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timetrace_weights</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="c1"># wrapper in general case, inherit and write a faster implementation if possible</span>
         <span class="k">return</span> <span class="n">sensitivity_model_assisted_tfm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timetrace_weights</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ModelAmplitudes.to_matched_filter_amplitudes">
+<a class="viewcode-back" href="../../_autosummary/_autosummary/arim.model/arim.model.ModelAmplitudes.html#arim.model.ModelAmplitudes.to_matched_filter_amplitudes">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_matched_filter_amplitudes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grid_slice</span><span class="o">=</span><span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">)):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Prepare model amplitudes for use as a matched filter weighting in TFM function</span>
+<span class="sd">        as amplitudes [Turin]_.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="n">grid_slice</span><span class="p">]</span><span class="o">.</span><span class="n">conj</span><span class="p">()</span> <span class="o">/</span> <span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">grid_slice</span><span class="p">]</span><span class="o">.</span><span class="n">conj</span><span class="p">()</span> <span class="o">*</span> <span class="bp">self</span><span class="p">[</span><span class="n">grid_slice</span><span class="p">])</span></div>
 </div>
 
 
@@ -1999,6 +2036,7 @@
 <span class="sd">    -------</span>
 <span class="sd">    predicted_intensities</span>
 <span class="sd">        Shape: (numpoints, )</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">numpoints</span><span class="p">,</span> <span class="n">numtimetraces</span> <span class="o">=</span> <span class="n">model_amplitudes</span><span class="o">.</span><span class="n">shape</span>
     <span class="k">assert</span> <span class="n">timetrace_weights</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span>
@@ -2040,6 +2078,7 @@
 <span class="sd">    -------</span>
 <span class="sd">    predicted_intensities</span>
 <span class="sd">        Shape: (numpoints, ).</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">numpoints</span><span class="p">,</span> <span class="n">numtimetraces</span> <span class="o">=</span> <span class="n">model_amplitudes</span><span class="o">.</span><span class="n">shape</span>
     <span class="k">assert</span> <span class="n">timetrace_weights</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span>

@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>arim.helpers.timeit &#8212; arim 0.10.0.a1 documentation</title>
+    <title>arim.helpers.timeit &#8212; arim 0.10.0.rc1 documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=f5189bcf"></script>
+    <script src="../../../_static/documentation_options.js?v=5a92b29a"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
@@ -112,7 +112,7 @@
   
   
   
-    <p class="title logo__title">arim 0.10.0.a1 documentation</p>
+    <p class="title logo__title">arim 0.10.0.rc1 documentation</p>
   
 </a></div>
     
@@ -646,18 +646,16 @@
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">arim</span><span class="o">.</span><span class="n">helpers</span><span class="o">.</span><span class="n">timeit</span><span class="p">(</span><span class="s1">&#39;Simple addition&#39;</span><span class="p">):</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">arim</span><span class="o">.</span><span class="n">helpers</span><span class="o">.</span><span class="n">timeit</span><span class="p">(</span><span class="s1">&#39;Simple addition&#39;</span><span class="p">):</span>
 <span class="gp">... </span>    <span class="mi">1</span> <span class="o">+</span> <span class="mi">1</span>
-<span class="go">Simple addition performed in 570.20 ns</span>
+<span class="go">    Simple addition performed in 570.20 ns</span>
 </pre></div>
 </div>
-<dl>
-<dt>Using a logger::</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">arim</span><span class="o">.</span><span class="n">helpers</span><span class="o">.</span><span class="n">timeit</span><span class="p">(</span><span class="s1">&#39;Simple addition&#39;</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">):</span>
-<span class="gp">&gt;&gt;&gt; </span>    <span class="mi">1</span> <span class="o">+</span> <span class="mi">1</span>
+<p>Using a logger:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">arim</span><span class="o">.</span><span class="n">helpers</span><span class="o">.</span><span class="n">timeit</span><span class="p">(</span><span class="s1">&#39;Simple addition&#39;</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="mi">1</span> <span class="o">+</span> <span class="mi">1</span>
 </pre></div>
 </div>
-</dd>
-</dl>
 </dd></dl>
 
 </section>

@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>arim.core &#8212; arim 0.10.0.a1 documentation</title>
+    <title>arim.core &#8212; arim 0.10.0.rc1 documentation</title>
   
   
   
@@ -38,7 +38,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=f5189bcf"></script>
+    <script src="../../_static/documentation_options.js?v=5a92b29a"></script>
     <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
@@ -109,7 +109,7 @@
   
   
   
-    <p class="title logo__title">arim 0.10.0.a1 documentation</p>
+    <p class="title logo__title">arim 0.10.0.rc1 documentation</p>
   
 </a></div>
     
@@ -388,12 +388,15 @@
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    Constant material attenuation:</span>
+
 <span class="sd">    &gt;&gt;&gt; mat_att_func = material_attenuation_factory(&quot;constant&quot;, 15.)</span>
 
 <span class="sd">    Polynomial material attenuation ``(1 + 2*(frequency/1e6) + 3*(frequency/1e6)**2)``</span>
+
 <span class="sd">    &gt;&gt;&gt; mat_att_func = material_attenuation_factory(&quot;polynomial&quot;, (1, 2, 3))</span>
 
 <span class="sd">    To use:</span>
+
 <span class="sd">    &gt;&gt;&gt; frequency = 5e6</span>
 <span class="sd">    &gt;&gt;&gt; mat_att_func(frequency)</span>
 
@@ -431,12 +434,12 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    timetraces</span>
-<span class="sd">    tx</span>
-<span class="sd">    rx</span>
-<span class="sd">    probe</span>
-<span class="sd">    examination_object</span>
-<span class="sd">    metadata</span>
+<span class="sd">    timetraces : ndarray</span>
+<span class="sd">    tx : ndarray</span>
+<span class="sd">    rx : ndarray</span>
+<span class="sd">    probe : Probe</span>
+<span class="sd">    examination_object : ExaminationObject</span>
+<span class="sd">    metadata : dict</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
@@ -538,11 +541,11 @@
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        filt: Filter</span>
+<span class="sd">        filt : Filter</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        frame: Frame</span>
+<span class="sd">        frame : Frame</span>
 <span class="sd">            New Frame object where the timetraces are filtered. All objects are passed</span>
 <span class="sd">            by reference.</span>
 
@@ -663,6 +666,7 @@
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        bool</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">orig_pairs</span> <span class="o">=</span> <span class="p">{(</span><span class="n">tx</span><span class="p">,</span> <span class="n">rx</span><span class="p">)</span> <span class="k">for</span> <span class="n">tx</span><span class="p">,</span> <span class="n">rx</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rx</span><span class="p">)}</span>
         <span class="n">reciprocal_pairs</span> <span class="o">=</span> <span class="p">{(</span><span class="n">rx</span><span class="p">,</span> <span class="n">tx</span><span class="p">)</span> <span class="k">for</span> <span class="n">tx</span><span class="p">,</span> <span class="n">rx</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rx</span><span class="p">)}</span>
@@ -696,6 +700,7 @@
 <span class="sd">        The new Frame shares the time, probe, examination object and metadata as the original</span>
 <span class="sd">        one, and may or may not share the same timetraces, tx and rx depending on the kind of</span>
 <span class="sd">        indexing.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">timetraces</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">timetraces</span><span class="p">[</span><span class="n">timetraces_idx</span><span class="p">]</span>
         <span class="n">tx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tx</span><span class="p">[</span><span class="n">timetraces_idx</span><span class="p">]</span>
@@ -842,7 +847,6 @@
 <span class="sd">        Probe coordinate system.</span>
 <span class="sd">    metadata : dict</span>
 
-
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">[</span>
@@ -946,14 +950,26 @@
 <span class="sd">        Populate the following keys in internal dictionary `metadata` if they not exist: numx, pitch_x, numy,</span>
 <span class="sd">        pitch_y, probe_type (&#39;single&#39;, &#39;linear&#39; or &#39;matrix&#39;).</span>
 
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
 
-<span class="sd">        :param numx: number of elements along x axis</span>
-<span class="sd">        :param pitch_x: difference between two consecutive elements along x axis (either positive or negative)</span>
-<span class="sd">        :param numy: number of elements along y axis</span>
-<span class="sd">        :param pitch_y: difference between two consecutive elements along y axis (either positive or negative)</span>
-<span class="sd">        :param args: positional arguments passed to Probe.__init__</span>
-<span class="sd">        :param kwargs: keywords arguments passed to Probe.__init__</span>
-<span class="sd">        :return: Probe</span>
+<span class="sd">        numx : int</span>
+<span class="sd">            Number of elements along x axis</span>
+<span class="sd">        pitch_x : float</span>
+<span class="sd">            Difference between two consecutive elements along x axis (either positive or negative)</span>
+<span class="sd">        numy : int</span>
+<span class="sd">            Number of elements along y axis</span>
+<span class="sd">        pitch_y : float</span>
+<span class="sd">            Difference between two consecutive elements along y axis (either positive or negative)</span>
+<span class="sd">        args</span>
+<span class="sd">            Positional arguments passed to `Probe.__init__`</span>
+<span class="sd">        kwargs</span>
+<span class="sd">            Keyword arguments passed to `Probe.__init__`</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Probe</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">numx</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">numx</span><span class="p">)</span>
         <span class="n">numy</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">numy</span><span class="p">)</span>
@@ -1391,6 +1407,7 @@
 <span class="sd">    are_normals_on_out_rays_side : bool or None</span>
 <span class="sd">        Are the normals of the interface pointing towards the outgoing rays? True or False.</span>
 <span class="sd">        If not relevant (no outgoing rays): None.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
@@ -1529,7 +1546,6 @@
 
 <span class="sd">        numlegs = nummodes = numinterfaces - 1</span>
 
-
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    interfaces : tuple of Interface</span>
@@ -1558,6 +1574,7 @@
 <span class="sd">        Results of ray tracing.</span>
 <span class="sd">    name : str or None</span>
 <span class="sd">        Name (optional)</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interfaces</span><span class="p">,</span> <span class="n">materials</span><span class="p">,</span> <span class="n">modes</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -1686,8 +1703,10 @@
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">        &gt;&gt;&gt; alu = Material(6300., 3120., 2700., &#39;solid&#39;, metadata={&#39;long_name&#39;: &#39;Aluminium&#39;})</span>
-<span class="sd">        &gt;&gt;&gt; water = Material(1480., None, 1000., &#39;liquid&#39;, metadata={&#39;long_name&#39;: &#39;Water&#39;})</span>
+
+<span class="sd">    &gt;&gt;&gt; alu = Material(6300., 3120., 2700., &#39;solid&#39;, metadata={&#39;long_name&#39;: &#39;Aluminium&#39;})</span>
+<span class="sd">    &gt;&gt;&gt; water = Material(1480., None, 1000., &#39;liquid&#39;, metadata={&#39;long_name&#39;: &#39;Water&#39;})</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
@@ -1750,6 +1769,7 @@
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
+
 <span class="sd">        &gt;&gt;&gt; material.velocity(&#39;L&#39;)</span>
 <span class="sd">        # this return material.longitudinal_vel</span>
 
@@ -1779,6 +1799,7 @@
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
+
 <span class="sd">        &gt;&gt;&gt; material.attenuation(&#39;L&#39;)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1891,7 +1912,8 @@
 <div class="viewcode-block" id="Time">
 <a class="viewcode-back" href="../../_autosummary/_autosummary/arim.core/arim.core.Time.html#arim.core.Time">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Time</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Linearly spaced time vector.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Linearly spaced time vector.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -1964,7 +1986,8 @@
 <a class="viewcode-back" href="../../_autosummary/_autosummary/arim.core/arim.core.Time.html#arim.core.Time.from_vect">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">from_vect</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">timevect</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="mf">1e-2</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Construct a time object from a linearly spaced time vector.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Construct a time object from a linearly spaced time vector.</span>
 <span class="sd">        Check that the vector is linearly spaced (tolerance: all steps must be within</span>
 <span class="sd">        ± 1e-3 times the average step).</span>
 

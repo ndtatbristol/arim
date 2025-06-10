@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>arim.plot.plot_oxz_many &#8212; arim 0.10.0.a1 documentation</title>
+    <title>arim.plot.plot_oxz_many &#8212; arim 0.10.0.rc1 documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=f5189bcf"></script>
+    <script src="../../../_static/documentation_options.js?v=5a92b29a"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
@@ -112,7 +112,7 @@
   
   
   
-    <p class="title logo__title">arim 0.10.0.a1 documentation</p>
+    <p class="title logo__title">arim 0.10.0.rc1 documentation</p>
   
 </a></div>
     
@@ -636,21 +636,21 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>data_list</strong> (<em>List</em><em>[</em><em>ndarray</em><em>]</em>) – Data are plotted from top left to bottom right, row per row.</p></li>
+<li><p><strong>data_list</strong> (<em>list</em><em>[</em><em>ndarray</em><em>]</em>) – Data are plotted from top left to bottom right, row per row.</p></li>
 <li><p><strong>grid</strong> (<a class="reference internal" href="../arim.geometry/arim.geometry.Grid.html#arim.geometry.Grid" title="arim.geometry.Grid"><em>Grid</em></a>)</p></li>
 <li><p><strong>nrows</strong> (<em>int</em>)</p></li>
 <li><p><strong>ncols</strong> (<em>int</em>)</p></li>
-<li><p><strong>title_list</strong> (<em>List</em><em>[</em><em>str</em><em>] or </em><em>None</em>)</p></li>
+<li><p><strong>title_list</strong> (<em>list</em><em>[</em><em>str</em><em>] or </em><em>None</em>)</p></li>
 <li><p><strong>suptitle</strong> (<em>str</em><em> or </em><em>None</em>)</p></li>
-<li><p><strong>draw_colorbar</strong> (<em>boolean</em>) – Default: True</p></li>
-<li><p><strong>figsize</strong> (<em>List</em><em>[</em><em>Float</em><em>] or </em><em>None</em>) – Default: <code class="docutils literal notranslate"><span class="pre">conf['plot_oxz_many.figsize']</span></code></p></li>
-<li><p><strong>savefig</strong> (<em>boolean</em>) – Default: <code class="docutils literal notranslate"><span class="pre">conf['savefig']</span></code></p></li>
-<li><p><strong>clim</strong> – Color limit. Common for all plots.</p></li>
-<li><p><strong>filename</strong></p></li>
+<li><p><strong>draw_colorbar</strong> (<em>bool</em>) – Default: True</p></li>
+<li><p><strong>figsize</strong> (<em>list</em><em>[</em><em>float</em><em>] or </em><em>None</em>) – Default: <code class="docutils literal notranslate"><span class="pre">conf['plot_oxz_many.figsize']</span></code></p></li>
+<li><p><strong>savefig</strong> (<em>bool</em><em>, </em><em>optional</em>) – Default: <code class="docutils literal notranslate"><span class="pre">conf['savefig']</span></code></p></li>
+<li><p><strong>clim</strong> (<em>tuple</em><em>, </em><em>optional</em>) – Color limits. Common for all plots.</p></li>
+<li><p><strong>filename</strong> (<em>str</em><em>, </em><em>optional</em>) – Name used for saving the image.</p></li>
 <li><p><strong>y_title</strong> (<em>float</em>) – Adjust y location of the titles.</p></li>
 <li><p><strong>y_suptitle</strong> (<em>float</em>) – Adjust y location of the titles.</p></li>
 <li><p><strong>axes_pad</strong> (<em>float</em>) – Pad between images in inches</p></li>
-<li><p><strong>plot_oxz_kwargs</strong></p></li>
+<li><p><strong>plot_oxz_kwargs</strong> – Keyword arguments passed to <a class="reference internal" href="arim.plot.plot_oxz.html#arim.plot.plot_oxz" title="arim.plot.plot_oxz"><code class="xref py py-func docutils literal notranslate"><span class="pre">plot_oxz()</span></code></a></p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -661,6 +661,10 @@
 </p>
 </dd>
 </dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="arim.plot.plot_oxz.html#arim.plot.plot_oxz" title="arim.plot.plot_oxz"><code class="xref py py-func docutils literal notranslate"><span class="pre">plot_oxz()</span></code></a></p>
+</div>
 </dd></dl>
 
 </section>

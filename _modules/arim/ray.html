@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>arim.ray &#8212; arim 0.10.0.a1 documentation</title>
+    <title>arim.ray &#8212; arim 0.10.0.rc1 documentation</title>
   
   
   
@@ -38,7 +38,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=f5189bcf"></script>
+    <script src="../../_static/documentation_options.js?v=5a92b29a"></script>
     <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
@@ -109,7 +109,7 @@
   
   
   
-    <p class="title logo__title">arim 0.10.0.a1 documentation</p>
+    <p class="title logo__title">arim 0.10.0.rc1 documentation</p>
   
 </a></div>
     
@@ -365,18 +365,18 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    time_1</span>
+<span class="sd">    time_1 : ndarray</span>
 <span class="sd">        Shape: (n, m)</span>
-<span class="sd">    time_2</span>
+<span class="sd">    time_2 : ndarray</span>
 <span class="sd">        Shape: (m, p)</span>
 <span class="sd">    dtype</span>
 <span class="sd">    dtype_indices</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    out_min_times</span>
+<span class="sd">    out_min_times : ndarray</span>
 <span class="sd">        Shape: (n, p)</span>
-<span class="sd">    out_min_indices</span>
+<span class="sd">    out_min_indices : ndarray</span>
 <span class="sd">        Shape: (n, p)</span>
 
 <span class="sd">    Notes</span>
@@ -448,10 +448,10 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    time_1</span>
-<span class="sd">    time_2</span>
-<span class="sd">    out_min_time</span>
-<span class="sd">    out_best_indices</span>
+<span class="sd">    time_1 : ndarray</span>
+<span class="sd">    time_2 : ndarray</span>
+<span class="sd">    out_min_time : ndarray</span>
+<span class="sd">    out_best_indices : ndarray</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -481,7 +481,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    paths_list : List[Path]</span>
+<span class="sd">    paths_list : list[Path]</span>
 <span class="sd">    convert_to_fortran_order</span>
 
 <span class="sd">    Returns</span>
@@ -529,7 +529,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    views : List[View]</span>
+<span class="sd">    views : list[View]</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -565,12 +565,12 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    interior_indices: *interior* indices of rays going from A(0) to A(d).</span>
-<span class="sd">        Shape: (d, n, m)</span>
-<span class="sd">    indices_new_interface: indices of the points of interface A(d) that the rays</span>
-<span class="sd">    starting from A(0) cross to go to A(d+1).</span>
-<span class="sd">        Shape: (n, p)</span>
-<span class="sd">    expanded_indices: OUTPUT</span>
+<span class="sd">    interior_indices : ndarray</span>
+<span class="sd">        *interior* indices of rays going from A(0) to A(d). Shape: (d, n, m)</span>
+<span class="sd">    indices_new_interface : ndarray</span>
+<span class="sd">        indices of the points of interface A(d) that the rays starting from A(0) cross</span>
+<span class="sd">        to go to A(d+1). Shape: (n, p)</span>
+<span class="sd">    expanded_indices : ndarray</span>
 <span class="sd">        Shape (d+1, n, p)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -612,11 +612,12 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    times : ndarray of floats [n x m]</span>
-<span class="sd">        Shortest time between first and last set of points.</span>
+<span class="sd">    times : ndarray[float]</span>
+<span class="sd">        Shortest time between first and last set of points, shape (n, m)</span>
 <span class="sd">        ``times[i, j]`` is the total travel time for the ray (i, j).</span>
-<span class="sd">    indices_interior : ndarray of floats [(d-2) x n x m]</span>
+<span class="sd">    indices_interior : ndarray[float]</span>
 <span class="sd">        Indices of points through which each ray goes, excluding the first and last interfaces.</span>
+<span class="sd">        Shape [(d-2) x n x m].</span>
 <span class="sd">        ``indices[k-1, i, j]`` is the indice point of the ``k`` *interior* interface through which</span>
 <span class="sd">        the ray (i,j) goes.</span>
 
@@ -746,14 +747,13 @@
 
 <span class="sd">        Example</span>
 <span class="sd">        -------</span>
-<span class="sd">        ::</span>
 
-<span class="sd">            for (d, (x, y, z)) in enumerate(rays.get_coordinates()):</span>
-<span class="sd">                # Coordinates at the d-th interface of the ray between ray A(1)[i] and</span>
-<span class="sd">                # ray_A(d)[j].</span>
-<span class="sd">                x[i, j]</span>
-<span class="sd">                y[i, j]</span>
-<span class="sd">                z[i, j]</span>
+<span class="sd">        &gt;&gt;&gt; for (d, (x, y, z)) in enumerate(rays.get_coordinates()):</span>
+<span class="sd">        ...     # Coordinates at the d-th interface of the ray between ray A(1)[i] and</span>
+<span class="sd">        ...     # ray_A(d)[j].</span>
+<span class="sd">        ...     x[i, j]</span>
+<span class="sd">        ...     y[i, j]</span>
+<span class="sd">        ...     z[i, j]</span>
 
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -780,8 +780,9 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the coordinates of one ray as ``Point``.</span>
 
-<span class="sd">        This function is slow: use ``get_coordinates`` or a variant for treating</span>
+<span class="sd">        This function is slow: use :meth:`Rays.get_coordinates` or a variant for treating</span>
 <span class="sd">        a larger number of rays.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">[:,</span> <span class="n">start_index</span><span class="p">,</span> <span class="n">end_index</span><span class="p">]</span>
         <span class="n">num_points_sets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fermat_path</span><span class="o">.</span><span class="n">num_points_sets</span>
@@ -837,7 +838,6 @@
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        path_interfaces : list[Interface]</span>
-<span class="sd">            .</span>
 <span class="sd">        walls : list[OrientedPoints]</span>
 <span class="sd">            All of the walls in the geometry, passed in from ``examination_object.walls``.</span>
 
@@ -999,16 +999,17 @@
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        interior_indices: *interior* indices of rays going from A(0) to A(d).</span>
-<span class="sd">            Shape: (d, n, m)</span>
-<span class="sd">        indices_new_interface: indices of the points of interface A(d) that the rays</span>
-<span class="sd">        starting from A(0) cross to go to A(d+1).</span>
-<span class="sd">            Shape: (n, p)</span>
+<span class="sd">        interior_indices : ndarray</span>
+<span class="sd">            *interior* indices of rays going from A(0) to A(d). Shape: (d, n, m)</span>
+<span class="sd">        indices_new_interface : ndarray</span>
+<span class="sd">            indices of the points of interface A(d) that the rays starting from A(0)</span>
+<span class="sd">            cross to go to A(d+1). Shape: (n, p)</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        expanded_indices</span>
+<span class="sd">        expanded_indices : ndarray</span>
 <span class="sd">            Shape (d+1, n, p)</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">d</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">m</span> <span class="o">=</span> <span class="n">interior_indices</span><span class="o">.</span><span class="n">shape</span>
         <span class="n">n_</span><span class="p">,</span> <span class="n">p</span> <span class="o">=</span> <span class="n">indices_new_interface</span><span class="o">.</span><span class="n">shape</span>
@@ -1067,7 +1068,10 @@
 
 <span class="sd">    A FermatPath must starts and ends with Points objects. Speeds (stored as float) and Points must alternate.</span>
 
-<span class="sd">    Ex: FermatPath((points_1, speed_1_2, points_2, speed_2_3, points_3))</span>
+<span class="sd">    Example</span>
+<span class="sd">    -------</span>
+
+<span class="sd">    &gt;&gt;&gt; FermatPath((points_1, speed_1_2, points_2, speed_2_3, points_3))</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -1206,7 +1210,6 @@
 <span class="sd">    cached_result : dict</span>
 <span class="sd">        Keys: Path. Values: _FermatSolverResult</span>
 
-
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fermat_paths_set</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype_indices</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -1246,6 +1249,7 @@
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
+<span class="sd">        FermatSolver</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">paths</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span>
@@ -1291,8 +1295,6 @@
 
 <span class="sd">        Warning: it is not safe to call this with a Path not passed to __init__</span>
 <span class="sd">        because of possible overflows.</span>
-
-
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -1344,14 +1346,22 @@
 <div class="viewcode-block" id="FermatSolver.consecutive_times">
 <a class="viewcode-back" href="../../_autosummary/_autosummary/arim.ray/arim.ray.FermatSolver.html#arim.ray.FermatSolver.consecutive_times">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">consecutive_times</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Computes the rays between two consecutive sets of points.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Computes the rays between two consecutive sets of points.</span>
 <span class="sd">        This is straight forward: each ray is a straight line; ray lengths are</span>
 <span class="sd">        obtained by taking the Euclidean distances between points.</span>
 
 <span class="sd">        Cache the distance array in the two directions: points1 to points2,</span>
 <span class="sd">        points 2 to points1.</span>
 
-<span class="sd">        Returns a ``Rays`` object.</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        path : Path</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Rays</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">points1</span><span class="p">,</span> <span class="n">speed</span><span class="p">,</span> <span class="n">points2</span> <span class="o">=</span> <span class="n">path</span>
 
@@ -1503,6 +1513,7 @@
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">from_path</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">use_cache</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Make a RayGeometry object from a Path object.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1512,6 +1523,7 @@
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
+<span class="sd">        RayGeometry</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">rays</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -1534,7 +1546,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Context manager for cleaning intermediate results after execution.</span>
 
-<span class="sd">        Example</span>
+<span class="sd">        Examples</span>
 <span class="sd">        -------</span>
 
 <span class="sd">        &gt;&gt;&gt; ray_geometry = RayGeometry.from_path(path)</span>
@@ -1544,6 +1556,7 @@
 <span class="sd">        ... # At this stage, the two results are stored in cache and the intermadiate</span>
 <span class="sd">        ... # results are discarded.</span>
 <span class="sd">        &gt;&gt;&gt; ray_geometry.inc_angle(1)  # fetch from cache</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_use_cache</span><span class="p">:</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
@@ -1672,7 +1685,6 @@
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        interface_idx : int</span>
-
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>

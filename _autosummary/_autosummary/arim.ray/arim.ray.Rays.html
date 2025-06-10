@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>arim.ray.Rays &#8212; arim 0.10.0.a1 documentation</title>
+    <title>arim.ray.Rays &#8212; arim 0.10.0.rc1 documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=f5189bcf"></script>
+    <script src="../../../_static/documentation_options.js?v=5a92b29a"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
@@ -112,7 +112,7 @@
   
   
   
-    <p class="title logo__title">arim 0.10.0.a1 documentation</p>
+    <p class="title logo__title">arim 0.10.0.rc1 documentation</p>
   
 </a></div>
     
@@ -647,9 +647,10 @@ arriving in <code class="docutils literal notranslate"><span class="pre">A(d)[j]
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>times</strong> (<em>ndarray</em><em> of </em><em>floats</em><em> [</em><em>n x m</em><em>]</em>) – Shortest time between first and last set of points.
+<li><p><strong>times</strong> (<em>ndarray</em><em>[</em><em>float</em><em>]</em>) – Shortest time between first and last set of points, shape (n, m)
 <code class="docutils literal notranslate"><span class="pre">times[i,</span> <span class="pre">j]</span></code> is the total travel time for the ray (i, j).</p></li>
-<li><p><strong>indices_interior</strong> (<em>ndarray</em><em> of </em><em>floats</em><em> [</em><em>(</em><em>d-2</em><em>) </em><em>x n x m</em><em>]</em>) – Indices of points through which each ray goes, excluding the first and last interfaces.
+<li><p><strong>indices_interior</strong> (<em>ndarray</em><em>[</em><em>float</em><em>]</em>) – Indices of points through which each ray goes, excluding the first and last interfaces.
+Shape [(d-2) x n x m].
 <code class="docutils literal notranslate"><span class="pre">indices[k-1,</span> <span class="pre">i,</span> <span class="pre">j]</span></code> is the indice point of the <code class="docutils literal notranslate"><span class="pre">k</span></code> <em>interior</em> interface through which
 the ray (i,j) goes.</p></li>
 <li><p><strong>fermat_path</strong> (<a class="reference internal" href="arim.ray.FermatPath.html#arim.ray.FermatPath" title="arim.ray.FermatPath"><em>FermatPath</em></a>) – Sets of points crossed by the rays.</p></li>
@@ -700,16 +701,16 @@ p: number of points of interface A(d+1)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>interior_indices</strong> (<em>interior</em> indices of rays going from A(0) to A(d).) – Shape: (d, n, m)</p></li>
-<li><p><strong>indices_new_interface</strong> (<em>indices</em><em> of </em><em>the points</em><em> of </em><em>interface A</em><em>(</em><em>d</em><em>) </em><em>that the rays</em>)</p></li>
-<li><p><strong>A</strong><strong>(</strong><strong>d+1</strong><strong>)</strong><strong>.</strong> (<em>starting from A</em><em>(</em><em>0</em><em>) </em><em>cross to go to</em>) – Shape: (n, p)</p></li>
+<li><p><strong>interior_indices</strong> (<em>ndarray</em>) – <em>interior</em> indices of rays going from A(0) to A(d). Shape: (d, n, m)</p></li>
+<li><p><strong>indices_new_interface</strong> (<em>ndarray</em>) – indices of the points of interface A(d) that the rays starting from A(0)
+cross to go to A(d+1). Shape: (n, p)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Shape (d+1, n, p)</p>
+<dd class="field-even"><p><strong>expanded_indices</strong> – Shape (d+1, n, p)</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>expanded_indices</p>
+<dd class="field-odd"><p>ndarray</p>
 </dd>
 </dl>
 </dd></dl>
@@ -721,12 +722,12 @@ p: number of points of interface A(d+1)</p>
 of three 2d ndarrays.</p>
 <p>Use numpy fancy indexing.</p>
 <p class="rubric">Example</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">))</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">rays</span><span class="o">.</span><span class="n">get_coordinates</span><span class="p">()):</span>
-    <span class="c1"># Coordinates at the d-th interface of the ray between ray A(1)[i] and</span>
-    <span class="c1"># ray_A(d)[j].</span>
-    <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
-    <span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
-    <span class="n">z</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">))</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">rays</span><span class="o">.</span><span class="n">get_coordinates</span><span class="p">()):</span>
+<span class="gp">... </span>    <span class="c1"># Coordinates at the d-th interface of the ray between ray A(1)[i] and</span>
+<span class="gp">... </span>    <span class="c1"># ray_A(d)[j].</span>
+<span class="gp">... </span>    <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
+<span class="gp">... </span>    <span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
+<span class="gp">... </span>    <span class="n">z</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -735,7 +736,7 @@ of three 2d ndarrays.</p>
 <dt class="sig sig-object py" id="arim.ray.Rays.get_coordinates_one">
 <span class="sig-name descname"><span class="pre">get_coordinates_one</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_index</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arim/ray.html#Rays.get_coordinates_one"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arim.ray.Rays.get_coordinates_one" title="Link to this definition">#</a></dt>
 <dd><p>Return the coordinates of one ray as <code class="docutils literal notranslate"><span class="pre">Point</span></code>.</p>
-<p>This function is slow: use <code class="docutils literal notranslate"><span class="pre">get_coordinates</span></code> or a variant for treating
+<p>This function is slow: use <a class="reference internal" href="#arim.ray.Rays.get_coordinates" title="arim.ray.Rays.get_coordinates"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Rays.get_coordinates()</span></code></a> or a variant for treating
 a larger number of rays.</p>
 </dd></dl>
 
@@ -767,8 +768,7 @@ Considering a convex geometry, these are rays which are physically blocked by th
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>path_interfaces</strong> (<em>list</em><em>[</em><a class="reference internal" href="../arim.core/arim.core.Interface.html#arim.core.Interface" title="arim.core.Interface"><em>Interface</em></a><em>]</em>) – <p>.</p>
-</p></li>
+<li><p><strong>path_interfaces</strong> (<em>list</em><em>[</em><a class="reference internal" href="../arim.core/arim.core.Interface.html#arim.core.Interface" title="arim.core.Interface"><em>Interface</em></a><em>]</em>)</p></li>
 <li><p><strong>walls</strong> (<em>list</em><em>[</em><a class="reference internal" href="../arim.geometry/arim.geometry.OrientedPoints.html#arim.geometry.OrientedPoints" title="arim.geometry.OrientedPoints"><em>OrientedPoints</em></a><em>]</em>) – All of the walls in the geometry, passed in from <code class="docutils literal notranslate"><span class="pre">examination_object.walls</span></code>.</p></li>
 </ul>
 </dd>

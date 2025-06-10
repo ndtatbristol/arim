@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>arim.geometry &#8212; arim 0.10.0.a1 documentation</title>
+    <title>arim.geometry &#8212; arim 0.10.0.rc1 documentation</title>
   
   
   
@@ -38,7 +38,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=f5189bcf"></script>
+    <script src="../../_static/documentation_options.js?v=5a92b29a"></script>
     <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
@@ -109,7 +109,7 @@
   
   
   
-    <p class="title logo__title">arim 0.10.0.a1 documentation</p>
+    <p class="title logo__title">arim 0.10.0.rc1 documentation</p>
   
 </a></div>
     
@@ -632,6 +632,7 @@
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        translated_points : Points</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">new_coords</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coords</span> <span class="o">+</span> <span class="n">direction</span>
         <span class="n">translated_points</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="n">new_coords</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
@@ -728,7 +729,7 @@
 
 <span class="sd">        See Also</span>
 <span class="sd">        --------</span>
-<span class="sd">        points_in_rectbox</span>
+<span class="sd">        :func:`points_in_rectbox`</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">points_in_rectbox</span><span class="p">(</span>
@@ -785,7 +786,6 @@
 <span class="sd">    coordinate system to be consistent with MFMC terminology (global and probe coordinate systems)</span>
 <span class="sd">    and to avoid confusion with the word &quot;frame&quot; as a set of timetrace.</span>
 
-
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
 <span class="sd">    origin</span>
@@ -795,6 +795,7 @@
 <span class="sd">    basis_matrix : ndarray</span>
 <span class="sd">        i_hat, j_hat and k_hat stored in columns (&#39;matrice de passage&#39; de la base locale vers GCS).</span>
 <span class="sd">        TODO: different convention as stated in header of the file</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;_origin&quot;</span><span class="p">,</span> <span class="s2">&quot;_i_hat&quot;</span><span class="p">,</span> <span class="s2">&quot;_j_hat&quot;</span><span class="p">]</span>
@@ -871,7 +872,8 @@
 
 <span class="sd">        See Also</span>
 <span class="sd">        --------</span>
-<span class="sd">        convert_to_gcs</span>
+<span class="sd">        :func:`convert_to_gcs`</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">points</span> <span class="o">=</span> <span class="n">points_gcs</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">origin</span><span class="p">)</span>
         <span class="c1"># TODO: improve convert_from_gcs</span>
@@ -907,6 +909,7 @@
 <span class="sd">        Notes</span>
 <span class="sd">        -----</span>
 <span class="sd">        This function is used to express a set of points relatively to a set of probe elements.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># The rotation of the points is likely to be the longest operation. Do it only once.</span>
         <span class="n">points_cs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">convert_from_gcs</span><span class="p">(</span><span class="n">points_gcs</span><span class="p">)</span>
@@ -939,7 +942,8 @@
 
 <span class="sd">        See Also</span>
 <span class="sd">        --------</span>
-<span class="sd">        convert_from_gcs</span>
+<span class="sd">        :func:`convert_from_gcs`</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">points_cs</span> <span class="o">=</span> <span class="n">points_cs</span><span class="o">.</span><span class="n">coords</span>
 
@@ -962,6 +966,7 @@
 <span class="sd">        -------</span>
 <span class="sd">        cs</span>
 <span class="sd">            New coordinate system.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">old_origin</span> <span class="o">=</span> <span class="n">Points</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">origin</span><span class="p">)</span>
         <span class="n">new_origin</span> <span class="o">=</span> <span class="n">old_origin</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="n">vector</span><span class="p">)[()]</span>
@@ -983,6 +988,7 @@
 <span class="sd">        -------</span>
 <span class="sd">        cs</span>
 <span class="sd">            New coordinate system.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">old_basis</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span>
             <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">origin</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">origin</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">i_hat</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">origin</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">j_hat</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span>
@@ -1325,20 +1331,25 @@
 
     <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;coords&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;xvect&quot;</span><span class="p">,</span> <span class="s2">&quot;yvect&quot;</span><span class="p">,</span> <span class="s2">&quot;zvect&quot;</span><span class="p">,</span> <span class="s2">&quot;mask&quot;</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">,</span> <span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span><span class="p">,</span> <span class="n">zmin</span><span class="p">,</span> <span class="n">zmax</span><span class="p">,</span> <span class="n">pixel_size</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">,</span> <span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span><span class="p">,</span> <span class="n">zmin</span><span class="p">,</span> <span class="n">zmax</span><span class="p">,</span> <span class="n">pixel_size</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">,</span> <span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span><span class="p">,</span> <span class="n">zmin</span><span class="p">,</span> <span class="n">zmax</span><span class="p">,</span> <span class="n">pixel_size</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">numx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">numy</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">numz</span><span class="p">),</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">mask</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">numx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">numy</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">numz</span><span class="p">),</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mask</span> <span class="o">=</span> <span class="n">mask</span>
 
 <div class="viewcode-block" id="MaskedGrid.mask_grid_where">
 <a class="viewcode-back" href="../../_autosummary/_autosummary/arim.geometry/arim.geometry.MaskedGrid.html#arim.geometry.MaskedGrid.mask_grid_where">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">mask_grid_where</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">condition</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Mask an existing Grid where a condition is met.</span>
+<span class="sd">        Mask an existing Grid where a condition is met. If a MaskedGrid is provided,</span>
+<span class="sd">        mask its union with `condition`.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        grid : Grid</span>
+<span class="sd">        grid : Grid, MaskedGrid</span>
 <span class="sd">        condition : ndarray[bool]</span>
 <span class="sd">            Shape ``(numx, numy, numz)``</span>
 
@@ -1364,7 +1375,12 @@
         <span class="k">if</span> <span class="n">condition</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="o">!=</span> <span class="s2">&quot;b&quot;</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;``condition`` is not boolean.&quot;</span><span class="p">)</span>
 
-        <span class="n">result</span><span class="o">.</span><span class="n">mask</span> <span class="o">=</span> <span class="n">condition</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">grid</span><span class="p">)</span> <span class="ow">is</span> <span class="n">MaskedGrid</span><span class="p">:</span>
+            <span class="n">mask</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">mask</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">condition</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+
+        <span class="n">result</span><span class="o">.</span><span class="n">mask</span> <span class="o">=</span> <span class="n">condition</span> <span class="o">|</span> <span class="n">mask</span>
         <span class="k">return</span> <span class="n">result</span></div>
 
 
@@ -1441,7 +1457,7 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    Points.spherical_coordinates : corresponding function with the ``Points`` interface.</span>
+<span class="sd">    :meth:`Points.spherical_coordinates` : corresponding function with the ``Points`` interface.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">r</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -1507,6 +1523,7 @@
 <span class="sd">    -------</span>
 <span class="sd">    rotated_points : ndarray</span>
 <span class="sd">        Shape: (\*shape_points, 3</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">assert</span> <span class="n">rotation_matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">:]</span> <span class="o">==</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
 
@@ -1548,6 +1565,7 @@
 <span class="sd">    -------</span>
 <span class="sd">    coords_gcs : ndarray</span>
 <span class="sd">        Shape: (\*shape_points, 3)</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># OM&#39; = Origin + OM_x * i_hat + OM_y * j_hat + OM_z * k_hat</span>
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">&quot;...ij,...i-&gt;...j&quot;</span><span class="p">,</span> <span class="n">bases</span><span class="p">,</span> <span class="n">coords_cs</span><span class="p">)</span> <span class="o">+</span> <span class="n">origins</span></div>
@@ -1579,6 +1597,7 @@
 <span class="sd">    -------</span>
 <span class="sd">    coords_gcs : ndarray</span>
 <span class="sd">        Shape: (\*shape_points, 3)</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">&quot;...ji,...i-&gt;...j&quot;</span><span class="p">,</span> <span class="n">bases</span><span class="p">,</span> <span class="n">points_gcs</span> <span class="o">-</span> <span class="n">origins</span><span class="p">)</span></div>
 
@@ -1617,6 +1636,7 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    bool</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">points1</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">points2</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span>
         <span class="n">points1</span><span class="o">.</span><span class="n">coords</span><span class="p">,</span> <span class="n">points2</span><span class="o">.</span><span class="n">coords</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="n">rtol</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="n">atol</span>
@@ -1682,6 +1702,8 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
+<span class="sd">    out : ndarray</span>
+<span class="sd">        If `out` was provided, a reference to it is returned.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -1709,6 +1731,8 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
+<span class="sd">    out : ndarray</span>
+<span class="sd">        If `out` was provided, a reference to it is returned.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -1876,6 +1900,7 @@
 <span class="sd">    -------</span>
 <span class="sd">    distance : ndarray [num1 x num2]</span>
 <span class="sd">        Euclidean distances between the points of the two input sets.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Check dimensions and shapes</span>
     <span class="k">try</span><span class="p">:</span>
@@ -1956,6 +1981,7 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
+<span class="sd">    bool</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">is_orthonormal</span><span class="p">(</span><span class="n">basis</span><span class="p">)</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span>
@@ -2018,8 +2044,9 @@
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 
+<span class="sd">    Return points such as ``10 &lt;= x`` and ``y &lt;= 20`` and ``30 &lt;= z &lt;= zmax``.</span>
+
 <span class="sd">    &gt;&gt;&gt; points_in_rectbox(x, y, z, xmin=10, ymax=20, zmin=30, zmax=39)</span>
-<span class="sd">    Returns points such as ``10 &lt;= x`` and ``y &lt;= 20`` and ``30 &lt;= z &lt;= zmax``.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="n">y</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="n">z</span><span class="o">.</span><span class="n">shape</span><span class="p">):</span>
@@ -2305,7 +2332,7 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    oriented_points : OrientedPOints</span>
+<span class="sd">    oriented_points : OrientedPoints</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">OrientedPoints</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">default_orientations</span><span class="p">(</span><span class="n">points</span><span class="p">))</span></div>

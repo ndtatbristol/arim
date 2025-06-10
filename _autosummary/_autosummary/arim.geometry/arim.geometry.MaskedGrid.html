@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>arim.geometry.MaskedGrid &#8212; arim 0.10.0.a1 documentation</title>
+    <title>arim.geometry.MaskedGrid &#8212; arim 0.10.0.rc1 documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=f5189bcf"></script>
+    <script src="../../../_static/documentation_options.js?v=5a92b29a"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
@@ -112,7 +112,7 @@
   
   
   
-    <p class="title logo__title">arim 0.10.0.a1 documentation</p>
+    <p class="title logo__title">arim 0.10.0.rc1 documentation</p>
   
 </a></div>
     
@@ -631,7 +631,7 @@
 <h1>arim.geometry.MaskedGrid<a class="headerlink" href="#arim-geometry-maskedgrid" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="arim.geometry.MaskedGrid">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arim.geometry.</span></span><span class="sig-name descname"><span class="pre">MaskedGrid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xmin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xmax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ymin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ymax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zmin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zmax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pixel_size</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arim/geometry.html#MaskedGrid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arim.geometry.MaskedGrid" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">arim.geometry.</span></span><span class="sig-name descname"><span class="pre">MaskedGrid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xmin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xmax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ymin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ymax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zmin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zmax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pixel_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arim/geometry.html#MaskedGrid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arim.geometry.MaskedGrid" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="arim.geometry.Grid.html#arim.geometry.Grid" title="arim.geometry.Grid"><code class="xref py py-class docutils literal notranslate"><span class="pre">Grid</span></code></a></p>
 <p>Regularly spaced 3d grid, which may be masked to switch off certain pixels
 in ray-tracing and TFM computation.</p>
@@ -756,11 +756,12 @@ use a class method, or edit the <code class="docutils literal notranslate"><span
 <dl class="py method">
 <dt class="sig sig-object py" id="arim.geometry.MaskedGrid.mask_grid_where">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mask_grid_where</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">grid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">condition</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/arim/geometry.html#MaskedGrid.mask_grid_where"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#arim.geometry.MaskedGrid.mask_grid_where" title="Link to this definition">#</a></dt>
-<dd><p>Mask an existing Grid where a condition is met.</p>
+<dd><p>Mask an existing Grid where a condition is met. If a MaskedGrid is provided,
+mask its union with <cite>condition</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>grid</strong> (<a class="reference internal" href="arim.geometry.Grid.html#arim.geometry.Grid" title="arim.geometry.Grid"><em>Grid</em></a>)</p></li>
+<li><p><strong>grid</strong> (<a class="reference internal" href="arim.geometry.Grid.html#arim.geometry.Grid" title="arim.geometry.Grid"><em>Grid</em></a><em>, </em><a class="reference internal" href="#arim.geometry.MaskedGrid" title="arim.geometry.MaskedGrid"><em>MaskedGrid</em></a>)</p></li>
 <li><p><strong>condition</strong> (<em>ndarray</em><em>[</em><em>bool</em><em>]</em>) – Shape <code class="docutils literal notranslate"><span class="pre">(numx,</span> <span class="pre">numy,</span> <span class="pre">numz)</span></code></p></li>
 </ul>
 </dd>

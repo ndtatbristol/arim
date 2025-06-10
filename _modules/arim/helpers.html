@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>arim.helpers &#8212; arim 0.10.0.a1 documentation</title>
+    <title>arim.helpers &#8212; arim 0.10.0.rc1 documentation</title>
   
   
   
@@ -38,7 +38,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=f5189bcf"></script>
+    <script src="../../_static/documentation_options.js?v=5a92b29a"></script>
     <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
@@ -109,7 +109,7 @@
   
   
   
-    <p class="title logo__title">arim 0.10.0.a1 documentation</p>
+    <p class="title logo__title">arim 0.10.0.rc1 documentation</p>
   
 </a></div>
     
@@ -403,15 +403,15 @@
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    ::</span>
 
-<span class="sd">        &gt;&gt;&gt; with arim.helpers.timeit(&#39;Simple addition&#39;):</span>
-<span class="sd">        ...     1 + 1</span>
+<span class="sd">    &gt;&gt;&gt; with arim.helpers.timeit(&#39;Simple addition&#39;):</span>
+<span class="sd">    ...     1 + 1</span>
 <span class="sd">        Simple addition performed in 570.20 ns</span>
 
-<span class="sd">    Using a logger::</span>
-<span class="sd">        &gt;&gt;&gt; with arim.helpers.timeit(&#39;Simple addition&#39;, logger=logger):</span>
-<span class="sd">        &gt;&gt;&gt;     1 + 1</span>
+<span class="sd">    Using a logger:</span>
+
+<span class="sd">    &gt;&gt;&gt; with arim.helpers.timeit(&#39;Simple addition&#39;, logger=logger):</span>
+<span class="sd">    ...     1 + 1</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">default_timer</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span>
@@ -534,6 +534,7 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the current git revision as a string. Returns an empty string</span>
 <span class="sd">    if git is not available or if the library is not not in a repository.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">curdir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
     <span class="n">filedir</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span>
@@ -596,16 +597,8 @@
 <div class="viewcode-block" id="chunk_array">
 <a class="viewcode-back" href="../../_autosummary/_autosummary/arim.helpers/arim.helpers.chunk_array.html#arim.helpers.chunk_array">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">chunk_array</span><span class="p">(</span><span class="n">array_shape</span><span class="p">,</span> <span class="n">block_size</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Yield selectors to split a array into multiple chunk.</span>
-
-<span class="sd">        &gt;&gt;&gt; x = np.arange(10)</span>
-<span class="sd">        &gt;&gt;&gt; for sel in chunk_array(x.shape, 3):</span>
-<span class="sd">        ...     print(x[sel])</span>
-<span class="sd">        [0 1 2]</span>
-<span class="sd">        [3 4 5]</span>
-<span class="sd">        [6 7 8]</span>
-<span class="sd">        [9]</span>
-
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Yield selectors to split a array into multiple chunk.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -615,6 +608,17 @@
 <span class="sd">        Number of items in each block (except the latest which might have less).</span>
 <span class="sd">    axis : int, optional</span>
 <span class="sd">        Split axis. Default: 0</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    &gt;&gt;&gt; x = np.arange(10)</span>
+<span class="sd">    &gt;&gt;&gt; for sel in chunk_array(x.shape, 3):</span>
+<span class="sd">    ...     print(x[sel])</span>
+<span class="sd">    [0 1 2]</span>
+<span class="sd">    [3 4 5]</span>
+<span class="sd">    [6 7 8]</span>
+<span class="sd">    [9]</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">ndim</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">array_shape</span><span class="p">)</span>
@@ -639,8 +643,11 @@
 <div class="viewcode-block" id="smallest_uint_that_fits">
 <a class="viewcode-back" href="../../_autosummary/_autosummary/arim.helpers/arim.helpers.smallest_uint_that_fits.html#arim.helpers.smallest_uint_that_fits">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">smallest_uint_that_fits</span><span class="p">(</span><span class="n">max_value</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the smallest unsigned integer datatype (dtype) such as all numbers</span>
-<span class="sd">    between 0 and &#39;max_value&#39; can be stored without overflow.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return the smallest unsigned integer datatype (dtype) such as all numbers</span>
+<span class="sd">    between 0 and &#39;max_value&#39; can be stored without overflow.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">dtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint16</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint64</span><span class="p">]</span>
     <span class="k">for</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="n">dtypes</span><span class="p">:</span>
         <span class="n">allowed_max_value</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">iinfo</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span><span class="o">.</span><span class="n">max</span>

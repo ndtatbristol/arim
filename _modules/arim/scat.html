@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>arim.scat &#8212; arim 0.10.0.a1 documentation</title>
+    <title>arim.scat &#8212; arim 0.10.0.rc1 documentation</title>
   
   
   
@@ -38,7 +38,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=f5189bcf"></script>
+    <script src="../../_static/documentation_options.js?v=5a92b29a"></script>
     <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
@@ -109,7 +109,7 @@
   
   
   
-    <p class="title logo__title">arim 0.10.0.a1 documentation</p>
+    <p class="title logo__title">arim 0.10.0.rc1 documentation</p>
   
 </a></div>
     
@@ -376,7 +376,7 @@
 <div class="viewcode-block" id="make_angles">
 <a class="viewcode-back" href="../../_autosummary/_autosummary/arim.scat/arim.scat.make_angles.html#arim.scat.make_angles">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">make_angles</span><span class="p">(</span><span class="n">numpoints</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return angles for scattering matrices. Linearly spaced vector in [-pi, pi[.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return angles for scattering matrices. Linearly spaced vector in `[-pi, pi]`.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">numpoints</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
 
 
@@ -405,7 +405,7 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    func</span>
+<span class="sd">    Callable</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">assert</span> <span class="n">scattering_matrix</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span>
@@ -431,6 +431,7 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    dict[str, function]</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">interpolate_matrix</span><span class="p">(</span><span class="n">mat</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">mat</span> <span class="ow">in</span> <span class="n">scattering_matrices</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span></div>
 
@@ -473,7 +474,6 @@
 
 <span class="sd">        maxn = max(min_terms, ceil(term_factor * alpha), ceil(term_factor * beta))</span>
 
-
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    inc_theta : ndarray</span>
@@ -496,20 +496,7 @@
 
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
-<span class="sd">    [Lopez-Sanchez] Lopez-Sanchez, Ana L., Hak-Joon Kim, Lester W. Schmerr, and Alexander</span>
-<span class="sd">    Sedov. 2005. ‘Measurement Models and Scattering Models for Predicting the Ultrasonic</span>
-<span class="sd">    Pulse-Echo Response From Side-Drilled Holes’. Journal of Nondestructive Evaluation 24</span>
-<span class="sd">    3): 83–96. doi:10.1007/s10921-005-7658-4.</span>
-
-<span class="sd">    [Brind] Brind, R. J., J. D. Achenbach, and J. E. Gubernatis. 1984. ‘High-Frequency</span>
-<span class="sd">    Scattering of Elastic Waves from Cylindrical Cavities’. Wave Motion 6 (1):</span>
-<span class="sd">    41–60. doi:10.1016/0165-2125(84)90022-2.</span>
-
-<span class="sd">    [Zhang] Zhang, Jie, B.W. Drinkwater, and P.D. Wilcox. 2008. ‘Defect Characterization</span>
-<span class="sd">    Using an Ultrasonic Array to Measure the Scattering Coefficient Matrix’. IEEE</span>
-<span class="sd">    Transactions on Ultrasonics, Ferroelectrics, and Frequency Control 55 (10): 2254–65.</span>
-<span class="sd">    doi:10.1109/TUFFC.924.</span>
-
+<span class="sd">    [Brind]_, [Lopez-Sanchez]_, [Zhang]_</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">theta</span> <span class="o">=</span> <span class="n">out_theta</span> <span class="o">-</span> <span class="n">inc_theta</span>
@@ -708,11 +695,7 @@
 
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
-<span class="sd">    [Glushkov] Glushkov, Evgeny, Natalia Glushkova, Alexander Ekhlakov, and</span>
-<span class="sd">    Elena Shapar. 2006. ‘An Analytically Based Computer Model for Surface</span>
-<span class="sd">    Measurements in Ultrasonic Crack Detection’. Wave Motion 43 (6): 458–73.</span>
-<span class="sd">    doi:10.1016/j.wavemoti.2006.03.002.</span>
-
+<span class="sd">    [Glushkov]_</span>
 <span class="sd">    Unpublished work from Alexander Velichko</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -900,8 +883,7 @@
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    [Ogilvy83] Ogilvy, J. A., and J. A. G. Temple. 1983. ‘Diffraction of Elastic Waves by Cracks: Application to</span>
-<span class="sd">    Time-of-Flight Inspection’. Ultrasonics 21 (6):259–69. https://doi.org/10.1016/0041-624X(83)90058-6.</span>
+<span class="sd">    [Ogilvy83]_</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">res</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
@@ -1143,7 +1125,10 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns a dict of functions.</span>
 
-<span class="sd">        &gt;&gt;&gt; assert scat_func(x, y, z, to_compute=[&#39;LT&#39;])[&#39;LT&#39;] == _partial_one_scat_key(scat_func, &#39;LT&#39;, z)(x, y)</span>
+<span class="sd">    Example</span>
+<span class="sd">    -------</span>
+
+<span class="sd">    &gt;&gt;&gt; assert scat_func(x, y, z, to_compute=[&#39;LT&#39;])[&#39;LT&#39;] == _partial_one_scat_key(scat_func, &#39;LT&#39;, z)(x, y)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Remark: do not try to replace this by a lambda function, a proper closure is needed</span>
@@ -1179,6 +1164,7 @@
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
+
 <span class="sd">    &gt;&gt;&gt; material = arim.Material(6300., 3120., 2700., &#39;solid&#39;, metadata={&#39;long_name&#39;: &#39;Aluminium&#39;})</span>
 
 <span class="sd">    Creating the scattering object:</span>
@@ -1237,6 +1223,7 @@
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
+
 <span class="sd">    &gt;&gt;&gt; material = arim.Material(6300., 3120., 2700., &#39;solid&#39;, metadata={&#39;long_name&#39;: &#39;Aluminium&#39;})</span>
 <span class="sd">    &gt;&gt;&gt; scat_obj = scat_factory(&#39;sdh&#39;, material, radius=0.5e-3)</span>
 
@@ -1252,7 +1239,6 @@
 <span class="sd">    array of shape (3, ).</span>
 
 <span class="sd">    &gt;&gt;&gt; result2 = scat_obj(inc_theta, out_theta, frequency, to_compute=[&#39;LL&#39;])</span>
-
 
 <span class="sd">    ``result2`` is a dict which contains the key &#39;LL&#39;. Use this feature to reduce the amount</span>
 <span class="sd">    of computation. Depending on how the function is written, other keys may be returned.</span>
@@ -1381,7 +1367,6 @@
 <span class="sd">        numangles : int</span>
 <span class="sd">        to_compute : set[str]</span>
 
-
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        dict[str, ndarray]</span>
@@ -1430,6 +1415,7 @@
 <span class="sd">      ie any argument but ``inc_theta``, ``out_theta``, ``frequency`` and ``to_compute``.</span>
 
 <span class="sd">    This class is abstract.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">_scat_kwargs</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># placeholder</span>
@@ -1459,6 +1445,7 @@
 <span class="sd">    Scattering for side-drilled hole</span>
 
 <span class="sd">    This class provides the :class:`Scattering2d` interface for :func:`sdh_2d_scat`.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">_scat_func</span> <span class="o">=</span> <span class="nb">staticmethod</span><span class="p">(</span><span class="n">sdh_2d_scat</span><span class="p">)</span>
@@ -1606,6 +1593,7 @@
 <span class="sd">    Crack tip diffraction</span>
 
 <span class="sd">    Wrapper for :func:`crack_tip_2d`</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">_scat_func</span> <span class="o">=</span> <span class="nb">staticmethod</span><span class="p">(</span><span class="n">crack_tip_2d</span><span class="p">)</span>
@@ -1658,7 +1646,6 @@
 <span class="sd">    interp_freq_kwargs : dict</span>
 <span class="sd">        Passed to ``scipy.interpolate.interp1d``.</span>
 <span class="sd">        Default: ``bounds_error=False, fill_value=&#39;extrapolate&#39;``</span>
-
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -1727,8 +1714,8 @@
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        frequencies</span>
-<span class="sd">        scat_matrix_dict</span>
+<span class="sd">        frequencies : ndarray</span>
+<span class="sd">        scat_matrix_dict : dict[str, ndarray]</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -1779,7 +1766,7 @@
 <span class="sd">        frequencies : ndarray</span>
 <span class="sd">            1d</span>
 <span class="sd">        new_freq : float</span>
-<span class="sd">        multi_freq_scat_matrices : dict[str]</span>
+<span class="sd">        multi_freq_scat_matrices : dict[str, ndarray]</span>
 <span class="sd">            Keys: frequencies (1d array), LL, LT, TL, TT</span>
 <span class="sd">        interp1d_kwargs : kwargs</span>
 <span class="sd">            Arguments for ``scipy.interpolate.interp1d``</span>

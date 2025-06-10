@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>arim.im.das &#8212; arim 0.10.0.a1 documentation</title>
+    <title>arim.im.das &#8212; arim 0.10.0.rc1 documentation</title>
   
   
   
@@ -38,7 +38,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=f5189bcf"></script>
+    <script src="../../../_static/documentation_options.js?v=5a92b29a"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
@@ -109,7 +109,7 @@
   
   
   
-    <p class="title logo__title">arim 0.10.0.a1 documentation</p>
+    <p class="title logo__title">arim 0.10.0.rc1 documentation</p>
   
 </a></div>
     
@@ -366,7 +366,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">numba</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">geomed</span><span class="p">,</span> <span class="n">huber</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">geomed</span><span class="p">,</span> <span class="n">huber</span><span class="p">,</span> <span class="n">tfm</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -382,11 +382,14 @@
     <span class="n">numpoints</span><span class="p">,</span> <span class="n">numtx</span> <span class="o">=</span> <span class="n">focal_law</span><span class="o">.</span><span class="n">lookup_times_tx</span><span class="o">.</span><span class="n">shape</span>
     <span class="n">_</span><span class="p">,</span> <span class="n">numrx</span> <span class="o">=</span> <span class="n">focal_law</span><span class="o">.</span><span class="n">lookup_times_rx</span><span class="o">.</span><span class="n">shape</span>
 
-    <span class="k">if</span> <span class="n">focal_law</span><span class="o">.</span><span class="n">amplitudes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">focal_law</span><span class="o">.</span><span class="n">amplitudes</span><span class="p">,</span> <span class="n">tfm</span><span class="o">.</span><span class="n">TxRxAmplitudes</span><span class="p">):</span>
         <span class="k">assert</span> <span class="n">focal_law</span><span class="o">.</span><span class="n">amplitudes</span><span class="o">.</span><span class="n">amplitudes_tx</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="n">numpoints</span><span class="p">,</span> <span class="n">numtx</span><span class="p">)</span>
         <span class="k">assert</span> <span class="n">focal_law</span><span class="o">.</span><span class="n">amplitudes</span><span class="o">.</span><span class="n">amplitudes_rx</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="n">numpoints</span><span class="p">,</span> <span class="n">numrx</span><span class="p">)</span>
         <span class="k">assert</span> <span class="n">focal_law</span><span class="o">.</span><span class="n">amplitudes</span><span class="o">.</span><span class="n">amplitudes_tx</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">c_contiguous</span>
         <span class="k">assert</span> <span class="n">focal_law</span><span class="o">.</span><span class="n">amplitudes</span><span class="o">.</span><span class="n">amplitudes_rx</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">c_contiguous</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">focal_law</span><span class="o">.</span><span class="n">amplitudes</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="n">focal_law</span><span class="o">.</span><span class="n">amplitudes</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="n">numpoints</span><span class="p">,</span> <span class="n">numtimetraces</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">focal_law</span><span class="o">.</span><span class="n">amplitudes</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">c_contiguous</span>
 
     <span class="k">assert</span> <span class="n">frame</span><span class="o">.</span><span class="n">tx</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="n">numtimetraces</span><span class="p">,)</span>
     <span class="k">assert</span> <span class="n">frame</span><span class="o">.</span><span class="n">rx</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="n">numtimetraces</span><span class="p">,)</span>
@@ -447,10 +450,27 @@
         <span class="n">result</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="n">numpoints</span><span class="p">,),</span> <span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype_data</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">result</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="n">numpoints</span><span class="p">,)</span>
 
+    <span class="c1"># TODO: MC (15/05/25) Would prefer to use `match` here but would mean forcing Python &gt;= 3.10</span>
     <span class="k">if</span> <span class="n">interpolation</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;nearest&quot;</span><span class="p">:</span>
-        <span class="n">delay_and_sum_function</span> <span class="o">=</span> <span class="n">_delay_and_sum_amplitudes_nearest</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">focal_law</span><span class="o">.</span><span class="n">amplitudes</span><span class="p">,</span> <span class="n">tfm</span><span class="o">.</span><span class="n">TxRxAmplitudes</span><span class="p">):</span>
+            <span class="n">amplitudes</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">focal_law</span><span class="o">.</span><span class="n">amplitudes</span><span class="o">.</span><span class="n">amplitudes_tx</span><span class="p">,</span>
+                <span class="n">focal_law</span><span class="o">.</span><span class="n">amplitudes</span><span class="o">.</span><span class="n">amplitudes_rx</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">delay_and_sum_function</span> <span class="o">=</span> <span class="n">_delay_and_sum_amplitudes_nearest</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">focal_law</span><span class="o">.</span><span class="n">amplitudes</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+            <span class="n">amplitudes</span> <span class="o">=</span> <span class="p">(</span><span class="n">focal_law</span><span class="o">.</span><span class="n">amplitudes</span><span class="p">,)</span>
+            <span class="n">delay_and_sum_function</span> <span class="o">=</span> <span class="n">_general_delay_and_sum_nearest</span>
     <span class="k">elif</span> <span class="n">interpolation</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;linear&quot;</span><span class="p">:</span>
-        <span class="n">delay_and_sum_function</span> <span class="o">=</span> <span class="n">_delay_and_sum_amplitudes_linear</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">focal_law</span><span class="o">.</span><span class="n">amplitudes</span><span class="p">,</span> <span class="n">tfm</span><span class="o">.</span><span class="n">TxRxAmplitudes</span><span class="p">):</span>
+            <span class="n">amplitudes</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">focal_law</span><span class="o">.</span><span class="n">amplitudes</span><span class="o">.</span><span class="n">amplitudes_tx</span><span class="p">,</span>
+                <span class="n">focal_law</span><span class="o">.</span><span class="n">amplitudes</span><span class="o">.</span><span class="n">amplitudes_rx</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">delay_and_sum_function</span> <span class="o">=</span> <span class="n">_delay_and_sum_amplitudes_linear</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">focal_law</span><span class="o">.</span><span class="n">amplitudes</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+            <span class="n">amplitudes</span> <span class="o">=</span> <span class="p">(</span><span class="n">focal_law</span><span class="o">.</span><span class="n">amplitudes</span><span class="p">,)</span>
+            <span class="n">delay_and_sum_function</span> <span class="o">=</span> <span class="n">_general_delay_and_sum_linear</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;invalid &#39;interpolation&#39; argument&quot;</span><span class="p">)</span>
 
@@ -462,8 +482,7 @@
         <span class="n">frame</span><span class="o">.</span><span class="n">rx</span><span class="p">,</span>
         <span class="n">focal_law</span><span class="o">.</span><span class="n">lookup_times_tx</span><span class="p">,</span>
         <span class="n">focal_law</span><span class="o">.</span><span class="n">lookup_times_rx</span><span class="p">,</span>
-        <span class="n">focal_law</span><span class="o">.</span><span class="n">amplitudes</span><span class="o">.</span><span class="n">amplitudes_tx</span><span class="p">,</span>
-        <span class="n">focal_law</span><span class="o">.</span><span class="n">amplitudes</span><span class="o">.</span><span class="n">amplitudes_rx</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">amplitudes</span><span class="p">,</span>
         <span class="n">frame</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">step</span><span class="p">,</span>
         <span class="n">frame</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">start</span><span class="p">,</span>
         <span class="n">fillvalue</span><span class="p">,</span>
@@ -542,6 +561,7 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    None</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">numtimetraces</span><span class="p">,</span> <span class="n">numsamples</span> <span class="o">=</span> <span class="n">weighted_timetraces</span><span class="o">.</span><span class="n">shape</span>
     <span class="n">numpoints</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">lookup_times_tx</span><span class="o">.</span><span class="n">shape</span>
@@ -602,71 +622,7 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    None</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">numtimetraces</span><span class="p">,</span> <span class="n">numsamples</span> <span class="o">=</span> <span class="n">weighted_timetraces</span><span class="o">.</span><span class="n">shape</span>
-    <span class="n">numpoints</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">lookup_times_tx</span><span class="o">.</span><span class="n">shape</span>
 
-    <span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="n">numba</span><span class="o">.</span><span class="n">prange</span><span class="p">(</span><span class="n">numpoints</span><span class="p">):</span>
-        <span class="n">res_tmp</span> <span class="o">=</span> <span class="mf">0.0</span>
-        <span class="k">for</span> <span class="n">scan</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">numtimetraces</span><span class="p">):</span>
-            <span class="n">lookup_time</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="n">lookup_times_tx</span><span class="p">[</span><span class="n">point</span><span class="p">,</span> <span class="n">tx</span><span class="p">[</span><span class="n">scan</span><span class="p">]]</span> <span class="o">+</span> <span class="n">lookup_times_rx</span><span class="p">[</span><span class="n">point</span><span class="p">,</span> <span class="n">rx</span><span class="p">[</span><span class="n">scan</span><span class="p">]]</span>
-            <span class="p">)</span>
-            <span class="n">loc1</span> <span class="o">=</span> <span class="p">(</span><span class="n">lookup_time</span> <span class="o">-</span> <span class="n">t0</span><span class="p">)</span> <span class="o">/</span> <span class="n">dt</span>
-            <span class="n">lookup_index</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">loc1</span><span class="p">)</span>
-            <span class="n">frac1</span> <span class="o">=</span> <span class="n">loc1</span> <span class="o">-</span> <span class="n">lookup_index</span>
-            <span class="n">lookup_index1</span> <span class="o">=</span> <span class="n">lookup_index</span> <span class="o">+</span> <span class="mi">1</span>
-
-            <span class="k">if</span> <span class="n">lookup_index</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">lookup_index1</span> <span class="o">&gt;=</span> <span class="n">numsamples</span><span class="p">:</span>
-                <span class="n">res_tmp</span> <span class="o">+=</span> <span class="n">fillvalue</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">lscanVal</span> <span class="o">=</span> <span class="n">weighted_timetraces</span><span class="p">[</span><span class="n">scan</span><span class="p">,</span> <span class="n">lookup_index</span><span class="p">]</span>
-                <span class="n">lscanVal1</span> <span class="o">=</span> <span class="n">weighted_timetraces</span><span class="p">[</span><span class="n">scan</span><span class="p">,</span> <span class="n">lookup_index1</span><span class="p">]</span>
-                <span class="n">lscanUseVal</span> <span class="o">=</span> <span class="n">lscanVal</span> <span class="o">+</span> <span class="n">frac1</span> <span class="o">*</span> <span class="p">(</span><span class="n">lscanVal1</span> <span class="o">-</span> <span class="n">lscanVal</span><span class="p">)</span>
-                <span class="n">res_tmp</span> <span class="o">+=</span> <span class="p">(</span>
-                    <span class="n">amplitudes_tx</span><span class="p">[</span><span class="n">point</span><span class="p">,</span> <span class="n">tx</span><span class="p">[</span><span class="n">scan</span><span class="p">]]</span>
-                    <span class="o">*</span> <span class="n">amplitudes_rx</span><span class="p">[</span><span class="n">point</span><span class="p">,</span> <span class="n">rx</span><span class="p">[</span><span class="n">scan</span><span class="p">]]</span>
-                    <span class="o">*</span> <span class="n">lscanUseVal</span>
-                <span class="p">)</span>
-        <span class="n">result</span><span class="p">[</span><span class="n">point</span><span class="p">]</span> <span class="o">=</span> <span class="n">res_tmp</span> <span class="o">/</span> <span class="n">numtimetraces</span>
-
-
-<span class="nd">@numba</span><span class="o">.</span><span class="n">jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">nogil</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">parallel</span><span class="o">=</span><span class="n">use_parallel</span><span class="p">,</span> <span class="n">fastmath</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">_delay_and_sum_amplitudes_linear</span><span class="p">(</span>
-    <span class="n">weighted_timetraces</span><span class="p">,</span>
-    <span class="n">tx</span><span class="p">,</span>
-    <span class="n">rx</span><span class="p">,</span>
-    <span class="n">lookup_times_tx</span><span class="p">,</span>
-    <span class="n">lookup_times_rx</span><span class="p">,</span>
-    <span class="n">amplitudes_tx</span><span class="p">,</span>
-    <span class="n">amplitudes_rx</span><span class="p">,</span>
-    <span class="n">dt</span><span class="p">,</span>
-    <span class="n">t0</span><span class="p">,</span>
-    <span class="n">fillvalue</span><span class="p">,</span>
-    <span class="n">result</span><span class="p">,</span>
-<span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Numba implementation of the delay and sum algorithm, using linear</span>
-<span class="sd">    interpolation for time point.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    weighted_timetraces : ndarray [numtimetraces x numsamples]</span>
-<span class="sd">    lookup_times_tx : ndarray [numpoints x numtx]</span>
-<span class="sd">        Times of flight (floats) between the transmitters and the grid points.</span>
-<span class="sd">    lookup_times_rx : ndarray [numpoints x numrx]</span>
-<span class="sd">        Times of flight (floats) between the grid points and the receivers.</span>
-<span class="sd">    amplitudes_tx : ndarray [numpoints x numtx]</span>
-<span class="sd">    amplitudes_rx : ndarray [numpoints x numrx]</span>
-<span class="sd">    result : ndarray [numpoints]</span>
-<span class="sd">        Result.</span>
-<span class="sd">    tx, rx : ndarray [numtimetraces]</span>
-<span class="sd">        Mapping between the timetraces and the transmitter/receiver.</span>
-<span class="sd">        Values: integers in [0, numtx[ and [0, numrx] respectively</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    None</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">numtimetraces</span><span class="p">,</span> <span class="n">numsamples</span> <span class="o">=</span> <span class="n">weighted_timetraces</span><span class="o">.</span><span class="n">shape</span>
     <span class="n">numpoints</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">lookup_times_tx</span><span class="o">.</span><span class="n">shape</span>
@@ -950,6 +906,7 @@
 <span class="sd">    Delay and sum with Lanczos interpolation with factor &#39;a&#39; of the timetraces.</span>
 
 <span class="sd">    https://en.wikipedia.org/wiki/Lanczos_resampling</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">numtimetraces</span><span class="p">,</span> <span class="n">numsamples</span> <span class="o">=</span> <span class="n">weighted_timetraces</span><span class="o">.</span><span class="n">shape</span>
     <span class="n">numpoints</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">lookup_times_tx</span><span class="o">.</span><span class="n">shape</span>
@@ -1094,6 +1051,7 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    None</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">numtimetraces</span><span class="p">,</span> <span class="n">numsamples</span> <span class="o">=</span> <span class="n">weighted_timetraces</span><span class="o">.</span><span class="n">shape</span>
     <span class="n">numpoints</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">lookup_times_tx</span><span class="o">.</span><span class="n">shape</span>
@@ -1156,6 +1114,7 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    None</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">numtimetraces</span><span class="p">,</span> <span class="n">numsamples</span> <span class="o">=</span> <span class="n">weighted_timetraces</span><span class="o">.</span><span class="n">shape</span>
     <span class="n">numpoints</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">lookup_times_tx</span><span class="o">.</span><span class="n">shape</span>
@@ -1192,11 +1151,12 @@
 <span class="sd">    Pure-Python implementation of delay and sum.</span>
 
 <span class="sd">    This is a very slow implementation, use for test only.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">numtimetraces</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">numtimetraces</span>
     <span class="n">numpoints</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">focal_law</span><span class="o">.</span><span class="n">lookup_times_tx</span><span class="o">.</span><span class="n">shape</span>
 
-    <span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">tfm</span>
+    <span class="c1"># from . import tfm</span>
 
     <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">focal_law</span><span class="o">.</span><span class="n">amplitudes</span><span class="p">,</span> <span class="n">tfm</span><span class="o">.</span><span class="n">TxRxAmplitudes</span><span class="p">)</span>
 
@@ -1273,16 +1233,15 @@
 <span class="sd">    -------</span>
 <span class="sd">    result : ndarray (numpoints, )</span>
 
-
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
 <span class="sd">    :func:`delay_and_sum_numba`</span>
 <span class="sd">    :func:`delay_and_sum_numba_noamp`</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">tfm</span>
+    <span class="c1"># from . import tfm</span>
 
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">focal_law</span><span class="o">.</span><span class="n">amplitudes</span><span class="p">,</span> <span class="n">tfm</span><span class="o">.</span><span class="n">TxRxAmplitudes</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">focal_law</span><span class="o">.</span><span class="n">amplitudes</span><span class="p">,</span> <span class="p">(</span><span class="n">tfm</span><span class="o">.</span><span class="n">TxRxAmplitudes</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)):</span>
         <span class="k">return</span> <span class="n">delay_and_sum_numba</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">focal_law</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">focal_law</span><span class="o">.</span><span class="n">amplitudes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">delay_and_sum_numba_noamp</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">focal_law</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>

@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>arim.signal &#8212; arim 0.10.0.a1 documentation</title>
+    <title>arim.signal &#8212; arim 0.10.0.rc1 documentation</title>
   
   
   
@@ -38,7 +38,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=f5189bcf"></script>
+    <script src="../../_static/documentation_options.js?v=5a92b29a"></script>
     <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
@@ -109,7 +109,7 @@
   
   
   
-    <p class="title logo__title">arim 0.10.0.a1 documentation</p>
+    <p class="title logo__title">arim 0.10.0.rc1 documentation</p>
   
 </a></div>
     
@@ -404,6 +404,7 @@
 <span class="sd">    Composed filter.</span>
 
 <span class="sd">    When called, this filter applies each of its subfilters on the data.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outer_filters</span><span class="p">,</span> <span class="n">inner_filters</span><span class="p">):</span>
@@ -426,7 +427,6 @@
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arr</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        arr</span>
@@ -470,8 +470,8 @@
 <span class="sd">    cutoff_min, cutoff_max : float</span>
 <span class="sd">        Cutoff frequencies in Hz.</span>
 <span class="sd">    time : arim.Time</span>
-<span class="sd">        Time object. This filter can be used only on data sampled consistently with the attribute</span>
-<span class="sd">    ``time``.</span>
+<span class="sd">        Time object. This filter can be used only on data sampled consistently with the</span>
+<span class="sd">        attribute ``time``.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
